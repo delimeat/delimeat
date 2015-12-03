@@ -1,6 +1,235 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
-                 version="2.1">
+<entity-mappings version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+	
+	<persistence-unit-metadata>
+		<xml-mapping-metadata-complete />
+		<persistence-unit-defaults>
+			<access>FIELD</access>
+			<cascade-persist />
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	
+	<package>io.delimeat.core.show</package>
+
+	<entity class="EpisodeResult" name="EpisodeResult">
+		<table name="EPISODE_RESULT" />
+		<attributes>
+
+			<id name="episodeResultId">
+				<column name="EPISODE_RESULT_ID" />
+				<generated-value />
+			</id>
+
+			<basic name="source" optional="false">
+				<column name="SOURCE" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+
+			<basic name="url" optional="false">
+				<column name="URL" nullable="false" />
+			</basic>
+
+			<basic name="valid" optional="false">
+				<column name="VALID" nullable="false" />
+			</basic>
+
+			<basic name="result" optional="false">
+				<column name="RESULT" nullable="false" />
+			</basic>
+
+			<version name="version">
+				<column name="VERSION" />
+			</version>
+
+			<many-to-one name="episode">
+				<join-column name="EPISODE_ID" referenced-column-name="EPISODE_ID"
+					updatable="false" insertable="false" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</many-to-one>
+
+		</attributes>
+	</entity>
+
+	<entity class="Episode" name="Episode">
+		<table name="EPISODE" />
+		<attributes>
+
+			<id name="episodeId">
+				<column name="EPISODE_ID" />
+				<generated-value />
+			</id>
+
+			<basic name="airDateTime" optional="false">
+				<column name="AIR_DATE_TIME" nullable="true" />
+				<temporal>DATE</temporal>
+			</basic>
+
+			<basic name="seasonNum" optional="false">
+				<column name="SEASON_NUM" nullable="false" />
+			</basic>
+
+			<basic name="episodeNum" optional="false">
+				<column name="EPISODE_NUM" nullable="false" />
+			</basic>
+
+			<basic name="title" optional="false">
+				<column name="TITLE" nullable="false" />
+			</basic>
+
+			<basic name="doubleEp" optional="false">
+				<column name="DOUBLE_EP" nullable="false" />
+			</basic>
+
+			<version name="version">
+				<column name="VERSION" />
+			</version>
+
+			<many-to-one name="show">
+				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID"
+					updatable="false" insertable="false" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</many-to-one>
+
+			<one-to-many name="results" mapped-by="episode">
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-many>
+
+		</attributes>
+	</entity>
+
+
+
+	<entity class="Show" name="Show">
+		<table name="SHOW" />
+		<attributes>
+
+			<id name="showId">
+				<column name="SHOW_ID" />
+				<generated-value />
+			</id>
+
+			<basic name="airTime" optional="false">
+				<column name="AIR_TIME" nullable="false" />
+			</basic>
+
+			<basic name="timezone" optional="false">
+				<column name="TIMEZONE" length="64" />
+			</basic>
+
+			<basic name="title" optional="false">
+				<column name="TITLE" length="255" nullable="false" />
+			</basic>
+
+			<basic name="airing" optional="false">
+				<column name="AIRING" nullable="false" />
+			</basic>
+
+			<basic name="showType" optional="false">
+				<column name="SHOW_TYPE" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+
+			<basic name="lastGuideUpdate" optional="true">
+				<column name="LAST_GUIDE_UPDATE" />
+				<temporal>DATE</temporal>
+			</basic>
+
+			<basic name="lastFeedUpdate" optional="false">
+				<column name="LAST_FEED_UPDATE" />
+				<temporal>DATE</temporal>
+			</basic>
+
+			<basic name="enabled" optional="false">
+				<column name="ENABLED" nullable="false" />
+			</basic>
+
+			<version name="version">
+				<column name="VERSION" />
+			</version>
+
+			<one-to-many name="guideSources" mapped-by="show">
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-many>
+
+			<one-to-one name="previousEpisode" fetch="LAZY">
+				<join-column name="PREV_EPISODE_ID" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-one>
+
+			<one-to-one name="nextEpisode" fetch="LAZY">
+				<join-column name="NEXT_EPISODE_ID" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-one>
+		</attributes>
+	</entity>
+
+
+	<entity class="ShowGuideSource" name="ShowGuideSource">
+		<table name="SHOW_GUIDE_SOURCE" />
+		<attributes>
+			<embedded-id name="id">
+
+			</embedded-id>
+
+			<basic name="guideId" optional="false">
+				<column name="GUIDE_ID" length="255" nullable="false" />
+			</basic>
+
+			<version name="version">
+				<column name="VERSION" />
+			</version>
+
+			<many-to-one name="show">
+				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID"
+					updatable="false" insertable="false" />
+			</many-to-one>
+
+		</attributes>
+	</entity>
+
+	<embeddable class="ShowGuideSourcePK">
+		<attributes>
+			<basic name="guideSource" optional="false">
+				<column name="GUIDE_SOURCE" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="showId" optional="false">
+				<column name="SHOW_ID" nullable="false" />
+			</basic>
+		</attributes>
+	</embeddable>
+
+
 </entity-mappings>

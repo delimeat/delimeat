@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="tvmazeGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="lazyInit" value="true" />
+		<property name="classesToBeBound">
+			<list>
+				<value>io.delimeat.core.guide.GuideSearchResult</value>
+				<!-- 
+				<value>io.delimeat.core.guide.GuideSearch</value>
+				!-->
+				<value>io.delimeat.core.guide.GuideEpisode</value>
+				<value>io.delimeat.core.guide.GuideInfo</value>
+			</list>
+		</property>
+		<property name="jaxbContextProperties">
+			<map>
+				<entry key="eclipselink.oxm.metadata-source">
+					<value type="java.io.InputStream">classpath://META-INF/oxm/guide-tvmaze-oxm.xml</value>
+				</entry>
+				<entry key="eclipselink.media-type">
+					<value>application/json</value>
+				</entry>
+				<entry key="eclipselink.json.include-root">
+					<value type="java.lang.Boolean">false</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+    
+    <bean id="tvmazeGuideUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="tvmazeGuideJaxb2MarshallerId" factory-method="createUnmarshaller"/>
+	
+    <bean id="tvmazeBaseUriId" class="java.net.URI">
+    	<constructor-arg value="${io.delimeat.core.guide.tvmaze.baseUri}"/>
+    </bean>
+
+	<bean id="tvmazeGuideDaoId" class="io.delimeat.core.guide.TvMazeJaxbGuideDao_Impl">
+		<property name="unmarshaller" ref="tvmazeGuideUnmarshallerId" />
+		<property name="urlHandler" ref="urlHandlerId" />
+		<property name="baseUri" ref="tvmazeBaseUriId"/>
+		<property name="properties">
+			<map>
+				<entry key="Content-Type">
+					<value>application/json</value>
+				</entry>
+			</map>
+		</property>
+	</bean>  
+    
+</beans>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="tvdbGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="lazyInit" value="true" />
+		<property name="classesToBeBound">
+			<list>
+				<value>io.delimeat.core.guide.GuideSearchResult</value>
+				<value>io.delimeat.core.guide.GuideSearch</value>
+				<value>io.delimeat.core.guide.GuideEpisode</value>
+				<value>io.delimeat.core.guide.GuideInfo</value>
+				<value>io.delimeat.core.guide.TvdbApiKey</value>
+				<value>io.delimeat.core.guide.TvdbError</value>
+				<value>io.delimeat.core.guide.TvdbToken</value>
+				<value>io.delimeat.core.guide.TvdbEpisodes</value>
+			</list>
+		</property>
+		<property name="jaxbContextProperties">
+			<map>
+				<entry key="eclipselink.oxm.metadata-source">
+					<value type="java.io.InputStream">classpath://META-INF/oxm/guide-tvdb-oxm.xml</value>
+				</entry>
+				<entry key="eclipselink.media-type">
+					<value>application/json</value>
+				</entry>
+				<entry key="eclipselink.json.include-root">
+					<value type="java.lang.Boolean">false</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+    
+    <bean id="tvdbGuideUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="tvdbGuideJaxb2MarshallerId" factory-method="createUnmarshaller">
+    </bean>
+    <bean id="tvdbGuideMarshallerId" class="javax.xml.bind.Marshaller" factory-bean="tvdbGuideJaxb2MarshallerId" factory-method="createMarshaller" />
+
+    <bean id="tvdbBaseUriId" class="java.net.URI">
+    	<constructor-arg value="${io.delimeat.core.guide.tvdb.baseUri}"/>
+    </bean>
+
+	<!-- 
+	<bean id="tvdbGuideDaoId" class="io.delimeat.core.guide.TvdbJaxbGuideDao_Impl">
+		<property name="unmarshaller" ref="tvdbGuideUnmarshallerId" />
+		<property name="marshaller" ref="tvdbGuideMarshallerId" />
+		<property name="urlHandler" ref="urlHandlerId" />
+		<property name="apiKey" value="FE3A3CA0FE707FEF"/>
+		<property name="baseUri" ref="tvdbBaseUriId"/>
+		<property name="validPeriodInMs" value="${io.delimeat.core.guide.tvdb.validPeriod}" />
+	</bean>
+	!-->
+	
+	<bean id="tvdbJaxbContextId" class="javax.xml.bind.JAXBContext" factory-bean="tvdbGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
+	
+	<bean id="tvdbJaxbContextResolverId" class="io.delimeat.util.jaxrs.JaxbContextResolver">
+		<property name="context" ref="tvdbJaxbContextId"/>
+		<property name="classes">
+			<list>
+				<value>io.delimeat.core.guide.GuideSearchResult</value>
+				<value>io.delimeat.core.guide.GuideSearch</value>
+				<value>io.delimeat.core.guide.GuideEpisode</value>
+				<value>io.delimeat.core.guide.GuideInfo</value>
+				<value>io.delimeat.core.guide.TvdbApiKey</value>
+				<value>io.delimeat.core.guide.TvdbError</value>
+				<value>io.delimeat.core.guide.TvdbToken</value>
+				<value>io.delimeat.core.guide.TvdbEpisodes</value>
+			</list>		
+		</property>
+	</bean>
+	
+	<bean id="tvdbJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
+		<property name="providers">
+			<list>
+				<ref bean="tvdbJaxbContextResolverId"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="tvdbjaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="tvdbJerseyClientFactoryId" factory-method="newClient"/>
+
+	<bean id="tvdbGuideDaoId" class="io.delimeat.core.guide.TvdbJaxrsGuideDao_Impl">
+		<property name="client" ref="tvdbjaxrsClientId" />
+		<property name="mediaType" value="APPLICATION_JSON_TYPE" />
+		<property name="apiKey" value="FE3A3CA0FE707FEF"/>
+		<property name="baseUri" ref="tvdbBaseUriId"/>
+		<property name="validPeriodInMs" value="${io.delimeat.core.guide.tvdb.validPeriod}" />
+	</bean>    
+    
+</beans>

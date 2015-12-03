@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<!-- 
+	<context:component-scan base-package="io.delimeat.core.rest"/>	
+	!-->
+	<!-- 
+	<bean id="showJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="lazyInit" value="true" />
+		<property name="classesToBeBound">
+			<list>
+				<value>io.delimeat.core.show.Show</value>
+				<value>io.delimeat.core.show.Episode</value>
+				<value>io.delimeat.core.show.EpisodeResult</value>
+				<value>io.delimeat.core.show.ShowGuideSource</value>
+				<value>io.delimeat.core.show.ShowGuideSourcePK</value>
+			</list>
+		</property>
+		<property name="jaxbContextProperties">
+			<map>
+				<entry key="eclipselink.oxm.metadata-source">
+					<value type="java.io.InputStream">classpath://META-INF/oxm/show-oxm.xml</value>
+				</entry>
+				<entry key="eclipselink.media-type">
+					<value>application/json</value>
+				</entry>
+				<entry key="eclipselink.json.include-root">
+					<value type="java.lang.Boolean">false</value>
+				</entry>
+				<entry key="eclipselink.json.wrapper-as-array-name">
+					<value type="java.lang.Boolean">true</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="showJaxbContextId" class="javax.xml.bind.JAXBContext" factory-bean="showJaxb2MarshallerId" factory-method="getJaxbContext" />
+	 
+	<bean id="showJaxbContextResolverId" class="io.delimeat.util.jaxrs.JaxbContextResolver">
+		<property name="context" ref="showJaxbContextId"/>
+		<property name="classes">
+			<list value-type="java.lang.Class">
+				<value>io.delimeat.core.show.Show</value>
+				<value>io.delimeat.core.show.Episode</value>
+				<value>io.delimeat.core.show.EpisodeResult</value>
+				<value>io.delimeat.core.show.ShowGuideSource</value>
+				<value>io.delimeat.core.show.ShowGuideSourcePK</value>
+			</list>
+		</property>
+	</bean>
+	!-->
+</beans>
