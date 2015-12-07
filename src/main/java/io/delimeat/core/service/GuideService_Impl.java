@@ -4,21 +4,25 @@ import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideInfoDao;
 import io.delimeat.core.guide.GuideSearchDao;
 import io.delimeat.core.guide.GuideSearchResult;
+import io.delimeat.core.guide.GuideSource;
+import io.delimeat.core.service.exception.GuideNotFoundException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GuideService_Impl implements GuideService {
 
-	private GuideInfoDao infoDao;
+	private Map<GuideSource,GuideInfoDao> infoDaos = new HashMap<GuideSource,GuideInfoDao>();
 	private GuideSearchDao searchDao;
 
-	public GuideInfoDao getInfoDao() {
-		return infoDao;
+	public Map<GuideSource,GuideInfoDao> getInfoDaos() {
+		return infoDaos;
 	}
 
-	public void setInfoDao(GuideInfoDao infoDao) {
-		this.infoDao = infoDao;
+	public void setInfoDaos(Map<GuideSource,GuideInfoDao> infoDaos) {
+		this.infoDaos = infoDaos;
 	}
 
 	public GuideSearchDao getSearchDao() {
@@ -36,8 +40,13 @@ public class GuideService_Impl implements GuideService {
 	}
 
 	@Override
-	public GuideInfo read(String guideId) throws IOException, Exception {
-		return infoDao.info(guideId);
+	public GuideInfo read(GuideSource source, String guideId)
+			throws GuideNotFoundException, IOException, Exception {
+		if(!infoDaos.containsKey(source)){
+			throw new GuideNotFoundException(source);
+		}
+		return infoDaos.get(source).info(guideId);
 	}
+
 
 }

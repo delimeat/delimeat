@@ -199,7 +199,9 @@ public class TvMazeJaxbGuideDao_ImplTest {
 	public void searchTest() throws IOException, Exception {
 		SearchJsonGenerator generator = new SearchJsonGenerator();
 		generator.addSeries("DESCRIPTION", "GUIDEID", "TITLE", "2015-09-29", "123", "432");
-
+		
+		System.out.println(generator.toString());
+		
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class), Mockito.any(Map.class)))
 				.thenReturn(generator.generate());
@@ -207,7 +209,7 @@ public class TvMazeJaxbGuideDao_ImplTest {
 
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
-		JAXBContext jc = JAXBContext.newInstance(new Class[] { GuideSearch.class, GuideSearchResult.class },
+		JAXBContext jc = JAXBContext.newInstance(new Class[] { GuideSearchResult.class },
 				properties);
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		unmarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");

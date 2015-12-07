@@ -2,12 +2,14 @@ package io.delimeat.util.jaxrs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
+import org.glassfish.jersey.filter.LoggingFilter;
 
 public class JerseyClientFactory {
 
@@ -49,6 +51,9 @@ public class JerseyClientFactory {
 		for (Object provider : providers) {
 			configuration.register(provider);
 		}
+		Logger logger = Logger.getLogger("Logger");
+		LoggingFilter filter = new LoggingFilter(logger, true);
+		configuration.register(filter);
 		if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);
 		}

@@ -1,9 +1,10 @@
 package io.delimeat.rest;
 
-import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.guide.GuideInfo;
+import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.service.GuideService;
+import io.delimeat.core.service.exception.GuideNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,10 +29,11 @@ public class GuideResource {
 			throws IOException, Exception {
 		return service.readLike(title);
 	}
-   
-   @Path("info/{source}/{id}")
-   @GET
-  	public GuideInfo getInfo(@PathParam("source") GuideSource source, @PathParam("id") String guideId) throws IOException, Exception {
-   	return service.read(source,guideId);
-  	}
+
+	@Path("info/{source}/{id}")
+	@GET
+	public GuideInfo getInfo(@PathParam("source") GuideSource source,
+			@PathParam("id") String guideId) throws GuideNotFoundException, IOException, Exception {
+		return service.read(source, guideId);
+	}
 }

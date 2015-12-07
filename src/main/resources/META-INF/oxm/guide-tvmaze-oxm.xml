@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xml-accessor-type="NONE" package-name="io.delimeat.core.guide"
+	xml-accessor-type="FIELD" package-name="io.delimeat.core.guide"
 	xml-mapping-metadata-complete="true">
 
 	<java-types>
@@ -19,12 +19,12 @@
 						value="io.delimeat.util.jaxb.TvMazeIdentifierAdapter" />
 				</xml-element>
 				<xml-element java-attribute="guideIds"
-					name="show/externals/thetvdb/text()">
+					xml-path="show/externals/thetvdb/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
 				</xml-element>
 				<xml-element java-attribute="guideIds"
-					name="show/externals/tvrage/text()">
+					xml-path="show/externals/tvrage/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvRageIdentifierAdapter" />
 				</xml-element>

@@ -11,15 +11,21 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	
 	<bean id="showServiceId" class="io.delimeat.core.service.ShowService_Impl">
         <property name="showDao" ref="showDaoId"/>
-        <!--
-		<property name="guideInfoDao" ref="tvdbGuideDaoId"/>
-        <property name="networksDao" ref="networksDaoId"/>
-        !-->
     </bean>
     
     <bean id="guideServiceId" class="io.delimeat.core.service.GuideService_Impl">
-    	<property name="infoDao" ref="tvdbGuideDaoId"/> 
+    	<property name="infoDaos">
+    		<map>
+    			<entry key="TVDB" value-ref="tvdbGuideDaoId" />
+    			<entry key="TVMAZE" value-ref="tvmazeGuideDaoId" />
+    		</map>
+    	</property>
     	<property name="searchDao" ref="tvdbGuideDaoId"/>
+    	<!--
+    	<property name="searchDao" ref="tvmazeGuideDaoId"/>
+    	!-->
+    	
+
     </bean>
 
 </beans>

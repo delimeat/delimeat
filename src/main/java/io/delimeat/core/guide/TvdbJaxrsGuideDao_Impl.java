@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Entity;
 import javax.xml.bind.JAXBException;
 
@@ -21,7 +22,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
 		return GuideSource.TVDB;
 	}
 
-	public TvdbToken login(String apiKey) throws Exception {
+	public TvdbToken login(String apiKey) throws ClientErrorException {
 		TvdbApiKey key = new TvdbApiKey();
 		key.setValue(apiKey);
 		Entity<TvdbApiKey> entity = Entity.entity(key, getMediaType());
@@ -29,7 +30,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
 
 	}
 
-	public TvdbToken refreshToken(TvdbToken token) throws Exception {
+	public TvdbToken refreshToken(TvdbToken token) throws ClientErrorException {
 		return getTarget().path("refresh_token").request(getMediaType())
 				.header("Authorization", "Bearer " + token.getValue()).get(TvdbToken.class);
 

@@ -14,9 +14,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		<property name="classesToBeBound">
 			<list>
 				<value>io.delimeat.core.guide.GuideSearchResult</value>
-				<!-- 
-				<value>io.delimeat.core.guide.GuideSearch</value>
-				!-->
 				<value>io.delimeat.core.guide.GuideEpisode</value>
 				<value>io.delimeat.core.guide.GuideInfo</value>
 			</list>
@@ -31,6 +28,9 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 				</entry>
 				<entry key="eclipselink.json.include-root">
 					<value type="java.lang.Boolean">false</value>
+				</entry>
+				<entry key="jaxb.formatted.output">
+					<value type="java.lang.Boolean">true</value>
 				</entry>
 			</map>
 		</property>
