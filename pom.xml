@@ -116,6 +116,9 @@
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.0.31-beta</org.mockito.version>
 
+      <!-- Servelet versions !-->
+		<javax.servlet.version>3.1.0</javax.servlet.version>
+     
 		<!-- Runtime versions ! -->
 		<org.springframework.version>4.2.2.RELEASE</org.springframework.version>
 		<org.eclipse.persistence.version>2.6.1</org.eclipse.persistence.version>
@@ -154,6 +157,13 @@
 			<version>${org.glassfish.jersey.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+     	<!-- SERVLET !-->
+     	<dependency>
+      	<groupId>javax.servlet</groupId>
+       	<artifactId>javax.servlet-api</artifactId>
+       	<version>${javax.servlet.version}</version>
+     	</dependency>
 
 		<!-- ORM ! -->
 		<dependency>
