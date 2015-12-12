@@ -7,18 +7,21 @@
 	<java-types>
 
 		<java-type name="TvdbApiKey">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="value" name="apikey" />
 			</java-attributes>
 		</java-type>
 
 		<java-type name="TvdbError">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="message" name="Error" />
 			</java-attributes>
 		</java-type>
 
 		<java-type name="TvdbToken">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="value" name="token" />
 			</java-attributes>
@@ -26,6 +29,7 @@
 
 
 		<java-type name="GuideSearchResult">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="description" xml-path="overview/text()" />
 				<xml-element java-attribute="firstAired" xml-path="firstAired/text()">
@@ -40,6 +44,7 @@
 		</java-type>
 
 		<java-type name="GuideSearch">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="results" xml-path="data"
 					xml-list="true" />
@@ -48,6 +53,7 @@
 
 
 		<java-type name="TvdbEpisodes">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="first" xml-path="links/first/text()" />
 				<xml-element java-attribute="last" xml-path="links/last/text()" />
@@ -59,6 +65,7 @@
 		</java-type>
 
 		<java-type name="GuideEpisode">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="airDate" name="firstAired">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
@@ -78,9 +85,8 @@
 
 
 		<java-type name="GuideInfo">
+			<xml-root-element/>
 			<java-attributes>
-				<!-- <xml-element java-attribute="episodes" xml-path="Episode" xml-list="true"/> 
-					! -->
 				<xml-element java-attribute="guideIds" name="data/id/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />

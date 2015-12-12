@@ -37,15 +37,11 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	</bean>
     
     <bean id="tvmazeGuideUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="tvmazeGuideJaxb2MarshallerId" factory-method="createUnmarshaller"/>
-	
-    <bean id="tvmazeBaseUriId" class="java.net.URI">
-    	<constructor-arg value="${io.delimeat.core.guide.tvmaze.baseUri}"/>
-    </bean>
 
 	<bean id="tvmazeGuideDaoId" class="io.delimeat.core.guide.TvMazeJaxbGuideDao_Impl">
 		<property name="unmarshaller" ref="tvmazeGuideUnmarshallerId" />
 		<property name="urlHandler" ref="urlHandlerId" />
-		<property name="baseUri" ref="tvmazeBaseUriId"/>
+		<property name="baseUri" value="${io.delimeat.core.guide.tvmaze.baseUri}"/>
 		<property name="properties">
 			<map>
 				<entry key="Content-Type">

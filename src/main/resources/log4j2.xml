@@ -6,7 +6,13 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="ALL">
+	<logger name="io.delimeat" level="ALL" additivity="false">
+		<AppenderRef ref="Console"/> 
+	</logger>
+	<logger name="org.glassfish.jersey" level="ALL" additivity="false">
+		<AppenderRef ref="Console"/> 
+	</logger>	
+    <Root level="ERROR" additivity="false">
       <AppenderRef ref="Console"/>
     </Root>
   </Loggers>

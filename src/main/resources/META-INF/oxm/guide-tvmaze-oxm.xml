@@ -7,6 +7,7 @@
 	<java-types>
 
 		<java-type name="GuideSearchResult">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="description" xml-path="show/summary/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.JaxbStringAdapter" />
@@ -33,16 +34,17 @@
 		</java-type>
 
 		<java-type name="GuideInfo">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="guideIds" name="id">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvMazeIdentifierAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" name="externals/thetvdb/text()">
+				<xml-element java-attribute="guideIds" xml-path="externals/thetvdb/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" name="externals/tvrage/text()">
+				<xml-element java-attribute="guideIds" xml-path="externals/tvrage/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvRageIdentifierAdapter" />
 				</xml-element>
@@ -72,6 +74,7 @@
 		</java-type>
 
 		<java-type name="GuideEpisode">
+			<xml-root-element/>
 			<java-attributes>
 				<xml-element java-attribute="airDate" name="airdate">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
