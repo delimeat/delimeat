@@ -1,0 +1,34 @@
+<md-toolbar>
+	<div class="md-toolbar-tools">
+		<md-button class="md-icon-button" aria-label="back" ng-href="#/shows"> 
+			<md-icon md-svg-src="navigation:arrow_back"></md-icon> 
+		</md-button>
+		<h2>
+			<span>Search For Shows</span>
+		</h2>
+		<span flex></span>
+		<form name="form" ng-submit="vm.search()">  
+			<input class="md-whiteframe-z1 search" id="title" type="search" required ng-model="vm.title" placeholder="show title"/>
+		</form>
+	</div>
+</md-toolbar>
+	
+<md-content md-scroll-y flex>
+
+	<md-list>
+		<md-list-item class="md-3-line" ng-repeat="result in vm.results | orderBy:'firstAired':true"> 
+			<!-- 
+			<md-button ng-click="vm.add(result)">
+			<div class="md-list-item-text">
+				<h3>{{result.title}}</h3>
+				<h4>{{result.firstAired | date : 'yyyy-MM-dd'}}</h4>
+				<p class="list-group-item-text" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{result.description}}</p>
+			</div>
+			</md-button>
+			!-->
+			<deli-guide-search-result class="md-list-item-text" result="result"></deli-guide-search-result>
+			
+			<md-divider ng-if="!$last"></md-divider>
+		</md-list-item>
+	</md-list>
+</md-content>

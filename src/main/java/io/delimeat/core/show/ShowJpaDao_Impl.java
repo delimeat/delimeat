@@ -24,8 +24,15 @@ public class ShowJpaDao_Impl implements ShowDao {
 	public Show create(Show show) throws Exception {
 		em.persist(show);
 		if (show.getGuideSources() != null && show.getGuideSources().size() > 0) {
+			final long showId = show.getShowId();
 			for (ShowGuideSource guideSource : show.getGuideSources()) {
-				guideSource.getId().setShowId(show.getShowId());
+				if(guideSource.getId()!=null){
+					guideSource.getId().setShowId(showId);
+				}else{
+					ShowGuideSourcePK id = new ShowGuideSourcePK();
+					id.setShowId(showId);
+					guideSource.setId(id);
+				}
 				guideSource.setShow(show);
 				em.persist(guideSource);
 			}
@@ -49,10 +56,10 @@ public class ShowJpaDao_Impl implements ShowDao {
 	@Override
 	public Show update(Show show) throws Exception {
 		if (show.getGuideSources() != null && show.getGuideSources().size() > 0) {
+			final long showId = show.getShowId();
 			for (ShowGuideSource guideSource : show.getGuideSources()) {
-				guideSource.getId().setShowId(show.getShowId());
+				guideSource.getId().setShowId(showId);
 				guideSource.setShow(show);
-				em.persist(guideSource);
 			}
 		}
 		if (show.getNextEpisode() != null) {

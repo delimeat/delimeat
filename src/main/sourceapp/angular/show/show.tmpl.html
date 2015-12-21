@@ -1,0 +1,86 @@
+<md-toolbar>
+	<div class="md-toolbar-tools">
+		<md-button class="md-icon-button" aria-label="back" ng-click="vm.leave()"> 
+			<md-icon md-svg-src="navigation:arrow_back"></md-icon> 
+		</md-button>
+		<h2>
+			<span>{{vm.show.title}}</span>
+		</h2>
+		<span flex></span>
+        <md-button class="md-icon-button" aria-label="delete" ng-click="vm.remove()">
+	        <md-tooltip>
+	          Delete
+	        </md-tooltip>
+            <md-icon md-svg-src="action:delete"></md-icon>
+        </md-button>
+	</div>
+</md-toolbar>
+
+<md-content md-scroll-y flex deli-working start="show.read.start" end="show.read.success">
+	<form name="form" ng-init="vm.setFormScope(this)"  class="md-padding" layout="row" layout-sm="column">
+		<div flex>
+			<md-input-container> 
+				<label>Title</label> 
+				<input ng-model="vm.show.title" name="title" required>
+			</md-input-container>
+			<md-input-container> 
+				<md-checkbox ng-model="vm.show.enabled">Enabled</md-checkbox>
+			</md-input-container>
+			<md-input-container> 
+		    	<md-select placeholder="Type" ng-model="vm.show.showType" name="type" required>
+		    		<md-option ng-repeat="type in vm.types" value="{{type.value}}">{{type.text}}</md-option>
+		    	</md-select>
+			</md-input-container>
+			<!-- 
+			<md-input-container>
+		    	<md-select placeholder="status" ng-model="vm.show.airStatus" name="status" required>
+		    		<md-option ng-repeat="status in vm.statuses" value="{{status.value}}">{{status.text}}</md-option>
+		    	</md-select> 
+			</md-input-container>
+			!-->
+		</div>
+		<!-- 
+		<div flex>
+			<md-input-container> 
+				<label>Min Size</label> 
+				<input required type="number" step="any" name="minSize" ng-model="vm.show.minSize">
+			</md-input-container>
+			<md-input-container>
+			  <label>Max Size</label>
+			  <input required type="number" step="any" name="maxSize" ng-model="vm.show.maxSize">
+			</md-input-container>
+			<md-input-container>
+			  <label>Minimum Seeders</label>
+			  <input required type="number" step="any" name="min seeders" ng-model="vm.show.minSeeders">
+			</md-input-container>
+		</div>
+		!-->
+		<div flex>
+			<div> 
+				<label>Previous Episode</label> 
+				<div ng-switch data-on="!vm.show.previousEpisode">
+					<p ng-switch-when="false" ng-bind-template='Season {{vm.show.previousEpisode.seasonNum}} Episode {{vm.show.previousEpisode.episodeNum}}: "{{vm.show.previousEpisode.title}}"'></p>
+					<p ng-switch-default>No Previous Episode</p>
+				</div>
+			</div>
+			<div>
+			  <label>Next Episode</label>
+				<div ng-switch data-on="!vm.show.nextEpisode">
+					<p ng-switch-when="false" ng-bind-template='Season {{vm.show.nextEpisode.seasonNum}} Episode {{vm.show.nextEpisode.episodeNum}}: "{{vm.show.nextEpisode.title}}"'></p>
+					<p ng-switch-default>Nothing Scheduled</p>			
+				</div>
+			</div>
+			<div>
+				<md-checkbox type="checkbox" aria-label="double episode" ng-model="vm.show.doubleEp">Double Episode</md-checkbox>
+			</div>
+			<div layout="row" layout-align="center center">
+		        <md-button class="md-icon-button" aria-label="search" ng-click="vm.displayEps()">
+			        <md-tooltip>
+			          Search For Episodes
+			        </md-tooltip>
+		            <md-icon md-svg-src="action:search"></md-icon>
+		        </md-button>
+			</div>
+		</div>
+	</form>
+</md-content>

@@ -1,0 +1,7 @@
+<md-button ng-click="vm.add()">
+	<div class="md-list-item-text">
+		<h3>{{vm.result.title}}</h3>
+		<h4>{{vm.result.firstAired | date : 'yyyy-MM-dd'}}</h4>
+		<p class="list-group-item-text" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{vm.result.description}}</p>
+	</div>
+</md-button>

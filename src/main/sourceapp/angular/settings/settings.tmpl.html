@@ -1,0 +1,39 @@
+<md-toolbar>
+	<div class="md-toolbar-tools">
+		<md-button class="md-icon-button" aria-label="back" ng-click="vm.leave()"> 
+			<md-icon md-svg-src="navigation:arrow_back"></md-icon> 
+		</md-button>
+		<h2>
+			<span>Settings</span>
+		</h2>
+		<span flex></span>
+	</div>
+</md-toolbar>
+
+<md-content md-scroll-y flex layout-padding >
+<form name="form" class="md-padding" layout="row" layout-sm="column">
+	<div flex>
+		<md-input-container> 
+			<label>Search Interval</label> 
+				<input type="number" ng-model="vm.settings.searchInterval" required/> </md-input-container>
+		<md-input-container> 
+			<label>Output Directory</label> 
+			<input ng-model="vm.settings.outputDirectory" required/>
+		</md-input-container>
+	</div>
+	<div flex>
+		<md-input-container> 
+			<md-checkbox ng-model="vm.settings.preferFiles">Prefer Files</md-checkbox> 
+		</md-input-container>
+		<md-input-container>
+			<md-checkbox ng-model="vm.settings.ignoreFolders">Ignore Folders</md-checkbox> 
+		</md-input-container>
+	</div>
+	<div flex>
+		<md-input-container> 
+			<label>Ignored File Types</label> 
+			<input ng-model="vm.settings.ignoredFileTypes.fileType" ng-list/> 
+		</md-input-container>
+	</div>
+</form>
+</md-content>

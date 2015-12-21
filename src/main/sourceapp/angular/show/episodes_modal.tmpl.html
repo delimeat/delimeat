@@ -1,0 +1,16 @@
+<md-dialog aria-label="Select Next Episode"> 
+	<md-dialog-content>
+		<md-list>
+			<md-list-item ng-click="ok()">Nothing Scheduled</md-list-item>
+			<md-list-item class="md-3-line" ng-repeat="episode in episodes | orderBy:'airDate':true" ng-click="ok(episode)" ng-switch data-on="episode.seasonNum==0" aria-label="Episode">	 
+				<div ng-switch-when="false" ng-bind-template='Season {{episode.seasonNum}} Episode {{episode.episodeNum}}: "{{episode.title}}"'></div>
+				<div ng-switch-default ng-bind-template='Special # {{episode.episodeNum}}: "{{episode.title}}"'></div>
+				<md-divider ng-if="!$last"></md-divider>
+			</md-list-item>
+		</md-list>
+	</md-dialog-content>
+	<div class="md-actions" layout="row">
+		<span flex></span>
+		<md-button ng-click="cancel()" class="md-primary">close</md-button>
+	</div>
+</md-dialog>

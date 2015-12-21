@@ -1,0 +1,16 @@
+<md-button ng-href="#/show/{{vm.show.showId}}">
+	<div class="md-list-item-text">
+		<h3>{{vm.show.title}}</h3>	
+		<div ng-switch on="!vm.show.nextEpisode">
+			<div ng-switch-when="false">
+				<h4 ng-bind-template='Season {{vm.show.nextEpisode.seasonNum}} Episode {{vm.show.nextEpisode.episodeNum}}: "{{vm.show.nextEpisode.title}}"'></h4>
+				<p ng-bind="{{ vm.formatDate(vm.show.nextEpisode.airDate) }} | date : 'yyyy-MM-dd'"></p>
+			</div>
+			<div ng-switch-default ng-switch on="vm.show.airStatus">
+				<h4>Nothing Scheduled</h4>
+				<p ng-switch-when='AIRING'>On Hiatus</p>
+				<p ng-switch-default>Ended</p>
+			</div>	
+		</div>
+	</div>
+</md-button>
