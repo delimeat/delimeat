@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.util.jaxrs.GuideNotFoundExceptionMapper;
-import io.delimeat.util.jaxrs.GuideSourceRequestFilter;
-
 public class JaxrsApplicationTest {
 
 	private JaxrsApplication application;
@@ -18,12 +15,10 @@ public class JaxrsApplicationTest {
 	
 	@Test
 	public void classesTest(){
-		Assert.assertEquals(5, application.getClasses().size());
+		Assert.assertEquals(3, application.getClasses().size());
 		Assert.assertTrue(application.getClasses().contains(ShowResource.class));
 		Assert.assertTrue(application.getClasses().contains(ConfigResource.class));
 		Assert.assertTrue(application.getClasses().contains(GuideResource.class));
-     	Assert.assertTrue(application.getClasses().contains(GuideNotFoundExceptionMapper.class));
-     	Assert.assertTrue(application.getClasses().contains(GuideSourceRequestFilter.class));
 	}
 	
 	@Test

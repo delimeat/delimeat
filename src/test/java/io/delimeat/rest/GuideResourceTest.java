@@ -7,9 +7,6 @@ import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.service.GuideService;
-import io.delimeat.core.service.exception.GuideNotFoundException;
-import io.delimeat.util.jaxrs.GuideNotFoundExceptionMapper;
-import io.delimeat.util.jaxrs.GuideSourceRequestFilter;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,8 +35,6 @@ public class GuideResourceTest extends JerseyTest {
 	protected Application configure() {
 		ResourceConfig config = new ResourceConfig();
 		config.register(GuideResource.class);
-		config.register(GuideNotFoundExceptionMapper.class);
-		config.register(GuideSourceRequestFilter.class);
 		config.register(new AbstractBinder() {
 
 			@Override
@@ -98,9 +93,9 @@ public class GuideResourceTest extends JerseyTest {
 		expectedInfo.setRunningTime(Integer.MIN_VALUE);
 		expectedInfo.setTitle("TITLE");
 		
-		Mockito.when(mockedGuideService.read(Mockito.any(GuideSource.class), Mockito.anyString())).thenReturn(expectedInfo);
+		Mockito.when(mockedGuideService.read( Mockito.anyString())).thenReturn(expectedInfo);
 
-		Response response = target("guide").path("info").path("tvdb").path("ID").request().get();
+		Response response = target("guide").path("info").path("ID").request().get();
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
 		
@@ -121,28 +116,5 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals("NETWORK", actualInfo.getNetwork());
 		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
 		Assert.assertEquals("TITLE", actualInfo.getTitle());	
-	}
-	
-	@Test
-	public void infoInvalidSourceTest(){
-		Response response = target("guide").path("info").path("BLAH").path("ID").request().get();
-		Assert.assertEquals(404, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
-		
-		DelimeatRestError error = response.readEntity(DelimeatRestError.class);
-		Assert.assertEquals("Invalid source BLAH", error.getMessage());
-	}
-	
-	@Test
-	public void infoGuideNotFoundTest() throws GuideNotFoundException, IOException, Exception{
-		GuideNotFoundException expectedException = new GuideNotFoundException(GuideSource.TMDB);
-		Mockito.when(mockedGuideService.read(Mockito.any(GuideSource.class), Mockito.anyString())).thenThrow(expectedException);
-		
-		Response response = target("guide").path("info").path("tmdb").path("ID").request().get();
-		Assert.assertEquals(404, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
-		
-		DelimeatRestError error = response.readEntity(DelimeatRestError.class);
-		Assert.assertEquals("GuideSource TMDB not found", error.getMessage());		
 	}
 }

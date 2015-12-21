@@ -1,8 +1,5 @@
 package io.delimeat.rest;
 
-import io.delimeat.util.jaxrs.GuideNotFoundExceptionMapper;
-import io.delimeat.util.jaxrs.GuideSourceRequestFilter;
-
 import java.util.logging.Logger;
 
 import javax.ws.rs.ApplicationPath;
@@ -20,8 +17,6 @@ public class JaxrsApplication extends ResourceConfig {
 		register(ShowResource.class);
 		register(GuideResource.class);
 		register(ConfigResource.class);
-		register(GuideNotFoundExceptionMapper.class);
-		register(GuideSourceRequestFilter.class);
 		register(new LoggingFilter(LOGGER, true));
 		property(ServerProperties.TRACING, "ALL");
 		//TODO enable for production

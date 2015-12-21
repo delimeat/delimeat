@@ -1,17 +1,13 @@
 package io.delimeat.core.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideInfoDao;
 import io.delimeat.core.guide.GuideSearchDao;
 import io.delimeat.core.guide.GuideSearchResult;
-import io.delimeat.core.guide.GuideSource;
-import io.delimeat.core.service.exception.GuideNotFoundException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,14 +25,10 @@ public class GuideService_ImplTest {
 
 	@Test
 	public void infoDaoTest() {
-		Assert.assertNotNull(service.getInfoDaos());
-		Assert.assertEquals(0, service.getInfoDaos().size());
+		Assert.assertNull(service.getInfoDao());
 		GuideInfoDao mockedDao = Mockito.mock(GuideInfoDao.class);
-		Map<GuideSource,GuideInfoDao> daos = new HashMap<GuideSource,GuideInfoDao>();
-		daos.put(GuideSource.TVDB, mockedDao);
-		service.setInfoDaos(daos);
-		Assert.assertEquals(1, service.getInfoDaos().size());
-		Assert.assertEquals(mockedDao, service.getInfoDaos().get(GuideSource.TVDB));
+		service.setInfoDao(mockedDao);
+		Assert.assertEquals(mockedDao, service.getInfoDao());
 	}
 
 	@Test
@@ -69,16 +61,11 @@ public class GuideService_ImplTest {
 		GuideInfo mockedInfo = Mockito.mock(GuideInfo.class);
 		Mockito.when(mockedDao.info(Mockito.anyString()))
 				.thenReturn(mockedInfo);
-		service.getInfoDaos().put(GuideSource.TVDB, mockedDao);
+		service.setInfoDao(mockedDao);
 		
-		GuideInfo actualInfo = service.read(GuideSource.TVDB, "guideid");
+		GuideInfo actualInfo = service.read("guideid");
 		Assert.assertNotNull(actualInfo);
 		Assert.assertEquals(mockedInfo, actualInfo);
-	}
-	
-	@Test(expected=GuideNotFoundException.class)
-	public void readGuideNotFoundTest() throws GuideNotFoundException, IOException, Exception{
-		service.read(GuideSource.TMDB, "GUIDEID");
 	}
 
 }
