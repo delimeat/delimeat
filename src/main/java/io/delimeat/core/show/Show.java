@@ -1,5 +1,7 @@
 package io.delimeat.core.show;
 
+import io.delimeat.util.jaxb.AirTimeAdapter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -16,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Show implements Comparable<Show> {
 
 	private long showId;
+	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
 	private int airTime;
 	private String timezone;
 	private List<ShowGuideSource> guideSources = new ArrayList<ShowGuideSource>();

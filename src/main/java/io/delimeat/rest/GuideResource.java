@@ -1,5 +1,6 @@
 package io.delimeat.rest;
 
+import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.service.GuideService;
@@ -32,5 +33,11 @@ public class GuideResource {
 	@GET
 	public GuideInfo getInfo(@PathParam("id") String guideId) throws IOException, Exception {
 		return service.read(guideId);
+	}
+	
+	@Path("info/{id}/episodes")
+	@GET
+	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId) throws IOException, Exception {
+		return service.readEpisodes(guideId);
 	}
 }

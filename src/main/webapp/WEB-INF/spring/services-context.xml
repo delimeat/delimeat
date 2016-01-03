@@ -14,14 +14,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     </bean>
     
     <bean id="guideServiceId" class="io.delimeat.core.service.GuideService_Impl">
-    	<property name="infoDaos">
-    		<map>
-    			<entry key="TVDB" value-ref="tvdbGuideDaoId" />
-    			<entry key="TVMAZE" value-ref="tvmazeGuideDaoId" />
-    		</map>
-    	</property>
+    	<property name="infoDao" ref="tvdbGuideDaoId"/>
     	<property name="searchDao" ref="tvdbGuideDaoId"/>
     	<!--
+    	<property name="infoDao" ref="tvmazeGuideDaoId"/>
     	<property name="searchDao" ref="tvmazeGuideDaoId"/>
     	!-->
     	

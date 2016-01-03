@@ -7,11 +7,14 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class TvdbDateAdapter extends XmlAdapter<String, Date> {
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	public String marshal(Date date) throws Exception {
-		return null;
+		if(date==null){
+			return null;
+		}
+		return FORMAT.format(date);
 	}
 
 	@Override
@@ -19,7 +22,7 @@ public class TvdbDateAdapter extends XmlAdapter<String, Date> {
 		if (string == null || "".equals(string)) {
 			return null;
 		} else {
-			return dateFormat.parse(string);
+			return FORMAT.parse(string);
 		}
 	}
 

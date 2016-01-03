@@ -91,7 +91,7 @@ public class ShowJpaDao_ImplTest {
 		show.setTitle("TITLE");
 
 		Episode prevEpisode = new Episode();
-		prevEpisode.setAirDateTime(SDF.parse("2015-10-15"));
+		prevEpisode.setAirDate(SDF.parse("2015-10-15"));
 		prevEpisode.setDoubleEp(true);
 		prevEpisode.setEpisodeNum(1);
 		prevEpisode.setSeasonNum(2);
@@ -100,7 +100,7 @@ public class ShowJpaDao_ImplTest {
 		show.setPreviousEpisode(prevEpisode);
 
 		Episode nextEpisode = new Episode();
-		nextEpisode.setAirDateTime(SDF.parse("2000-01-01"));
+		nextEpisode.setAirDate(SDF.parse("2000-01-01"));
 		nextEpisode.setDoubleEp(false);
 		nextEpisode.setEpisodeNum(2);
 		nextEpisode.setSeasonNum(1);
@@ -128,7 +128,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(newShow.getPreviousEpisode());
 		Assert.assertNotEquals(0, newShow.getPreviousEpisode().getEpisodeId());
-		Assert.assertEquals("2015-10-15", SDF.format(newShow.getPreviousEpisode().getAirDateTime()));
+		Assert.assertEquals("2015-10-15", SDF.format(newShow.getPreviousEpisode().getAirDate()));
 		Assert.assertTrue(newShow.getPreviousEpisode().isDoubleEp());
 		Assert.assertEquals(1, newShow.getPreviousEpisode().getEpisodeNum());
 		Assert.assertEquals(2, newShow.getPreviousEpisode().getSeasonNum());
@@ -136,7 +136,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(newShow.getNextEpisode());
 		Assert.assertNotEquals(0, newShow.getNextEpisode().getEpisodeId());
-		Assert.assertEquals("2000-01-01", SDF.format(newShow.getNextEpisode().getAirDateTime()));
+		Assert.assertEquals("2000-01-01", SDF.format(newShow.getNextEpisode().getAirDate()));
 		Assert.assertFalse(newShow.getNextEpisode().isDoubleEp());
 		Assert.assertEquals(2, newShow.getNextEpisode().getEpisodeNum());
 		Assert.assertEquals(1, newShow.getNextEpisode().getSeasonNum());
@@ -168,7 +168,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(show.getNextEpisode());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDateTime()));
+		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDate()));
 		Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeNum());
 		Assert.assertEquals("NEXT EPISODE", show.getNextEpisode().getTitle());
@@ -179,7 +179,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(show.getPreviousEpisode());
 		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDateTime()));
+		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDate()));
 		Assert.assertEquals(2, show.getPreviousEpisode().getSeasonNum());
 		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeNum());
 		Assert.assertEquals("PREVIOUS EPISODE", show.getPreviousEpisode().getTitle());
@@ -276,7 +276,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(show.getNextEpisode());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDateTime()));
+		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDate()));
 		Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeNum());
 		Assert.assertEquals("NEXT EPISODE", show.getNextEpisode().getTitle());
@@ -287,7 +287,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNotNull(show.getPreviousEpisode());
 		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDateTime()));
+		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDate()));
 		Assert.assertEquals(2, show.getPreviousEpisode().getSeasonNum());
 		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeNum());
 		Assert.assertEquals("PREVIOUS EPISODE", show.getPreviousEpisode().getTitle());

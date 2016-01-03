@@ -3,6 +3,7 @@ var app = angular.module('app', [
 'ngResource',
 'ngAnimate',
 'ngMaterial',
+'ui.bootstrap',
 'delimeat.shared',
 'delimeat.shows',
 'delimeat.settings',

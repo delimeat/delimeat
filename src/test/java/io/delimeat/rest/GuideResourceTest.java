@@ -2,6 +2,7 @@ package io.delimeat.rest;
 
 import io.delimeat.core.guide.AiringDay;
 import io.delimeat.core.guide.AiringStatus;
+import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideIdentifier;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideSearchResult;
@@ -11,6 +12,7 @@ import io.delimeat.core.service.GuideService;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -82,14 +84,14 @@ public class GuideResourceTest extends JerseyTest {
 		GuideInfo expectedInfo = new GuideInfo();
 		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
 		expectedInfo.setAirStatus(AiringStatus.ENDED);
-		expectedInfo.setAirTime(Integer.MAX_VALUE);
+		expectedInfo.setAirTime(9900000);
 		expectedInfo.setDescription("DESCRIPTION");
 		expectedInfo.getGenres().add("GENRE");
 		GuideIdentifier id = new GuideIdentifier();
 		id.setSource(GuideSource.TMDB);
 		id.setValue("VALUE");
 		expectedInfo.getGuideIds().add(id);
-		expectedInfo.setNetwork("NETWORK");
+		expectedInfo.setTimezone("TIMEZONE");
 		expectedInfo.setRunningTime(Integer.MIN_VALUE);
 		expectedInfo.setTitle("TITLE");
 		
@@ -104,7 +106,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(1, actualInfo.getAirDays().size());
 		Assert.assertEquals(AiringDay.FRIDAY, actualInfo.getAirDays().get(0));
 		Assert.assertEquals(AiringStatus.ENDED, actualInfo.getAirStatus());
-		Assert.assertEquals(Integer.MAX_VALUE, actualInfo.getAirTime());
+		Assert.assertEquals(9900000, actualInfo.getAirTime());
 		Assert.assertEquals("DESCRIPTION", actualInfo.getDescription());
 		Assert.assertNotNull(actualInfo.getGenres());
 		Assert.assertEquals(1, actualInfo.getGenres().size());
@@ -113,8 +115,34 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(1, actualInfo.getGuideIds().size());
 		Assert.assertEquals(GuideSource.TMDB, actualInfo.getGuideIds().get(0).getSource());
 		Assert.assertEquals("VALUE", actualInfo.getGuideIds().get(0).getValue());
-		Assert.assertEquals("NETWORK", actualInfo.getNetwork());
+		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
 		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
 		Assert.assertEquals("TITLE", actualInfo.getTitle());	
+	}
+	
+	@Test
+	public void episodesTest() throws IOException, Exception{
+		GuideEpisode expectedEp = new GuideEpisode();
+		expectedEp.setAirDate(SDF.parse("2015-12-21"));
+		expectedEp.setEpisodeNum(1);
+		expectedEp.setProductionNum(2);
+		expectedEp.setSeasonNum(3);
+		expectedEp.setTitle("TITLE");
+		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
+
+		Mockito.when(mockedGuideService.readEpisodes( Mockito.anyString())).thenReturn(expectedEps);
+		
+		Response response = target("guide").path("info").path("ID").path("episodes").request().get();
+		Assert.assertEquals(200, response.getStatus());
+		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+		
+		List<GuideEpisode> actualResults = response.readEntity(new GenericType<List<GuideEpisode>>() {});
+		Assert.assertNotNull(actualResults);
+		Assert.assertEquals(1, actualResults.size());
+		Assert.assertEquals("2015-12-21", SDF.format(actualResults.get(0).getAirDate()));
+		Assert.assertEquals(1, actualResults.get(0).getEpisodeNum().intValue());
+		Assert.assertEquals(2, actualResults.get(0).getProductionNum().intValue());
+		Assert.assertEquals(3, actualResults.get(0).getSeasonNum().intValue());
+		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
 	}
 }

@@ -3,10 +3,15 @@ package io.delimeat.core.guide;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import io.delimeat.util.jaxb.TvdbDateAdapter;
+
 public class GuideEpisode implements Comparable<GuideEpisode> {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
+	@XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
 	private Date airDate = null;
 	private Integer seasonNum = 0;
 	private Integer episodeNum = 0;

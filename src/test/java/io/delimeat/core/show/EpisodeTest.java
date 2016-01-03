@@ -37,9 +37,9 @@ public class EpisodeTest {
 
 	@Test
 	public void airDateTimeTest() throws ParseException {
-		Assert.assertNull(episode.getAirDateTime());
-		episode.setAirDateTime(SDF.parse("2015-11-06"));
-		Assert.assertEquals("2015-11-06", SDF.format(episode.getAirDateTime()));
+		Assert.assertNull(episode.getAirDate());
+		episode.setAirDate(SDF.parse("2015-11-06"));
+		Assert.assertEquals("2015-11-06", SDF.format(episode.getAirDate()));
 	}
 
 	@Test

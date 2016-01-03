@@ -95,9 +95,14 @@
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.IMDBIdentifierAdapter" />
 				</xml-element>
+				<xml-element java-attribute="firstAired" xml-path="data/firstAired/text()">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
+				</xml-element>
 				<xml-element java-attribute="description" xml-path="data/overview/text()" />
 				<xml-element java-attribute="runningTime" xml-path="data/runtime/text()" />
-				<xml-element java-attribute="network" xml-path="data/network/text()" />
+				<xml-element java-attribute="timezone" xml-path="data/network/text()" >
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbTimezoneAdapter" />
+				</xml-element>
 				<xml-element java-attribute="title" xml-path="data/seriesName/text()" />
 				<xml-element java-attribute="airDays" xml-path="data/airsDayOfWeek/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbAiringDayAdapter" />

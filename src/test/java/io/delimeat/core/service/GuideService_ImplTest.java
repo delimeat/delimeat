@@ -1,5 +1,6 @@
 package io.delimeat.core.service;
 
+import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideInfoDao;
 import io.delimeat.core.guide.GuideSearchDao;
@@ -7,6 +8,8 @@ import io.delimeat.core.guide.GuideSearchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -66,6 +69,24 @@ public class GuideService_ImplTest {
 		GuideInfo actualInfo = service.read("guideid");
 		Assert.assertNotNull(actualInfo);
 		Assert.assertEquals(mockedInfo, actualInfo);
+	}
+	
+	@Test
+	public void readEpisodesTest() throws IOException, Exception {
+		GuideInfoDao mockedDao = Mockito.mock(GuideInfoDao.class);
+		GuideEpisode mockedEpisode = Mockito.mock(GuideEpisode.class);
+		Mockito.when(mockedEpisode.getSeasonNum()).thenReturn(1);
+		Mockito.when(mockedEpisode.getAirDate()).thenReturn(new Date());
+
+		List<GuideEpisode> expectedEpisodes = Arrays.asList(mockedEpisode);
+		Mockito.when(mockedDao.episodes(Mockito.anyString()))
+				.thenReturn(expectedEpisodes);
+		service.setInfoDao(mockedDao);	
+		
+		List<GuideEpisode> actualEpisodes = service.readEpisodes("guideId");
+		Assert.assertNotNull(actualEpisodes);
+		Assert.assertEquals(1, actualEpisodes.size());
+		Assert.assertEquals(mockedEpisode,actualEpisodes.get(0));
 	}
 
 }

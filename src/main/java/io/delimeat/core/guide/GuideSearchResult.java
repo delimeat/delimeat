@@ -1,12 +1,17 @@
 package io.delimeat.core.guide;
 
+import io.delimeat.util.jaxb.TvdbDateAdapter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 public class GuideSearchResult implements Comparable<GuideSearchResult> {
 
 	protected String description;
+	@XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
 	protected Date firstAired;
 	protected List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
 	protected String title;

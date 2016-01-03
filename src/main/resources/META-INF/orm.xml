@@ -66,8 +66,8 @@
 				<generated-value />
 			</id>
 
-			<basic name="airDateTime" optional="false">
-				<column name="AIR_DATE_TIME" nullable="true" />
+			<basic name="airDate" optional="false">
+				<column name="AIR_DATE" nullable="false" />
 				<temporal>DATE</temporal>
 			</basic>
 

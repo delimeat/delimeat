@@ -22,7 +22,9 @@
     "angular-translate-storage-local":"~2.7.2",
     "angular-translate-loader-static-files":"~2.7.2",
     "angular-translate-interpolation-messageformat":"~2.7.2",
-    "angular-translate-handler-log":"~2.7.2"
+    "angular-translate-handler-log":"~2.7.2",
+    "bootstrap":"~3.3.6",
+    "angular-bootstrap":"~0.14.3"
   },
   "resolutions": {
     "angular": "~1.4.8"

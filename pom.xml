@@ -54,9 +54,11 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <version>0.0.26</version>
         
+        <!--
         <configuration>
             <installDirectory>target</installDirectory>
         </configuration>
+        !-->
         
         <executions>
           <execution>

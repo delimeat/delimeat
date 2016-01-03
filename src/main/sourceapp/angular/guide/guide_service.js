@@ -16,9 +16,9 @@ function GuideService($resource) {
     return {
         read: read
     };
-
     
     function read(title) {
     	return vm._resource.read({title:title}).$promise;
     }
+    
 }

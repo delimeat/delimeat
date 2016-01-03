@@ -1,17 +1,28 @@
 package io.delimeat.core.guide;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import io.delimeat.util.jaxb.AirTimeAdapter;
+import io.delimeat.util.jaxb.TvdbDateAdapter;
+
+@XmlRootElement
 public class GuideInfo implements Comparable<GuideInfo> {
 
 	protected String description;
 	protected int runningTime;
-	protected String network;
+	protected String timezone;
+	@XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
+	protected Date firstAired;
 	protected List<String> genres = new ArrayList<String>();
 	protected List<AiringDay> airDays = new ArrayList<AiringDay>();
 	protected AiringStatus airStatus = AiringStatus.UNKNOWN;
 	protected String title;
+	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
 	protected int airTime;
 	protected List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
 
@@ -30,10 +41,10 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	}
 
 	/**
-	 * @return the network
+	 * @return the timezone
 	 */
-	public String getNetwork() {
-		return network;
+	public String getTimezone() {
+		return timezone;
 	}
 
 	/**
@@ -83,8 +94,8 @@ public class GuideInfo implements Comparable<GuideInfo> {
 		this.runningTime = runningTime;
 	}
 
-	public void setNetwork(String network) {
-		this.network = network;
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 	public void setGenres(List<String> genres) {
@@ -111,6 +122,13 @@ public class GuideInfo implements Comparable<GuideInfo> {
 		this.guideIds = guideIds;
 	}
 
+	public Date getFirstAired() {
+		return firstAired;
+	}
+
+	public void setFirstAired(Date firstAired) {
+		this.firstAired = firstAired;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -120,7 +138,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	public String toString() {
 		return "GuideInfo [title=" + title + ", guideIds=" + guideIds + ", airStatus=" + airStatus + ", airDays="
 				+ airDays + ", airTime=" + airTime + ", genres=" + genres + ", runningTime=" + runningTime
-				+ ", network=" + network + ", description=" + description + "]";
+				+ ", network=" + timezone + ", description=" + description + "]";
 	}
 
 	@Override

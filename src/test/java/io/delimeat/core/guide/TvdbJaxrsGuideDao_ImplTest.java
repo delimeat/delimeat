@@ -86,12 +86,13 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		private StringBuffer xml;
 
 		public InfoJsonGenerator(String description, String guideid, String title, String status, String network,
-				String runtime, String airsDayOfWeek, String airsTime, String imdbId, List<String> genres) {
+				String runtime, String airsDayOfWeek, String airsTime, String imdbId, List<String> genres, String firstAired) {
 			xml = new StringBuffer();
 			xml.append("{\"data\": {");
 			xml.append("\"overview\":\"" + description + "\",");
 			xml.append("\"id\":\"" + guideid + "\",");
 			xml.append("\"seriesName\":\"" + title + "\",");
+			xml.append("\"firstAired\":\"" + firstAired + "\",");
 			xml.append("\"status\":\"" + status + "\",");
 			xml.append("\"network\":\"" + network + "\",");
 			xml.append("\"runtime\":\"" + runtime + "\",");
@@ -352,7 +353,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	@Test
 	public void infoTest() throws IOException, Exception {
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "Ended", "CBS", "45",
-				"Monday", "8:00pm", "IMDB", Arrays.asList("GENRE"));
+				"Monday", "8:00pm", "IMDB", Arrays.asList("GENRE"),"2015-12-28");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://test.com"));
@@ -372,13 +373,14 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("IMDB", info.getGuideIds().get(1).getValue());
 		Assert.assertEquals("DESCRIPTION", info.getDescription());
 		Assert.assertEquals("TITLE", info.getTitle());
+		Assert.assertEquals("2015-12-28", SDF.format(info.getFirstAired()));
 		Assert.assertEquals(1, info.getAirDays().size());
 		Assert.assertEquals(AiringDay.MONDAY, info.getAirDays().get(0));
 		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
 		Assert.assertEquals(72000000, info.getAirTime());
 		Assert.assertEquals(1, info.getGenres().size());
 		Assert.assertEquals("GENRE", info.getGenres().get(0));
-		Assert.assertEquals("CBS", info.getNetwork());
+		Assert.assertEquals("EST", info.getTimezone());
 		Assert.assertEquals(45, info.getRunningTime());
 
 	}

@@ -53,8 +53,7 @@
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.JaxbStringAdapter" />
 				</xml-element>
 				<xml-element java-attribute="runningTime" name="runtime" />
-				<xml-element java-attribute="network" xml-path="network/name/text()" />
-
+				<xml-element java-attribute="timezone" xml-path="network/country/timezone/text()" />
 				<xml-element java-attribute="airDays" xml-path="schedule/days/text()"
 					xml-list="true">
 					<xml-java-type-adapter

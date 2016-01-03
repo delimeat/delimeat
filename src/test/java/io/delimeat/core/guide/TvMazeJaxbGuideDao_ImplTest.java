@@ -64,7 +64,7 @@ public class TvMazeJaxbGuideDao_ImplTest {
 		private StringBuffer xml;
 
 		public InfoJsonGenerator(String description, String guideid, String title, String runtime, String tvdbId,
-				String tvrageId, List<String> genres, String status, String network, String time, List<String> days) {
+				String tvrageId, List<String> genres, String status, String timezone, String time, List<String> days) {
 			xml = new StringBuffer();
 			xml.append("{");
 			xml.append("\"summary\":\"" + description + "\",");
@@ -86,7 +86,7 @@ public class TvMazeJaxbGuideDao_ImplTest {
 			xml.append("],");
 			xml.append("\"status\":\"" + status + "\",");
 			xml.append("\"runtime\":" + runtime + ",");
-			xml.append("\"network\":{\"name\":\"" + network + "\"},");
+			xml.append("\"network\":{\"country\":{\"timezone\":\"" + timezone + "\"}},");
 			xml.append("\"schedule\":{\"time\":\"" + time + "\",");
 			xml.append("\"days\":[");
 			boolean firstDay = true;
@@ -245,7 +245,7 @@ public class TvMazeJaxbGuideDao_ImplTest {
 		days.add("Monday");
 		days.add("Friday");
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "60", "123", "432",
-				genres, "Ended", "NETWORK", "20:00", days);
+				genres, "Ended", "TIMEZONE", "20:00", days);
 
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class), Mockito.any(Map.class)))
@@ -269,7 +269,7 @@ public class TvMazeJaxbGuideDao_ImplTest {
 		Assert.assertEquals("TITLE", info.getTitle());
 		Assert.assertEquals(60, info.getRunningTime());
 		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
-		Assert.assertEquals("NETWORK", info.getNetwork());
+		Assert.assertEquals("TIMEZONE", info.getTimezone());
 		Assert.assertNotNull(info.getGuideIds());
 		Assert.assertEquals(3, info.getGuideIds().size());
 		Assert.assertEquals(GuideSource.TVMAZE, info.getGuideIds().get(0).getSource());

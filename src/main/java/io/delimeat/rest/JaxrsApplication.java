@@ -1,5 +1,7 @@
 package io.delimeat.rest;
 
+import io.delimeat.util.jaxrs.CORSResponseFilter;
+
 import java.util.logging.Logger;
 
 import javax.ws.rs.ApplicationPath;
@@ -19,6 +21,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(ConfigResource.class);
 		register(new LoggingFilter(LOGGER, true));
 		property(ServerProperties.TRACING, "ALL");
+		register(CORSResponseFilter.class);
 		//TODO enable for production
 		//EncodingFilter.enableFor(this, GZipEncoder.class);
 	}

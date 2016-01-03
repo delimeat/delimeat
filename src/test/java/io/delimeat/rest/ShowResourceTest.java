@@ -57,7 +57,7 @@ public class ShowResourceTest extends JerseyTest{
 	public void readAllTest() throws Exception{
 		Show show = new Show();
 		show.setAiring(true);
-		show.setAirTime(Integer.MAX_VALUE);
+		show.setAirTime(9900000);
 		show.setEnabled(false);
 		show.setIncludeSpecials(true);
 		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
@@ -69,7 +69,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setVersion(97);
 		
 		Episode nextEp = new Episode();
-		nextEp.setAirDateTime(SDF.parse("2015-12-03"));
+		nextEp.setAirDate(SDF.parse("2015-12-03"));
 		nextEp.setDoubleEp(true);
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
@@ -80,7 +80,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setNextEpisode(nextEp);
 		
 		Episode prevEp = new Episode();
-		prevEp.setAirDateTime(SDF.parse("2015-12-04"));
+		prevEp.setAirDate(SDF.parse("2015-12-04"));
 		prevEp.setDoubleEp(true);
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
@@ -113,7 +113,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(1, actualShows.size());
 		Show actualShow = actualShows.get(0);
 		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(Integer.MAX_VALUE, actualShow.getAirTime());
+		Assert.assertEquals(9900000, actualShow.getAirTime());
 		Assert.assertFalse(actualShow.isEnabled());
 		Assert.assertTrue(actualShow.isIncludeSpecials());
 		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
@@ -126,7 +126,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getNextEpisode());
 		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
 		Assert.assertTrue(actualNextEp.isDoubleEp());
 		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
 		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
@@ -137,7 +137,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getPreviousEpisode());
 		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
 		Assert.assertTrue(actualPrevEp.isDoubleEp());
 		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
 		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
@@ -161,7 +161,7 @@ public class ShowResourceTest extends JerseyTest{
 	public void readTest() throws Exception{
 		Show show = new Show();
 		show.setAiring(true);
-		show.setAirTime(Integer.MAX_VALUE);
+		show.setAirTime(9900000);
 		show.setEnabled(false);
 		show.setIncludeSpecials(true);
 		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
@@ -173,7 +173,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setVersion(97);
 		
 		Episode nextEp = new Episode();
-		nextEp.setAirDateTime(SDF.parse("2015-12-03"));
+		nextEp.setAirDate(SDF.parse("2015-12-03"));
 		nextEp.setDoubleEp(true);
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
@@ -184,7 +184,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setNextEpisode(nextEp);
 		
 		Episode prevEp = new Episode();
-		prevEp.setAirDateTime(SDF.parse("2015-12-04"));
+		prevEp.setAirDate(SDF.parse("2015-12-04"));
 		prevEp.setDoubleEp(true);
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
@@ -212,7 +212,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Show actualShow = response.readEntity(Show.class);
 		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(Integer.MAX_VALUE, actualShow.getAirTime());
+		Assert.assertEquals(9900000, actualShow.getAirTime());
 		Assert.assertFalse(actualShow.isEnabled());
 		Assert.assertTrue(actualShow.isIncludeSpecials());
 		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
@@ -225,7 +225,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getNextEpisode());
 		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
 		Assert.assertTrue(actualNextEp.isDoubleEp());
 		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
 		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
@@ -236,7 +236,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getPreviousEpisode());
 		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
 		Assert.assertTrue(actualPrevEp.isDoubleEp());
 		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
 		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
@@ -260,7 +260,7 @@ public class ShowResourceTest extends JerseyTest{
 	public void updateTest() throws Exception{
 		Show show = new Show();
 		show.setAiring(true);
-		show.setAirTime(Integer.MAX_VALUE);
+		show.setAirTime(9900000);
 		show.setEnabled(false);
 		show.setIncludeSpecials(true);
 		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
@@ -272,7 +272,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setVersion(97);
 		
 		Episode nextEp = new Episode();
-		nextEp.setAirDateTime(SDF.parse("2015-12-03"));
+		nextEp.setAirDate(SDF.parse("2015-12-03"));
 		nextEp.setDoubleEp(true);
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
@@ -283,7 +283,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setNextEpisode(nextEp);
 		
 		Episode prevEp = new Episode();
-		prevEp.setAirDateTime(SDF.parse("2015-12-04"));
+		prevEp.setAirDate(SDF.parse("2015-12-04"));
 		prevEp.setDoubleEp(true);
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
@@ -311,7 +311,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Show actualShow = response.readEntity(Show.class);
 		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(Integer.MAX_VALUE, actualShow.getAirTime());
+		Assert.assertEquals(9900000, actualShow.getAirTime());
 		Assert.assertFalse(actualShow.isEnabled());
 		Assert.assertTrue(actualShow.isIncludeSpecials());
 		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
@@ -324,7 +324,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getNextEpisode());
 		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
 		Assert.assertTrue(actualNextEp.isDoubleEp());
 		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
 		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
@@ -335,7 +335,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getPreviousEpisode());
 		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
 		Assert.assertTrue(actualPrevEp.isDoubleEp());
 		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
 		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
@@ -370,7 +370,7 @@ public class ShowResourceTest extends JerseyTest{
 	public void createTest() throws Exception{
 		Show show = new Show();
 		show.setAiring(true);
-		show.setAirTime(Integer.MAX_VALUE);
+		show.setAirTime(9900000);
 		show.setEnabled(false);
 		show.setIncludeSpecials(true);
 		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
@@ -382,7 +382,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setVersion(97);
 		
 		Episode nextEp = new Episode();
-		nextEp.setAirDateTime(SDF.parse("2015-12-03"));
+		nextEp.setAirDate(SDF.parse("2015-12-03"));
 		nextEp.setDoubleEp(true);
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
@@ -393,7 +393,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setNextEpisode(nextEp);
 		
 		Episode prevEp = new Episode();
-		prevEp.setAirDateTime(SDF.parse("2015-12-04"));
+		prevEp.setAirDate(SDF.parse("2015-12-04"));
 		prevEp.setDoubleEp(true);
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
@@ -421,7 +421,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Show actualShow = response.readEntity(Show.class);
 		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(Integer.MAX_VALUE, actualShow.getAirTime());
+		Assert.assertEquals(9900000, actualShow.getAirTime());
 		Assert.assertFalse(actualShow.isEnabled());
 		Assert.assertTrue(actualShow.isIncludeSpecials());
 		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
@@ -434,7 +434,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getNextEpisode());
 		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
 		Assert.assertTrue(actualNextEp.isDoubleEp());
 		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
 		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
@@ -445,7 +445,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Assert.assertNotNull(actualShow.getPreviousEpisode());
 		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDateTime()));
+		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
 		Assert.assertTrue(actualPrevEp.isDoubleEp());
 		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
 		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());

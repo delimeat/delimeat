@@ -77,7 +77,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		private StringBuffer xml;
 
 		public InfoJsonGenerator(String description, String guideid, String title, String runtime, String tvdbId,
-				String tvrageId, List<String> genres, String status, String network, String time, List<String> days) {
+				String tvrageId, List<String> genres, String status, String timezone, String time, List<String> days) {
 			xml = new StringBuffer();
 			xml.append("{");
 			xml.append("\"summary\":\"" + description + "\",");
@@ -99,7 +99,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			xml.append("],");
 			xml.append("\"status\":\"" + status + "\",");
 			xml.append("\"runtime\":" + runtime + ",");
-			xml.append("\"network\":{\"name\":\"" + network + "\"},");
+			xml.append("\"network\":{\"country\":{\"timezone\":\"" + timezone + "\"}},");
 			xml.append("\"schedule\":{\"time\":\"" + time + "\",");
 			xml.append("\"days\":[");
 			boolean firstDay = true;
@@ -243,7 +243,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		days.add("Monday");
 		days.add("Friday");
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "60", "123", "432",
-				genres, "Ended", "NETWORK", "20:00", days);
+				genres, "Ended", "CBS", "20:00", days);
 
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
@@ -254,7 +254,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("TITLE", info.getTitle());
 		Assert.assertEquals(60, info.getRunningTime());
 		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
-		Assert.assertEquals("NETWORK", info.getNetwork());
+		Assert.assertEquals("CBS", info.getTimezone());
 		Assert.assertNotNull(info.getGuideIds());
 		Assert.assertEquals(3, info.getGuideIds().size());
 		Assert.assertEquals(GuideSource.TVMAZE, info.getGuideIds().get(0).getSource());

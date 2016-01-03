@@ -1,5 +1,7 @@
 package io.delimeat.rest;
 
+import io.delimeat.util.jaxrs.CORSResponseFilter;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,10 +17,11 @@ public class JaxrsApplicationTest {
 	
 	@Test
 	public void classesTest(){
-		Assert.assertEquals(3, application.getClasses().size());
+		Assert.assertEquals(4, application.getClasses().size());
 		Assert.assertTrue(application.getClasses().contains(ShowResource.class));
 		Assert.assertTrue(application.getClasses().contains(ConfigResource.class));
 		Assert.assertTrue(application.getClasses().contains(GuideResource.class));
+		Assert.assertTrue(application.getClasses().contains(CORSResponseFilter.class));
 	}
 	
 	@Test

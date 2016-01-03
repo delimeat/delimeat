@@ -1,5 +1,7 @@
 package io.delimeat.core.guide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class GuideInfoTest {
+
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
 	private GuideInfo info;
 
@@ -61,11 +65,11 @@ public class GuideInfoTest {
 	}
 
 	@Test
-	public void setNetworkTest() {
+	public void setTimezoneTest() {
 
-		Assert.assertEquals(null, info.getNetwork());
-		info.setNetwork("SciFi");
-		Assert.assertEquals("SciFi", info.getNetwork());
+		Assert.assertEquals(null, info.getTimezone());
+		info.setTimezone("SciFi");
+		Assert.assertEquals("SciFi", info.getTimezone());
 	}
 
 	@Test
@@ -98,6 +102,15 @@ public class GuideInfoTest {
 		Assert.assertEquals(0, info.getAirTime());
 		info.setAirTime(10000);
 		Assert.assertEquals(10000, info.getAirTime());
+	}
+	
+	@Test
+	public void firstAiredTest() throws ParseException {
+
+		Assert.assertEquals(null, info.getFirstAired());
+
+		info.setFirstAired(SDF.parse("2005-04-03"));
+		Assert.assertEquals("2005-04-03", SDF.format(info.getFirstAired()));
 	}
 	/*
 	 * @Test public void episodesTest(){ Assert.assertEquals(0,
