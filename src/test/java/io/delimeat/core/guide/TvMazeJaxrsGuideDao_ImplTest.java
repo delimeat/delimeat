@@ -1,5 +1,8 @@
 package io.delimeat.core.guide;
 
+import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
+import io.delimeat.util.jaxrs.JaxbContextResolver;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +31,9 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider.ConnectionFactory;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;
-
-import io.delimeat.util.jaxrs.JaxbContextResolver;
 
 public class TvMazeJaxrsGuideDao_ImplTest {
 
@@ -215,6 +215,8 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		classes.add(GuideSearchResult.class);
 		resolver.setClasses(classes);
 		clientConfig.register(resolver);
+		clientConfig.register(CustomMOXyJsonProvider.class);
+		clientConfig.property("jersey.config.disableMoxyJson", "true");
 
 		return ClientBuilder.newClient(clientConfig);
 	}
@@ -274,7 +276,6 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 
 	}
 
-	@Ignore("unmarshalling not working")
 	@Test
 	public void episodesTest() throws Exception {
 		EpisodesJsonGenerator generator = new EpisodesJsonGenerator();
@@ -287,8 +288,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 
 		List<GuideEpisode> result = dao.episodes("ID");
 		Assert.assertNotNull(result);
-		// Assert.assertEquals(1, result.size());
-		System.out.println(result.get(0));
+		Assert.assertEquals(2, result.size());
 		Assert.assertEquals(0, result.get(0).getProductionNum().intValue());
 		Assert.assertEquals(Integer.MIN_VALUE, result.get(0).getEpisodeNum().intValue());
 		Assert.assertEquals(Integer.MAX_VALUE, result.get(0).getSeasonNum().intValue());
@@ -296,7 +296,6 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("2015-09-29", SDF.format(result.get(0).getAirDate()));
 	}
 
-	@Ignore("unmarshaling not working")
 	@Test
 	public void searchTest() throws IOException, Exception {
 		SearchJsonGenerator generator = new SearchJsonGenerator();

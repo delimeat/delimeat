@@ -121,20 +121,20 @@
 		
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
-		<org.mockito.version>2.0.31-beta</org.mockito.version>
+		<org.mockito.version>2.0.36-beta</org.mockito.version>
 
       	<!-- Servelet versions !-->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
      
 		<!-- Runtime versions ! -->
-		<org.springframework.version>4.2.2.RELEASE</org.springframework.version>
-		<org.eclipse.persistence.version>2.6.1</org.eclipse.persistence.version>
+		<org.springframework.version>4.2.4.RELEASE</org.springframework.version>
+		<org.eclipse.persistence.version>2.6.2</org.eclipse.persistence.version>
 		<javax.transaction.version>1.2</javax.transaction.version>
 		<org.glassfish.jersey.version>2.22.1</org.glassfish.jersey.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 		<org.jsoup.version>1.8.3</org.jsoup.version>
 		<org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
-		<org.apache.logging.log4j.version>2.4.1</org.apache.logging.log4j.version>
+		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
 	</properties>
 
 	<dependencies>
