@@ -1,11 +1,13 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.guide.GuideEpisode;
+import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
+import io.delimeat.core.guide.GuideNotAuthorisedException;
+import io.delimeat.core.guide.GuideNotFoundException;
 import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.service.GuideService;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,20 +26,19 @@ public class GuideResource {
 
 	@Path("search/{title}")
 	@GET
-	public List<GuideSearchResult> get(@PathParam("title") String title)
-			throws IOException, Exception {
+	public List<GuideSearchResult> get(@PathParam("title") String title) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		return service.readLike(title);
 	}
 
 	@Path("info/{id}")
 	@GET
-	public GuideInfo getInfo(@PathParam("id") String guideId) throws IOException, Exception {
+	public GuideInfo getInfo(@PathParam("id") String guideId) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		return service.read(guideId);
 	}
 	
 	@Path("info/{id}/episodes")
 	@GET
-	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId) throws IOException, Exception {
+	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		return service.readEpisodes(guideId);
 	}
 }

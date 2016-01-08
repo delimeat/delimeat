@@ -16,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.mockito.Mockito;
 
 import io.delimeat.util.UrlHandler;
@@ -99,7 +100,7 @@ public class JaxbConfigDao_ImplTest {
 	}
 
 	@Test
-	public void readTest() throws IOException, Exception {
+	public void readTest() throws Exception {
 		List<String> ignoredFiles = new ArrayList<String>();
 		ignoredFiles.add("AVI");
 		ignoredFiles.add("MOV");
@@ -125,7 +126,7 @@ public class JaxbConfigDao_ImplTest {
 	}
 
 	@Test
-	public void writeTest() throws Exception {
+	public void updateTest() throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
@@ -152,5 +153,38 @@ public class JaxbConfigDao_ImplTest {
 
 		Assert.assertEquals(generator.toString(), bos.toString());
 	}
+  
+   @Ignore("need to figure out how to mock files")
+   @Test
+  	public void createTest() throws Exception{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
+		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
+		dao.setUrlHandler(mockedHandler);
+     
+		//URL mockedUrl = Mockito.mock(URL.class);
+		//Mockito.when(mockedUrl.getFile()).thenReturn("FILE");
+
+		JAXBContext jc = JAXBContext.newInstance(Config.class);
+		dao.setMarshaller(jc.createMarshaller());
+
+		List<String> ignoredFiles = new ArrayList<String>();
+		ignoredFiles.add("AVI");
+		ignoredFiles.add("MOV");
+
+		Config config = new Config();
+		config.setOutputDirectory("outputDir");
+		config.setSearchInterval(100);
+		config.setPreferFiles(true);
+		config.setIgnoreFolders(false);
+		config.getIgnoredFileTypes().add("AVI");
+		config.getIgnoredFileTypes().add("MOV");
+
+		dao.create(config);
+
+		XMLGenerator generator = new XMLGenerator(100, true, false, ignoredFiles, "outputDir");
+
+		Assert.assertEquals(generator.toString(), bos.toString());    
+   }
 
 }

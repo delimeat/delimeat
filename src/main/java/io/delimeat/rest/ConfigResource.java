@@ -1,9 +1,8 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.config.ConfigDao;
-
-import java.io.IOException;
+import io.delimeat.core.config.ConfigException;
+import io.delimeat.core.service.ConfigService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -19,16 +18,16 @@ import javax.ws.rs.core.MediaType;
 public class ConfigResource {
 
 	@Inject
-	private ConfigDao dao;
+	private ConfigService service;
 
 	@GET
-	public Config get() throws IOException, Exception {
-		return dao.read();
+	public Config get() throws ConfigException {
+		return service.read();
 	}
 
 	@PUT
-	public Config update(Config config) throws IOException, Exception {
-		dao.update(config);
+	public Config update(Config config) throws ConfigException {
+		service.update(config);
 		return config;
 	}
 

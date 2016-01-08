@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -39,6 +41,25 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
+  	private class ErrorJsonGenerator {
+
+		private StringBuffer xml;
+
+		public ErrorJsonGenerator(String message) {
+			xml = new StringBuffer();
+			xml.append("{");
+			xml.append("\"name\":\"" + message + "\"");
+		}
+
+		public String toString() {
+			return xml.toString() + "}";
+		}
+
+		public InputStream generate() throws Exception {
+			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
+		}
+	}
+  
 	private class EpisodesJsonGenerator {
 		private StringBuffer xml;
 		private boolean first = true;
@@ -176,6 +197,15 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			}
 			inputStub = inputStub.thenReturn(input);
 		}
+     
+		OngoingStubbing<InputStream> errorStub = null;
+		for (InputStream input : inputs) {
+			if (errorStub == null) {
+				errorStub = Mockito.when(mockedUrlConnection.getErrorStream());
+			}
+			errorStub = errorStub.thenReturn(input);
+		}   
+     
 		Mockito.when(mockedUrlConnection.getURL()).thenReturn(new URL("http://test.com"));
 
 		// register each response code to return
@@ -206,15 +236,16 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
 		JAXBContext jc = JAXBContext.newInstance(
-				new Class[] { GuideEpisode.class, GuideInfo.class, GuideSearchResult.class }, properties);
-		JaxbContextResolver resolver = new JaxbContextResolver();
+				new Class[] { GuideError.class, GuideEpisode.class, GuideInfo.class, GuideSearchResult.class }, properties);
+		
+      JaxbContextResolver resolver = new JaxbContextResolver();
 		resolver.setContext(jc);
-		List<Class<?>> classes = new ArrayList<Class<?>>();
-		classes.add(GuideEpisode.class);
-		classes.add(GuideInfo.class);
-		classes.add(GuideSearchResult.class);
-		resolver.setClasses(classes);
-		clientConfig.register(resolver);
+		resolver.getClasses().add(GuideEpisode.class);
+		resolver.getClasses().add(GuideInfo.class);
+		resolver.getClasses().add(GuideSearchResult.class);
+      resolver.getClasses().add(GuideError.class);
+		
+      clientConfig.register(resolver);
 		clientConfig.register(CustomMOXyJsonProvider.class);
 		clientConfig.property("jersey.config.disableMoxyJson", "true");
 
@@ -275,6 +306,40 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(AiringDay.FRIDAY, info.getAirDays().get(1));
 
 	}
+  
+  @Test(expected=GuideNotFoundException.class)
+	public void infoNotFoundTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+      try{
+        dao.info("TITLE");
+      }catch(GuideNotFoundException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void infoExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+     
+      try{
+        dao.info("TITLE");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
+	}
 
 	@Test
 	public void episodesTest() throws Exception {
@@ -294,6 +359,39 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(Integer.MAX_VALUE, result.get(0).getSeasonNum().intValue());
 		Assert.assertEquals("TITLE", result.get(0).getTitle());
 		Assert.assertEquals("2015-09-29", SDF.format(result.get(0).getAirDate()));
+	}
+  
+	@Test(expected=GuideNotFoundException.class)
+	public void episodesNotFoundTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+      try{
+         dao.episodes("GUIDEID");
+      }catch(GuideNotFoundException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void episodesExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+      try{
+         dao.episodes("GUIDEID");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
 	}
 
 	@Test
@@ -319,5 +417,21 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("DESCRIPTION", results.get(0).getDescription());
 		Assert.assertEquals("TITLE", results.get(0).getTitle());
 		Assert.assertEquals("2015-09-29", SDF.format(results.get(0).getFirstAired()));
+	}
+  
+	@Test(expected=GuideException.class)
+	public void searchExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+     
+      try{
+        dao.search("TITLE");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
 	}
 }

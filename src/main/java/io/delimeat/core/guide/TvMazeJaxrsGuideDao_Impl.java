@@ -2,10 +2,12 @@ package io.delimeat.core.guide;
 
 import io.delimeat.util.jaxrs.AbstractJaxrsClientHelper;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideInfoDao, GuideSearchDao {
@@ -16,31 +18,72 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
 	}
 
 	@Override
-	public List<GuideSearchResult> search(String id) throws IOException, Exception {
-		return getTarget()
-				.path("search")
-				.path("shows")
-				.queryParam("q", URLEncoder.encode(id, ENCODING))
-				.request(getMediaType()).get(new GenericType<List<GuideSearchResult>>() {});
+	public List<GuideSearchResult> search(String title) throws GuideException {
+        String encodedTitle;
+        try {
+            encodedTitle = URLEncoder.encode(title, ENCODING);
+        } catch (UnsupportedEncodingException ex) {
+            encodedTitle = title;
+        }
+     
+        try {
+            return getTarget().path("search")
+              						.path("shows")
+              						.queryParam("q", encodedTitle)
+              						.request(getMediaType())
+                              .get(new GenericType<List<GuideSearchResult>>() {});
+          
+        } catch (WebApplicationException ex) {
+            throw new GuideException(ex);
+        }
 	}
 
 	@Override
-	public GuideInfo info(String guideId) throws IOException, Exception {
-		return getTarget()
-				.path("shows")
-				.path(URLEncoder.encode(guideId, ENCODING))
-				.request(getMediaType())
-				.get(GuideInfo.class);
+	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideException {
+        String encodedGuideId;
+        try {
+            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+        } catch (UnsupportedEncodingException ex) {
+            encodedGuideId = guideId;
+        }
+     
+        try {
+            return getTarget().path("shows")
+              						.path(encodedGuideId)
+              						.request(getMediaType())
+              						.get(GuideInfo.class);
+          
+        } catch (NotFoundException ex) {
+            GuideError error = ex.getResponse().readEntity(GuideError.class);
+            throw new GuideNotFoundException(error, ex);
+        } catch (WebApplicationException ex) {
+            throw new GuideException(ex);
+        }
 	}
 
 	@Override
-	public List<GuideEpisode> episodes(String guideId) throws IOException, Exception {
-		return getTarget()
-				.path("shows")
-				.path(URLEncoder.encode(guideId, ENCODING))
-				.path("episodes")
-				.request(getMediaType())
-				.get(new GenericType<List<GuideEpisode>>() {});
+	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideException {
+        String encodedGuideId;
+        try {
+            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+        } catch (UnsupportedEncodingException ex) {
+            encodedGuideId = guideId;
+        }
+     
+        try {
+          return getTarget()
+                .path("shows")
+                .path(encodedGuideId)
+                .path("episodes")
+                .request(getMediaType())
+                .get(new GenericType<List<GuideEpisode>>() {});
+          
+        } catch (NotFoundException ex) {
+            GuideError error = ex.getResponse().readEntity(GuideError.class);
+            throw new GuideNotFoundException(error, ex);
+        } catch (WebApplicationException ex) {
+            throw new GuideException(ex);
+        }
 	}
 
 }

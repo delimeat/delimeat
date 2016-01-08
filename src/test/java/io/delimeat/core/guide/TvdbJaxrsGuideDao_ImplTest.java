@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -37,6 +40,25 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
+	private class ErrorJsonGenerator {
+
+		private StringBuffer xml;
+
+		public ErrorJsonGenerator(String message) {
+			xml = new StringBuffer();
+			xml.append("{");
+			xml.append("\"Error\":\"" + message + "\"");
+		}
+
+		public String toString() {
+			return xml.toString() + "}";
+		}
+
+		public InputStream generate() throws Exception {
+			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
+		}
+	}
+  
 	private class TokenJsonGenerator {
 
 		private StringBuffer xml;
@@ -177,6 +199,15 @@ public class TvdbJaxrsGuideDao_ImplTest {
 			}
 			inputStub = inputStub.thenReturn(input);
 		}
+     
+		OngoingStubbing<InputStream> errorStub = null;
+		for (InputStream input : inputs) {
+			if (errorStub == null) {
+				errorStub = Mockito.when(mockedUrlConnection.getErrorStream());
+			}
+			errorStub = errorStub.thenReturn(input);
+		}   
+     
 		Mockito.when(mockedUrlConnection.getURL()).thenReturn(new URL("http://test.com"));
 
 		// register each response code to return
@@ -207,14 +238,14 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
 		JAXBContext jc = JAXBContext.newInstance(new Class[] { TvdbApiKey.class, TvdbToken.class,
-				TvdbError.class, GuideSearchResult.class, GuideInfo.class, TvdbEpisodes.class, GuideEpisode.class },
+				GuideError.class, GuideSearchResult.class, GuideInfo.class, TvdbEpisodes.class, GuideEpisode.class },
 				properties);
 
 		JaxbContextResolver resolver = new JaxbContextResolver();
 		resolver.setContext(jc);
 		resolver.getClasses().add(TvdbApiKey.class);
 		resolver.getClasses().add(TvdbToken.class);
-		resolver.getClasses().add(TvdbError.class);
+		resolver.getClasses().add(GuideError.class);
 		resolver.getClasses().add(GuideSearchResult.class);
 		resolver.getClasses().add(GuideSearch.class);
 		resolver.getClasses().add(GuideInfo.class);
@@ -255,7 +286,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	}
 
 	@Test
-	public void loginTest() throws IOException, Exception {
+	public void loginTest() throws Exception {
 		TokenJsonGenerator generator = new TokenJsonGenerator("TOKEN");
 
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
@@ -267,9 +298,42 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertNotNull(token);
 		Assert.assertEquals("TOKEN", token.getValue());
 	}
+  
+	@Test(expected=GuideNotAuthorisedException.class)
+	public void loginNotAuthorisedTest()  throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 401 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+      try{
+			dao.login("APIKEY");
+      }catch(GuideNotAuthorisedException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotAuthorizedException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+	@Test(expected=GuideException.class)
+	public void loginExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+      try{
+			dao.login("APIKEY");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
+	}
 
 	@Test
-	public void refreshTokenTest() throws IOException, Exception {
+	public void refreshTokenTest() throws Exception {
 		TokenJsonGenerator generator = new TokenJsonGenerator("NEW_TOKEN");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setBaseUri(new URI("http://test.com"));
@@ -281,6 +345,46 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		TvdbToken newToken = dao.refreshToken(oldToken);
 		Assert.assertNotNull(newToken);
 		Assert.assertEquals("NEW_TOKEN", newToken.getValue());
+	}
+  
+	@Test(expected=GuideNotAuthorisedException.class)
+	public void refreshTokenNotAuthorisedTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 401 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+      TvdbToken oldToken = new TvdbToken();
+      oldToken.setValue("OLD_TOKEN");
+
+      try{
+        dao.refreshToken(oldToken);
+      }catch(GuideNotAuthorisedException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotAuthorizedException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void refreshTokenExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+     
+	   TvdbToken oldToken = new TvdbToken();
+      oldToken.setValue("OLD_TOKEN");
+     
+      try{
+        dao.refreshToken(oldToken);
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
 	}
 
 	@Test
@@ -294,7 +398,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	}
 
 	@Test
-	public void tokenLogin() throws IOException, Exception {
+	public void tokenLogin() throws Exception {
 		TokenJsonGenerator generator = new TokenJsonGenerator("TOKEN");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setBaseUri(new URI("http://test.com"));
@@ -308,7 +412,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	}
 
 	@Test
-	public void tokenRefreshTest() throws IOException, Exception {
+	public void tokenRefreshTest() throws Exception {
 		TokenJsonGenerator generator = new TokenJsonGenerator("NEW_TOKEN");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setBaseUri(new URI("http://test.com"));
@@ -326,7 +430,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	}
 
 	@Test
-	public void searchTest() throws IOException, Exception {
+	public void searchTest() throws Exception {
 		SearchJsonGenerator generator = new SearchJsonGenerator();
 		generator.addSeries("DESCRIPTION", "GUIDEID", "TITLE", "2005-03-11");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
@@ -349,9 +453,77 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("TITLE", results.get(0).getTitle());
 		Assert.assertEquals("2005-03-11", SDF.format(results.get(0).getFirstAired()));
 	}
+  
 
+	@Test(expected=GuideNotAuthorisedException.class)
+	public void searchNotAuthorisedTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 401 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+        dao.search("TITLE");
+      }catch(GuideNotAuthorisedException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotAuthorizedException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+	
+  @Test(expected=GuideNotFoundException.class)
+	public void searchNotFoundTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+        dao.search("TITLE");
+      }catch(GuideNotFoundException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void searchExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+     
+      try{
+        dao.search("TITLE");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
+	}
+  
 	@Test
-	public void infoTest() throws IOException, Exception {
+	public void infoTest() throws Exception {
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "Ended", "CBS", "45",
 				"Monday", "8:00pm", "IMDB", Arrays.asList("GENRE"),"2015-12-28");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
@@ -385,8 +557,75 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 	}
 
+@Test(expected=GuideNotAuthorisedException.class)
+	public void infoNotAuthorisedTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 401 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+        dao.info("TITLE");
+      }catch(GuideNotAuthorisedException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotAuthorizedException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+	
+  @Test(expected=GuideNotFoundException.class)
+	public void infoNotFoundTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+        dao.info("TITLE");
+      }catch(GuideNotFoundException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void infoExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+     
+      try{
+        dao.info("TITLE");
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
+	}
+  
 	@Test
-	public void episodesTest() throws IOException, Exception {
+	public void episodesTest() throws Exception {
 		EpisodesJsonGenerator generator = new EpisodesJsonGenerator(null, 0, 0, 0);
 		generator.addEpisode(0, Integer.MIN_VALUE, Integer.MAX_VALUE, "TITLE", "2015-09-29");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
@@ -414,8 +653,75 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("2015-09-29", SDF.format(result.getEpisodes().get(0).getAirDate()));
 	}
 
+
+@Test(expected=GuideNotAuthorisedException.class)
+	public void episodesNotAuthorisedTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 401 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+         dao.episodes("GUIDEID",1);
+      }catch(GuideNotAuthorisedException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotAuthorizedException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+	
+  @Test(expected=GuideNotFoundException.class)
+	public void episodesNotFoundTest() throws Exception {
+		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+
+		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+
+      try{
+         dao.episodes("GUIDEID",1);
+      }catch(GuideNotFoundException ex){
+      	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
+         Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
+         throw ex;
+      }
+	}
+  
+	@Test(expected=GuideException.class)
+	public void episodesExceptionTest() throws Exception {
+
+      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+
+		dao.setBaseUri(new URI("http://test.com"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dao.setToken(token);
+     
+      try{
+         dao.episodes("GUIDEID",1);
+      }catch(GuideException ex){
+         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
+         throw ex;
+      }
+	}
 	@Test
-	public void episodeListNoNextTest() throws IOException, Exception {
+	public void episodeListNoNextTest() throws Exception {
 		EpisodesJsonGenerator generator = new EpisodesJsonGenerator(1, 1, 0, 0);
 		generator.addEpisode(0, Integer.MIN_VALUE, Integer.MAX_VALUE, "TITLE", "2015-09-29");
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
@@ -439,7 +745,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	}
 
 	@Test
-	public void episodeListHasNextTest() throws IOException, Exception {
+	public void episodeListHasNextTest() throws Exception {
 		EpisodesJsonGenerator generator = new EpisodesJsonGenerator(1, 2, 2, 0);
 		generator.addEpisode(0, Integer.MIN_VALUE, Integer.MAX_VALUE, "TITLE", "2015-09-29");
 

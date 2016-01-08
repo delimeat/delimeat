@@ -1,6 +1,9 @@
 package io.delimeat.rest;
 
 import io.delimeat.util.jaxrs.CORSResponseFilter;
+import io.delimeat.util.jaxrs.GenericExceptionMapper;
+import io.delimeat.util.jaxrs.GuideExceptionMapper;
+import io.delimeat.util.jaxrs.PersistenceExceptionMapper;
 
 import java.util.logging.Logger;
 
@@ -22,6 +25,9 @@ public class JaxrsApplication extends ResourceConfig {
 		register(new LoggingFilter(LOGGER, true));
 		property(ServerProperties.TRACING, "ALL");
 		register(CORSResponseFilter.class);
+      register(PersistenceExceptionMapper.class);
+      register(GenericExceptionMapper.class);
+      register(GuideExceptionMapper.class);
 		//TODO enable for production
 		//EncodingFilter.enableFor(this, GZipEncoder.class);
 	}

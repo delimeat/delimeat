@@ -16,7 +16,6 @@ xmlns:context="http://www.springframework.org/schema/context"
 	<import resource="config-context.xml" />
 	<import resource="guide-context.xml" />
 	<import resource="show-context.xml" />
-	<import resource="networks-context.xml" />
 	<import resource="services-context.xml" />
 	<import resource="web-context.xml" />
 	

@@ -1,7 +1,9 @@
 package io.delimeat.util.jaxrs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
@@ -15,6 +17,8 @@ public class JerseyClientFactory {
 
 	private ConnectorProvider connectorProvider;
 	private List<Object> providers = new ArrayList<Object>();
+   private List<Class<?>> providerClasses = new ArrayList<Class<?>>();
+   private Map<String,Object> properties = new HashMap<String,Object>();
 
 	/**
 	 * @return the connectorProvider
@@ -42,8 +46,38 @@ public class JerseyClientFactory {
 	 * @param providers
 	 *            the providers to set
 	 */
+	public void setProviderClasses(List<Class<?>> providerClasses) {
+		this.providerClasses = providerClasses;
+	}
+ 
+	/**
+	 * @return the providers
+	 */
+	public List<Class<?>> getProviderClasses() {
+		return providerClasses;
+	}
+
+	/**
+	 * @param providers
+	 *            the providers to set
+	 */
 	public void setProviders(List<Object> providers) {
 		this.providers = providers;
+	}
+  
+	/**
+	 * @return the properties
+	 */
+	public Map<String,Object> getProperties() {
+		return properties;
+	}
+
+	/**
+	 * @param properties
+	 *            the properties to set
+	 */
+	public void setProperties(Map<String,Object> properties) {
+		this.properties = properties;
 	}
 
 	public Client newClient() {
@@ -51,6 +85,12 @@ public class JerseyClientFactory {
 		for (Object provider : providers) {
 			configuration.register(provider);
 		}
+		for (Class<?> provider : providerClasses) {
+			configuration.register(provider);
+		}
+      for(String key: properties.keySet()){
+        configuration.property(key, properties.get(key));
+      }
 		Logger logger = Logger.getLogger("Logger");
 		LoggingFilter filter = new LoggingFilter(logger, true);
 		configuration.register(filter);

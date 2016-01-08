@@ -1,7 +1,7 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.config.ConfigDao;
+import io.delimeat.core.service.ConfigService;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 
 public class ConfigResourceTest extends JerseyTest {
 
-	private ConfigDao mockedConfigDao = Mockito.mock(ConfigDao.class);
+	private ConfigService mockedConfigService = Mockito.mock(ConfigService.class);
 
 	@Override
 	protected Application configure() {
@@ -31,7 +31,7 @@ public class ConfigResourceTest extends JerseyTest {
 
 			@Override
 			protected void configure() {
-				bind(mockedConfigDao).to(ConfigDao.class);
+				bind(mockedConfigService).to(ConfigService.class);
 			}
 
 		});
@@ -48,7 +48,7 @@ public class ConfigResourceTest extends JerseyTest {
 		expectedConfig.setOutputDirectory("OUTPUTDIR");
 		expectedConfig.setPreferFiles(true);
 		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
-		Mockito.when(mockedConfigDao.read()).thenReturn(expectedConfig);
+		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
 		Response response = target("config").request().get();
 		Assert.assertEquals(200, response.getStatus());

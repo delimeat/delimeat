@@ -1,10 +1,10 @@
 package io.delimeat.core.config;
 
-import java.io.IOException;
-
 public interface ConfigDao {
 
-	public Config read() throws IOException, Exception;
+   public void create(Config config) throws ConfigException;
+  
+	public Config read() throws ConfigNotFoundException, ConfigException;
 
-	public void update(Config config) throws IOException, Exception;
+	public void update(Config config) throws ConfigNotFoundException, ConfigException;
 }

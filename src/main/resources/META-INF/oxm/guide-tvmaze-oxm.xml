@@ -6,6 +6,13 @@
 
 	<java-types>
 
+      <java-type name="GuideError">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="message" name="name" />
+			</java-attributes>
+		</java-type>
+     
 		<java-type name="GuideSearchResult">
 			<xml-root-element/>
 			<java-attributes>
@@ -40,11 +47,11 @@
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvMazeIdentifierAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" xml-path="externals/thetvdb/text()">
+				<xml-element java-attribute="guideIds" name="externals/thetvdb/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" xml-path="externals/tvrage/text()">
+				<xml-element java-attribute="guideIds" name="externals/tvrage/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvRageIdentifierAdapter" />
 				</xml-element>

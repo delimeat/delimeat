@@ -36,9 +36,6 @@ public class UrlHandler_Impl implements UrlHandler {
 		OutputStream os;
 		if (url.getProtocol().equalsIgnoreCase("file")) {
 			File file = new File(url.getFile());
-			if (!file.exists()) {
-				file.createNewFile();
-			}
 			os = new FileOutputStream(file);
 
 		} else {

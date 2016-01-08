@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import java.util.TimeZone;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +20,7 @@ public class TvdbTimezoneAdapterTest {
 
 	@Test
 	public void testExistsUnmarshal() throws Exception {
-		Assert.assertEquals("NZ", adapter.unmarshal("TVNZ"));
+		Assert.assertEquals("Etc/GMT+12", adapter.unmarshal("TVNZ"));
 	}
 	
 	@Test
@@ -38,13 +36,6 @@ public class TvdbTimezoneAdapterTest {
 	@Test
 	public void testEmptyUnmarshal() throws Exception {
 		Assert.assertNull(adapter.unmarshal(""));
-	}
-	@Test
-	public void test(){
-		for(String id: TimeZone.getAvailableIDs()){
-			System.out.println(id + " " +TimeZone.getTimeZone(id).getDisplayName());
-			
-		}
 	}
 
 }

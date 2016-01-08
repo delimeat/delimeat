@@ -33,7 +33,7 @@ xmlns:context="http://www.springframework.org/schema/context"
     <bean id="configUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="configJaxb2marshallerId" factory-method="createUnmarshaller" />
     <bean id="configMarshallerId" class="javax.xml.bind.Marshaller" factory-bean="configJaxb2marshallerId" factory-method="createMarshaller" />
 
-	<bean id="configDAOId" class="io.delimeat.core.config.JaxbConfigDao_Impl">
+	<bean id="configDaoId" class="io.delimeat.core.config.JaxbConfigDao_Impl">
 		<property name="unmarshaller" ref="configUnmarshallerId" />
 		<property name="marshaller" ref="configMarshallerId" />
 		<property name="urlHandler" ref="urlHandlerId" />
