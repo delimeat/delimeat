@@ -4,6 +4,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.EntityNotFoundException;
 
@@ -17,6 +18,9 @@ public class PersistenceExceptionMapper implements ExceptionMapper<PersistenceEx
       int status = 500;
       if(exception instanceof EntityNotFoundException){
 			status = 404;
+      }
+      else if(exception instanceof OptimisticLockException){
+    	  status = 409;
       }
       return Response.status(status)
         					.entity(new JaxrsError(status,exception.getMessage()))

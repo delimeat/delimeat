@@ -1,10 +1,7 @@
 package io.delimeat.core.config;
 
 import io.delimeat.util.jaxb.AbstractJaxbHelper;
-import io.delimeat.util.DelimeatUtils;
 
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,22 +12,7 @@ import javax.xml.bind.JAXBException;
 
 public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao {
 
-	private String defaultOutputDir;
 	private URL url;
-
-	@Override
-   public void create(Config config) throws ConfigException{
-        try {
-            File file = new File(getUrl().getFile());
-	         file.createNewFile();
-            if(DelimeatUtils.isEmpty(config.getOutputDirectory())){
-              config.setOutputDirectory(getDefaultOutputDir());
-            }
-          	update(config);
-        } catch (IOException ex) {
-            throw new ConfigException(ex);
-        }
-   }
   
 	@Override
 	public Config read() throws ConfigNotFoundException, ConfigException {
@@ -52,8 +34,6 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
         try {
             OutputStream output = getUrlHandler().openOutput(getUrl());
             marshal(output, config);
-        } catch (FileNotFoundException ex) {
-            throw new ConfigNotFoundException(ex);
         } catch (IOException ex) {
             throw new ConfigException(ex);
         } catch (JAXBException ex) {
@@ -68,13 +48,5 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
 	public void setUrl(URL url) {
 		this.url = url;
 	}
-
-	public String getDefaultOutputDir() {
-		return defaultOutputDir;
-	}
-
-	public void setDefaultOutputDir(String defaultOutputDir) {
-		this.defaultOutputDir = defaultOutputDir;
-	}
-
+	
 }

@@ -1,8 +1,9 @@
 package io.delimeat.core.config;
 
+import io.delimeat.util.UrlHandler;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,10 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.mockito.Mockito;
-
-import io.delimeat.util.UrlHandler;
 
 public class JaxbConfigDao_ImplTest {
 
@@ -74,13 +72,6 @@ public class JaxbConfigDao_ImplTest {
 		Marshaller mockedMarshaller = Mockito.mock(Marshaller.class);
 		dao.setMarshaller(mockedMarshaller);
 		Assert.assertEquals(mockedMarshaller, dao.getMarshaller());
-	}
-
-	@Test
-	public void defaultOutputDirectoryTest() {
-		Assert.assertNull(dao.getDefaultOutputDir());
-		dao.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
-		Assert.assertEquals("DEFAULT_OUTPUT_DIR", dao.getDefaultOutputDir());
 	}
 
 	@Test
@@ -153,38 +144,5 @@ public class JaxbConfigDao_ImplTest {
 
 		Assert.assertEquals(generator.toString(), bos.toString());
 	}
-  
-   @Ignore("need to figure out how to mock files")
-   @Test
-  	public void createTest() throws Exception{
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
-		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
-		dao.setUrlHandler(mockedHandler);
-     
-		//URL mockedUrl = Mockito.mock(URL.class);
-		//Mockito.when(mockedUrl.getFile()).thenReturn("FILE");
-
-		JAXBContext jc = JAXBContext.newInstance(Config.class);
-		dao.setMarshaller(jc.createMarshaller());
-
-		List<String> ignoredFiles = new ArrayList<String>();
-		ignoredFiles.add("AVI");
-		ignoredFiles.add("MOV");
-
-		Config config = new Config();
-		config.setOutputDirectory("outputDir");
-		config.setSearchInterval(100);
-		config.setPreferFiles(true);
-		config.setIgnoreFolders(false);
-		config.getIgnoredFileTypes().add("AVI");
-		config.getIgnoredFileTypes().add("MOV");
-
-		dao.create(config);
-
-		XMLGenerator generator = new XMLGenerator(100, true, false, ignoredFiles, "outputDir");
-
-		Assert.assertEquals(generator.toString(), bos.toString());    
-   }
 
 }
