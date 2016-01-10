@@ -14,12 +14,12 @@ public interface ShowDao {
 	public Show read(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 
 	/**
-	 * Update existing Show
+	 * Create or Update existing Show
 	 * 
 	 * @param show
 	 * @throws Exception
 	 */
-	public Show createOrUpdate(Show show) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
+	public Show createOrUpdate(Show show) throws ShowConcurrencyException, ShowException;
 
 	/**
 	 * Delete a show

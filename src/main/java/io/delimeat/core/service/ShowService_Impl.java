@@ -1,8 +1,12 @@
 package io.delimeat.core.service;
 
 import io.delimeat.core.show.Show;
+import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowDao;
+import io.delimeat.core.show.ShowException;
 import io.delimeat.core.show.ShowGuideSource;
+import io.delimeat.core.show.ShowNotFoundException;
+import io.delimeat.util.DelimeatUtils;
 
 import java.util.List;
 
@@ -22,32 +26,32 @@ public class ShowService_Impl implements ShowService {
 	}
 
 	@Override
-	public Show create(Show show) throws Exception {
-		return getShowDao().createOrUpdate(mergeShow(show));
+	public Show create(Show show) throws ShowConcurrencyException, ShowException {
+		return getShowDao().createOrUpdate(prepareShow(show));
 	}
 
 	@Override
-	public Show read(Long id) throws Exception {
+	public Show read(Long id) throws ShowNotFoundException, ShowConcurrencyException, ShowException {
 		return getShowDao().read(id);
 	}
 
 	@Override
-	public List<Show> readAll() throws Exception {
+	public List<Show> readAll() throws ShowException {
 		return getShowDao().readAll();
 	}
 
 	@Override
-	public Show update(Show show) throws Exception {
-		return getShowDao().createOrUpdate(mergeShow(show));
+	public Show update(Show show) throws ShowConcurrencyException, ShowException {
+		return getShowDao().createOrUpdate(prepareShow(show));
 	}
 
 	@Override
-	public void delete(Long id) throws Exception {
+	public void delete(Long id) throws ShowNotFoundException, ShowException {
 		getShowDao().delete(id);
 	}
 	
-	private Show mergeShow(Show show){
-		if (show.getGuideSources() != null && show.getGuideSources().size() > 0) {
+	public Show prepareShow(Show show){
+		if (!DelimeatUtils.isCollectionEmpty(show.getGuideSources())) {
 			for (ShowGuideSource guideSource : show.getGuideSources()) {
 				guideSource.setShow(show);
 			}
@@ -55,7 +59,6 @@ public class ShowService_Impl implements ShowService {
 		
 		if (show.getNextEpisode() != null) {
 			show.getNextEpisode().setShow(show);
-
 		}
 		
 		if (show.getPreviousEpisode() != null) {

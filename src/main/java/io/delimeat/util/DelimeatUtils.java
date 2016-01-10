@@ -2,6 +2,7 @@ package io.delimeat.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 public class DelimeatUtils {
 
@@ -14,6 +15,16 @@ public class DelimeatUtils {
     public static boolean isEmpty(String value) {
         return value == null || value.trim().length() == 0;
     }
+  
+    /**
+     * Returns true if the collection is null or empty.
+     *
+     * @param value
+     * @return true if collection is null or empty
+     */  
+	 public static boolean isCollectionEmpty(Collection<?> value){
+		 return value == null || value.isEmpty();
+	 }
 
     /**
      * Calculates the SHA1 of the byte array.

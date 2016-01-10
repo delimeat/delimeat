@@ -3,8 +3,10 @@ package io.delimeat.core.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
+import io.delimeat.core.show.ShowGuideSource;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,4 +87,32 @@ public class ShowService_ImplTest {
 		service.delete(Long.MAX_VALUE);
 		Mockito.verify(mockedShowDao).delete(Mockito.anyLong());
 	}
+  
+   @Test
+   public void prepareShowTest(){
+     Show show = new Show();
+     ShowGuideSource showGuideSource = new ShowGuideSource();
+     show.getGuideSources().add(showGuideSource);
+     
+     Episode nextEpisode = new Episode();
+     show.setNextEpisode(nextEpisode);
+     
+     Episode prevEpisode = new Episode();
+     show.setPreviousEpisode(prevEpisode);
+
+     Show updatedShow = service.prepareShow(show);
+     
+     Assert.assertNotNull(updatedShow);
+     Assert.assertEquals(updatedShow,show);
+     Assert.assertNotNull(show.getGuideSources());
+     Assert.assertEquals(1, show.getGuideSources().size());
+     Assert.assertEquals(showGuideSource,show.getGuideSources().get(0));
+     Assert.assertEquals(show, show.getGuideSources().get(0).getShow());
+     
+     Assert.assertNotNull(show.getNextEpisode());
+     Assert.assertEquals(show, show.getNextEpisode().getShow());
+     
+     Assert.assertNotNull(show.getPreviousEpisode());
+     Assert.assertEquals(show, show.getPreviousEpisode().getShow());
+   }
 }

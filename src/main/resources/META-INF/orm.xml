@@ -10,6 +10,10 @@
 			<cascade-persist />
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
+  
+	<named-query name="Show.getAll">
+		<query>SELECT show FROM Show show</query>
+	</named-query>
 	
 	<package>io.delimeat.core.show</package>
 

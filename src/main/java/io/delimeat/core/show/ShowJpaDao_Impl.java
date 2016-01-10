@@ -7,7 +7,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
 
 public class ShowJpaDao_Impl implements ShowDao {
 
@@ -67,9 +66,8 @@ public class ShowJpaDao_Impl implements ShowDao {
 	@Override
 	public List<Show> readAll() throws ShowException {
 		try{
-			
-			TypedQuery<Show> query = em.createQuery("SELECT e FROM Show e", Show.class);
-			return query.getResultList();
+        
+         return em.createNamedQuery("Show.getAll",Show.class).getResultList();
 		
 		} catch (PersistenceException ex){
 			throw new ShowException(ex);

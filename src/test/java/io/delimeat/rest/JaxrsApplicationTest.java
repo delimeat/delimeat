@@ -3,7 +3,7 @@ package io.delimeat.rest;
 import io.delimeat.util.jaxrs.CORSResponseFilter;
 import io.delimeat.util.jaxrs.GenericExceptionMapper;
 import io.delimeat.util.jaxrs.GuideExceptionMapper;
-import io.delimeat.util.jaxrs.PersistenceExceptionMapper;
+import io.delimeat.util.jaxrs.ShowExceptionMapper;
 
 
 import org.junit.Assert;
@@ -28,7 +28,7 @@ public class JaxrsApplicationTest {
 		Assert.assertTrue(application.getClasses().contains(CORSResponseFilter.class));
 		Assert.assertTrue(application.getClasses().contains(GenericExceptionMapper.class));
 		Assert.assertTrue(application.getClasses().contains(GuideExceptionMapper.class));
-		Assert.assertTrue(application.getClasses().contains(PersistenceExceptionMapper.class));
+		Assert.assertTrue(application.getClasses().contains(ShowExceptionMapper.class));
 	}
 	
 	@Test
