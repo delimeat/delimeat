@@ -40,7 +40,8 @@ public class ConfigService_Impl implements ConfigService {
 	}
 
 	@Override
-	public void update(Config config) throws ConfigException {
+	public Config update(Config config) throws ConfigException {
 		dao.update(config);
+		return config;
 	}
 }

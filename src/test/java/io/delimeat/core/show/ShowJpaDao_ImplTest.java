@@ -4,6 +4,7 @@ import io.delimeat.core.feed.FeedSource;
 import io.delimeat.core.guide.GuideSource;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
 
 import org.apache.derby.tools.ij;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -22,13 +22,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ShowJpaDao_ImplTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String SQL_FILE = "/io/delimeat/core/show/derby_show_test.sql";
+	private static final String CLEANUP_FILE = "/io/delimeat/core/show/derby_show_cleanup.sql";
 	
 	private static EntityManagerFactory factory;
 	private static EntityManager entityManager;
@@ -58,6 +58,15 @@ public class ShowJpaDao_ImplTest {
 	@Before
 	public void openTransaction() {
 		entityManager.getTransaction().begin();
+	}
+	
+	@After
+	public void cleanup() throws UnsupportedEncodingException{
+		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(CLEANUP_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
 	}
 
 	@After
@@ -108,7 +117,8 @@ public class ShowJpaDao_ImplTest {
 		nextEpisode.setTitle("TITLE_TWO");
 		show.setNextEpisode(nextEpisode);
 
-		Show newShow = dao.create(show);
+		//Show newShow = dao.create(show);
+		Show newShow = dao.createOrUpdate(show);
 
 		Assert.assertNotEquals(0, newShow.getShowId());
 		Assert.assertTrue(newShow.isAiring());
@@ -203,16 +213,14 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
 		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
 		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
-
-		connection.rollback();
 	}
 
-	@Test(expected = EntityNotFoundException.class)
+	@Test(expected = ShowNotFoundException.class)
 	public void notFoundReadShowTest() throws Exception {
 		dao.read(3);
 	}
 
-	@Test(expected = EntityNotFoundException.class)
+	@Test(expected = ShowNotFoundException.class)
 	public void notFoundDeleteTest() throws Exception {
 		dao.delete(1);
 	}
@@ -235,18 +243,7 @@ public class ShowJpaDao_ImplTest {
 		pk.setGuideSource(GuideSource.IMDB);
 		pk.setShowId(1L);
 		Assert.assertNull(entityManager.find(ShowGuideSource.class, pk));
-
-		connection.rollback();
-	}
-
-	@Test
-	@Ignore
-	public void entityNotFoundReadAllShows() throws Exception {
-		List<Show> shows = dao.readAll();
-		System.out.println(shows);
-		System.out.println(shows.size());
-		Assert.assertEquals(0, shows.size());
-
+		
 	}
 
 	@Test
@@ -312,10 +309,8 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
 		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
 
-		connection.rollback();
 	}
 
-	// TODO full test case
 	@Test
 	public void updateTest() throws Exception {
 		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
@@ -329,7 +324,7 @@ public class ShowJpaDao_ImplTest {
 		show.getGuideSources().remove(0);
 		show.setNextEpisode(null);
 		show.getPreviousEpisode().setTitle("UPDATED PREV EP");
-		Show updatedShow = dao.update(show);
+		Show updatedShow = dao.createOrUpdate(show);
 
 		Assert.assertEquals("UPDATED TITLE", updatedShow.getTitle());
 		Assert.assertEquals(0, updatedShow.getGuideSources().size());
@@ -343,7 +338,6 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals("UPDATED PREV EP", readShow.getPreviousEpisode().getTitle());
 		Assert.assertEquals(updatedShow.getVersion(), readShow.getVersion());
 
-		connection.rollback();
 	}
-
+	
 }

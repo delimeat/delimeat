@@ -1,6 +1,7 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.config.Config;
+import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.service.ConfigService;
 
 import java.io.IOException;
@@ -65,13 +66,14 @@ public class ConfigResourceTest extends JerseyTest {
 	}
 
 	@Test
-	public void updateTest() {
+	public void updateTest() throws ConfigException {
 		Config expectedConfig = new Config();
 		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
 		expectedConfig.setIgnoreFolders(false);
 		expectedConfig.setOutputDirectory("OUTPUTDIR");
 		expectedConfig.setPreferFiles(true);
 		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Mockito.when(mockedConfigService.update(Mockito.any(Config.class))).thenReturn(expectedConfig);
 
 		Response response = target("config").request().put(
 				Entity.entity(expectedConfig, MediaType.APPLICATION_JSON_TYPE));

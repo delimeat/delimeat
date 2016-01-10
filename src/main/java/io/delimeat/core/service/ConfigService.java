@@ -7,5 +7,5 @@ public interface ConfigService {
 
     public Config read() throws ConfigException;
 
-    public void update(Config config) throws ConfigException;
+    public Config update(Config config) throws ConfigException;
 }

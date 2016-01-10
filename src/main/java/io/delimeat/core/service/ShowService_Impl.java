@@ -2,6 +2,7 @@ package io.delimeat.core.service;
 
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
+import io.delimeat.core.show.ShowGuideSource;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ShowService_Impl implements ShowService {
 
 	@Override
 	public Show create(Show show) throws Exception {
-		return getShowDao().create(show);
+		return getShowDao().createOrUpdate(mergeShow(show));
 	}
 
 	@Override
@@ -37,12 +38,30 @@ public class ShowService_Impl implements ShowService {
 
 	@Override
 	public Show update(Show show) throws Exception {
-		return getShowDao().update(show);
+		return getShowDao().createOrUpdate(mergeShow(show));
 	}
 
 	@Override
 	public void delete(Long id) throws Exception {
 		getShowDao().delete(id);
+	}
+	
+	private Show mergeShow(Show show){
+		if (show.getGuideSources() != null && show.getGuideSources().size() > 0) {
+			for (ShowGuideSource guideSource : show.getGuideSources()) {
+				guideSource.setShow(show);
+			}
+		}
+		
+		if (show.getNextEpisode() != null) {
+			show.getNextEpisode().setShow(show);
+
+		}
+		
+		if (show.getPreviousEpisode() != null) {
+			show.getPreviousEpisode().setShow(show);
+		}
+		return show;
 	}
 
 }

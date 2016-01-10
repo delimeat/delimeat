@@ -27,8 +27,7 @@ public class ConfigResource {
 
 	@PUT
 	public Config update(Config config) throws ConfigException {
-		service.update(config);
-		return config;
+		return service.update(config);
 	}
 
 }

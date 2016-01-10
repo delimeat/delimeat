@@ -211,9 +211,8 @@
 				<column name="VERSION" />
 			</version>
 
-			<many-to-one name="show">
-				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID"
-					updatable="false" insertable="false" />
+			<many-to-one name="show" maps-id="showId">
+				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID" />
 			</many-to-one>
 
 		</attributes>

@@ -32,7 +32,7 @@ public class ShowService_ImplTest {
 	public void createTest() throws Exception {
 		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
 		Show mockedShow = Mockito.mock(Show.class);
-		Mockito.when(mockedShowDao.create(Mockito.any(Show.class))).thenReturn(
+		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(
 				mockedShow);
 		service.setShowDao(mockedShowDao);
 
@@ -70,7 +70,7 @@ public class ShowService_ImplTest {
 	public void updateTest() throws Exception {
 		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
 		Show mockedShow = Mockito.mock(Show.class);
-		Mockito.when(mockedShowDao.update(Mockito.any(Show.class))).thenReturn(
+		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(
 				mockedShow);
 		service.setShowDao(mockedShowDao);
 

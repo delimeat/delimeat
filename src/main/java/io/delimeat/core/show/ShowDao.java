@@ -5,22 +5,13 @@ import java.util.List;
 public interface ShowDao {
 
 	/**
-	 * Create a new instance of show
-	 * 
-	 * @param show
-	 * @return showId
-	 * @throws Exception
-	 */
-	public Show create(Show show) throws Exception;
-
-	/**
 	 * Read a show
 	 * 
 	 * @param showId
 	 * @return Show
 	 * @throws Exception
 	 */
-	public Show read(long showId) throws Exception;
+	public Show read(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 
 	/**
 	 * Update existing Show
@@ -28,7 +19,7 @@ public interface ShowDao {
 	 * @param show
 	 * @throws Exception
 	 */
-	public Show update(Show show) throws Exception;
+	public Show createOrUpdate(Show show) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 
 	/**
 	 * Delete a show
@@ -36,7 +27,7 @@ public interface ShowDao {
 	 * @param showId
 	 * @throws Exception
 	 */
-	public void delete(long showId) throws Exception;
+	public void delete(long showId) throws ShowNotFoundException, ShowException;
 
 	/**
 	 * Read all Shows
@@ -44,5 +35,5 @@ public interface ShowDao {
 	 * @return List of all shows
 	 * @throws Exception
 	 */
-	public List<Show> readAll() throws Exception;
+	public List<Show> readAll() throws ShowException;
 }

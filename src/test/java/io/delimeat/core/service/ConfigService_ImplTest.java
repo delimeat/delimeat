@@ -65,7 +65,8 @@ public class ConfigService_ImplTest {
 
 		Config mockedConfig = Mockito.mock(Config.class);
 
-		service.update(mockedConfig);
+		Config actualConfig = service.update(mockedConfig);
+		Assert.assertEquals(mockedConfig,actualConfig);
 
 		Mockito.verify(mockedDao).update(Mockito.any(Config.class));
 	}
