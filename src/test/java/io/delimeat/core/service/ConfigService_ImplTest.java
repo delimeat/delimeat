@@ -54,7 +54,7 @@ public class ConfigService_ImplTest {
 		service.setConfigDao(mockedDao);
 
 		Assert.assertNotNull(service.read());
-		Mockito.verify(mockedDao).update(Mockito.any(Config.class));
+		Mockito.verify(mockedDao).createOrUpdate(Mockito.any(Config.class));
 
 	}
 
@@ -68,7 +68,7 @@ public class ConfigService_ImplTest {
 		Config actualConfig = service.update(mockedConfig);
 		Assert.assertEquals(mockedConfig,actualConfig);
 
-		Mockito.verify(mockedDao).update(Mockito.any(Config.class));
+		Mockito.verify(mockedDao).createOrUpdate(Mockito.any(Config.class));
 	}
 
 }

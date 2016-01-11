@@ -34,14 +34,14 @@ public class ConfigService_Impl implements ConfigService {
 		} catch (ConfigNotFoundException ex) {
 			config = new Config();
 			config.setOutputDirectory(getDefaultOutputDir());
-			dao.update(config);
+			dao.createOrUpdate(config);
 		}
 		return config;
 	}
 
 	@Override
 	public Config update(Config config) throws ConfigException {
-		dao.update(config);
+		dao.createOrUpdate(config);
 		return config;
 	}
 }

@@ -117,7 +117,7 @@ public class JaxbConfigDao_ImplTest {
 	}
 
 	@Test
-	public void updateTest() throws Exception {
+	public void createOrUpdateTest() throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
@@ -138,7 +138,7 @@ public class JaxbConfigDao_ImplTest {
 		config.getIgnoredFileTypes().add("AVI");
 		config.getIgnoredFileTypes().add("MOV");
 
-		dao.update(config);
+		dao.createOrUpdate(config);
 
 		XMLGenerator generator = new XMLGenerator(100, true, false, ignoredFiles, "outputDir");
 

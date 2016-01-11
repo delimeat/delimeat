@@ -30,7 +30,7 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
 	}
 
 	@Override
-	public void update(Config config) throws ConfigNotFoundException, ConfigException {
+	public void createOrUpdate(Config config) throws ConfigNotFoundException, ConfigException {
         try {
             OutputStream output = getUrlHandler().openOutput(getUrl());
             marshal(output, config);
