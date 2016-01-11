@@ -1,5 +1,7 @@
 package io.delimeat.util.jaxb;
 
+import io.delimeat.util.DelimeatUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +9,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class TvdbTimezoneAdapter extends XmlAdapter<String, String> {
 
+   private static final String DEFAULT = "EST";
+  
 	@Override
 	public String marshal(String value) throws Exception {
 		return null;
@@ -14,10 +18,10 @@ public class TvdbTimezoneAdapter extends XmlAdapter<String, String> {
 
 	@Override
 	public String unmarshal(String value) throws Exception {
-		if(value==null || "".equals(value)){
+		if(DelimeatUtils.isEmpty(value)){
 			return null;
 		}
-		return LIST.containsKey(value) ? LIST.get(value) : "EST";
+		return LIST.containsKey(value) ? LIST.get(value) : DEFAULT;
 	}
 	
 	public static final Map<String,String> LIST = new HashMap<String,String>() {

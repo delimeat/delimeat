@@ -1,5 +1,7 @@
 package io.delimeat.util.jaxb;
 
+import io.delimeat.util.DelimeatUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class TvdbGenreAdapter extends XmlAdapter<String, List<String>> {
 
 	@Override
 	public List<String> unmarshal(String value) throws Exception {
-		if (value == null || "".equals(value)) {
+		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
 		List<String> values = new ArrayList<String>();

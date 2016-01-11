@@ -1,6 +1,7 @@
 package io.delimeat.util.jaxb;
 
 import io.delimeat.core.guide.AiringDay;
+import io.delimeat.util.DelimeatUtils;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -21,7 +22,7 @@ public class TvMazeAiringDayAdapter extends XmlAdapter<String, AiringDay> {
 
 	@Override
 	public AiringDay unmarshal(String value) throws Exception {
-		if (value == null || "".equalsIgnoreCase(value)) {
+		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
 

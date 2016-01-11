@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.delimeat.core.guide.AiringDay;
+import io.delimeat.util.DelimeatUtils;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -25,7 +26,7 @@ public class TvdbAiringDayAdapter extends XmlAdapter<String, List<AiringDay>> {
 
 	@Override
 	public List<AiringDay> unmarshal(String value) throws Exception {
-		if (value == null || "".equalsIgnoreCase(value)) {
+		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
 		List<AiringDay> list = new ArrayList<AiringDay>();

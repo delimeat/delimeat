@@ -1,5 +1,7 @@
 package io.delimeat.util.jaxb;
 
+import io.delimeat.util.DelimeatUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -20,7 +22,7 @@ public class TvdbAirTimeAdapter extends XmlAdapter<String, Integer> {
 
 	@Override
 	public Integer unmarshal(String value) throws Exception {
-		if (value == null || "".equals(value)) {
+		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
 		int result = 0;

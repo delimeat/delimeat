@@ -17,7 +17,7 @@ public class ShowGuideSourcePKAdapter extends XmlAdapter<GuideSource, ShowGuideS
 
 	@Override
 	public ShowGuideSourcePK unmarshal(GuideSource value) throws Exception {
-		if (value == null || "".equals(value)) {
+		if (value == null) {
 			return null;
 		}
 		ShowGuideSourcePK pk = new ShowGuideSourcePK();
