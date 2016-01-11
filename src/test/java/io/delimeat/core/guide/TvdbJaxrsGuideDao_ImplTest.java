@@ -548,7 +548,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("2015-12-28", SDF.format(info.getFirstAired()));
 		Assert.assertEquals(1, info.getAirDays().size());
 		Assert.assertEquals(AiringDay.MONDAY, info.getAirDays().get(0));
-		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
+		Assert.assertFalse(info.isAiring());
 		Assert.assertEquals(72000000, info.getAirTime());
 		Assert.assertEquals(1, info.getGenres().size());
 		Assert.assertEquals("GENRE", info.getGenres().get(0));

@@ -91,10 +91,10 @@ public class GuideInfoTest {
 	}
 
 	@Test
-	public void setAiringStatusTest() {
-		Assert.assertEquals(AiringStatus.UNKNOWN, info.getAirStatus());
-		info.setAirStatus(AiringStatus.ENDED);
-		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
+	public void airingTest() {
+		Assert.assertTrue(info.isAiring());
+		info.setAiring(false);
+		Assert.assertFalse(info.isAiring());
 	}
 
 	@Test

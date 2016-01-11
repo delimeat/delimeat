@@ -29,31 +29,38 @@ public class TvdbAiringDayAdapter extends XmlAdapter<String, List<AiringDay>> {
 		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
-		List<AiringDay> list = new ArrayList<AiringDay>();
-
-		if (MON.equalsIgnoreCase(value)) {
-			list.add(AiringDay.MONDAY);
-		} else if (TUE.equalsIgnoreCase(value)) {
-			list.add(AiringDay.TUESDAY);
-		} else if (WED.equalsIgnoreCase(value)) {
-			list.add(AiringDay.WEDNESDAY);
-		} else if (THU.equalsIgnoreCase(value)) {
-			list.add(AiringDay.THURSDAY);
-		} else if (FRI.equalsIgnoreCase(value)) {
-			list.add(AiringDay.FRIDAY);
-		} else if (SAT.equalsIgnoreCase(value)) {
-			list.add(AiringDay.SATURDAY);
-		} else if (SUN.equalsIgnoreCase(value)) {
-			list.add(AiringDay.SUNDAY);
-		} else if (DAY.equalsIgnoreCase(value)) {
-			list.add(AiringDay.MONDAY);
-			list.add(AiringDay.TUESDAY);
-			list.add(AiringDay.WEDNESDAY);
-			list.add(AiringDay.THURSDAY);
-			list.add(AiringDay.FRIDAY);
-		} else {
-			list.add(AiringDay.UNKNOWN);
-		}
+     
+		final List<AiringDay> list = new ArrayList<AiringDay>();
+		switch(value.toLowerCase()){
+        case MON:
+        		list.add(AiringDay.MONDAY);
+        break;
+        case TUE:
+        		list.add(AiringDay.TUESDAY);
+        break;
+        case WED:
+        		list.add(AiringDay.WEDNESDAY);
+        break;
+        case THU:
+        		list.add(AiringDay.THURSDAY);
+        break;
+        case FRI:
+        		list.add(AiringDay.FRIDAY);
+        break;
+        case SAT:
+        		list.add(AiringDay.SATURDAY);
+        break;
+        case SUN:
+        		list.add(AiringDay.SUNDAY);
+        break;
+		  case DAY:
+        		list.add(AiringDay.MONDAY);
+       		list.add(AiringDay.TUESDAY);
+        		list.add(AiringDay.WEDNESDAY);
+        		list.add(AiringDay.THURSDAY);
+        		list.add(AiringDay.FRIDAY);
+        break;
+      }
 		return list;
 	}
 

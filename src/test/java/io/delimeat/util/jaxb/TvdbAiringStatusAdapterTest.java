@@ -1,6 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.core.guide.AiringStatus;
 import io.delimeat.util.jaxb.TvdbAiringStatusAdapter;
 
 import org.junit.Assert;
@@ -18,32 +17,32 @@ public class TvdbAiringStatusAdapterTest {
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertNull(adapter.marshal(AiringStatus.AIRING));
+		Assert.assertNull(adapter.marshal(true));
 	}
 
 	@Test
 	public void airingUnmarshalTest() throws Exception {
-		Assert.assertEquals(AiringStatus.AIRING, adapter.unmarshal("Continuing"));
+		Assert.assertTrue(adapter.unmarshal("Continuing"));
 	}
 
 	@Test
 	public void endedUnmarshalTest() throws Exception {
-		Assert.assertEquals(AiringStatus.ENDED, adapter.unmarshal("Ended"));
+		Assert.assertFalse(adapter.unmarshal("Ended"));
 	}
 
 	@Test
 	public void unknownUnmarshalTest() throws Exception {
-		Assert.assertEquals(AiringStatus.UNKNOWN, adapter.unmarshal("GIBERISH"));
+		Assert.assertFalse(adapter.unmarshal("GIBERISH"));
 	}
 
 	@Test
 	public void unmarshalNullTest() throws Exception {
-		Assert.assertEquals(AiringStatus.UNKNOWN, adapter.unmarshal(null));
+		Assert.assertFalse(adapter.unmarshal(null));
 	}
 
 	@Test
 	public void unmarshalEmptyStringTest() throws Exception {
-		Assert.assertEquals(AiringStatus.UNKNOWN, adapter.unmarshal(""));
+		Assert.assertFalse(adapter.unmarshal(""));
 
 	}
 }

@@ -65,12 +65,12 @@ public abstract class AbstractJaxbHelper {
 	}
 
 	protected <T> T unmarshal(InputStream input, Class<T> type) throws JAXBException {
-		StreamSource source = new StreamSource(input);
+		final StreamSource source = new StreamSource(input);
 		return unmarshaller.unmarshal(source, type).getValue();
 	}
 
 	protected void marshal(OutputStream output, Object object) throws JAXBException {
-		StreamResult result = new StreamResult(output);
+		final StreamResult result = new StreamResult(output);
 		getMarshaller().marshal(object, result);
 	}
 

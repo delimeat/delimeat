@@ -107,7 +107,7 @@
 				<xml-element java-attribute="airDays" xml-path="data/airsDayOfWeek/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbAiringDayAdapter" />
 				</xml-element>
-				<xml-element java-attribute="airStatus" xml-path="data/status/text()">
+				<xml-element java-attribute="airing" xml-path="data/status/text()">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbAiringStatusAdapter" />
 				</xml-element>

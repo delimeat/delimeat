@@ -286,7 +286,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("DESCRIPTION", info.getDescription());
 		Assert.assertEquals("TITLE", info.getTitle());
 		Assert.assertEquals(60, info.getRunningTime());
-		Assert.assertEquals(AiringStatus.ENDED, info.getAirStatus());
+		Assert.assertFalse(info.isAiring());
 		Assert.assertEquals("CBS", info.getTimezone());
 		Assert.assertNotNull(info.getGuideIds());
 		Assert.assertEquals(3, info.getGuideIds().size());

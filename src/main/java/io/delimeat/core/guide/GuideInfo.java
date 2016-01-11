@@ -20,7 +20,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	protected Date firstAired;
 	protected List<String> genres = new ArrayList<String>();
 	protected List<AiringDay> airDays = new ArrayList<AiringDay>();
-	protected AiringStatus airStatus = AiringStatus.UNKNOWN;
+	protected boolean airing = true;
 	protected String title;
 	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
 	protected int airTime;
@@ -62,10 +62,10 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	}
 
 	/**
-	 * @return the airStatus
+	 * @return the airing
 	 */
-	public AiringStatus getAirStatus() {
-		return airStatus;
+	public boolean isAiring() {
+		return airing;
 	}
 
 	/**
@@ -106,8 +106,8 @@ public class GuideInfo implements Comparable<GuideInfo> {
 		this.airDays = airDays;
 	}
 
-	public void setAirStatus(AiringStatus airStatus) {
-		this.airStatus = airStatus;
+	public void setAiring(boolean airing) {
+		this.airing = airing;
 	}
 
 	public void setTitle(String title) {
@@ -136,7 +136,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	 */
 	@Override
 	public String toString() {
-		return "GuideInfo [title=" + title + ", guideIds=" + guideIds + ", airStatus=" + airStatus + ", airDays="
+		return "GuideInfo [title=" + title + ", guideIds=" + guideIds + ", airing=" + airing + ", airDays="
 				+ airDays + ", airTime=" + airTime + ", genres=" + genres + ", runningTime=" + runningTime
 				+ ", network=" + timezone + ", description=" + description + "]";
 	}

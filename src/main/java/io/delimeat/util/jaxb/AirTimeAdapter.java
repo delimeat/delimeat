@@ -27,10 +27,10 @@ public class AirTimeAdapter extends XmlAdapter<String, Integer> {
 		if(DelimeatUtils.isEmpty(value)){
 			return null;
 		}
-		int result = 0;
+		Integer result = null;
 		final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Long formatedVal = sdf.parse(value).getTime();
+		final Long formatedVal = sdf.parse(value).getTime();
 		if(formatedVal<= Integer.MAX_VALUE){
 			result = formatedVal.intValue();
 		}

@@ -25,37 +25,37 @@ public class TvdbAirTimeAdapter extends XmlAdapter<String, Integer> {
 		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
-		int result = 0;
-		String airtime = (String) value;
-		if (airtime.length() > 0) {
-			// convert to lowercase and remove any whitespace
-			String tmpAirtime = airtime.toLowerCase().replaceAll("\\s", "");
+     
+		Integer result = 0;
+     // convert to lowercase and remove any whitespace
+     String tmpAirtime = value.toLowerCase().replaceAll("\\s", "");
 
-			SimpleDateFormat sdf = null;
-			if (tmpAirtime.matches("(([0-1][0-2]|[1-9])(am|pm))")) {
-				sdf = new SimpleDateFormat("hha");
-			} else if (tmpAirtime.matches("(([1][0-2]|[0]?[1-9]):([0-5][0-9])(am|pm))")) {
-				sdf = new SimpleDateFormat("hh:mma");
-			} else if (tmpAirtime.matches("^([0-2]?[0-9]:[0-5][0-9])$")) {
-				sdf = new SimpleDateFormat("HH:mm");
-			}
-			if (sdf != null) {
-				try {
-					// set the timezone to GMT not the default timezone so its
-					// not offset.
-					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-					long airtimeMS = sdf.parse(tmpAirtime).getTime();
-					if (airtimeMS < Integer.MAX_VALUE) {
-						result = (int) airtimeMS;
-					}
-				} catch (ParseException e) {
-					log.error("encountered an error trying to parse airing time: " + airtime + " using: "
-							+ sdf.toPattern(), e);
-				}
-			} else {
-				log.error("unhandled time format for airtime: " + airtime);
-			}
-		}
+     String format = null;
+
+     if (tmpAirtime.matches("(([0-1][0-2]|[1-9])(am|pm))")) {
+       format = "hha";
+     } else if (tmpAirtime.matches("(([1][0-2]|[0]?[1-9]):([0-5][0-9])(am|pm))")) {
+       format = "hh:mma";
+     } else if (tmpAirtime.matches("^([0-2]?[0-9]:[0-5][0-9])$")) {
+       format = "HH:mm";
+     }
+     if(!DelimeatUtils.isEmpty(format)) {
+       final SimpleDateFormat sdf = new SimpleDateFormat(format);
+       try {
+         // set the timezone to GMT not the default timezone so its
+         // not offset.
+         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+         Long airtimeMS = sdf.parse(tmpAirtime).getTime();
+         if (airtimeMS < Integer.MAX_VALUE) {
+           result = airtimeMS.intValue();
+         }
+       } catch (ParseException e) {
+         log.error("encountered an error trying to parse airing time: " + value + " using: "
+                   + sdf.toPattern(), e);
+       }
+     } else {
+       log.error("unhandled time format for airtime: " + value);
+     }
 		return result;
 	}
 

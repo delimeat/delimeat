@@ -13,13 +13,22 @@ import javax.xml.bind.JAXBException;
 public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao {
 
 	private URL url;
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
   
 	@Override
 	public Config read() throws ConfigNotFoundException, ConfigException {
         try {
-            InputStream input = getUrlHandler().openInput(getUrl());
-            Config config = unmarshal(input, Config.class);
-            return config;
+        
+          	InputStream input = getUrlHandler().openInput(getUrl());
+            return unmarshal(input, Config.class);
+
         } catch (FileNotFoundException ex) {
             throw new ConfigNotFoundException(ex);
         } catch (IOException ex) {
@@ -32,21 +41,15 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
 	@Override
 	public void createOrUpdate(Config config) throws ConfigNotFoundException, ConfigException {
         try {
+          
             OutputStream output = getUrlHandler().openOutput(getUrl());
             marshal(output, config);
+          
         } catch (IOException ex) {
             throw new ConfigException(ex);
         } catch (JAXBException ex) {
             throw new ConfigException(ex);
         }
-	}
-
-	public URL getUrl() {
-		return url;
-	}
-
-	public void setUrl(URL url) {
-		this.url = url;
 	}
 	
 }

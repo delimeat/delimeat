@@ -1,7 +1,6 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.guide.AiringDay;
-import io.delimeat.core.guide.AiringStatus;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideIdentifier;
 import io.delimeat.core.guide.GuideInfo;
@@ -83,7 +82,7 @@ public class GuideResourceTest extends JerseyTest {
 	public void infoTest()  throws IOException, Exception {
 		GuideInfo expectedInfo = new GuideInfo();
 		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
-		expectedInfo.setAirStatus(AiringStatus.ENDED);
+		expectedInfo.setAiring(false);
 		expectedInfo.setAirTime(9900000);
 		expectedInfo.setDescription("DESCRIPTION");
 		expectedInfo.getGenres().add("GENRE");
@@ -105,7 +104,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertNotNull(actualInfo.getAirDays());
 		Assert.assertEquals(1, actualInfo.getAirDays().size());
 		Assert.assertEquals(AiringDay.FRIDAY, actualInfo.getAirDays().get(0));
-		Assert.assertEquals(AiringStatus.ENDED, actualInfo.getAirStatus());
+		Assert.assertFalse(actualInfo.isAiring());
 		Assert.assertEquals(9900000, actualInfo.getAirTime());
 		Assert.assertEquals("DESCRIPTION", actualInfo.getDescription());
 		Assert.assertNotNull(actualInfo.getGenres());

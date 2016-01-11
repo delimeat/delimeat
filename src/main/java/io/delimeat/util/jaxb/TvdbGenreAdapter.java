@@ -2,7 +2,7 @@ package io.delimeat.util.jaxb;
 
 import io.delimeat.util.DelimeatUtils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -21,14 +21,9 @@ public class TvdbGenreAdapter extends XmlAdapter<String, List<String>> {
 		if (DelimeatUtils.isEmpty(value)) {
 			return null;
 		}
-		List<String> values = new ArrayList<String>();
-		String[] valueArray = value.split("\\Q" + DELIMITER + "\\E");
-		for (String val : valueArray) {
-			if (val != null && val.length() > 0) {
-				values.add(val.toUpperCase());
-			}
-		}
-		return values;
+		final String[] valueArray = value.toUpperCase().split("\\Q" + DELIMITER + "\\E");
+      return Arrays.asList(valueArray);
+
 	}
 
 }

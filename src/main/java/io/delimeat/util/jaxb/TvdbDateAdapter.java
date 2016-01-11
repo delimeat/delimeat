@@ -13,18 +13,13 @@ public class TvdbDateAdapter extends XmlAdapter<String, Date> {
 
 	@Override
 	public String marshal(Date date) throws Exception {
-		if(date==null){
-			return null;
-		}
-		return new SimpleDateFormat(FORMAT).format(date);
+		return date == null ? null: new SimpleDateFormat(FORMAT).format(date);
+
 	}
 
 	@Override
 	public Date unmarshal(String value) throws Exception {
-		if (DelimeatUtils.isEmpty(value)) {
-			return null;
-		}
-		return new SimpleDateFormat(FORMAT).parse(value);
+		return DelimeatUtils.isEmpty(value) ? null : new SimpleDateFormat(FORMAT).parse(value);
 	}
 
 }

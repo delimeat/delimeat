@@ -61,13 +61,11 @@
 				</xml-element>
 				<xml-element java-attribute="runningTime" name="runtime" />
 				<xml-element java-attribute="timezone" xml-path="network/country/timezone/text()" />
-				<xml-element java-attribute="airDays" xml-path="schedule/days/text()"
-					xml-list="true">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvMazeAiringDayAdapter" />
+				<xml-element java-attribute="airDays" xml-path="schedule/days/text()" xml-list="true">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvMazeAiringDayAdapter" />
 				</xml-element>
 
-				<xml-element java-attribute="airStatus" name="status">
+				<xml-element java-attribute="airing" name="status">
 					<xml-java-type-adapter
 						value="io.delimeat.util.jaxb.TvdbAiringStatusAdapter" />
 				</xml-element>

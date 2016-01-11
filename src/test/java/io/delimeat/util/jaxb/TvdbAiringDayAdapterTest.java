@@ -70,8 +70,7 @@ public class TvdbAiringDayAdapterTest {
 
 	@Test
 	public void AirDayUnknownTest() throws Exception {
-		Assert.assertEquals(1, adapter.unmarshal("giberish").size());
-		Assert.assertEquals(AiringDay.UNKNOWN, adapter.unmarshal("giberish").get(0));
+		Assert.assertEquals(0, adapter.unmarshal("giberish").size());
 	}
 
 	@Test

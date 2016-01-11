@@ -58,7 +58,7 @@ public class TvMazeAiringDayAdapterTest {
 
 	@Test
 	public void AirDayUnknownTest() throws Exception {
-		Assert.assertEquals(AiringDay.UNKNOWN, adapter.unmarshal("giberish"));
+		Assert.assertNull(adapter.unmarshal("giberish"));
 	}
 
 	@Test

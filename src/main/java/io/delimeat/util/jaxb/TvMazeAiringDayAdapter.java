@@ -26,23 +26,24 @@ public class TvMazeAiringDayAdapter extends XmlAdapter<String, AiringDay> {
 			return null;
 		}
 
-		if (MON.equalsIgnoreCase(value)) {
-			return AiringDay.MONDAY;
-		} else if (TUE.equalsIgnoreCase(value)) {
-			return AiringDay.TUESDAY;
-		} else if (WED.equalsIgnoreCase(value)) {
-			return AiringDay.WEDNESDAY;
-		} else if (THU.equalsIgnoreCase(value)) {
-			return AiringDay.THURSDAY;
-		} else if (FRI.equalsIgnoreCase(value)) {
-			return AiringDay.FRIDAY;
-		} else if (SAT.equalsIgnoreCase(value)) {
-			return AiringDay.SATURDAY;
-		} else if (SUN.equalsIgnoreCase(value)) {
-			return AiringDay.SUNDAY;
-		}
-		return AiringDay.UNKNOWN;
-
+      switch(value.toLowerCase()){
+        case MON:
+        		return AiringDay.MONDAY;
+        case TUE:
+        		return AiringDay.TUESDAY;
+        case WED:
+        		return AiringDay.WEDNESDAY;
+        case THU:
+        		return AiringDay.THURSDAY;
+        case FRI:
+        		return AiringDay.FRIDAY;
+        case SAT:
+        		return AiringDay.SATURDAY;
+        case SUN:
+        		return AiringDay.SUNDAY;
+		  default:
+        		return null;
+      }
 	}
 
 }
