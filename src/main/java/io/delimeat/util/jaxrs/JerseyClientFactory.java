@@ -81,23 +81,29 @@ public class JerseyClientFactory {
 	}
 
 	public Client newClient() {
-		ClientConfig configuration = new ClientConfig();
-		for (Object provider : providers) {
+		final ClientConfig configuration = new ClientConfig();
+		
+     for (Object provider : providers) {
 			configuration.register(provider);
 		}
-		for (Class<?> provider : providerClasses) {
+		
+      for (Class<?> provider : providerClasses) {
 			configuration.register(provider);
 		}
+      
       for(String key: properties.keySet()){
         configuration.property(key, properties.get(key));
       }
+     
 		Logger logger = Logger.getLogger("Logger");
-		LoggingFilter filter = new LoggingFilter(logger, true);
-		configuration.register(filter);
-		if (connectorProvider != null) {
+		LoggingFilter loggingFilter = new LoggingFilter(logger, true);
+		configuration.register(loggingFilter);
+		
+      if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);
 		}
-		return JerseyClientBuilder.createClient(configuration);
+		
+      return JerseyClientBuilder.createClient(configuration);
 	}
 
 }

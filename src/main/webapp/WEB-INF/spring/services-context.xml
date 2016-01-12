@@ -22,10 +22,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 
       <property name="infoDao" ref="tvdbGuideDaoId"/>
     	<property name="searchDao" ref="tvdbGuideDaoId"/>
-    	<!--
+		<!--
     	<property name="infoDao" ref="tvmazeGuideDaoId"/>
     	<property name="searchDao" ref="tvmazeGuideDaoId"/>
-    	!-->
+    	!-->    	
 
     </bean>
   

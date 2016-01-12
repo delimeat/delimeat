@@ -119,7 +119,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	}
 
 	public void setGuideIds(List<GuideIdentifier> guideIds) {
-		this.guideIds = guideIds;
+      this.guideIds = guideIds;
 	}
 
 	public Date getFirstAired() {
