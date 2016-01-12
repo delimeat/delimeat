@@ -15,7 +15,63 @@ public class FeedResult {
 	protected List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
 	protected List<TorrentRejection> torrentRejections = new ArrayList<TorrentRejection>();
 	protected Torrent torrent;
-	
+
+	public String getTorrentURL() {
+		return torrentURL;
+	}
+
+	public void setTorrentURL(String torrentURL) {
+		this.torrentURL = torrentURL;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public long getContentLength() {
+		return contentLength;
+	}
+
+	public void setContentLength(long contentLength) {
+		this.contentLength = contentLength;
+	}
+
+	public long getSeeders() {
+		return seeders;
+	}
+
+	public void setSeeders(long seeders) {
+		this.seeders = seeders;
+	}
+
+	public long getLeechers() {
+		return leechers;
+	}
+
+	public void setLeechers(long leechers) {
+		this.leechers = leechers;
+	}
+
+	public List<FeedResultRejection> getFeedResultRejections() {
+		return feedResultRejections;
+	}
+
+	public void setFeedResultRejections(
+			List<FeedResultRejection> feedResultRejections) {
+		this.feedResultRejections = feedResultRejections;
+	}
+
+	public List<TorrentRejection> getTorrentRejections() {
+		return torrentRejections;
+	}
+
+	public void setTorrentRejections(List<TorrentRejection> torrentRejections) {
+		this.torrentRejections = torrentRejections;
+	}
 
 	public Torrent getTorrent() {
 		return torrent;
@@ -25,73 +81,14 @@ public class FeedResult {
 		this.torrent = torrent;
 	}
 
-
-	public void addFeedResultRejection(FeedResultRejection rejection) {
-		feedResultRejections.add(rejection);
-	}
-
-
-	public void addTorrentRejection(TorrentRejection rejection) {
-		torrentRejections.add(rejection);
-		
-	}
-
-
-	public long getContentLength() {
-		return contentLength;
-	}
-
-
-	public List<FeedResultRejection> getFeedResultRejections() {
-		return feedResultRejections;
-	}
-
-
-	public long getLeechers() {
-		return leechers;
-	}
-
-
-	public long getSeeders() {
-
-		return seeders;
-	}
-
-
-	public String getTitle() {
-		return title;
-	}
-
-
-	public List<TorrentRejection> getTorrentRejections() {
-		return torrentRejections;
-	}
-
-
-	public String getTorrentURL() {
-		return torrentURL;
-	}
-
-	public void setLeechers(long leechers) {
-		this.leechers = leechers;
-		
-	}
-	
-	public void setSeeders(long seeders) {
-		this.seeders = seeders;
-		
-	}
-	
-	public void setTitle(String title){
-		this.title = title;
-	}
-
-	public void setTorrentURL(String torrentURL){
-		this.torrentURL = torrentURL;
-	}
-
-	public void setContentLength(Long contentLength){
-		this.contentLength = contentLength;
+	@Override
+	public String toString() {
+		return "FeedResult [title=" + title + ", torrentURL=" + torrentURL
+				+ ", contentLength=" + contentLength + ", seeders=" + seeders
+				+ ", leechers=" + leechers + ", torrent="
+				+ (torrent != null ? torrent : null)
+				+ ", feedResultRejections=" + feedResultRejections
+				+ ", torrentRejections=" + torrentRejections + "]";
 	}
 
 }

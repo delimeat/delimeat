@@ -20,12 +20,15 @@ public class TorrentInfo extends TorrentFile {
 	public byte[] getInfoHash() {
 		return infoHash;
 	}
-	/**
-	 * Set SHA1 encoded info hash
-	 * @param infoHash
-	 */
+
 	public void setInfoHash(byte[] infoHash){
 		this.infoHash = infoHash;
+	}
+	
+	@Override
+	public String toString() {
+		return "TorrentInfo [name=" + name + ", length="
+				+ length + " files=" + files + "]";
 	}
 
 }
