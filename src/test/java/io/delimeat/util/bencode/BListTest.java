@@ -27,7 +27,7 @@ public class BListTest {
 		Assert.assertEquals(1, b_list_one.size());
 		Assert.assertEquals(true, b_list_one.get(0) instanceof BInteger);
 		Assert.assertEquals(1234567890,
-				((BInteger) b_list_one.get(0)).getValue());
+				((BInteger) b_list_one.get(0)).longValue());
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class BListTest {
 	@Test
 	public void BValueRemoveTest() {
 		BString b_string = new BString();
-		BInteger b_integer = new BInteger();
+		BInteger b_integer = new BInteger(1);
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);
 		b_list_one.add(b_integer);
@@ -66,7 +66,7 @@ public class BListTest {
 	@Test
 	public void IndexRemoveTest() {
 		BString b_string = new BString();
-		BInteger b_integer = new BInteger();
+		BInteger b_integer = new BInteger(1);
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);
 		b_list_one.add(b_integer);

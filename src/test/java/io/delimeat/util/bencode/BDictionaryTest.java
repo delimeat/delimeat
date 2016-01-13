@@ -128,7 +128,7 @@ public class BDictionaryTest {
 		b_dict.setValue(b_string_key);
 		Assert.assertEquals(false, b_dict.expectingKey());
 		Assert.assertEquals(0, b_dict.size());
-		BInteger b_integer_val = new BInteger();
+		BInteger b_integer_val = new BInteger(1);
 		b_dict.setValue(b_integer_val);
 		Assert.assertEquals(true, b_dict.expectingKey());
 		Assert.assertEquals(1, b_dict.size());
@@ -138,7 +138,7 @@ public class BDictionaryTest {
 	public void InvalidSetValueTest() throws BencodeException {
 		BDictionary b_dict = new BDictionary();
 		Assert.assertEquals(true, b_dict.expectingKey());
-		BInteger b_integer_val = new BInteger();
+		BInteger b_integer_val = new BInteger(1);
 		b_dict.setValue(b_integer_val);
 	}
 }

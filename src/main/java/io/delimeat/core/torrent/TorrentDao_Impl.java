@@ -128,7 +128,7 @@ public class TorrentDao_Impl implements TorrentDao {
 		}
 		if (infoDictionary.containsKey(LENGTH_KEY) && infoDictionary.get(LENGTH_KEY) instanceof BInteger) {
 			BInteger lenghtValue =(BInteger)infoDictionary.get(LENGTH_KEY);
-			info.setLength(lenghtValue.getValue());
+			info.setLength(lenghtValue.longValue());
 		}
 		if (infoDictionary.containsKey(FILES_KEY) && infoDictionary.get(FILES_KEY) instanceof BList) {
 			// get the files list
@@ -148,7 +148,7 @@ public class TorrentDao_Impl implements TorrentDao {
 		TorrentFile file = new TorrentFile();
 		if(fileDictionary.containsKey(LENGTH_KEY) && fileDictionary.get(LENGHT_KEY) instanceof BInteger){
 			BInteger lengthInt = (BInteger)fileDictionary.get(LENGHT_KEY);
-			long length = lengthInt.getValue();
+			long length = lengthInt.longValue();
 			file.setLength(length);
 		}
 		if (fileDictionary.containsKey(PATH_KEY) && fileDictionary.get(PATH_KEY) instanceof BList){

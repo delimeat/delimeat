@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -145,10 +144,8 @@ public final class BencodeUtils {
 
 	private static void encodeInteger(OutputStream os, BInteger value)
 			throws IOException {
-		Charset charset = Charset.forName("US-ASCII");
 		os.write(INTEGER);
-		String result = Long.toString(value.getValue());
-		os.write(result.getBytes(charset));
+		os.write(value.toString().getBytes());
 		os.write(END);
 	}
 
@@ -220,13 +217,7 @@ public final class BencodeUtils {
 				throw new BencodeException("UnexpectedInputInteger " + (char)next);
 			}
 		}
-		Long integer = null;
-		try{
-			integer = new Long(value);
-		}catch(NumberFormatException e){
-			throw new BencodeException("UnhandledIntegerSize " + value);
-		}
-		return new BInteger(integer);
+		return new BInteger(value);
 	}
 
 	private static BString readString(int firstChar, InputStream input)

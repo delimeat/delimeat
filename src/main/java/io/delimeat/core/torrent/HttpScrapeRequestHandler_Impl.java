@@ -50,11 +50,11 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 						// set seeder value
 						if (key.equals(COMPLETE_KEY)
 								&& value instanceof BInteger) {
-							seeders = ((BInteger) value).getValue();
+							seeders = ((BInteger) value).longValue();
 						}// set leechers value
 						else if (key.equals(INCOMPLETE_KEY)
 								&& value instanceof BInteger) {
-							leechers = ((BInteger) value).getValue();
+							leechers = ((BInteger) value).longValue();
 						}
 					}
 				}

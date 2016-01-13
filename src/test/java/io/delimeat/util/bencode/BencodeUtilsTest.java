@@ -74,7 +74,7 @@ public class BencodeUtilsTest {
 		Assert.assertEquals("STRING_1_VAL", string_1.toString());
 		Assert.assertEquals(true, list_1.get(1) instanceof BInteger);
 		BInteger integer_1 = (BInteger) list_1.get(1);
-		Assert.assertEquals(2, integer_1.getValue());
+		Assert.assertEquals(2, integer_1.longValue());
 
 		// check the root dictionary has a dictionary with a string and an
 		// integer in it
@@ -89,7 +89,7 @@ public class BencodeUtilsTest {
 		Assert.assertEquals(true,
 				dict_2.get(new BString("INTEGER_2")) instanceof BInteger);
 		BInteger integer_2 = (BInteger) dict_2.get(new BString("INTEGER_2"));
-		Assert.assertEquals(1, integer_2.getValue());
+		Assert.assertEquals(1, integer_2.longValue());
 
 		// check the root dictionary has a string value in it
 		Assert.assertEquals(true,
@@ -101,7 +101,7 @@ public class BencodeUtilsTest {
 		Assert.assertEquals(true,
 				dict_1.get(new BString("INTEGER_3")) instanceof BInteger);
 		BInteger integer_3 = (BInteger) dict_1.get(new BString("INTEGER_3"));
-		Assert.assertEquals(3, integer_3.getValue());
+		Assert.assertEquals(3, integer_3.longValue());
 	}
 
 	/**
@@ -197,21 +197,6 @@ public class BencodeUtilsTest {
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-	}
-
-	/**
-	 * check if there is an unexpected character in an integer
-	 * 
-	 * @throws BencodeException
-	 * @throws IOException
-	 */
-	@Test(expected = BencodeException.class)
-	public void UnhandledIntegerSizeTest() throws BencodeException, IOException {
-       // create the bencoded value to be decoded and decode it
-       byte[] inputBytes = "d3:keyi9223372036854775808ee".getBytes(Charset
-                                                                   .forName("ISO-8859-1"));
-       ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-       BencodeUtils.decode(input);
 	}
 
 	/**
