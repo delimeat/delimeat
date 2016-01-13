@@ -113,16 +113,10 @@ public class BencodeUtilsTest {
 	 */
 	@Test(expected = BencodeException.class)
 	public void NonDictionaryDecodeTest() throws BencodeException, IOException {
-		try {
-			// create the bencoded value to be decoded and decode it
-			byte[] inputBytes = "A".getBytes(Charset.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals("Expected start of dictionary, found A",
-					e.getMessage());
-			throw e;
-		}
+     // create the bencoded value to be decoded and decode it
+     byte[] inputBytes = "A".getBytes(Charset.forName("ISO-8859-1"));
+     ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
+     BencodeUtils.decode(input);
 	}
 
 	/**
@@ -134,18 +128,11 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void InvalidDictionaryKeyDecodeTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "di1ed9:INTEGER_2e".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Expected key to be BString, got org.jbencode.BInteger",
-					e.getMessage());
-			throw e;
-		}
 	}
 
 	/**
@@ -157,18 +144,11 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void DictionaryHasKeyButNoValueTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keye".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Found end of dictionary when expecting a value",
-					e.getMessage());
-			throw e;
-		}
 	}
 
 	/**
@@ -180,17 +160,11 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedEndOfCollectionTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi1eee".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals("Found unexpected end of collection",
-					e.getMessage());
-			throw e;
-		}
 	}
 
 	/**
@@ -202,18 +176,11 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedEndOfIntegerTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Unexpected end of input encountered when expecting an \"e\" or a numeric character",
-					e.getMessage());
-			throw e;
-		}
 	}
 
 	/**
@@ -225,18 +192,11 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedCharacterInIntegerTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi12aee".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Unexpected character encountered, got \"a\" when expecting an \"e\" or a numeric character",
-					e.getMessage());
-			throw e;
-		}
 	}
 
 	/**
@@ -247,18 +207,11 @@ public class BencodeUtilsTest {
 	 */
 	@Test(expected = BencodeException.class)
 	public void UnhandledIntegerSizeTest() throws BencodeException, IOException {
-		try {
-			// create the bencoded value to be decoded and decode it
-			byte[] inputBytes = "d3:keyi9223372036854775808ee".getBytes(Charset
-					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Enountered bencoded integer with value 9223372036854775808 is outside the handled bounds",
-					e.getMessage());
-			throw e;
-		}
+       // create the bencoded value to be decoded and decode it
+       byte[] inputBytes = "d3:keyi9223372036854775808ee".getBytes(Charset
+                                                                   .forName("ISO-8859-1"));
+       ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
+       BencodeUtils.decode(input);
 	}
 
 	/**
@@ -270,18 +223,12 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedCharacterInStringTest() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3r:keyi123ee".getBytes(Charset
 					.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Unexpected character encountered, got \"r\" when expected a colon or a numeric character",
-					e.getMessage());
-			throw e;
-		}
+
 	}
 
 	/**
@@ -293,17 +240,10 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedEndOfStringTestTwo() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:ke".getBytes(Charset.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Unexpected end of string, read 2 characters but expected 3 characters",
-					e.getMessage());
-			throw e;
-		}
 
 	}
 
@@ -316,17 +256,10 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedEndOfStringTestOne() throws BencodeException,
 			IOException {
-		try {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3".getBytes(Charset.forName("ISO-8859-1"));
 			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
 			BencodeUtils.decode(input);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"Unexpected end of input. Expected a numeric character that specifies the length of a string",
-					e.getMessage());
-			throw e;
-		}
 
 	}
 
@@ -340,17 +273,10 @@ public class BencodeUtilsTest {
 	@Test(expected = BencodeException.class)
 	public void UnexpectedBencodedTypeTest() throws BencodeException,
 			IOException {
-		try {
 			BDictionary dict = new BDictionary();
 			dict.put(new BString("key"), new BObject() {
 			});
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			BencodeUtils.encode(os, dict);
-		} catch (BencodeException e) {
-			Assert.assertEquals(
-					"org.jbencode.BencodeUtilsTest$1 is not a valid bencoding type",
-					e.getMessage());
-			throw e;
-		}
 	}
 }

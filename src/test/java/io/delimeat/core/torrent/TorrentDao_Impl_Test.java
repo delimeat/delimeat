@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -193,7 +194,7 @@ public class TorrentDao_Impl_Test {
 		ByteArrayInputStream bais = new ByteArrayInputStream(
 				bytesVal.getBytes());
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URL.class)))
+		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URL.class),Mockito.any(Map.class)))
 				.thenReturn(bais);
 		dao.setUrlHandler(mockedUrlHandler);
 
