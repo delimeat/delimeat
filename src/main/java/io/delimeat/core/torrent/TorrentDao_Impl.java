@@ -12,7 +12,7 @@ import io.delimeat.util.bencode.BencodeException;
 import io.delimeat.util.bencode.BencodeUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,38 +53,47 @@ public class TorrentDao_Impl implements TorrentDao {
 	
 	@Override
 	public Torrent read(URI uri) throws TorrentException, IOException {
-		try{
-			Map<String,String> headers = new HashMap<String,String>();
-			headers.put("referer", uri.toASCIIString());
-			InputStream is = getUrlHandler().openInput(uri.toURL(),headers);
-         byte[] bytes = IOUtils.toByteArray(is);
-			BDictionary dictionary = BencodeUtils.decode(bytes);
-			Torrent torrent = parseRootDictionary(dictionary);
-			return torrent;
-		}catch(BencodeException e){
-			throw new TorrentException(e);
-		}catch(NoSuchAlgorithmException e){
-			throw new TorrentException(e);
-		}
+
+     final String protocol = uri.getScheme();;
+     if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
+       throw new TorrentException("Unsupported protocol " + protocol + " expected one of HTTP or HTTPS");
+     }
+
+     final Map<String,String> headers = new HashMap<String,String>();
+     headers.put("referer", uri.toASCIIString());
+     final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL());
+     if(conn.getResponseCode()!=200){
+       throw new TorrentException("Receieved response " + conn.getResponseCode() +" from " + uri.toURL());
+     }
+
+
+     try{
+       final byte[] bytes = IOUtils.toByteArray(conn.getInputStream());
+       final BDictionary dictionary = BencodeUtils.decode(bytes);
+       final Torrent torrent = parseRootDictionary(dictionary);
+       torrent.setBytes(bytes);
+       return torrent;
+     }catch(BencodeException ex){
+       throw new TorrentException("Encountered an error unmarshalling torrent",ex);
+     }
+
 
 	}
 
 	@Override
 	public ScrapeResult scrape(URI uri, byte[] infoHash) throws UnhandledScrapeException, TorrentException, IOException {
 
-		String protocol = uri.getScheme().toUpperCase();
+		final String protocol = uri.getScheme().toUpperCase();
 		if(getScrapeReqeustHandlers().containsKey(protocol)){
-			ScrapeRequestHandler scraper = getScrapeReqeustHandlers().get(protocol);
+			final ScrapeRequestHandler scraper = getScrapeReqeustHandlers().get(protocol);
 			return scraper.scrape(uri, infoHash);
 		}else{
-			throw new UnhandledScrapeException("protocol: " + protocol +" is unsupported for scrape");
+			throw new UnhandledScrapeException("No scrape request handler found for protocol: " + protocol);
 		}
 	}
 	
-	public Torrent parseRootDictionary(BDictionary rootDictionary) throws IOException, BencodeException, NoSuchAlgorithmException{
-		Torrent torrent = new Torrent();
-		byte[] bytes = BencodeUtils.encode(rootDictionary);
-		torrent.setBytes(bytes);
+	public Torrent parseRootDictionary(BDictionary rootDictionary) throws BencodeException, IOException{
+		final Torrent torrent = new Torrent();
 		if(rootDictionary.containsKey(ANNOUNCE_KEY) && rootDictionary.get(ANNOUNCE_KEY) instanceof BString){
 			BString announceValue = (BString)rootDictionary.get(ANNOUNCE_KEY);
 			String tracker = announceValue.toString();
@@ -120,10 +129,14 @@ public class TorrentDao_Impl implements TorrentDao {
 		return trackers;
 	}
 	
-	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, NoSuchAlgorithmException, IOException{
-		TorrentInfo info = new TorrentInfo();
-		MessageDigest md = MessageDigest.getInstance("SHA-1");
-		//info.setInfoHash(DigestUtils.sha(infoDictionary.getBytes()));
+	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
+		final TorrentInfo info = new TorrentInfo();
+		final MessageDigest md;
+     	try{
+        md = MessageDigest.getInstance("SHA-1");
+      }catch(NoSuchAlgorithmException ex){
+      	throw new RuntimeException(ex);
+      }
 		final byte[] bytes = BencodeUtils.encode(infoDictionary);
 		info.setInfoHash(md.digest(bytes));
 		if (infoDictionary.containsKey(NAME_KEY) && infoDictionary.get(NAME_KEY) instanceof BString) {

@@ -8,11 +8,11 @@ import io.delimeat.util.bencode.BencodeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -191,11 +191,12 @@ public class TorrentDao_Impl_Test {
 	@Test
 	public void readTest() throws Exception {
 		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
-		ByteArrayInputStream bais = new ByteArrayInputStream(
-				bytesVal.getBytes());
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URL.class),Mockito.any(Map.class)))
-				.thenReturn(bais);
+      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+      Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+      Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+
 		dao.setUrlHandler(mockedUrlHandler);
 
 		URI uri = new URI("http://test.com/");
@@ -231,6 +232,23 @@ public class TorrentDao_Impl_Test {
 
 		URI scrapeUri = new URI("udp://scrape.me:8080");
 		dao.scrape(scrapeUri, "INFO_HASH".getBytes());
+	}
+  
+	@Test(expected=TorrentException.class)
+	public void scrapeNotHTTPTest() throws Exception{
+		dao.read(new URI("udp://test.com"));
+	}
+  
+	@Test(expected=TorrentException.class)
+	public void scrapeNotOKTest() throws Exception{
+		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
+      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+      Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+
+		dao.setUrlHandler(mockedUrlHandler);
+
+      dao.read( new URI("http://test.com/"));
 	}
 
 	@Test

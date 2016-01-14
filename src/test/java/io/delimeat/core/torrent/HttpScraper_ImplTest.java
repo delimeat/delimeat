@@ -3,6 +3,7 @@ package io.delimeat.core.torrent;
 import io.delimeat.util.UrlHandler;
 
 import java.io.ByteArrayInputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -73,12 +74,31 @@ public class HttpScraper_ImplTest {
 	public void scrapeTest() throws URISyntaxException, Exception{
 		UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
 		String scrapeResult = "d5:filesd20:....................d8:completei5e10:downloadedi50e10:incompletei10eeee";
-		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenReturn(new ByteArrayInputStream(scrapeResult.getBytes()));
+      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+      Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+      Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(scrapeResult.getBytes()));
+		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
 		
 		scraper.setUrlHandler(mockedHandler);
 		ScrapeResult result = scraper.scrape(new URI("http://test/announce?test=true"), "....................".getBytes());
 		
 		Assert.assertEquals(5, result.getSeeders());
 		Assert.assertEquals(10, result.getLeechers());
+	}
+  
+	@Test(expected=TorrentException.class)
+	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
+		scraper.scrape(new URI("udp://test.com"), "....................".getBytes());
+	}
+  
+	@Test(expected=TorrentException.class)
+	public void scrapeNotOKTest() throws Exception{
+		UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
+      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+      Mockito.when(mockedConnection.getResponseCode()).thenReturn(204);
+		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+		
+		scraper.setUrlHandler(mockedHandler);
+		scraper.scrape(new URI("http://test/announce?test=true"), "....................".getBytes());
 	}
 }

@@ -74,6 +74,7 @@
 		<org.jsoup.version>1.8.3</org.jsoup.version>
 		<org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
 		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
+      <commons-io.version>2.4</commons-io.version>
 	</properties>
 
 	<dependencies>
@@ -251,6 +252,12 @@
 			<artifactId>jsoup</artifactId>
 			<version>${org.jsoup.version}</version>
 		</dependency>
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>${commons-io.version}</version>
+      </dependency>
+
 
 	</dependencies>
 </project>
