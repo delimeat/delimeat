@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import org.mockito.Mockito;
 
-public class HttpScraper_ImplTest {
+public class HttpScrapeRequestHandler_ImplTest {
 
 	private HttpScrapeRequestHandler_Impl scraper;
 	

@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class UDPScraper_ImpTest {
+public class UDPScrapeRequestHandler_ImpTest {
 
 	private UDPScrapeRequestHandler_Impl scraper;
 

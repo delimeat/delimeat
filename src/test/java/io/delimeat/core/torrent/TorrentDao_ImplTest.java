@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class TorrentDao_Impl_Test {
+public class TorrentDao_ImplTest {
 
 	private String sep = System.getProperty("file.separator");
 	private TorrentDao_Impl dao;
@@ -184,8 +184,7 @@ public class TorrentDao_Impl_Test {
 				.getLength());
 		Assert.assertEquals("��^�&�Mm��x�Q�(�", new String(torrent.getInfo()
 				.getInfoHash()));
-		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
-		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));
+		Assert.assertNull(torrent.getBytes());
 	}
 
 	@Test
