@@ -1,5 +1,7 @@
 package io.delimeat.core.torrent;
 
+import org.apache.commons.io.IOUtils;
+
 import io.delimeat.util.UrlHandler;
 import io.delimeat.util.bencode.BDictionary;
 import io.delimeat.util.bencode.BInteger;
@@ -55,7 +57,8 @@ public class TorrentDao_Impl implements TorrentDao {
 			Map<String,String> headers = new HashMap<String,String>();
 			headers.put("referer", uri.toASCIIString());
 			InputStream is = getUrlHandler().openInput(uri.toURL(),headers);
-			BDictionary dictionary = BencodeUtils.decode(is);
+         byte[] bytes = IOUtils.toByteArray(is);
+			BDictionary dictionary = BencodeUtils.decode(bytes);
 			Torrent torrent = parseRootDictionary(dictionary);
 			return torrent;
 		}catch(BencodeException e){
@@ -80,7 +83,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	
 	public Torrent parseRootDictionary(BDictionary rootDictionary) throws IOException, BencodeException, NoSuchAlgorithmException{
 		Torrent torrent = new Torrent();
-		byte[] bytes = rootDictionary.getBytes();
+		byte[] bytes = BencodeUtils.encode(rootDictionary);
 		torrent.setBytes(bytes);
 		if(rootDictionary.containsKey(ANNOUNCE_KEY) && rootDictionary.get(ANNOUNCE_KEY) instanceof BString){
 			BString announceValue = (BString)rootDictionary.get(ANNOUNCE_KEY);
@@ -121,7 +124,8 @@ public class TorrentDao_Impl implements TorrentDao {
 		TorrentInfo info = new TorrentInfo();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		//info.setInfoHash(DigestUtils.sha(infoDictionary.getBytes()));
-		info.setInfoHash(md.digest(infoDictionary.getBytes()));
+		final byte[] bytes = BencodeUtils.encode(infoDictionary);
+		info.setInfoHash(md.digest(bytes));
 		if (infoDictionary.containsKey(NAME_KEY) && infoDictionary.get(NAME_KEY) instanceof BString) {
 			BString nameValue = (BString)infoDictionary.get(NAME_KEY);
 			info.setName(nameValue.toString());

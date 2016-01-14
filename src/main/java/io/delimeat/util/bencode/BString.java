@@ -6,17 +6,12 @@ public class BString implements BObject, Comparable<BString> {
 
 	private byte[] value;
 
-	public BString() {
-		// do nothing
-	}
-
 	public BString(byte[] value) {
 		this.value = value;
 	}
 
-	public BString(String value) {
-		byte[] bytes = value.getBytes();
-		this.value = bytes;
+	public BString(String value) { 
+		this.value = value.getBytes();
 	}
 
 	public byte[] getValue() {
@@ -30,14 +25,6 @@ public class BString implements BObject, Comparable<BString> {
 		} else {
 			return new String();
 		}
-	}
-
-	public void setValue(byte[] value) {
-		this.value = value;
-	}
-
-	public void setValue(String value) {
-		this.value = value.getBytes();
 	}
 
 	@Override

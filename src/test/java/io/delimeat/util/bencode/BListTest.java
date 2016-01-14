@@ -14,7 +14,7 @@ public class BListTest {
 	@Test
 	public void BValueAddTest() {
 		BList b_list_one = new BList();
-		BString b_string = new BString();
+		BString b_string = new BString("value");
 		b_list_one.add(b_string);
 		Assert.assertEquals(1, b_list_one.size());
 		Assert.assertEquals(b_string, b_list_one.get(0));
@@ -52,7 +52,7 @@ public class BListTest {
 
 	@Test
 	public void BValueRemoveTest() {
-		BString b_string = new BString();
+		BString b_string = new BString("value");
 		BInteger b_integer = new BInteger(1);
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);
@@ -65,7 +65,7 @@ public class BListTest {
 
 	@Test
 	public void IndexRemoveTest() {
-		BString b_string = new BString();
+		BString b_string = new BString("value");
 		BInteger b_integer = new BInteger(1);
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);

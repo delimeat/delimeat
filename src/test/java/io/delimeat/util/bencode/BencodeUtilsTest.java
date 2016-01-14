@@ -1,7 +1,5 @@
 package io.delimeat.util.bencode;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -11,6 +9,7 @@ import org.junit.Test;
 
 public class BencodeUtilsTest {
 
+  
 	@Test
 	public void encodingTest() throws UnsupportedEncodingException,
 			IOException, BencodeException {
@@ -39,14 +38,14 @@ public class BencodeUtilsTest {
 		dict_1.put(new BString("INTEGER_3"), new BInteger(3));
 
 		// encode the values and verify they are correctly encoded
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		BencodeUtils.encode(output, dict_1);
-		String encoded_string = new String(output.toByteArray());
+		byte[] bytes =  BencodeUtils.encode( dict_1);
+		String encoded_string = new String(bytes);
 		Assert.assertEquals(
 				"d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe",
 				encoded_string);
 
 	}
+   
 
 	@Test
 	/**
@@ -57,8 +56,7 @@ public class BencodeUtilsTest {
 		// create the bencoded value to be decoded and decode it
 		byte[] inputBytes = "d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe"
 				.getBytes(Charset.forName("ISO-8859-1"));
-		ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-		BDictionary dict_1 = BencodeUtils.decode(input);
+		BDictionary dict_1 = BencodeUtils.decode(inputBytes);
 
 		// check that there are four values in the root dictionary
 		Assert.assertEquals(4, dict_1.size());
@@ -115,8 +113,7 @@ public class BencodeUtilsTest {
 	public void NonDictionaryDecodeTest() throws BencodeException, IOException {
      // create the bencoded value to be decoded and decode it
      byte[] inputBytes = "A".getBytes(Charset.forName("ISO-8859-1"));
-     ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-     BencodeUtils.decode(input);
+     BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -131,8 +128,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "di1ed9:INTEGER_2e".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -147,8 +143,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keye".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -163,8 +158,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi1eee".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -179,8 +173,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -195,8 +188,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:keyi12aee".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 	}
 
 	/**
@@ -211,8 +203,7 @@ public class BencodeUtilsTest {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3r:keyi123ee".getBytes(Charset
 					.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 
 	}
 
@@ -227,8 +218,7 @@ public class BencodeUtilsTest {
 			IOException {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3:ke".getBytes(Charset.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 
 	}
 
@@ -243,25 +233,8 @@ public class BencodeUtilsTest {
 			IOException {
 			// create the bencoded value to be decoded and decode it
 			byte[] inputBytes = "d3".getBytes(Charset.forName("ISO-8859-1"));
-			ByteArrayInputStream input = new ByteArrayInputStream(inputBytes);
-			BencodeUtils.decode(input);
+			BencodeUtils.decode(inputBytes);
 
 	}
 
-	/**
-	 * check if the values in the bencoded dictionary are only BInteger,
-	 * BString, BList or BDictionary
-	 * 
-	 * @throws BencodeException
-	 * @throws IOException
-	 */
-	@Test(expected = BencodeException.class)
-	public void UnexpectedBencodedTypeTest() throws BencodeException,
-			IOException {
-			BDictionary dict = new BDictionary();
-			dict.put(new BString("key"), new BObject() {
-			});
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			BencodeUtils.encode(os, dict);
-	}
 }

@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -17,114 +16,64 @@ public final class BencodeUtils {
 	private static final char END = 'e';
 	private static final char NEGATIVE = '-';
 	private static final char COLON = ':';
-	
-	private static void addValue(Stack<BObject> stack, BObject value)
-			throws  BencodeException {
-		BObject last = stack.peek();
-		if (last instanceof BDictionary) {
-			BDictionary dict = (BDictionary) last;
-			dict.setValue(value);
-		} else if (last instanceof BList) {
-			BList list = (BList) last;
-			list.add(value);
-		} else {
-			throw new BencodeUnexpectedTypeException("UnexpectedBencodeType " +last.getClass().getName());
-		}
-	}
 
-	/**
-	 * Decode an input stream to a bencoded dictionary
-	 *
-	 * @param input
-	 *            - the input stream to be decoded
-	 * @param charset
-	 *            - the charset to decode with
-	 * @return
-	 * @throws BencodeException
-	 * @throws IOException
-	 */
 	public static BDictionary decode(InputStream input)
-			throws BencodeException, IOException {
-		int c = input.read();
-		if (c != DICTIONARY) {
-			throw new BencodeUnexpectedCharacterException("ExpectedStartOfDictionary " + (char)c);
-		}
-		Stack<BObject> stack = new Stack<BObject>();
-		BDictionary root = new BDictionary();
-
-		stack.push(root);
-		BObject currentValue = null;
-		while ((c = input.read()) != -1) {
-			if (c == DICTIONARY) {
-				currentValue = new BDictionary();
-				addValue(stack, currentValue);
-				stack.push(currentValue);
-			} else if (c == LIST) {
-				currentValue = new BList();
-				addValue(stack, currentValue);
-				stack.push(currentValue);
-			} else if (c == INTEGER) {
-				currentValue = readInteger(input);
-				addValue(stack, currentValue);
-			} else if (Character.isDigit((char) c)) {
-				currentValue = readString(c, input);
-				addValue(stack, currentValue);
-			} else if (c == END) {
-				BObject last = null;
-				try{
-					last = stack.peek();
-				}catch(EmptyStackException e){
-					throw new BencodeException("UnexpectedEndOfCollection");
-				}
-				if (last instanceof BDictionary) {
-					BDictionary dict = (BDictionary) last;
-					if (dict.expectingKey() == false) {
-						throw new BencodeException("UnexpectedEndOfDictionary");
-					}
-				} // 90% sure this will never happen
-				else if (!(last instanceof BList)) {
-					throw new BencodeException("UnexpectedEndOfCollection");
-				}
-				stack.pop();
-			}
-		}
-		return root;
-	}
-	/**
-	 * 
-	 * @param input
-	 * @return
-	 * @throws BencodeException
-	 * @throws IOException
-	 */
-	public static BDictionary decode(byte[] input) throws BencodeException, IOException{
-		ByteArrayInputStream bais = new ByteArrayInputStream(input);
-		return decode(bais);
-	}
-
-	/**
-	 * Encode a BDictionary and output to an output stream
-	 *
-	 * @param os
-	 *            - OutputStream to output to
-	 * @param value
-	 *            - BDictionary value to encode
-	 * @throws UnsupportedEncodingException
-	 * @throws IOException
-	 * @throws BencodeException
-	 */
-	public static void encode(OutputStream os, BDictionary value)
 			throws IOException, BencodeException {
-		encodeDictionary(os, value);
+
+           int c = input.read();
+           if (c != DICTIONARY) {
+             throw new BencodeException("Expected start of dictionary got " + (char)c);
+           }
+           final Stack<BCollection> stack = new Stack<BCollection>();
+           final BDictionary root = new BDictionary();
+
+           stack.push(root);
+           BObject currentValue = null;
+           while ((c = input.read()) != -1) {
+             if (c == DICTIONARY) {
+               currentValue = new BDictionary();
+               stack.peek().addValue(currentValue);
+               stack.push((BCollection)currentValue);
+             } else if (c == LIST) {
+               currentValue = new BList();
+               stack.peek().addValue(currentValue);
+               stack.push((BCollection)currentValue);
+             } else if (c == INTEGER) {
+               currentValue = readInteger(input);
+               stack.peek().addValue(currentValue);
+             } else if (Character.isDigit((char) c)) {
+               int numericValue = Character.getNumericValue((char) c);
+               currentValue = readString(numericValue, input);
+               stack.peek().addValue(currentValue);
+             } else if (c == END) {
+               try{
+                 final BCollection last = stack.peek();
+
+                 if (last instanceof BDictionary && ((BDictionary)last).getKey() != null) {
+                   throw new BencodeException("Unexpected end of dictionary");
+                 }
+
+                 stack.pop();
+
+               }catch(EmptyStackException e){
+                 throw new BencodeException("Unexpected end of collection encountered");
+               }
+
+             }
+           }
+           return root; 
 	}
-	/**
-	 * Encode a BDictionary and return a byte array
-	 * @param value
-	 * 			 - BDictionary value to encode
-	 * @return
-	 * @throws IOException
-	 * @throws BencodeException
-	 */
+
+	public static BDictionary decode(byte[] input) throws IOException, BencodeException {
+		return decode(new ByteArrayInputStream(input));
+	}
+  
+
+  	public static void encode(OutputStream os, BDictionary value)
+    throws IOException, BencodeException {
+      encodeDictionary(os, value);
+   }
+
 	public static byte[] encode(BDictionary value) throws IOException, BencodeException{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		encodeDictionary(baos, value);
@@ -165,8 +114,8 @@ public final class BencodeUtils {
 
 	private static void encodeString(OutputStream os, byte[] value)
 			throws IOException {
-		String result = Integer.toString(value.length);
-		os.write(result.getBytes());
+		final byte[] length = Integer.toString(value.length).getBytes();
+		os.write(length);
 		os.write(COLON);
 		os.write(value);
 	}
@@ -182,15 +131,13 @@ public final class BencodeUtils {
 			encodeList(os, (BList) value);
 		} else if (value instanceof BDictionary) {
 			encodeDictionary(os, (BDictionary) value);
-		} else {
-			throw new BencodeException("InvalidBencodingType " + value.getClass().getName());
 		}
 	}
 
 	private static BInteger readInteger(InputStream stream) throws IOException,
 			BencodeException {
 
-		int character = stream.read();
+		final int character = stream.read();
 		String value;
 
 		if (character == NEGATIVE) {
@@ -208,7 +155,7 @@ public final class BencodeUtils {
 			next = stream.read();
 
 			if (next == -1) {
-				throw new BencodeException("UnexpectedEndOfInputInteger");
+				throw new BencodeException("Unexpected EndOfInputInteger");
 			} else if ((char) next == END) {
 				break;
 			} else if (Character.isDigit((char) next)) {
@@ -219,49 +166,45 @@ public final class BencodeUtils {
 		}
 		return new BInteger(value);
 	}
-
-	private static BString readString(int firstChar, InputStream input)
+  
+	private static BString readString(int firstCharNumeric, InputStream input)
 			throws IOException, BencodeException {
 
-		int numeric = Character.getNumericValue((char) firstChar);
-		String lengthStr = numeric + "";
-
-		int next;
+		String lengthStr = firstCharNumeric + "";
 
 		// Read while next character is numeric
-		while (true) {
+		int next;
+      while (true) {
 
 			next = input.read();
 
 			if (next == -1) {
-				throw new BencodeException("UnexpectedEndOfInputString");
+				throw new BencodeException("Unexpected end of string length");
 			} else if ((char) next == COLON) {
 				break;
 			} else if (Character.isDigit((char) next)) {
 				lengthStr = lengthStr + Character.getNumericValue((char) next);
 			} else {
-				throw new BencodeException("UnexpectedInputString " + (char) next);
+				throw new BencodeException("Unexpected character in string length " + (char) next);
 			}
 		}
 
-		int length = Integer.parseInt(lengthStr);
-
-		byte[] bytes = new byte[length];
-
-		int totalCharsRead = 0;
+		final int expectedLength = Integer.parseInt(lengthStr);
+		final byte[] bytes = new byte[expectedLength];
+		int actualLength = 0;
 
 		// Need to read everything even if blocking
-		while (totalCharsRead < length) {
-			int charsRead = input.read(bytes, totalCharsRead, length - totalCharsRead);
+		while (actualLength < expectedLength) {
+			int charsRead = input.read(bytes, actualLength, expectedLength - actualLength);
 			if (charsRead == -1) {
 				break;
 			}
-			totalCharsRead += charsRead;
+			actualLength += charsRead;
 		}
 
 		// Check that the whole String was read.
-		if (totalCharsRead != length) {
-			throw new BencodeException("UnexpectedEndOfCharactersString" + new Object[]{totalCharsRead,length});
+		if (actualLength != expectedLength) {
+			throw new BencodeException("Unexpected End Of Characters String expected "+ expectedLength + " read " + actualLength);
 		}
 		return new BString(bytes);
 	}
