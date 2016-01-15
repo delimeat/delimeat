@@ -16,7 +16,7 @@ public class TorrentCompressedValidator_Impl implements TorrentValidator {
 	private static final String REGEX = "(zip|rar|tar)$";
   
 	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) throws TorrentValidatorException {
+	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException {
 		final Pattern fileTypePattern = Pattern.compile(REGEX);
       final TorrentInfo info = torrent.getInfo();
       Matcher fileTypeMatcher;

@@ -2,7 +2,6 @@ package io.delimeat.core.feed.validation;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
-import io.delimeat.core.feed.validation.TorrentValidatorException;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;
@@ -12,7 +11,7 @@ public class TorrentSizeValidator_Impl implements TorrentValidator {
 
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config)
-			throws TorrentValidatorException {
+			throws FeedValidationException {
 		final TorrentInfo info = torrent.getInfo();
 		long torrentSize = 0;
 		if(info.getFiles() != null && info.getFiles().isEmpty() == false){

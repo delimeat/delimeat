@@ -9,7 +9,7 @@ import io.delimeat.core.torrent.TorrentInfo;
 public class TorrentFolderValidator_Impl implements TorrentValidator{
 
 	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) throws TorrentValidatorException {
+	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException {
      final TorrentInfo info = torrent.getInfo();
      return (info.getFiles() == null || info.getFiles().isEmpty() );
 	}

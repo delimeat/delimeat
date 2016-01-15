@@ -16,7 +16,7 @@ public class TorrentFileTypeValidator_Impl implements TorrentValidator {
 	
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config)
-			throws TorrentValidatorException {
+			throws FeedValidationException {
 		String regex = "";
       Iterator<String> it = config.getIgnoredFileTypes().iterator();
 		while(it.hasNext()){

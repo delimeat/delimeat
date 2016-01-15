@@ -7,6 +7,6 @@ import io.delimeat.core.torrent.Torrent;
 
 public interface TorrentValidator {
 
-	public boolean validate(Torrent torrent, Show show, Config config) throws TorrentValidatorException;
+	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException;
    public FeedResultRejection getRejection();
 }

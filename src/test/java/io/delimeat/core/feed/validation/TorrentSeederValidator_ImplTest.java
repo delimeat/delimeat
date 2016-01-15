@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class SeederTorrentValidator_Impl_Test {
+public class TorrentSeederValidator_ImplTest {
 
 	private TorrentSeederValidator_Impl validator;
    private Show show;

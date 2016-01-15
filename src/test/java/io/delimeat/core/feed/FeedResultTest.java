@@ -58,11 +58,11 @@ public class FeedResultTest {
 		Assert.assertNotNull(result.getFeedResultRejections());
 		Assert.assertEquals(0, result.getFeedResultRejections().size());
 		
-		result.setFeedResultRejections(Arrays.asList(FeedResultRejection.INCORRECT_DAILY_EPISODE,FeedResultRejection.INCORRECT_EPISODE));
+		result.setFeedResultRejections(Arrays.asList(FeedResultRejection.CONTAINS_COMPRESSED,FeedResultRejection.INCORRECT_TITLE));
 		
 		Assert.assertEquals(2, 0, result.getFeedResultRejections().size());
-		Assert.assertEquals(FeedResultRejection.INCORRECT_DAILY_EPISODE, result.getFeedResultRejections().get(0));
-		Assert.assertEquals(FeedResultRejection.INCORRECT_EPISODE, result.getFeedResultRejections().get(1));
+		Assert.assertEquals(FeedResultRejection.CONTAINS_COMPRESSED, result.getFeedResultRejections().get(0));
+		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, result.getFeedResultRejections().get(1));
 	}
 	
 	@Test

@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SizeTorrentValidator_Impl_Test {
+public class TorrentSizeValidator_ImplTest {
 
 	private TorrentSizeValidator_Impl validator;
    private Show show;

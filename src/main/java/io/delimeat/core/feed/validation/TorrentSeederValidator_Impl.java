@@ -36,7 +36,7 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
 	
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config)
-			throws TorrentValidatorException {
+			throws FeedValidationException {
      
      final byte[] infoHash = torrent.getInfo().getInfoHash();
      ScrapeResult scrape = null;

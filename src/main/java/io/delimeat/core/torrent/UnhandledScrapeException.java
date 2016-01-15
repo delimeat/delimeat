@@ -14,5 +14,5 @@ public class UnhandledScrapeException extends TorrentException {
 
 	public UnhandledScrapeException(String message, Throwable cause) {
 		super(message, cause);
-	}	
+	}
 }
