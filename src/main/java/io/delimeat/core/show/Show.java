@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "showId", "title", "showType", "enabled", "airing", "airTime", "timezone", "guideSources",
-		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate", "lastFeedUpdate", "version" })
+		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate", "lastFeedUpdate", "minSize", "maxSize", "version" })
 public class Show implements Comparable<Show> {
 
 	private long showId;
@@ -32,6 +32,8 @@ public class Show implements Comparable<Show> {
 	private Episode nextEpisode;
 	private Episode previousEpisode;
 	private boolean includeSpecials;
+   private int minSize;
+   private int maxSize;
 	private int version;
 
 	/**
@@ -243,6 +245,36 @@ public class Show implements Comparable<Show> {
 	public void setIncludeSpecials(boolean includeSpecials) {
 		this.includeSpecials = includeSpecials;
 	}
+ 
+	/**
+	 * @return the minSize
+	 */
+	public int getMinSize() {
+		return minSize;
+	}
+
+	/**
+	 * @param minSize
+	 *            the minSize to set
+	 */
+	public void setMinSize(int minSize) {
+		this.minSize = minSize;
+	}
+  
+	/**
+	 * @return the maxSize
+	 */
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	/**
+	 * @param maxSize
+	 *            the maxSize to set
+	 */
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
 
 	@Override
 	public int compareTo(Show otherShow) {
@@ -273,8 +305,8 @@ public class Show implements Comparable<Show> {
 				+ ", airing=" + airing + ", airTime=" + airTime + ", timezone=" + timezone + ", guideSources="
 				+ guideSources + ", nextEpisode=" + (nextEpisode != null ? nextEpisode : null) + ", previousEpisode="
 				+ (previousEpisode != null ? previousEpisode : null) + ", includeSpecials=" + includeSpecials
-				+ ", lastGuideUpdate=" + lastGuideUpdate + ", lastFeedUpdate=" + lastFeedUpdate + ", version=" + version
-				+ "]";
+				+ ", lastGuideUpdate=" + lastGuideUpdate + ", lastFeedUpdate=" + lastFeedUpdate + ", minSize=" + minSize 
+            + ", maxSize=" + maxSize + ", version=" + version+ "]";
 	}
 
 }

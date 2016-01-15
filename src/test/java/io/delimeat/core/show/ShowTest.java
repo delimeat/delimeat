@@ -122,5 +122,19 @@ public class ShowTest {
 		show.setVersion(Integer.MAX_VALUE);
 		Assert.assertEquals(Integer.MAX_VALUE, show.getVersion());
 	}
+  
+	@Test
+	public void minSizeTest() {
+		Assert.assertEquals(0, show.getMinSize());
+		show.setMinSize(Integer.MAX_VALUE);
+		Assert.assertEquals(Integer.MAX_VALUE, show.getMinSize());
+	}
+  
+	@Test
+	public void maxSizeTest() {
+		Assert.assertEquals(0, show.getMaxSize());
+		show.setMaxSize(Integer.MAX_VALUE);
+		Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
+	}
 
 }

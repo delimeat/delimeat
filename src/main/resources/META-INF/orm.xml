@@ -163,6 +163,14 @@
 			<basic name="enabled" optional="false">
 				<column name="ENABLED" nullable="false" />
 			</basic>
+        
+         <basic name="minSize" optional="false">
+				<column name="MIN_SIZE" nullable="false" />
+			</basic>
+        
+         <basic name="maxSize" optional="false">
+				<column name="MAX_SIZE" nullable="false" />
+			</basic>
 
 			<version name="version">
 				<column name="VERSION" />

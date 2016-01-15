@@ -1,116 +1,80 @@
 package io.delimeat.core.feed.validation;
 
-import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.TorrentRejection;
+import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;
 import io.delimeat.core.torrent.TorrentInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class CompressedTorrentValidator_Impl_Test {
 	
-	private static final String REGEX = "(zip|rar|tar)$";
-	
 	private TorrentCompressedValidator_Impl validator;
-	private FeedResult result;
+   private Show show;
+   private Config config;
+   private Torrent torrent;
 	
 	@Before
 	public void setUp(){
 		validator = new TorrentCompressedValidator_Impl();
-		result = new FeedResult();
+      show = new Show();
+      config = new Config();
+      torrent = new Torrent();
 	}
 	
-	@Test
-	public void regexTest(){
-		Assert.assertNull(validator.getRegex());
-		validator.setRegex(REGEX);
-		Assert.assertEquals(REGEX, validator.getRegex());
-	}
-	
+   @Test
+   public void rejectionTest(){
+     Assert.assertEquals(FeedResultRejection.CONTAINS_COMPRESSED, validator.getRejection());
+   }
+  
 	@Test
 	public void singleFileValidTest() throws Exception{		
-		TorrentInfo mockedTorrentInfo= Mockito.mock(TorrentInfo.class);
-		Mockito.when(mockedTorrentInfo.getName()).thenReturn("VALIDFILE_TYPE.WMV");
-		Mockito.when(mockedTorrentInfo.getFiles()).thenReturn(null);
+		TorrentInfo info = new TorrentInfo();
+      info.setName("VALIDFILE_TYPE.WMV");
+      info.setFiles(null);
 		
-		Torrent mockedTorrent= Mockito.mock(Torrent.class);
-		Mockito.when(mockedTorrent.getInfo()).thenReturn(mockedTorrentInfo);
-		
-		result.setTorrent(mockedTorrent);
-
-		validator.setRegex(REGEX);
-		validator.validate(result, null);
-		
-		Assert.assertEquals(0, result.getTorrentRejections().size());	
+      torrent.setInfo(info);		
+		Assert.assertTrue(validator.validate(torrent, show, config));		
 	}
 	@Test
-	public void singleFileInvalidTest() throws Exception{		
-		TorrentInfo mockedTorrentInfo=Mockito.mock(TorrentInfo.class);
-		Mockito.when(mockedTorrentInfo.getName()).thenReturn("VALIDFILE_TYPE.ZIP");
-		Mockito.when(mockedTorrentInfo.getFiles()).thenReturn(null);
+	public void singleFileInvalidTest() throws Exception{	
+		TorrentInfo info = new TorrentInfo();
+      info.setName("VALIDFILE_TYPE.ZIP");
 		
-		Torrent mockedTorrent= Mockito.mock(Torrent.class);
-		Mockito.when(mockedTorrent.getInfo()).thenReturn(mockedTorrentInfo);
-		
-		result.setTorrent(mockedTorrent);
-		validator.setRegex(REGEX);
-		validator.validate(result, null);
-		
-		Assert.assertEquals(1, result.getTorrentRejections() .size());	
-		Assert.assertEquals(TorrentRejection.CONTAINS_COMPRESSED, result.getTorrentRejections().get(0));
+      torrent.setInfo(info);	
+		Assert.assertFalse(validator.validate(torrent, show, config));		
+
 	}
 	@Test
 	public void multipleFileValidTest() throws Exception{
-
-		TorrentFile mockedTorrentFile1=Mockito.mock(TorrentFile.class);
-		Mockito.when(mockedTorrentFile1.getName()).thenReturn("VALID_FILE_TYPE.WMV");
-		TorrentFile mockedTorrentFile2=Mockito.mock(TorrentFile.class);
-		Mockito.when(mockedTorrentFile2.getName()).thenReturn("VALID_FILE_TYPE.FLV");		
-		List<TorrentFile> torrentFiles = new ArrayList<TorrentFile>();
-		torrentFiles.add(mockedTorrentFile1);
-		torrentFiles.add(mockedTorrentFile2);
+		TorrentInfo info = new TorrentInfo();
+      TorrentFile file1 = new TorrentFile();
+      file1.setName("VALIDFILE_TYPE.WMV");
+      info.getFiles().add(file1);
+      TorrentFile file2 = new TorrentFile();
+      file2.setName("VALID_FILE_TYPE.FLV");
+      info.getFiles().add(file2);     
 		
-		TorrentInfo mockedTorrentInfo=Mockito.mock(TorrentInfo.class);
-		Mockito.when(mockedTorrentInfo.getFiles()).thenReturn(torrentFiles);
+      torrent.setInfo(info);		
+		Assert.assertTrue(validator.validate(torrent, show, config));		
 		
-		Torrent mockedTorrent=Mockito.mock(Torrent.class);
-		Mockito.when(mockedTorrent.getInfo()).thenReturn(mockedTorrentInfo);
-		
-		result.setTorrent(mockedTorrent);
-		validator.setRegex(REGEX);
-		validator.validate(result, null);
-		
-		Assert.assertEquals(0, result.getTorrentRejections().size());		
 	}
 	@Test
 	public void multipleFileInvalidTest() throws Exception{
+		TorrentInfo info = new TorrentInfo();
+      TorrentFile file1 = new TorrentFile();
+      file1.setName("VALIDFILE_TYPE.rar");
+      info.getFiles().add(file1);
+      TorrentFile file2 = new TorrentFile();
+      file2.setName("VALID_FILE_TYPE.FLV");
+      info.getFiles().add(file2);     
+		
+      torrent.setInfo(info);		
+		Assert.assertFalse(validator.validate(torrent, show, config));		
 
-		TorrentFile mockedTorrentFile1=Mockito.mock(TorrentFile.class);
-		Mockito.when(mockedTorrentFile1.getName()).thenReturn("INVALID_FILE_TYPE.rar");
-		TorrentFile mockedTorrentFile2=Mockito.mock(TorrentFile.class);
-		Mockito.when(mockedTorrentFile2.getName()).thenReturn("VALID_FILE_TYPE.AVI");		
-		List<TorrentFile> torrentFiles = new ArrayList<TorrentFile>();
-		torrentFiles.add(mockedTorrentFile1);
-		torrentFiles.add(mockedTorrentFile2);
-		
-		TorrentInfo mockedTorrentInfo=Mockito.mock(TorrentInfo.class);
-		Mockito.when(mockedTorrentInfo.getFiles()).thenReturn(torrentFiles);
-		
-		Torrent mockedTorrent=Mockito.mock(Torrent.class);
-		Mockito.when(mockedTorrent.getInfo()).thenReturn(mockedTorrentInfo);
-
-		result.setTorrent(mockedTorrent);
-		validator.setRegex(REGEX);
-		validator.validate(result, null);
-		
-		Assert.assertEquals(1, result.getTorrentRejections().size());	
-		Assert.assertEquals(TorrentRejection.CONTAINS_COMPRESSED, result.getTorrentRejections().get(0));
 	}
 }

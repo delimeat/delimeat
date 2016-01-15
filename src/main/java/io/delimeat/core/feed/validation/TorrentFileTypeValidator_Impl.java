@@ -1,46 +1,54 @@
 package io.delimeat.core.feed.validation;
 
-import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.TorrentRejection;
+import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;
+import io.delimeat.core.torrent.TorrentInfo;
+import io.delimeat.util.DelimeatUtils;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TorrentFileTypeValidator_Impl implements TorrentValidator {
-
-	private List<String> fileTypes;
 	
 	@Override
-	public void validate(FeedResult result, Show show)
+	public boolean validate(Torrent torrent, Show show, Config config)
 			throws TorrentValidatorException {
-		final List<String> runFileTypes = fileTypes;
 		String regex = "";
-		for(int index = 0; index < runFileTypes.size();index++){
-			regex += ((index > 0) ? "|"+runFileTypes.get(index): runFileTypes.get(index));
-		}
-		if(regex.length()>0){ //only do it if there is any file types excluded
-			Pattern pattern = Pattern.compile(regex.toLowerCase());
+      Iterator<String> it = config.getIgnoredFileTypes().iterator();
+		while(it.hasNext()){
+        regex += it.next();
+        if(it.hasNext()){
+          regex += "|";
+        }
+      }
+
+		if(!DelimeatUtils.isEmpty(regex)){ //only do it if there is any file types excluded
+			final Pattern pattern = Pattern.compile(regex.toLowerCase());
 			Matcher matcher;
-			Torrent torrent = result.getTorrent();
-			if(torrent.getInfo().getFiles()!=null && torrent.getInfo().getFiles().size()>0){
-				for(TorrentFile file: torrent.getInfo().getFiles()){
+         final TorrentInfo info = torrent.getInfo();
+			if(info.getFiles() != null && info.getFiles().isEmpty() == false){
+				for(TorrentFile file: info.getFiles()){
 					matcher = pattern.matcher(file.getName().toLowerCase());
 					if(matcher.find()){
-						result.getTorrentRejections().add(TorrentRejection.CONTAINS_EXCLUDED_FILE_TYPES);
-						break;
+						return false;
 					}
 				}
-			}else{
-				matcher = pattern.matcher(torrent.getInfo().getName().toLowerCase());
-				if(matcher.find()){
-					result.getTorrentRejections().add(TorrentRejection.CONTAINS_EXCLUDED_FILE_TYPES);
-				}
-			}
+			}else if( DelimeatUtils.isNotEmpty(info.getName()) ){
+         	matcher = pattern.matcher(info.getName().toLowerCase());
+         	return (matcher.find() == false);
+         }
 		}
+      return true;
 	}
+  
+  
+    @Override
+    public FeedResultRejection getRejection() {
+        return FeedResultRejection.CONTAINS_EXCLUDED_FILE_TYPES;
+    }
 
 }

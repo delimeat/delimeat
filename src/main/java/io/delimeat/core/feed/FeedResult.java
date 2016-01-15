@@ -13,7 +13,6 @@ public class FeedResult {
 	protected long seeders;
 	protected long leechers;
 	protected List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
-	protected List<TorrentRejection> torrentRejections = new ArrayList<TorrentRejection>();
 	protected Torrent torrent;
 
 	public String getTorrentURL() {
@@ -65,14 +64,6 @@ public class FeedResult {
 		this.feedResultRejections = feedResultRejections;
 	}
 
-	public List<TorrentRejection> getTorrentRejections() {
-		return torrentRejections;
-	}
-
-	public void setTorrentRejections(List<TorrentRejection> torrentRejections) {
-		this.torrentRejections = torrentRejections;
-	}
-
 	public Torrent getTorrent() {
 		return torrent;
 	}
@@ -88,7 +79,7 @@ public class FeedResult {
 				+ ", leechers=" + leechers + ", torrent="
 				+ (torrent != null ? torrent : null)
 				+ ", feedResultRejections=" + feedResultRejections
-				+ ", torrentRejections=" + torrentRejections + "]";
+				 + "]";
 	}
 
 }

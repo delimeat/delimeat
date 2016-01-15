@@ -98,6 +98,8 @@ public class ShowJpaDao_ImplTest {
 		show.setShowType(ShowType.ANIMATED);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
+      show.setMinSize(Integer.MIN_VALUE);
+      show.setMaxSize(Integer.MAX_VALUE);
 
 		Episode prevEpisode = new Episode();
 		prevEpisode.setAirDate(SDF.parse("2015-10-15"));
@@ -123,6 +125,8 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertNotEquals(0, newShow.getShowId());
 		Assert.assertTrue(newShow.isAiring());
 		Assert.assertEquals(1, show.getAirTime());
+      Assert.assertEquals(Integer.MIN_VALUE, show.getMinSize());
+      Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
 
 		Assert.assertNotNull(show.getGuideSources());
 		Assert.assertEquals(1, newShow.getGuideSources().size());
@@ -175,7 +179,9 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals("TIMEZONE", show.getTimezone());
 		Assert.assertEquals("TITLE", show.getTitle());
 		Assert.assertEquals(99, show.getVersion());
-
+		Assert.assertEquals(100, show.getMinSize());
+     	Assert.assertEquals(101, show.getMaxSize());
+     
 		Assert.assertNotNull(show.getNextEpisode());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());
 		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDate()));
@@ -270,6 +276,9 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals("TIMEZONE", show.getTimezone());
 		Assert.assertEquals("TITLE", show.getTitle());
 		Assert.assertEquals(99, show.getVersion());
+		Assert.assertEquals(100, show.getMinSize());
+		Assert.assertEquals(101, show.getMaxSize());
+     
 
 		Assert.assertNotNull(show.getNextEpisode());
 		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());

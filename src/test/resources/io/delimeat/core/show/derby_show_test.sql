@@ -11,6 +11,8 @@ SHOW
 	TIMEZONE, 
 	TITLE, 
 	VERSION, 
+   MIN_SIZE,
+   MAX_SIZE,
 	NEXT_EPISODE_ID, 
 	PREV_EPISODE_ID)
 VALUES
@@ -25,6 +27,8 @@ VALUES
 	'TIMEZONE',
 	'TITLE',
 	99,
+   100,
+   101,
 	null,
 	null
 	);

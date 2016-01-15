@@ -1,19 +1,27 @@
 package io.delimeat.core.feed.validation;
 
-import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.TorrentRejection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.ScrapeResult;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
 import io.delimeat.core.torrent.UnhandledScrapeException;
+import io.delimeat.util.DelimeatUtils;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Iterator;
 
 public class TorrentSeederValidator_Impl implements TorrentValidator {
 
+   private static final Log LOG = LogFactory.getLog(TorrentSeederValidator_Impl.class);
 	private static final long MINSEEDERS = 20;
 
 	private TorrentDao torrentDao;
@@ -27,63 +35,45 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
 	}
 	
 	@Override
-	public void validate(FeedResult result, Show show)
+	public boolean validate(Torrent torrent, Show show, Config config)
 			throws TorrentValidatorException {
-		// only scrap results not rejected
-		if(result.getTorrentRejections().size()==0){
-			TorrentDao dao = getTorrentDao();
-			Torrent torrent = result.getTorrent();
-			byte[] infoHash = torrent.getInfo().getInfoHash();
-			ScrapeResult scrape = null;
-			if(torrent.getTrackers()!=null && torrent.getTrackers().size()>0){
-				for(String tracker: torrent.getTrackers()){
-					try{
-						scrape = dao.scrape(new URI(tracker), infoHash);
-						break;
-					}catch(SocketTimeoutException e){
-						//move on to next tracker
-					}/*
-					catch(IOException e){
-						//do nothing probably a timeout
-					}*/
-					catch(UnhandledScrapeException e){
-						//do nothing, cant scrape
-					}
-					catch(TorrentException e){
-						//do nothing move on
-					}
-					catch(Exception e){
-						//this is unexpected throw it
-						throw new TorrentValidatorException(e);
-					}
-				}
-			}else if(torrent.getTracker()!=null){
-				try{
-					scrape = dao.scrape(new URI(torrent.getTracker()), infoHash);
-				}catch(SocketTimeoutException e){
-					//move on to next tracker
-				}
-				catch(UnhandledScrapeException e){
-					//do nothing, cant scrape
-				}
-				catch(TorrentException e){
-					//do nothing move on
-				}
-				catch(Exception e){
-					//this is unexpected throw it
-					throw new TorrentValidatorException(e);
-				}
-			}
-			if(scrape!=null){
-				result.setSeeders(scrape.getSeeders());
-				result.setLeechers(scrape.getLeechers());
-			}
-			long resultSeeders = result.getSeeders();
-			if(resultSeeders<MINSEEDERS){
-				result.getTorrentRejections().add(TorrentRejection.INSUFFICENT_SEEDERS);
-			}
-		
-		}
+     
+     final byte[] infoHash = torrent.getInfo().getInfoHash();
+     ScrapeResult scrape = null;
+     if(torrent.getTrackers() != null && torrent.getTrackers().isEmpty() == false){
+       Iterator<String> it = torrent.getTrackers().iterator();
+       while(scrape==null && it.hasNext()){
+         scrape = scrape(it.next(),infoHash);
+       }
+     }
+     else if(DelimeatUtils.isNotEmpty(torrent.getTracker())){
+     		scrape = scrape(torrent.getTracker(),infoHash);
+     }
+
+     return (scrape != null && scrape.getSeeders() >= MINSEEDERS);
 	}
+   
+   public ScrapeResult scrape(String tracker, byte[] infohash){
+       try{
+         return getTorrentDao().scrape(new URI(tracker), infohash);
+       }catch(SocketTimeoutException e){
+         LOG.info("Timed out scraping tracker "+ tracker, e);
+       } catch (UnhandledScrapeException e) {
+         LOG.info("Unnable to scrape tracker "+ tracker, e);
+       } catch (IOException e) {
+         LOG.info("Unnable to scrape tracker "+ tracker, e);
+       } catch (TorrentException e) {
+         LOG.info("Unnable to scrape tracker "+ tracker, e);
+       } catch (URISyntaxException e) {
+         LOG.info("Unnable to scrape tracker "+ tracker, e);
+       }  
+     	return null;
+   }
+  
+  
+    @Override
+    public FeedResultRejection getRejection() {
+        return FeedResultRejection.INSUFFICENT_SEEDERS;
+    }
 
 }

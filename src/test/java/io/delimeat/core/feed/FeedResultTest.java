@@ -66,18 +66,6 @@ public class FeedResultTest {
 	}
 	
 	@Test
-	public void torrentRejectionsTest(){
-		Assert.assertNotNull(result.getTorrentRejections());
-		Assert.assertEquals(0, result.getTorrentRejections().size());
-		
-		result.setTorrentRejections(Arrays.asList(TorrentRejection.CONTAINS_COMPRESSED,TorrentRejection.CONTAINS_EXCLUDED_FILE_TYPES));
-		
-		Assert.assertEquals(2, 0, result.getTorrentRejections().size());
-		Assert.assertEquals(TorrentRejection.CONTAINS_COMPRESSED, result.getTorrentRejections().get(0));
-		Assert.assertEquals(TorrentRejection.CONTAINS_EXCLUDED_FILE_TYPES, result.getTorrentRejections().get(1));		
-	}
-	
-	@Test
 	public void torrentTest(){
 		Assert.assertNull(result.getTorrent());
 		
