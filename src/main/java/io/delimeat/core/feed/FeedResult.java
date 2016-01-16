@@ -12,6 +12,7 @@ public class FeedResult {
 	protected long contentLength;
 	protected long seeders;
 	protected long leechers;
+	
 	protected List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
 	protected Torrent torrent;
 

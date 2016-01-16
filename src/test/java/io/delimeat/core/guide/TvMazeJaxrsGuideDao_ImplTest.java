@@ -180,7 +180,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 	private TvMazeJaxrsGuideDao_Impl dao;
 
 	@Before
-	public void before() throws Exception {
+	public void setUp() throws Exception {
 		dao = new TvMazeJaxrsGuideDao_Impl();
 	}
 
