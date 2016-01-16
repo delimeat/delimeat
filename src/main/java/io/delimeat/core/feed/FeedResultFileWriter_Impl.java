@@ -1,11 +1,12 @@
 package io.delimeat.core.feed;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.torrent.Torrent;
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class FeedResultFileWriter_Impl implements FeedResultWriter {
@@ -13,17 +14,27 @@ public class FeedResultFileWriter_Impl implements FeedResultWriter {
 	private UrlHandler urlHandler;
 	
 	@Override
-	public void write(Torrent torrent, Config config) throws FeedException {
-		final String outputDirectory = config.getOutputDirectory();
-		final String fileName = torrent.getInfo().getName() + ".torrent";
-		final String filePath = outputDirectory + System.getProperty("file.separator") + fileName;
+	public void write(String fileName, byte[] bytes, Config config) throws FeedException {
+		final String outputDirectory;
+		if( DelimeatUtils.isNotEmpty(config.getOutputDirectory()) ){
+			outputDirectory = config.getOutputDirectory();
+		}else {
+			outputDirectory = System.getProperty("user.home");
+		}	
+		final String outputUrl = "file:" + outputDirectory + "/" + fileName;
 		try{
-			OutputStream output = getUrlHandler().openOutput(new URL("file:"+filePath));
-			output.write(torrent.getBytes());
+			final URL url = new URL(outputUrl);
+			try{
+				url.toURI();
+			}catch(URISyntaxException ex){
+				throw new FeedException("Unnable to write to malformed url " + outputUrl, ex);
+			}
+			final OutputStream output = getUrlHandler().openOutput(url);
+			output.write(bytes);
 			output.flush();
 			output.close();
 		}catch(IOException ex){
-			throw new FeedException(ex);
+			throw new FeedException("Unnable to write to " + outputUrl ,ex);
 		}
 	}
 
