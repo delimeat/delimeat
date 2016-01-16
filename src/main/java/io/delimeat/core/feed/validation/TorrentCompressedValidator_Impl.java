@@ -18,20 +18,22 @@ public class TorrentCompressedValidator_Impl implements TorrentValidator {
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException {
 		final Pattern fileTypePattern = Pattern.compile(REGEX);
-      final TorrentInfo info = torrent.getInfo();
-      Matcher fileTypeMatcher;
-		if(info.getFiles() != null && info.getFiles().isEmpty() == false ){
-			for(TorrentFile file: info.getFiles()){
-				fileTypeMatcher = fileTypePattern.matcher(file.getName().toLowerCase());
-				if(fileTypeMatcher.find()){
+		final TorrentInfo info = torrent.getInfo();
+		Matcher fileTypeMatcher;
+		if (info.getFiles() != null && info.getFiles().isEmpty() == false) {
+			for (TorrentFile file : info.getFiles()) {
+				fileTypeMatcher = fileTypePattern.matcher(file.getName()
+						.toLowerCase());
+				if (fileTypeMatcher.find()) {
 					return false;
 				}
 			}
-		}else if( DelimeatUtils.isNotEmpty(info.getName()) ){
-		  fileTypeMatcher = fileTypePattern.matcher(info.getName().toLowerCase());
-        return fileTypeMatcher.find() == false;
-      }
-      return true;
+		} else if (DelimeatUtils.isNotEmpty(info.getName())) {
+			fileTypeMatcher = fileTypePattern.matcher(info.getName()
+					.toLowerCase());
+			return fileTypeMatcher.find() == false;
+		}
+		return true;
 	}
 
     @Override
