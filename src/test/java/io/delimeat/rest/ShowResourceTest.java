@@ -359,11 +359,8 @@ public class ShowResourceTest extends JerseyTest{
 	public void deleteTest() throws Exception{
 		Response response = target("shows").path("1").request().delete();
 		Assert.assertEquals(204, response.getStatus());
-		//TODO change to actuall return a useful message
-		//Assert.assertEquals(200, response.getStatus());
-		//Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));	
 		
-		Mockito.verify(mockedShowService).delete(Mockito.anyLong());
+		Mockito.verify(mockedShowService).delete(1l);
 	}
 
 	@Test

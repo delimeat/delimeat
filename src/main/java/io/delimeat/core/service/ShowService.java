@@ -18,5 +18,7 @@ public interface ShowService {
 	public Show update(Show show) throws ShowConcurrencyException, ShowException;
 
 	public void delete(Long id) throws ShowNotFoundException, ShowException;
+	
+	public void updateNextEpisode(Show show) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 
 }

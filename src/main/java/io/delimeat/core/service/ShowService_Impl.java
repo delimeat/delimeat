@@ -67,4 +67,11 @@ public class ShowService_Impl implements ShowService {
 		return show;
 	}
 
+	@Override
+	public void updateNextEpisode(Show show) throws ShowNotFoundException,
+			ShowConcurrencyException, ShowException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
