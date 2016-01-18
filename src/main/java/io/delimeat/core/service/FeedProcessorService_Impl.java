@@ -153,73 +153,40 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 	//TODO add test case
 	@Override
 	public boolean process(FeedProcessor processor, Show show) throws ConfigException, FeedException, ShowException {
-		
-		// read feed results
+		//TODO make transactional & lock the show
+      // read feed results
 		final List<FeedResult> readResults = fetchResults(processor, show);
-		
+		// validate the read results
 		final List<FeedResult> foundResults = validateFeedResults(processor, show, readResults);
-		
+		// get the config
 		final Config config = configService.read();
-		
-		final List<FeedResult> validResults = new ArrayList<FeedResult>();
-		final Iterator<FeedResult> foundResultsIterator = foundResults.iterator();
-		while(processor.getStatus() == FeedProcessorStatus.STARTED 
-				&& foundResultsIterator.hasNext()){
-			FeedResult result = foundResultsIterator.next();
-			
-			Torrent torrent;
-			try{			
-				torrent = fetchTorrent(result);
-			}catch(MalformedURLException ex){
-				LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
-				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);	
-				continue;
-			}catch(URISyntaxException ex){
-				LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
-				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
-				continue;
-			}catch(IOException ex){
-				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
-				continue;					
-			}catch(TorrentException ex){
-				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
-				continue;					
-			}
-			result.setTorrent(torrent);
-			
-			// perform torrent validations
-			validateResultTorrent(processor,result,torrent,config,show);
-			
-			// if it aint rejected yet its valid!
-			if( DelimeatUtils.isCollectionEmpty(result.getFeedResultRejections()) ){
-				validResults.add(result);
-			}
-		}
+		// select all the valid results based on the torrent files
+		final List<FeedResult> validResults = validateResultTorrents(processor, foundResults, config, show);
 		
 		if(processor.getStatus() == FeedProcessorStatus.STARTED){
-			FeedResult selectedResult =  selectResult(validResults,config);
+         // select the best result
+			final FeedResult selectedResult =  selectResult(validResults,config);
 			
-			// if nothing has been found yet or its incomplete we were unsuccessful
-			if(selectedResult == null || selectedResult.getTorrent() == null 
-					|| selectedResult.getTorrent().getInfo() == null
-					|| DelimeatUtils.isEmpty(selectedResult.getTorrent().getInfo().getName()) )
+			// if something has been found and its valid output it
+			if(selectedResult != null && selectedResult.getTorrent() != null 
+					&& selectedResult.getTorrent().getInfo() != null
+					&& DelimeatUtils.isEmpty(selectedResult.getTorrent().getInfo().getName()) )
 			{
-				return false;
-			}
-			
-			final Torrent torrent = selectedResult.getTorrent();
-			final String fileName = torrent.getInfo().getName();
-			feedResultWriter.write(fileName, torrent.getBytes(), config);
-			
-			// try setting the next episode
-			show.setPreviousEpisode(show.getNextEpisode());
-			show.setNextEpisode(null);
-			show.setLastFeedUpdate(new Date());
-			showService.update(show);
-			
-			processor.setFoundResults(foundResults);
-			processor.setSelectedResult(selectedResult);
-			return true;
+               final Torrent torrent = selectedResult.getTorrent();
+               final String fileName = torrent.getInfo().getName();
+               feedResultWriter.write(fileName, torrent.getBytes(), config);
+
+               // try setting the next episode
+               //TODO maybe need to include functionality for double eps
+               show.setPreviousEpisode(show.getNextEpisode());
+               show.setNextEpisode(null);
+               show.setLastFeedUpdate(new Date());
+               showService.update(show); //maybe add in catch for concurrent updates???
+
+               processor.setFoundResults(foundResults);
+               processor.setSelectedResult(selectedResult);
+               return true;
+         }
 		}
 		return false;
 
@@ -277,7 +244,7 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 		return torrentDao.read(uri);
 	}
 	
-	public void validateResultTorrent(FeedProcessor processor, FeedResult result, Torrent torrent, Config config, Show show) throws FeedValidationException{
+	public void validateTorrent(FeedProcessor processor, FeedResult result, Torrent torrent, Config config, Show show) throws FeedValidationException{
 		// perform torrent validations
 		final List<TorrentValidator> validators = new ArrayList<TorrentValidator>();
 		validators.addAll(torrentValidators);
@@ -309,4 +276,42 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 		}
 		return result;
 	}
+  
+  public List<FeedResult> validateResultTorrents(FeedProcessor processor, List<FeedResult> inResults, Config config, Show show) throws FeedValidationException{
+    	final List<FeedResult> outResults = new ArrayList<FeedResult>();
+		final Iterator<FeedResult> foundResultsIterator = inResults.iterator();
+		while(processor.getStatus() == FeedProcessorStatus.STARTED 
+				&& foundResultsIterator.hasNext()){
+			FeedResult result = foundResultsIterator.next();
+			
+			Torrent torrent;
+			try{			
+				torrent = fetchTorrent(result);
+			}catch(MalformedURLException ex){
+				LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
+				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);	
+				continue;
+			}catch(URISyntaxException ex){
+				LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
+				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
+				continue;
+			}catch(IOException ex){
+				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
+				continue;					
+			}catch(TorrentException ex){
+				result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
+				continue;					
+			}
+			result.setTorrent(torrent);
+			
+			// perform torrent validations
+			validateTorrent(processor,result,torrent,config,show);
+			
+			// if it aint rejected yet its valid!
+			if( DelimeatUtils.isCollectionEmpty(result.getFeedResultRejections()) ){
+				outResults.add(result);
+			}
+		}
+    return outResults;
+  }
 }

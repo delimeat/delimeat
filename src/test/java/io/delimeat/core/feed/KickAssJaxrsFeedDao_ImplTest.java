@@ -179,7 +179,8 @@ public class KickAssJaxrsFeedDao_ImplTest {
 		Assert.assertEquals(30, results.get(0).getLeechers());
 		Assert.assertEquals("http://test.com", results.get(0).getTorrentURL());
 	}
-	@Test
+  
+	//@Test
 	public void test() throws Exception {
 		ClientConfig clientConfig = new ClientConfig();
 
