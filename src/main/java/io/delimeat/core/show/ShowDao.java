@@ -36,4 +36,13 @@ public interface ShowDao {
 	 * @throws Exception
 	 */
 	public List<Show> readAll() throws ShowException;
+  
+	/**
+	 * read and lock a show
+	 * 
+	 * @param showId
+	 * @return Show
+	 * @throws Exception
+	 */
+	public Show readAndLock(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException; 
 }

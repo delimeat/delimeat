@@ -12,6 +12,7 @@ import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
 import io.delimeat.core.show.Show;
+import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowType;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
@@ -49,11 +50,11 @@ public class FeedProcessorService_ImplTest {
 	}
 	
 	@Test
-	public void showServiceTest(){
-		Assert.assertNull(service.getShowService());
-		ShowService mockedService = Mockito.mock(ShowService.class);
-		service.setShowService(mockedService);
-		Assert.assertEquals(mockedService, service.getShowService());
+	public void showDaoTest(){
+		Assert.assertNull(service.getShowDao());
+		ShowDao mockedDao = Mockito.mock(ShowDao.class);
+		service.setShowDao(mockedDao);
+		Assert.assertEquals(mockedDao, service.getShowDao());
 	}
 
 	@Test

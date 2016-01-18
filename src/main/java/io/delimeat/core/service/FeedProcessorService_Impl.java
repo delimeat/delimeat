@@ -13,6 +13,7 @@ import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
 import io.delimeat.core.show.Show;
+import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
@@ -39,7 +40,7 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 	private static final Log LOG = LogFactory.getLog(FeedProcessorService_Impl.class);
 	
 	private ConfigService configService;
-	private ShowService showService;
+	private ShowDao showDao;
 	private GuideService guideService;
 	private List<FeedDao> feedDaos;
 	private TorrentDao torrentDao;
@@ -59,12 +60,12 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 		this.configService = configService;
 	}
 
-	public ShowService getShowService() {
-		return showService;
+	public ShowDao getShowDao() {
+		return showDao;
 	}
 
-	public void setShowService(ShowService showService) {
-		this.showService = showService;
+	public void setShowDao(ShowDao showDao) {
+		this.showDao = showDao;
 	}
 
 	public GuideService getGuideService() {
@@ -153,15 +154,15 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 	//TODO add test case
 	@Override
 	public boolean process(FeedProcessor processor, Show show) throws ConfigException, FeedException, ShowException {
-		//TODO make transactional & lock the show
+		Show lockedShow = showDao.readAndLock(show.getShowId());
       // read feed results
-		final List<FeedResult> readResults = fetchResults(processor, show);
+		final List<FeedResult> readResults = fetchResults(processor, lockedShow);
 		// validate the read results
-		final List<FeedResult> foundResults = validateFeedResults(processor, show, readResults);
+		final List<FeedResult> foundResults = validateFeedResults(processor, lockedShow, readResults);
 		// get the config
 		final Config config = configService.read();
 		// select all the valid results based on the torrent files
-		final List<FeedResult> validResults = validateResultTorrents(processor, foundResults, config, show);
+		final List<FeedResult> validResults = validateResultTorrents(processor, foundResults, config, lockedShow);
 		
 		if(processor.getStatus() == FeedProcessorStatus.STARTED){
          // select the best result
@@ -178,10 +179,10 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 
                // try setting the next episode
                //TODO maybe need to include functionality for double eps
-               show.setPreviousEpisode(show.getNextEpisode());
-               show.setNextEpisode(null);
-               show.setLastFeedUpdate(new Date());
-               showService.update(show); //maybe add in catch for concurrent updates???
+               lockedShow.setPreviousEpisode(lockedShow.getNextEpisode());
+               lockedShow.setNextEpisode(null);
+               lockedShow.setLastFeedUpdate(new Date());
+               showDao.createOrUpdate(lockedShow);
 
                processor.setFoundResults(foundResults);
                processor.setSelectedResult(selectedResult);

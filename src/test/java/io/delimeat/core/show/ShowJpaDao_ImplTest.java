@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 
 import org.apache.derby.tools.ij;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -347,6 +348,70 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals("UPDATED PREV EP", readShow.getPreviousEpisode().getTitle());
 		Assert.assertEquals(updatedShow.getVersion(), readShow.getVersion());
 
+	}
+  
+	@Test
+	public void readAndLockShowTest() throws Exception {
+
+		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+
+		Show show = dao.readAndLock(1);
+      Assert.assertEquals(LockModeType.PESSIMISTIC_WRITE, entityManager.getLockMode(show));
+		Assert.assertEquals(1, show.getShowId());
+		Assert.assertEquals(1200, show.getAirTime());
+		Assert.assertTrue(show.isAiring());
+		Assert.assertFalse(show.isEnabled());
+		Assert.assertTrue(show.isIncludeSpecials());
+		Assert.assertEquals("1988-12-25", SDF.format(show.getLastFeedUpdate()));
+		Assert.assertNull(show.getLastGuideUpdate());
+		Assert.assertEquals(ShowType.ANIMATED, show.getShowType());
+		Assert.assertEquals("TIMEZONE", show.getTimezone());
+		Assert.assertEquals("TITLE", show.getTitle());
+		Assert.assertEquals(99, show.getVersion());
+		Assert.assertEquals(100, show.getMinSize());
+     	Assert.assertEquals(101, show.getMaxSize());
+     
+		Assert.assertNotNull(show.getNextEpisode());
+		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());
+		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDate()));
+		Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
+		Assert.assertEquals(2, show.getNextEpisode().getEpisodeNum());
+		Assert.assertEquals("NEXT EPISODE", show.getNextEpisode().getTitle());
+		Assert.assertFalse(show.getNextEpisode().isDoubleEp());
+		Assert.assertEquals(3, show.getNextEpisode().getVersion());
+		Assert.assertNotNull(show.getNextEpisode().getShow());
+		Assert.assertEquals(1, show.getNextEpisode().getShow().getShowId());
+
+		Assert.assertNotNull(show.getPreviousEpisode());
+		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeId());
+		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDate()));
+		Assert.assertEquals(2, show.getPreviousEpisode().getSeasonNum());
+		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeNum());
+		Assert.assertEquals("PREVIOUS EPISODE", show.getPreviousEpisode().getTitle());
+		Assert.assertTrue(show.getPreviousEpisode().isDoubleEp());
+		Assert.assertEquals(4, show.getPreviousEpisode().getVersion());
+		Assert.assertNotNull(show.getPreviousEpisode().getShow());
+		Assert.assertEquals(1, show.getPreviousEpisode().getShow().getShowId());
+		Assert.assertNotNull(show.getPreviousEpisode().getResults());
+		Assert.assertEquals(1, show.getPreviousEpisode().getResults().size());
+		Assert.assertEquals(1, show.getPreviousEpisode().getResults().get(0).getEpisodeResultId());
+		Assert.assertEquals(FeedSource.KAT, show.getPreviousEpisode().getResults().get(0).getSource());
+		Assert.assertEquals("http://www.test.com", show.getPreviousEpisode().getResults().get(0).getUrl());
+		Assert.assertEquals("BYTES", show.getPreviousEpisode().getResults().get(0).getResult());
+		Assert.assertTrue(show.getPreviousEpisode().getResults().get(0).isValid());
+		Assert.assertEquals(99, show.getPreviousEpisode().getResults().get(0).getVersion());
+		Assert.assertNotNull(show.getPreviousEpisode().getResults().get(0).getEpisode());
+		Assert.assertEquals(3, show.getPreviousEpisode().getResults().get(0).getEpisode().getEpisodeId());
+
+		Assert.assertEquals(1, show.getGuideSources().size());
+		Assert.assertEquals("GUIDEID", show.getGuideSources().get(0).getGuideId());
+		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
+		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
+		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -69,6 +70,20 @@ public class ShowJpaDao_Impl implements ShowDao {
         
          return em.createNamedQuery("Show.getAll",Show.class).getResultList();
 		
+		} catch (PersistenceException ex){
+			throw new ShowException(ex);
+		}
+	}
+  
+	@Override
+	public Show readAndLock(long showId) throws ShowNotFoundException, ShowException {
+		try{
+         Show show = em.getReference(Show.class, showId);
+         em.lock(show, LockModeType.PESSIMISTIC_WRITE);
+			return show;
+		
+		} catch (EntityNotFoundException ex){
+			throw new ShowNotFoundException(ex);
 		} catch (PersistenceException ex){
 			throw new ShowException(ex);
 		}

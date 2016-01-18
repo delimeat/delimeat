@@ -10,9 +10,6 @@ import io.delimeat.util.DelimeatUtils;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
-@Transactional
 public class ShowService_Impl implements ShowService {
 
 	private ShowDao showDao;
@@ -65,13 +62,6 @@ public class ShowService_Impl implements ShowService {
 			show.getPreviousEpisode().setShow(show);
 		}
 		return show;
-	}
-
-	@Override
-	public void updateNextEpisode(Show show) throws ShowNotFoundException,
-			ShowConcurrencyException, ShowException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
