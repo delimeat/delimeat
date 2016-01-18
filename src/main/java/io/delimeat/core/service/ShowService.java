@@ -7,23 +7,16 @@ import io.delimeat.core.show.ShowNotFoundException;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 public interface ShowService {
 
-   @Transactional
 	public Show create(Show show) throws ShowConcurrencyException, ShowException;
 
-   @Transactional
 	public Show read(Long id) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 
-   @Transactional
 	public List<Show> readAll() throws ShowException;
 
-   @Transactional
 	public Show update(Show show) throws ShowConcurrencyException, ShowException;
 
-  	@Transactional
 	public void delete(Long id) throws ShowNotFoundException, ShowException;
 	
 }

@@ -10,6 +10,8 @@ import io.delimeat.util.DelimeatUtils;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 public class ShowService_Impl implements ShowService {
 
 	private ShowDao showDao;
@@ -23,26 +25,31 @@ public class ShowService_Impl implements ShowService {
 	}
 
 	@Override
+	@Transactional
 	public Show create(Show show) throws ShowConcurrencyException, ShowException {
 		return getShowDao().createOrUpdate(prepareShow(show));
 	}
 
 	@Override
+	@Transactional
 	public Show read(Long id) throws ShowNotFoundException, ShowConcurrencyException, ShowException {
 		return getShowDao().read(id);
 	}
 
 	@Override
+	@Transactional
 	public List<Show> readAll() throws ShowException {
 		return getShowDao().readAll();
 	}
 
 	@Override
+	@Transactional
 	public Show update(Show show) throws ShowConcurrencyException, ShowException {
 		return getShowDao().createOrUpdate(prepareShow(show));
 	}
 
 	@Override
+	@Transactional
 	public void delete(Long id) throws ShowNotFoundException, ShowException {
 		getShowDao().delete(id);
 	}

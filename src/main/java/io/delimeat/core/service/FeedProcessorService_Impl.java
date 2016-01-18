@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -153,6 +155,7 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 
 	//TODO add test case
 	@Override
+	@Transactional
 	public boolean process(FeedProcessor processor, Show show) throws ConfigException, FeedException, ShowException {
 		Show lockedShow = showDao.readAndLock(show.getShowId());
       // read feed results
