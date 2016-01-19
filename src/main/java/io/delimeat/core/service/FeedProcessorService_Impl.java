@@ -156,41 +156,45 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 	//TODO add test case
 	@Override
 	@Transactional
-	public boolean process(FeedProcessor processor, Show show) throws ConfigException, FeedException, ShowException {
+	public boolean process(FeedProcessor processor, Show show)
+			throws ConfigException, FeedException, ShowException {
 		Show lockedShow = showDao.readAndLock(show.getShowId());
-      // read feed results
+		// read feed results
 		final List<FeedResult> readResults = fetchResults(processor, lockedShow);
 		// validate the read results
-		final List<FeedResult> foundResults = validateFeedResults(processor, lockedShow, readResults);
+		final List<FeedResult> foundResults = validateFeedResults(processor, readResults,
+				lockedShow);
 		// get the config
 		final Config config = configService.read();
 		// select all the valid results based on the torrent files
-		final List<FeedResult> validResults = validateResultTorrents(processor, foundResults, config, lockedShow);
-		
-		if(processor.getStatus() == FeedProcessorStatus.STARTED){
-         // select the best result
-			final FeedResult selectedResult =  selectResult(validResults,config);
-			
+		final List<FeedResult> validResults = validateResultTorrents(processor,
+				foundResults, lockedShow, config);
+
+		if (processor.getStatus() == FeedProcessorStatus.STARTED) {
+			// select the best result
+			final FeedResult selectedResult = selectResult(validResults, config);
+
 			// if something has been found and its valid output it
-			if(selectedResult != null && selectedResult.getTorrent() != null 
+			if (selectedResult != null
+					&& selectedResult.getTorrent() != null
 					&& selectedResult.getTorrent().getInfo() != null
-					&& DelimeatUtils.isEmpty(selectedResult.getTorrent().getInfo().getName()) )
-			{
-               final Torrent torrent = selectedResult.getTorrent();
-               final String fileName = torrent.getInfo().getName();
-               feedResultWriter.write(fileName, torrent.getBytes(), config);
+					&& DelimeatUtils.isEmpty(selectedResult.getTorrent()
+							.getInfo().getName())) {
+				final Torrent torrent = selectedResult.getTorrent();
+				final String fileName = torrent.getInfo().getName();
+				feedResultWriter.write(fileName, torrent.getBytes(), config);
 
-               // try setting the next episode
-               //TODO maybe need to include functionality for double eps
-               lockedShow.setPreviousEpisode(lockedShow.getNextEpisode());
-               lockedShow.setNextEpisode(null);
-               lockedShow.setLastFeedUpdate(new Date());
-               showDao.createOrUpdate(lockedShow);
+				// try setting the next episode
+				// TODO maybe need to include functionality for double eps
+				lockedShow.setPreviousEpisode(lockedShow.getNextEpisode());
+				lockedShow.setNextEpisode(null);
+				lockedShow.setLastFeedUpdate(new Date());
+				showDao.createOrUpdate(lockedShow);
 
-               processor.setFoundResults(foundResults);
-               processor.setSelectedResult(selectedResult);
-               return true;
-         }
+				processor.setFoundResults(foundResults);
+				processor.setSelectedResult(selectedResult);
+				return true;
+			}
 		}
 		return false;
 
@@ -214,7 +218,7 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 		return readResults;
 	}
 	
-	public List<FeedResult> validateFeedResults(FeedProcessor processor, Show show, List<FeedResult> results) throws FeedValidationException{
+	public List<FeedResult> validateFeedResults(FeedProcessor processor, List<FeedResult> results, Show show) throws FeedValidationException{
 		final Iterator<FeedResultValidator> resultValidatorIterator;
 		switch(show.getShowType()){
 			case DAILY:
@@ -281,7 +285,7 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 		return result;
 	}
   
-  public List<FeedResult> validateResultTorrents(FeedProcessor processor, List<FeedResult> inResults, Config config, Show show) throws FeedValidationException{
+  public List<FeedResult> validateResultTorrents(FeedProcessor processor, List<FeedResult> inResults, Show show, Config config) throws FeedValidationException{
     	final List<FeedResult> outResults = new ArrayList<FeedResult>();
 		final Iterator<FeedResult> foundResultsIterator = inResults.iterator();
 		while(processor.getStatus() == FeedProcessorStatus.STARTED 

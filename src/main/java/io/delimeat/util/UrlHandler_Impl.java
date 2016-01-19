@@ -34,7 +34,7 @@ public class UrlHandler_Impl implements UrlHandler {
 	public OutputStream openOutput(URL url) throws IOException {
 		OutputStream os;
 		if ("file".equalsIgnoreCase(url.getProtocol())) {
-			os = new FileOutputStream(url.getFile(), true);
+			os = new FileOutputStream(url.getFile());
 
 		} else {
 			URLConnection conn = openUrlConnection(url);

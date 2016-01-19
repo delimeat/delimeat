@@ -44,15 +44,18 @@ public class GuideService_Impl implements GuideService {
 	}
 
 	@Override
-	public List<GuideEpisode> readEpisodes(final String guideId) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
+	public List<GuideEpisode> readEpisodes(final String guideId)
+			throws GuideNotFoundException, GuideNotAuthorisedException,
+			GuideException {
 		List<GuideEpisode> eps = infoDao.episodes(guideId);
-      Iterator<GuideEpisode> it = eps.iterator();
-		while(it.hasNext()){
-        GuideEpisode ep = it.next();
-			if(ep.getSeasonNum() == null || ep.getSeasonNum() == 0 || ep.getAirDate() == null){
+		Iterator<GuideEpisode> it = eps.iterator();
+		while (it.hasNext()) {
+			GuideEpisode ep = it.next();
+			if (ep.getSeasonNum() == null || ep.getSeasonNum() == 0
+					|| ep.getAirDate() == null) {
 				it.remove();
 			}
-      }      
+		}
 		return eps;
 	}
 

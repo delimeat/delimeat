@@ -216,7 +216,7 @@ public class FeedProcessorService_ImplTest {
 		Show show = new Show();
 		show.setShowType(ShowType.SEASON);
 		
-		service.validateFeedResults(processor, show, new ArrayList<FeedResult>());
+		service.validateFeedResults(processor, new ArrayList<FeedResult>(), show);
 		
 		Mockito.verifyZeroInteractions(validator);
 	}
@@ -238,7 +238,7 @@ public class FeedProcessorService_ImplTest {
 		
 		List<FeedResult> inResults = Arrays.asList(result1,result2);
 		
-		List<FeedResult> outResults = service.validateFeedResults(processor, show, inResults);
+		List<FeedResult> outResults = service.validateFeedResults(processor, inResults, show);
 		Assert.assertEquals(1, outResults.size());
 		Assert.assertEquals(result2, outResults.get(0));
 	}
@@ -260,7 +260,7 @@ public class FeedProcessorService_ImplTest {
 		
 		List<FeedResult> inResults = Arrays.asList(result1,result2);
 		
-		List<FeedResult> outResults = service.validateFeedResults(processor, show, inResults);
+		List<FeedResult> outResults = service.validateFeedResults(processor, inResults, show);
 		Assert.assertEquals(1, outResults.size());
 		Assert.assertEquals(result1, outResults.get(0));
 	}
@@ -477,7 +477,7 @@ public class FeedProcessorService_ImplTest {
 		Config config = new Config();
 		config.setIgnoreFolders(false);
       
-      List<FeedResult> results = service.validateResultTorrents(processor, Arrays.asList(result1,result2,result3,result4,result5,result6), config, null);
+      List<FeedResult> results = service.validateResultTorrents(processor, Arrays.asList(result1,result2,result3,result4,result5,result6), null, config);
 		Mockito.verify(dao,Mockito.times(4)).read(Mockito.any(URI.class));
   		Mockito.verify(validator,Mockito.times(2)).validate(Mockito.any(Torrent.class), Mockito.any(Show.class),  Mockito.any(Config.class));
       Assert.assertEquals(1,results.size());
@@ -493,6 +493,28 @@ public class FeedProcessorService_ImplTest {
       Assert.assertEquals(FeedResultRejection.UNNABLE_TO_GET_TORRENT,result5.getFeedResultRejections().get(0));
       Assert.assertEquals(1,result6.getFeedResultRejections().size());
       Assert.assertEquals(FeedResultRejection.CONTAINS_COMPRESSED,result6.getFeedResultRejections().get(0));
+  }
+  
+  @Test(expected=FeedValidationException.class)
+  public void validatResultTorrentsExceptionTest() throws Exception{
+		FeedResult result = new FeedResult();
+		result.setTorrentURL("http://test.com");
+  
+		TorrentDao dao = Mockito.mock(TorrentDao.class);
+		Torrent torrent = new Torrent();
+		Mockito.when(dao.read(Mockito.any(URI.class))).thenReturn(torrent);
+		service.setTorrentDao(dao);
+  
+		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
+		Mockito.when(validator.validate(Mockito.any(Torrent.class), Mockito.any(Show.class),  Mockito.any(Config.class))).thenThrow(FeedValidationException.class);
+		service.setTorrentValidators(Arrays.asList(validator));
+
+		FeedProcessor processor = Mockito.mock(FeedProcessor.class);
+		Mockito.when(processor.getStatus()).thenReturn(FeedProcessorStatus.STARTED);
+				
+		Config config = new Config();
+		config.setIgnoreFolders(false);	  
+	    service.validateResultTorrents(processor, Arrays.asList(result), null, config);
   }
   
   
