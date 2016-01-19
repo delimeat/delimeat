@@ -414,4 +414,18 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
 	}
 	
+	@Test
+	public void readAllEpisodesTest() throws Exception {
+
+		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+
+		List<Episode> episodes = dao.readAllEpisodes(1);
+		
+		Assert.assertEquals(2,episodes.size());
+	}
+	
 }

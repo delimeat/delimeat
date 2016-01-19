@@ -14,7 +14,11 @@
 	<package>io.delimeat.core.show</package>
   
 	<named-query name="Show.getAll">
-		<query>SELECT show FROM Show show</query>
+		<query>SELECT s FROM Show s</query>
+	</named-query>
+	
+	<named-query name="Show.getAllEpisodes">
+		<query>SELECT e FROM Episode e where e.show.showId = :showId</query>
 	</named-query>
 
 	<entity class="EpisodeResult" name="EpisodeResult">

@@ -89,4 +89,15 @@ public class ShowJpaDao_Impl implements ShowDao {
 		}
 	}
 
+	@Override
+	public List<Episode> readAllEpisodes(long showId)
+			throws ShowException {
+		try{
+	         return em.createNamedQuery("Show.getAllEpisodes",Episode.class).setParameter("showId", showId).getResultList();
+			
+			} catch (PersistenceException ex){
+				throw new ShowException(ex);
+			}
+	}
+
 }

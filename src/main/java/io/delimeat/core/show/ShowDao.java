@@ -44,5 +44,14 @@ public interface ShowDao {
 	 * @return Show
 	 * @throws Exception
 	 */
-	public Show readAndLock(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException; 
+	public Show readAndLock(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
+
+	/**
+	 * Read all episodes
+	 * 
+	 * @return List of all shows
+	 * @throws Exception
+	 */
+	public List<Episode> readAllEpisodes(long showId) throws ShowException;
+	
 }
