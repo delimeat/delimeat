@@ -14,11 +14,15 @@
 	<package>io.delimeat.core.show</package>
   
 	<named-query name="Show.getAll">
-		<query>SELECT s FROM Show s</query>
+		<query><![CDATA[SELECT s FROM Show s]]></query>
 	</named-query>
 	
 	<named-query name="Show.getAllEpisodes">
-		<query>SELECT e FROM Episode e where e.show.showId = :showId</query>
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show.showId = :showId]]></query>
+	</named-query>
+ 
+	<named-query name="Show.getEpisodeAfter">
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show.showId = :showId and e.airDate > :airDate ORDER BY e.airDate ASC]]></query>
 	</named-query>
 
 	<entity class="EpisodeResult" name="EpisodeResult">

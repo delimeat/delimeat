@@ -12,6 +12,7 @@ import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
@@ -184,10 +185,11 @@ public class FeedProcessorService_Impl implements FeedProcessorService {
 				final String fileName = torrent.getInfo().getName();
 				feedResultWriter.write(fileName, torrent.getBytes(), config);
 
-				// try setting the next episode
-				// TODO maybe need to include functionality for double eps
-				lockedShow.setPreviousEpisode(lockedShow.getNextEpisode());
-				lockedShow.setNextEpisode(null);
+				// set the next episode
+				Episode previousEp = lockedShow.getNextEpisode();
+				Episode nextEp = showDao.readEpisodeAfter(lockedShow.getShowId(), previousEp.getAirDate());
+				lockedShow.setPreviousEpisode(previousEp);
+				lockedShow.setNextEpisode(nextEp);
 				lockedShow.setLastFeedUpdate(new Date());
 				showDao.createOrUpdate(lockedShow);
 

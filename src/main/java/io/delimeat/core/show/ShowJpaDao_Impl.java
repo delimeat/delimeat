@@ -1,10 +1,15 @@
 package io.delimeat.core.show;
 
+import io.delimeat.core.show.Episode;
+import io.delimeat.core.show.ShowException;
+
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -99,5 +104,21 @@ public class ShowJpaDao_Impl implements ShowDao {
 				throw new ShowException(ex);
 			}
 	}
+
+    @Override
+    public Episode readEpisodeAfter(long showId, Date date) throws ShowException {
+		try{
+	         return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
+              			.setParameter("showId", showId)
+              			.setParameter("airDate",date)
+              			.setMaxResults(1)
+              			.getSingleResult();
+			
+			} catch(NoResultException ex){  
+				return null; 
+    		} catch (PersistenceException ex){
+				throw new ShowException(ex);
+			}
+    }
 
 }

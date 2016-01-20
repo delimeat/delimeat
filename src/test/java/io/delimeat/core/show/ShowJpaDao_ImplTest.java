@@ -416,7 +416,6 @@ public class ShowJpaDao_ImplTest {
 	
 	@Test
 	public void readAllEpisodesTest() throws Exception {
-
 		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
 				.getConnection();
 
@@ -427,5 +426,51 @@ public class ShowJpaDao_ImplTest {
 		
 		Assert.assertEquals(2,episodes.size());
 	}
+  
+   @Test
+   public void readAllEpisodesNoResultTest() throws Exception{
+		List<Episode> episodes = dao.readAllEpisodes(1);
+		
+		Assert.assertNotNull(episodes);
+    	Assert.assertEquals(0,episodes.size());
+   }
+   
+   @Test
+   public void readEpisodeAfterTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+     
+      Episode ep = dao.readEpisodeAfter(1,SDF.parse("1988-12-24"));
+		Assert.assertEquals(3, ep.getEpisodeId());
+		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
+		Assert.assertEquals(2, ep.getSeasonNum());
+		Assert.assertEquals(3, ep.getEpisodeNum());
+		Assert.assertEquals("PREVIOUS EPISODE", ep.getTitle());
+		Assert.assertTrue(ep.isDoubleEp());
+		Assert.assertEquals(4, ep.getVersion());
+		Assert.assertNotNull(ep.getShow());
+		Assert.assertEquals(1, ep.getShow().getShowId());
+		Assert.assertNotNull(ep.getResults());
+		Assert.assertEquals(1, ep.getResults().size());
+		Assert.assertEquals(1, ep.getResults().get(0).getEpisodeResultId());
+		Assert.assertEquals(FeedSource.KAT, ep.getResults().get(0).getSource());
+		Assert.assertEquals("http://www.test.com", ep.getResults().get(0).getUrl());
+		Assert.assertEquals("BYTES", ep.getResults().get(0).getResult());
+		Assert.assertTrue(ep.getResults().get(0).isValid());
+		Assert.assertEquals(99, ep.getResults().get(0).getVersion());
+		Assert.assertNotNull(ep.getResults().get(0).getEpisode());
+		Assert.assertEquals(3, ep.getResults().get(0).getEpisode().getEpisodeId());
+   }
+  
+	@Test
+   public void readEpisodeAfterNoResultTest() throws Exception{ 
+      Episode ep = dao.readEpisodeAfter(1,SDF.parse("1988-12-25"));
+      Assert.assertNull(ep);
+		
+   }
+	
 	
 }

@@ -1,5 +1,6 @@
 package io.delimeat.core.show;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ShowDao {
@@ -49,9 +50,21 @@ public interface ShowDao {
 	/**
 	 * Read all episodes
 	 * 
+	 * @param showId
 	 * @return List of all shows
 	 * @throws Exception
 	 */
 	public List<Episode> readAllEpisodes(long showId) throws ShowException;
+ 
+	/**
+	 * Read episode after date
+	 * 
+	 * @param showId
+	 * @param date
+	 * @return episode
+	 * @throws Exception
+	 */
+	public Episode readEpisodeAfter(long showId, Date date) throws ShowException;
+  
 	
 }
