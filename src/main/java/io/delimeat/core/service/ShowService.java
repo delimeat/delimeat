@@ -1,5 +1,6 @@
 package io.delimeat.core.service;
 
+import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowException;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface ShowService {
 
-	public Show create(Show show) throws ShowConcurrencyException, ShowException;
+	public Show create(Show show) throws GuideException, ShowConcurrencyException, ShowException;
 
 	public Show read(Long id) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
 

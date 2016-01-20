@@ -12,7 +12,7 @@ public interface ShowDao {
 	 * @return Show
 	 * @throws Exception
 	 */
-	public Show read(long showId) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
+	public Show read(long showId) throws ShowNotFoundException, ShowException;
 
 	/**
 	 * Create or Update existing Show
@@ -65,6 +65,35 @@ public interface ShowDao {
 	 * @throws Exception
 	 */
 	public Episode readEpisodeAfter(long showId, Date date) throws ShowException;
+  
+  	/**
+	 * Read episode 
+	 * 
+	 * @param episodeId
+	 * @param date
+	 * @return episode
+	 * @throws Exception
+	 */
+	public Episode readEpisode(long episodeId) throws ShowNotFoundException, ShowConcurrencyException, ShowException;
+  
+  	/**
+	 * Create episode 
+	 * 
+	 * @param episodeId
+	 * @param date
+	 * @return episode
+	 * @throws Exception
+	 */
+	 public Episode createOrUpdateEpisode(Episode episode) throws ShowConcurrencyException, ShowException;
+
+  	/**
+	 * Delete an episode
+	 * 
+	 * @param episodeId
+	 * @throws Exception
+	 */
+	 public void deleteEpisode(long episodeId) throws ShowNotFoundException, ShowException;
+  
   
 	
 }

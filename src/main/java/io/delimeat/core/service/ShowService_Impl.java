@@ -1,5 +1,9 @@
 package io.delimeat.core.service;
 
+import io.delimeat.core.guide.GuideEpisode;
+import io.delimeat.core.guide.GuideException;
+import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowDao;
@@ -8,13 +12,16 @@ import io.delimeat.core.show.ShowGuideSource;
 import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.transaction.Transactional;
 
 public class ShowService_Impl implements ShowService {
 
 	private ShowDao showDao;
+   private GuideInfoDao guideDao;
 
 	public ShowDao getShowDao() {
 		return showDao;
@@ -23,11 +30,79 @@ public class ShowService_Impl implements ShowService {
 	public void setShowDao(ShowDao showDao) {
 		this.showDao = showDao;
 	}
+  
+	public GuideInfoDao getGuideDao() {
+		return guideDao;
+	}
+
+	public void setFeedDaoDao(GuideInfoDao guideDao) {
+		this.guideDao = guideDao;
+	}
 
 	@Override
 	@Transactional
-	public Show create(Show show) throws ShowConcurrencyException, ShowException {
-		return getShowDao().createOrUpdate(prepareShow(show));
+	public Show create(Show show) throws GuideException, ShowConcurrencyException, ShowException {
+     
+      final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
+      
+      ShowGuideSource showGuideSource = null;
+      for(ShowGuideSource source: createdShow.getGuideSources()){
+      	if(source.getId().getGuideSource()==guideDao.getGuideSource()){
+      		showGuideSource = source;
+         	break;
+         }
+      }
+     
+      if(showGuideSource != null){
+      	final List<GuideEpisode> guideEps = guideDao.episodes(showGuideSource.getGuideId());
+         Collections.sort(guideEps);
+         ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
+         while(guideEpIt.hasNext()){
+            
+            GuideEpisode guideEp = guideEpIt.next();
+            
+            if(guideEp.getSeasonNum() == null || guideEp.getSeasonNum() == 0 || guideEp.getAirDate() == null ){
+              // do nothing its a special or a dud
+              //guideEpIt.remove();
+              continue;
+            }
+            
+            Episode nextEp = createdShow.getNextEpisode();
+            if(nextEp != null && nextEp.getSeasonNum() == guideEp.getSeasonNum() && nextEp.getEpisodeNum() == guideEp.getEpisodeNum() ){
+              // do nothing because we alread have it
+              //guideEpIt.remove();
+              continue;
+            }
+           
+            Episode prevEp = createdShow.getPreviousEpisode();
+            if(prevEp != null && prevEp.getSeasonNum() == guideEp.getSeasonNum() && prevEp.getEpisodeNum() == guideEp.getEpisodeNum() ){
+              // do nothing because we alread have it
+              //guideEpIt.remove();
+              continue;
+            }
+           
+            /*
+            if(guideEpIt.hasPrevious() && guideEpIt.previous().getAirDate() == guideEp.getAirDate()){
+              //merge the double episode
+              GuideEpisode prevGuideEp = guideEpIt.previous();
+              String newTitle = prevGuideEp.getTitle() + " & " + guideEp.getTitle();
+              prevGuideEp.setTitle(newTitle);
+              guideEpIt.remove();
+            }*/
+            Episode ep = new Episode();
+            ep.setShow(createdShow);
+            ep.setTitle(guideEp.getTitle());
+            ep.setSeasonNum(guideEp.getSeasonNum());
+            ep.setEpisodeNum(guideEp.getEpisodeNum());
+            ep.setAirDate(guideEp.getAirDate());
+            showDao.createOrUpdateEpisode(ep);
+           
+         }
+        
+         
+      }
+      
+		return createdShow;
 	}
 
 	@Override

@@ -120,5 +120,47 @@ public class ShowJpaDao_Impl implements ShowDao {
 				throw new ShowException(ex);
 			}
     }
+  
+	@Override
+	public Episode readEpisode(long episodeId) throws ShowNotFoundException, ShowException {
+		try{
+			
+			return em.getReference(Episode.class, episodeId);
+		
+		} catch (EntityNotFoundException ex){
+			throw new ShowNotFoundException(ex);
+		} catch (PersistenceException ex){
+			throw new ShowException(ex);
+		}
+	}
+
+	@Override
+	public Episode createOrUpdateEpisode(Episode episode) throws ShowConcurrencyException, ShowException {
+		try{
+			
+			return em.merge(episode);
+			
+		} catch (EntityNotFoundException ex){
+			throw new ShowNotFoundException(ex);
+		} catch (OptimisticLockException ex){
+			throw new ShowConcurrencyException(ex);
+		} catch (PersistenceException ex){
+			throw new ShowException(ex);
+		}
+
+	}
+
+	@Override
+	public void deleteEpisode(long episodeId) throws ShowNotFoundException, ShowException {
+		try{
+			
+			em.remove(readEpisode(episodeId));
+			
+		} catch (EntityNotFoundException ex){
+			throw new ShowNotFoundException(ex);
+		} catch (PersistenceException ex){
+			throw new ShowException(ex);
+		}
+	}
 
 }
