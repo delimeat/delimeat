@@ -18,11 +18,11 @@
 	</named-query>
 	
 	<named-query name="Show.getAllEpisodes">
-		<query><![CDATA[SELECT e FROM Episode e WHERE e.show.showId = :showId]]></query>
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show]]></query>
 	</named-query>
  
 	<named-query name="Show.getEpisodeAfter">
-		<query><![CDATA[SELECT e FROM Episode e WHERE e.show.showId = :showId and e.airDate > :airDate ORDER BY e.airDate ASC]]></query>
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show and e.airDate > :airDate ORDER BY e.airDate ASC]]></query>
 	</named-query>
 
 	<entity class="EpisodeResult" name="EpisodeResult">

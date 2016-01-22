@@ -464,10 +464,9 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(3, ep.getResults().get(0).getEpisode().getEpisodeId());
    }
   
-	@Test
+	@Test(expected=ShowNotFoundException.class)
    public void readEpisodeAfterNoResultTest() throws Exception{ 
-      Episode ep = dao.readEpisodeAfter(1,SDF.parse("1988-12-25"));
-      Assert.assertNull(ep);	
+      dao.readEpisodeAfter(1,SDF.parse("1988-12-25"));
    }
 
    @Test
@@ -558,18 +557,39 @@ public class ShowJpaDao_ImplTest {
      	Assert.assertEquals(show, createdEpisode.getShow());
    }
   
- 	@Test(expected=ShowNotFoundException.class)
+ 	@Test
   	public void deleteEpisodeTest() throws Exception{
      		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
 				.getConnection();
 
 		InputStream is = System.class.getResourceAsStream(SQL_FILE);
 		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
-     
-      dao.deleteEpisode(4);
-     
-      Assert.assertNull(dao.readEpisode(4));
 
+      // get the episode to confirm it exists
+      try{
+      	dao.readEpisode(4);
+      }catch(ShowNotFoundException e){
+      	Assert.fail("episode must exist");
+      }
+      // delete it
+      dao.deleteEpisode(4);
+      // try getting the episode again to confirm it doesnt exist
+      try{
+      	dao.readEpisode(4);
+      }catch(ShowNotFoundException e){
+         // we want an exception
+      	Assert.assertTrue(true);
+         return;
+      }
+      // no exception means episode still exists
+     	Assert.fail("episode must not exist");
+   }
+  
+ 	@Test(expected=ShowNotFoundException.class)
+  	public void deleteEpisodeNotFoundTest() throws Exception{     
+      dao.deleteEpisode(4);
+      Episode ep = dao.readEpisode(4);
+      System.out.println(ep);
    }
 	
 }

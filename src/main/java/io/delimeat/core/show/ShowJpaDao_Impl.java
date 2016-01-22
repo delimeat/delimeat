@@ -46,8 +46,6 @@ public class ShowJpaDao_Impl implements ShowDao {
 			
 			return em.merge(show);
 			
-		} catch (EntityNotFoundException ex){
-			throw new ShowNotFoundException(ex);
 		} catch (OptimisticLockException ex){
 			throw new ShowConcurrencyException(ex);
 		} catch (PersistenceException ex){
@@ -96,26 +94,29 @@ public class ShowJpaDao_Impl implements ShowDao {
 
 	@Override
 	public List<Episode> readAllEpisodes(long showId)
-			throws ShowException {
+			throws ShowNotFoundException, ShowException {
 		try{
-	         return em.createNamedQuery("Show.getAllEpisodes",Episode.class).setParameter("showId", showId).getResultList();
+        		Show show = read(showId);
+	         return em.createNamedQuery("Show.getAllEpisodes",Episode.class).setParameter("show", show).getResultList();
 			
-			} catch (PersistenceException ex){
+			} catch (EntityNotFoundException ex){
+				throw new ShowNotFoundException(ex);
+			}  catch (PersistenceException ex){
 				throw new ShowException(ex);
 			}
 	}
 
     @Override
-    public Episode readEpisodeAfter(long showId, Date date) throws ShowException {
+    public Episode readEpisodeAfter(long showId, Date date) throws ShowNotFoundException, ShowException {
 		try{
 	         return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
-              			.setParameter("showId", showId)
+              			.setParameter("show", read(showId))
               			.setParameter("airDate",date)
               			.setMaxResults(1)
               			.getSingleResult();
 			
 			} catch(NoResultException ex){  
-				return null; 
+				throw new ShowNotFoundException(ex);
     		} catch (PersistenceException ex){
 				throw new ShowException(ex);
 			}
@@ -140,8 +141,6 @@ public class ShowJpaDao_Impl implements ShowDao {
 			
 			return em.merge(episode);
 			
-		} catch (EntityNotFoundException ex){
-			throw new ShowNotFoundException(ex);
 		} catch (OptimisticLockException ex){
 			throw new ShowConcurrencyException(ex);
 		} catch (PersistenceException ex){
