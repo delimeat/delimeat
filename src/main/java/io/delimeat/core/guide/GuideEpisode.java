@@ -79,12 +79,12 @@ public class GuideEpisode implements Comparable<GuideEpisode> {
 		if (this.getAirDate() != null && other.getAirDate() != null) {
 			Integer dateCompare = this.getAirDate().compareTo(other.getAirDate());
 			if (dateCompare == 0) {
-				Integer thisSeasNum = this.getSeasonNum() != null ? this.getSeasonNum() : new Integer(0);
-				Integer otherSeasNum = other.getSeasonNum() != null ? other.getSeasonNum() : new Integer(0);
-				Integer thisEpNum = this.getEpisodeNum() != null ? this.getEpisodeNum() : new Integer(0);
-				Integer otherEpNum = other.getEpisodeNum() != null ? other.getEpisodeNum() : new Integer(0);
-				if (this.getSeasonNum() > 0 && other.getSeasonNum() > 0 && this.getEpisodeNum() > 0
-						&& other.getEpisodeNum() > 0) {
+				final Integer thisSeasNum = this.getSeasonNum() != null ? this.getSeasonNum() : new Integer(0);
+				final Integer otherSeasNum = other.getSeasonNum() != null ? other.getSeasonNum() : new Integer(0);
+				final Integer thisEpNum = this.getEpisodeNum() != null ? this.getEpisodeNum() : new Integer(0);
+				final Integer otherEpNum = other.getEpisodeNum() != null ? other.getEpisodeNum() : new Integer(0);
+				if ( thisSeasNum > 0 &&  otherSeasNum > 0 && thisEpNum > 0
+						&& otherEpNum > 0) {
 					Integer seasonCompare = thisSeasNum.compareTo(otherSeasNum);
 					if (seasonCompare == 0) {
 						Integer episodeCompare = thisEpNum.compareTo(otherEpNum);

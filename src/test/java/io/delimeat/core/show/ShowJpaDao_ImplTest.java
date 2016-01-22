@@ -423,7 +423,7 @@ public class ShowJpaDao_ImplTest {
 
 		List<Episode> episodes = dao.readAllEpisodes(1);
 		
-		Assert.assertEquals(2,episodes.size());
+		Assert.assertEquals(3,episodes.size());
 	}
   
    @Test
@@ -558,25 +558,18 @@ public class ShowJpaDao_ImplTest {
      	Assert.assertEquals(show, createdEpisode.getShow());
    }
   
- 	@Test
+ 	@Test(expected=ShowNotFoundException.class)
   	public void deleteEpisodeTest() throws Exception{
      		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
 				.getConnection();
 
 		InputStream is = System.class.getResourceAsStream(SQL_FILE);
 		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
-      
-      Show show = dao.read(1);
-      
-     	Episode episode = show.getPreviousEpisode();
      
-     	show.setPreviousEpisode(null);
-      dao.createOrUpdate(show);
+      dao.deleteEpisode(4);
      
-      dao.deleteEpisode(episode.getEpisodeId());
-      entityManager.getTransaction().commit();
-      Show newShow = dao.read(1); // verify show still exists
-      Assert.assertNotNull(newShow);
+      Assert.assertNull(dao.readEpisode(4));
+
    }
 	
 }

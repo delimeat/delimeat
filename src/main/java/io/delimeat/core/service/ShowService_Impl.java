@@ -35,7 +35,7 @@ public class ShowService_Impl implements ShowService {
 		return guideDao;
 	}
 
-	public void setFeedDaoDao(GuideInfoDao guideDao) {
+	public void setGuideDao(GuideInfoDao guideDao) {
 		this.guideDao = guideDao;
 	}
 
@@ -45,16 +45,16 @@ public class ShowService_Impl implements ShowService {
      
       final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
       
-      ShowGuideSource showGuideSource = null;
+      String guideId = null;
       for(ShowGuideSource source: createdShow.getGuideSources()){
       	if(source.getId().getGuideSource()==guideDao.getGuideSource()){
-      		showGuideSource = source;
+      		guideId = source.getGuideId();
          	break;
          }
       }
      
-      if(showGuideSource != null){
-      	final List<GuideEpisode> guideEps = guideDao.episodes(showGuideSource.getGuideId());
+      if(guideId != null){
+      	final List<GuideEpisode> guideEps = guideDao.episodes(guideId);
          Collections.sort(guideEps);
          ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
          while(guideEpIt.hasNext()){

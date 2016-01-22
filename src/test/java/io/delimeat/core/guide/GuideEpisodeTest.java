@@ -188,6 +188,23 @@ public class GuideEpisodeTest {
 
 		Assert.assertEquals(-1, ep.compareTo(mockedEpisode2));
 	}
+  
+	@Test
+	public void compareToSeasonNull() throws Exception {
+
+		ep.setAirDate(SDF.parse("2005-03-02"));
+		ep.setProductionNum(101);
+		ep.setSeasonNum(null);
+		ep.setEpisodeNum(1);
+
+		GuideEpisode mockedEpisode2 = Mockito.mock(GuideEpisode.class);
+		Mockito.when(mockedEpisode2.getAirDate()).thenReturn(SDF.parse("2005-03-02"));
+		Mockito.when(mockedEpisode2.getProductionNum()).thenReturn(101);
+		Mockito.when(mockedEpisode2.getSeasonNum()).thenReturn(1);
+		Mockito.when(mockedEpisode2.getEpisodeNum()).thenReturn(1);
+
+		Assert.assertEquals(0, ep.compareTo(mockedEpisode2));
+	}
 
 	@Test
 	public void compareToEpisodeAfter() throws Exception {
@@ -221,6 +238,23 @@ public class GuideEpisodeTest {
 		Mockito.when(mockedEpisode2.getEpisodeNum()).thenReturn(2);
 
 		Assert.assertEquals(-1, ep.compareTo(mockedEpisode2));
+	}
+ 
+	@Test
+	public void compareToEpisodeNull() throws Exception {
+
+		ep.setAirDate(SDF.parse("2005-03-02"));
+		ep.setProductionNum(101);
+		ep.setSeasonNum(1);
+		ep.setEpisodeNum(null);
+
+		GuideEpisode mockedEpisode2 = Mockito.mock(GuideEpisode.class);
+		Mockito.when(mockedEpisode2.getAirDate()).thenReturn(SDF.parse("2005-03-02"));
+		Mockito.when(mockedEpisode2.getProductionNum()).thenReturn(101);
+		Mockito.when(mockedEpisode2.getSeasonNum()).thenReturn(1);
+		Mockito.when(mockedEpisode2.getEpisodeNum()).thenReturn(1);
+
+		Assert.assertEquals(0, ep.compareTo(mockedEpisode2));
 	}
 
 	@Test
