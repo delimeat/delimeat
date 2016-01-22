@@ -120,7 +120,6 @@ public class ShowJpaDao_ImplTest {
 		nextEpisode.setTitle("TITLE_TWO");
 		show.setNextEpisode(nextEpisode);
 
-		//Show newShow = dao.create(show);
 		Show newShow = dao.createOrUpdate(show);
 
 		Assert.assertNotEquals(0, newShow.getShowId());
@@ -329,7 +328,7 @@ public class ShowJpaDao_ImplTest {
 		InputStream is = System.class.getResourceAsStream(SQL_FILE);
 		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
 
-		Show show = dao.read(1L);
+		Show show = dao.read(1);
 		show.setTitle("UPDATED TITLE");
 		show.getGuideSources().remove(0);
 		show.setNextEpisode(null);
@@ -341,12 +340,12 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertNull(updatedShow.getNextEpisode());
 		Assert.assertEquals("UPDATED PREV EP", updatedShow.getPreviousEpisode().getTitle());
 
-		Show readShow = dao.read(1L);
+
+		Show readShow = dao.read(1);
 		Assert.assertEquals("UPDATED TITLE", readShow.getTitle());
 		Assert.assertEquals(0, readShow.getGuideSources().size());
 		Assert.assertNull(readShow.getNextEpisode());
 		Assert.assertEquals("UPDATED PREV EP", readShow.getPreviousEpisode().getTitle());
-		Assert.assertEquals(updatedShow.getVersion(), readShow.getVersion());
 
 	}
   
@@ -468,9 +467,116 @@ public class ShowJpaDao_ImplTest {
 	@Test
    public void readEpisodeAfterNoResultTest() throws Exception{ 
       Episode ep = dao.readEpisodeAfter(1,SDF.parse("1988-12-25"));
-      Assert.assertNull(ep);
-		
+      Assert.assertNull(ep);	
    }
-	
+
+   @Test
+   public void readEpisodeTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+     
+      Episode ep = dao.readEpisode(3);
+		Assert.assertEquals(3, ep.getEpisodeId());
+		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
+		Assert.assertEquals(2, ep.getSeasonNum());
+		Assert.assertEquals(3, ep.getEpisodeNum());
+		Assert.assertEquals("PREVIOUS EPISODE", ep.getTitle());
+		Assert.assertTrue(ep.isDoubleEp());
+		Assert.assertEquals(4, ep.getVersion());
+		Assert.assertNotNull(ep.getShow());
+		Assert.assertEquals(1, ep.getShow().getShowId());
+		Assert.assertNotNull(ep.getResults());
+		Assert.assertEquals(1, ep.getResults().size());
+		Assert.assertEquals(1, ep.getResults().get(0).getEpisodeResultId());
+		Assert.assertEquals(FeedSource.KAT, ep.getResults().get(0).getSource());
+		Assert.assertEquals("http://www.test.com", ep.getResults().get(0).getUrl());
+		Assert.assertEquals("BYTES", ep.getResults().get(0).getResult());
+		Assert.assertTrue(ep.getResults().get(0).isValid());
+		Assert.assertEquals(99, ep.getResults().get(0).getVersion());
+		Assert.assertNotNull(ep.getResults().get(0).getEpisode());
+		Assert.assertEquals(3, ep.getResults().get(0).getEpisode().getEpisodeId());
+   }
+  
+	@Test(expected=ShowNotFoundException.class)
+   public void readEpisodeNotFoundTest() throws Exception{ 
+      dao.readEpisode(1);	
+   }
+  
+   @Test
+  	public void createEpisodeTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+      
+      Show show = dao.read(1);
+		Episode newEpisode = new Episode();
+		newEpisode.setAirDate(SDF.parse("2000-01-01"));
+		newEpisode.setDoubleEp(true);
+		newEpisode.setEpisodeNum(99);
+		newEpisode.setSeasonNum(100);
+		newEpisode.setShow(show);
+		newEpisode.setTitle("TITLE_TWO");
+     
+      Episode createdEpisode = dao.createOrUpdateEpisode(newEpisode);
+		Assert.assertNotEquals(0, createdEpisode.getEpisodeId());
+		Assert.assertEquals("2000-01-01", SDF.format(createdEpisode.getAirDate()));
+		Assert.assertTrue(createdEpisode.isDoubleEp());
+		Assert.assertEquals(99, createdEpisode.getEpisodeNum());
+		Assert.assertEquals(100,createdEpisode.getSeasonNum());
+		Assert.assertEquals("TITLE_TWO", createdEpisode.getTitle());
+     	Assert.assertEquals(show, createdEpisode.getShow());
+   }
+  
+ 	@Test
+  	public void updateEpisodeTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+      
+      Show show = dao.read(1);
+		show.getPreviousEpisode().setAirDate(SDF.parse("2000-01-01"));
+		show.getPreviousEpisode().setDoubleEp(true);
+		show.getPreviousEpisode().setEpisodeNum(99);
+		show.getPreviousEpisode().setSeasonNum(100);
+		show.getPreviousEpisode().setShow(show);
+		show.getPreviousEpisode().setTitle("TITLE_TWO");
+     
+      Episode createdEpisode = dao.createOrUpdateEpisode(show.getPreviousEpisode());
+		Assert.assertNotEquals(0, createdEpisode.getEpisodeId());
+		Assert.assertEquals("2000-01-01", SDF.format(createdEpisode.getAirDate()));
+		Assert.assertTrue(createdEpisode.isDoubleEp());
+		Assert.assertEquals(99, createdEpisode.getEpisodeNum());
+		Assert.assertEquals(100,createdEpisode.getSeasonNum());
+		Assert.assertEquals("TITLE_TWO", createdEpisode.getTitle());
+     	Assert.assertEquals(show, createdEpisode.getShow());
+   }
+  
+ 	@Test
+  	public void deleteEpisodeTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+      
+      Show show = dao.read(1);
+      
+     	Episode episode = show.getPreviousEpisode();
+     
+     	show.setPreviousEpisode(null);
+      dao.createOrUpdate(show);
+     
+      dao.deleteEpisode(episode.getEpisodeId());
+      entityManager.getTransaction().commit();
+      Show newShow = dao.read(1); // verify show still exists
+      Assert.assertNotNull(newShow);
+   }
 	
 }
