@@ -13,7 +13,6 @@ import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
-import io.delimeat.core.service.ConfigService;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.Torrent;
@@ -34,12 +33,19 @@ public class FeedProcessor_ImplTest {
 		processor = new FeedProcessor_Impl();
 	}
 	
-@Test
-	public void configServiceTest(){
-		Assert.assertNull(processor.getConfigService());
-		ConfigService mockedService = Mockito.mock(ConfigService.class);
-		processor.setConfigService(mockedService);
-		Assert.assertEquals(mockedService, processor.getConfigService());
+	@Test
+	public void statusTest(){
+		Assert.assertEquals(FeedProcessorStatus.PENDING, processor.getStatus());
+     	processor.setStatus(FeedProcessorStatus.ENDED_UNSUCCESSFUL);
+		Assert.assertEquals(FeedProcessorStatus.ENDED_UNSUCCESSFUL, processor.getStatus());
+	}  
+   
+	@Test
+	public void configTest(){
+		Assert.assertNull(processor.getConfig());
+		Config config = new Config();
+     	processor.setConfig(config);
+		Assert.assertEquals(config, processor.getConfig());
 	}
 	
 	@Test

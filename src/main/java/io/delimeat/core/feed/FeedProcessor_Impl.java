@@ -18,12 +18,10 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.feed.FeedProcessorStatus;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
-import io.delimeat.core.service.ConfigService;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
@@ -39,9 +37,10 @@ public class FeedProcessor_Impl implements FeedProcessor {
     private static final Log          LOG    = LogFactory.getLog(FeedProcessor_Impl.class);
 
     private FeedProcessorStatus       status = FeedProcessorStatus.PENDING;
+    private Exception 					  exception;
 
     private Show                      show;
-    private ConfigService             configService;
+    private Config		              config;
     private ShowDao                   showDao;
     private List<FeedDao>             feedDaos;
     private TorrentDao                torrentDao;
@@ -58,12 +57,12 @@ public class FeedProcessor_Impl implements FeedProcessor {
         return show;
     }
 
-    public ConfigService getConfigService() {
-        return configService;
+    public Config getConfig() {
+        return config;
     }
 
-    public void setConfigService(ConfigService configService) {
-        this.configService = configService;
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
     public ShowDao getShowDao() {
@@ -136,21 +135,25 @@ public class FeedProcessor_Impl implements FeedProcessor {
     public FeedProcessorStatus getStatus() {
         return status;
     }
-  
+    
     public void setStatus(FeedProcessorStatus status) {
         this.status = status;
+    }
+  
+    @Override  
+    public Exception getException(){
+      return exception;
     }
 
   	 @Transactional
     @Override
-    public void process() throws ConfigException, FeedValidationException, FeedException, ShowException {
+    public void process() {
+    	try{
         final Show lockedShow = showDao.readAndLock(show.getShowId());
         // read feed results
         final List<FeedResult> readResults = fetchResults(lockedShow);
         // validate the read results
         final List<FeedResult> foundResults = validateFeedResults(readResults, lockedShow);
-        // get the config
-        final Config config = configService.read();
         // select all the valid results based on the torrent files
         final List<FeedResult> validResults = validateResultTorrents(foundResults, lockedShow, config);
 
@@ -168,8 +171,16 @@ public class FeedProcessor_Impl implements FeedProcessor {
                 feedResultWriter.write(fileName, bytes, config);
 
                 updateShow(lockedShow);
+              	 status = FeedProcessorStatus.ENDED_SUCCESSFUL;
+              	 return;
             }
         }
+        status = FeedProcessorStatus.ENDED_UNSUCCESSFUL;
+      }
+      catch(Exception e){
+        exception = e;
+        status = FeedProcessorStatus.ENDED_ERROR;
+      }
     }
 
     public List<FeedResult> fetchResults(Show show) {
