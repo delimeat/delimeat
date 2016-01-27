@@ -45,27 +45,16 @@ public class ShowService_Impl implements ShowService {
      
       final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
       
-      String guideId = null;
-      for(ShowGuideSource source: createdShow.getGuideSources()){
-      	if(source.getId().getGuideSource()==guideDao.getGuideSource()){
-      		guideId = source.getGuideId();
-         	break;
-         }
-      }
+      final String guideId = DelimeatUtils.findGuideId(createdShow.getGuideSources(), guideDao.getGuideSource());
      
-      if(guideId != null){
-      	final List<GuideEpisode> guideEps = guideDao.episodes(guideId);
+      if(DelimeatUtils.isNotEmpty(guideId) == true){
+      	final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
+         final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
          Collections.sort(guideEps);
          ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
          while(guideEpIt.hasNext()){
             
             GuideEpisode guideEp = guideEpIt.next();
-            
-            if(guideEp.getSeasonNum() == null || guideEp.getSeasonNum() == 0 || guideEp.getAirDate() == null ){
-              // do nothing its a special or a dud
-              //guideEpIt.remove();
-              continue;
-            }
             
             Episode nextEp = createdShow.getNextEpisode();
             if(nextEp != null && nextEp.getSeasonNum() == guideEp.getSeasonNum() && nextEp.getEpisodeNum() == guideEp.getEpisodeNum() ){

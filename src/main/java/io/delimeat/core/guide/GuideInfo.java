@@ -25,6 +25,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
 	protected int airTime;
 	protected List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
+  	protected Date lastUpdated;
 
 	/**
 	 * @return the description
@@ -128,6 +129,14 @@ public class GuideInfo implements Comparable<GuideInfo> {
 
 	public void setFirstAired(Date firstAired) {
 		this.firstAired = firstAired;
+	}
+
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
 	}
 	/*
 	 * (non-Javadoc)
