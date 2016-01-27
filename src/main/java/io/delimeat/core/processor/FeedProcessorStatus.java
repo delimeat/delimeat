@@ -1,4 +1,4 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor;
 
 public enum FeedProcessorStatus{
 	PENDING,

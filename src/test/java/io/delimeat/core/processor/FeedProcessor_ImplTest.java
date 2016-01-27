@@ -1,4 +1,4 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -10,9 +10,16 @@ import java.util.Comparator;
 import java.util.List;
 
 import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedDao;
+import io.delimeat.core.feed.FeedException;
+import io.delimeat.core.feed.FeedResult;
+import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.processor.FeedProcessorStatus;
+import io.delimeat.core.processor.FeedProcessor_Impl;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.Torrent;

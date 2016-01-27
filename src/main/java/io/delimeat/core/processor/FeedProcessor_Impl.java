@@ -1,4 +1,4 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +18,15 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.feed.FeedProcessorStatus;
+import io.delimeat.core.feed.FeedDao;
+import io.delimeat.core.feed.FeedException;
+import io.delimeat.core.feed.FeedResult;
+import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.processor.FeedProcessorStatus;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;

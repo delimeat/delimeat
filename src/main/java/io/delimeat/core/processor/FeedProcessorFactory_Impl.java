@@ -1,13 +1,16 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import io.delimeat.core.config.Config;
-import io.delimeat.core.feed.FeedProcessor;
+import io.delimeat.core.feed.FeedDao;
+import io.delimeat.core.feed.FeedResult;
+import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.processor.FeedProcessor;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.TorrentDao;
