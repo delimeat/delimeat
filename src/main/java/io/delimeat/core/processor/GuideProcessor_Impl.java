@@ -1,26 +1,28 @@
 package io.delimeat.core.processor;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.processor.ProcessorListener;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
 import io.delimeat.util.DelimeatUtils;
 
-public class GuideProcessor_Impl implements GuideProcessor{
+public class GuideProcessor_Impl implements Processor{
 
 	private boolean active = false;
+   private final List<ProcessorListener> listeners = new ArrayList<ProcessorListener>();
   	private Show show;
 	private ShowDao showDao;
   	private GuideInfoDao guideDao;
-  	private Exception exception;
+  
 
 	public void setShow(Show show) {
 		this.show = show;
@@ -47,111 +49,130 @@ public class GuideProcessor_Impl implements GuideProcessor{
 	}
   
     @Override
-    public boolean abort() {
-      if(active == true){
-        active = false;
-        return true;
-      }
-      return false;
+    public void abort() {
+      active = false;
+    }
+  
+    public void setActive(boolean active){
+      this.active = active;
     }
 
-    @Override
-    public Exception getException() {
-        return exception;
+    public boolean isActive(){
+      return active;
     }
 
     @Override
     public void process() throws ShowException, GuideException {
         if(active == false){
-          active = true;
-          Show lockedShow = showDao.readAndLock(show.getShowId());
-          
-          String guideId = DelimeatUtils.findGuideId(lockedShow.getGuideSources(), guideDao.getGuideSource()) ;
-          
-          if(DelimeatUtils.isNotEmpty(guideId) == true){
-            // get the info
-            final GuideInfo info = guideDao.info(guideId);
-            // only update if the info is newer than the last update we did
-            if(info.getLastUpdated().after(show.getLastGuideUpdate()) == true){
-              
-              // update the airing status
-              show.setAiring(info.isAiring());
-              
-              // get the episodes and refresh them
-              final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
-              final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
-              Collections.sort(guideEps);
-              if(guideEps.isEmpty() == false){
+          try{
+            active = true;
+            final Show lockedShow = showDao.readAndLock(show.getShowId());
+
+            final String guideId = DelimeatUtils.findGuideId(lockedShow.getGuideSources(), guideDao.getGuideSource()) ;
+
+            if(active == true && DelimeatUtils.isNotEmpty(guideId) == true){
+              // get the info
+              final GuideInfo info = guideDao.info(guideId);
+              // only update if the info is newer than the last update we did
+              if(info.getLastUpdated().after(show.getLastGuideUpdate()) == true){
+
+                // flag to update the show
+                boolean showDirty = false;
                 
-                // set the next episode
-                if(show.getNextEpisode() == null){
-                  GuideEpisode guideEp = null;
-                  if(show.getPreviousEpisode() != null){
-                    // loop through the guide episodes to find the first ep after the prev ep
-                    Episode prevEp = show.getPreviousEpisode();
-                    for(GuideEpisode ep: guideEps){
-                      if(DelimeatUtils.compare(prevEp, ep) > 0){
-                        guideEp = ep;
-                        break;
-                      }
-                    }
-                  }else{
-                    // if there is no previous ep the next ep is the first one
-                    guideEp = guideEps.get(0); 
-                  }
-                  
-                  if(guideEp != null ){
-                    Episode nextEp = DelimeatUtils.toEpisode(guideEp);
-                    nextEp.setShow(lockedShow);
-                    lockedShow.setNextEpisode(nextEp);
-                    showDao.createOrUpdate(lockedShow);
-                  }  
+                // episodes to create or update
+                final List<Episode> createOrUpdateEps = new ArrayList<Episode>();
+
+                // update the airing status
+                if(lockedShow.isAiring() != info.isAiring()){
+                  lockedShow.setAiring(info.isAiring());
+                  showDirty = true;
                 }
-                
-                // update/add the episodes we dont have
-                final List<Episode> showEps = showDao.readAllEpisodes(lockedShow.getShowId());
-                // sort the existing episodes newest to oldest
-                Collections.reverse(showEps);
-                // sort the guide episodes newest to oldest
-                Collections.reverse(guideEps);
-                
-                Iterator<Episode> showEpIt = showEps.iterator();                
-                while(showEpIt.hasNext()){
-                  Episode showEp = showEpIt.next();
-                  // stop updating once we reach the next episode
-                  if(showEp == lockedShow.getNextEpisode()){
-                    break;
+
+
+                // get the episodes and refresh them
+                final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
+
+                if(active == true && DelimeatUtils.isCollectionNotEmpty(foundGuideEps) == true){
+
+                  // get the existing episodes
+                  final List<Episode> showEps = showDao.readAllEpisodes(lockedShow.getShowId());
+
+                  // remove any specials or duds
+                  final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
+                  // order them by airing date ascending
+                  Collections.sort(guideEps); 
+                  // sort the episode from latest to earliest
+                  Collections.reverse(guideEps);
+
+                  // loop through all the guide eps
+                  GuideEpisode prevGuideEp = null;
+                  for(GuideEpisode guideEp: guideEps){
+                    // see if we already have the episode
+                    int indexOf = showEps.indexOf(guideEp);
+                    if(indexOf >= 0){
+                      // if we do have the episode check if we need to move the air date or update the title
+                      Episode showEp = showEps.get(indexOf);
+                      if(showEp.getTitle() != guideEp.getTitle() || showEp.getAirDate().equals(guideEp.getAirDate()) == false){
+                        showEp.setTitle(guideEp.getTitle());
+                        showEp.setAirDate(guideEp.getAirDate());
+                        createOrUpdateEps.add(showEp);
+                      }
+                    }else {
+                      // if we dont have the episode add it
+                      Episode newEp = new Episode(guideEp);
+                      newEp.setShow(lockedShow);
+                      createOrUpdateEps.add(newEp);	
+                    }
+
+                    // stop when we reach the previous episode
+                    if(lockedShow.getPreviousEpisode() != null && lockedShow.getPreviousEpisode().equals(guideEp)){
+                       break;                  
+                    }
+                    prevGuideEp = guideEp;
                   }
-                  // loop through the remaining guide episodes
-                  Iterator<GuideEpisode> guideEpIt = guideEps.iterator();
-                  while(guideEpIt.hasNext()){
-                      GuideEpisode guideEp = guideEpIt.next();
-                    	 int compare = DelimeatUtils.compare(showEp, guideEp);
-                    	 // if the guide ep is before the current show ep we need to add it
-                      if(compare > 0 ){
-                        guideEpIt.remove();
-                        Episode newEp = DelimeatUtils.toEpisode(guideEp);
-                        newEp.setShow(lockedShow);
-                        showDao.createOrUpdateEpisode(newEp);
-                      }
-                      else if(compare == 0){
-                        // if the guide ep is the current show ep and the title or air date have changed update it
-                        if(showEp.getTitle() != guideEp.getTitle() || showEp.getAirDate().equals(guideEp.getAirDate()) == false){
-                          guideEpIt.remove();
-                          showEp.setTitle(guideEp.getTitle());
-                          showEp.setAirDate(guideEp.getAirDate());
-                          showDao.createOrUpdateEpisode(showEp);
-                        }
-                      }else{
-                        // if the guide ep is after the current show ep time to move onto the next show ep
-                        break;
-                      }
+
+                  // if the show has no next episode and we have found one use that
+                  if(lockedShow.getNextEpisode() == null && prevGuideEp != null ){
+                    Episode nextEp = createOrUpdateEps.get(createOrUpdateEps.indexOf(prevGuideEp));
+                    lockedShow.setNextEpisode(nextEp);
+                    showDirty = true;
+                  }
+
+                }
+
+                // if we're still active update the show
+                if(active == true){
+                  // update the show if its dirty
+                  if(showDirty == true){
+                     showDao.createOrUpdate(lockedShow);
+                  }
+                  // create/update eps if any
+                  if(DelimeatUtils.isCollectionNotEmpty(createOrUpdateEps) == true){
+                    for(Episode ep: createOrUpdateEps){
+                      showDao.createOrUpdateEpisode(ep);
+                    }
                   }
                 }
                 
               }
-            }           
+
+            }
+          }finally{
+            active = false;
+            for(ProcessorListener listener: listeners){
+              listener.alertComplete(this);
+            }
           }
         }   
+    }
+
+    @Override
+    public void addListener(ProcessorListener listener) {
+       listeners.add(listener);    
+    }
+
+    @Override
+    public void removeListener(ProcessorListener listener) {
+        listeners.add(listener);        
     }
 }

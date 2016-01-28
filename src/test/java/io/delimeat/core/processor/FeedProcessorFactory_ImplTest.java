@@ -155,7 +155,7 @@ public class FeedProcessorFactory_ImplTest {
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(true);
 		
-		FeedProcessor processor = factory.build(show, config);
+		Processor processor = factory.build(show, config);
 		Assert.assertTrue(processor instanceof FeedProcessor_Impl);
 		FeedProcessor_Impl castProcessor = (FeedProcessor_Impl)processor;
 		Assert.assertEquals(show, castProcessor.getShow());
@@ -203,7 +203,7 @@ public class FeedProcessorFactory_ImplTest {
 		config.setIgnoreFolders(false);
 		config.setPreferFiles(false);
 		
-		FeedProcessor processor = factory.build(show, config);
+		Processor processor = factory.build(show, config);
 		Assert.assertTrue(processor instanceof FeedProcessor_Impl);
 		FeedProcessor_Impl castProcessor = (FeedProcessor_Impl)processor;
 		Assert.assertEquals(show, castProcessor.getShow());

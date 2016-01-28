@@ -47,11 +47,12 @@ public class ShowService_ImplTest {
 		service.setShowDao(mockedShowDao);
      
       GuideInfoDao mockedGuideDao = Mockito.mock(GuideInfoDao.class);
+      service.setGuideDao(mockedGuideDao);
 
 		Show actualShow = service.create(new Show());
      	Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
       Mockito.verify(mockedShowDao, Mockito.times(0)).createOrUpdateEpisode(Mockito.any(Episode.class));
-      Mockito.verifyZeroInteractions(mockedGuideDao);
+      Mockito.verify(mockedGuideDao, Mockito.times(0)).episodes(Mockito.anyString());
 		Assert.assertEquals(mockedShow, actualShow);
 	}
 
@@ -64,17 +65,21 @@ public class ShowService_ImplTest {
       sgs1.setGuideId("1");
       ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
      	sgs1pk.setGuideSource(GuideSource.IMDB);
+      sgs1.setId(sgs1pk);
+      show.getGuideSources().add(sgs1);
 		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(
 				show);
 		service.setShowDao(mockedShowDao);
      
       GuideInfoDao mockedGuideDao = Mockito.mock(GuideInfoDao.class);
       Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
+      service.setGuideDao(mockedGuideDao);
 
 		Show actualShow = service.create(new Show());
      	Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
       Mockito.verify(mockedShowDao, Mockito.times(0)).createOrUpdateEpisode(Mockito.any(Episode.class));
-      Mockito.verifyZeroInteractions(mockedGuideDao);
+      Mockito.verify(mockedGuideDao, Mockito.times(0)).episodes(Mockito.anyString());
+
 		Assert.assertEquals(show, actualShow);
 	}
   

@@ -2,7 +2,6 @@ package io.delimeat.util;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideSource;
-import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.ShowGuideSource;
 
 import java.security.MessageDigest;
@@ -43,6 +42,16 @@ public class DelimeatUtils {
 	 public static boolean isCollectionEmpty(Collection<?> value){
 		 return value == null || value.isEmpty();
 	 }
+  
+    /**
+     * Returns true if the collection is not null or empty.
+     *
+     * @param value
+     * @return true if collection is null or empty
+     */  
+	 public static boolean isCollectionNotEmpty(Collection<?> value){
+		 return !isCollectionEmpty(value);
+	 }
 
     /**
      * Calculates the SHA1 of the byte array.
@@ -78,47 +87,37 @@ public class DelimeatUtils {
         return sb.toString();
     }
   
-    public static Episode toEpisode(GuideEpisode episode){
-      Episode newEp = new Episode();
-      newEp.setTitle(episode.getTitle());
-      newEp.setAirDate(episode.getAirDate());
-      newEp.setSeasonNum(episode.getSeasonNum());
-      newEp.setEpisodeNum(episode.getEpisodeNum());
-      return newEp;
+  /**
+     * Returns the clean list of guide episodes.
+     * 	episodes must have a airing date, and not be a special episode (no season or season == 0)
+     *
+     * @param episodes
+     * @return clean episodes
+     */  
+  public static List<GuideEpisode> cleanEpisodes(List<GuideEpisode> episodes){
+    List<GuideEpisode> cleanEps = new ArrayList<GuideEpisode>();
+    Iterator<GuideEpisode> it = episodes.iterator();
+    while(it.hasNext()){
+      GuideEpisode ep = it.next();
+      if(ep.getSeasonNum() != null && ep.getSeasonNum() != 0 && ep.getAirDate() != null ){
+        cleanEps.add(ep);
+      }
+
     }
-  
-	public static List<GuideEpisode> cleanEpisodes(List<GuideEpisode> episodes){
-		List<GuideEpisode> cleanEps = new ArrayList<GuideEpisode>();
-     	Iterator<GuideEpisode> it = episodes.iterator();
-     	while(it.hasNext()){
-        GuideEpisode ep = it.next();
-        if(ep.getSeasonNum() != null && ep.getSeasonNum() != 0 && ep.getAirDate() != null ){
-          cleanEps.add(ep);
-        }
-			
-      }
-     	return cleanEps;
-   }
-  
-  public static int compare(Episode episode, GuideEpisode guideEpisode){
-		Integer epSeason = episode.getSeasonNum();
-      int seasonCompare = epSeason.compareTo(guideEpisode.getSeasonNum());
-      if(seasonCompare == 0){
-        Integer epEpisode = episode.getEpisodeNum();
-        return epEpisode.compareTo(guideEpisode.getEpisodeNum());
-      }
-      return seasonCompare;
+    return cleanEps;
   }
-  
+
   public static String findGuideId(List<ShowGuideSource> guideSources, GuideSource guideSource){
-      String guideId = null;
+    String guideId = null;
+    if(isCollectionEmpty(guideSources) == false ){
       for(ShowGuideSource source: guideSources){
         if(source.getId().getGuideSource() == guideSource){
           guideId = source.getGuideId();
           break;
         }
       }
-      return guideId;
+  	 }
+    return guideId;
   }
   	
 }

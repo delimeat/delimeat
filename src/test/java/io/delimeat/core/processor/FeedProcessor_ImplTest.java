@@ -18,7 +18,6 @@ import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.FeedValidationException;
 import io.delimeat.core.feed.validation.TorrentValidator;
-import io.delimeat.core.processor.FeedProcessorStatus;
 import io.delimeat.core.processor.FeedProcessor_Impl;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
@@ -41,13 +40,13 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void statusTest() {
-		Assert.assertEquals(FeedProcessorStatus.PENDING, processor.getStatus());
-		processor.setStatus(FeedProcessorStatus.ENDED_UNSUCCESSFUL);
-		Assert.assertEquals(FeedProcessorStatus.ENDED_UNSUCCESSFUL,
-				processor.getStatus());
+	public void showTest() {
+		Assert.assertNull(processor.getShow());
+		Show show = new Show();
+		processor.setShow(show);
+		Assert.assertEquals(show, processor.getShow());
 	}
-
+  
 	@Test
 	public void configTest() {
 		Assert.assertNull(processor.getConfig());
@@ -81,6 +80,15 @@ public class FeedProcessor_ImplTest {
 		TorrentDao mockedDao = Mockito.mock(TorrentDao.class);
 		processor.setTorrentDao(mockedDao);
 		Assert.assertEquals(mockedDao, processor.getTorrentDao());
+	}
+
+  	@Test
+	public void abortTest() {
+		Assert.assertFalse(processor.isActive());
+		processor.setActive(true);
+		Assert.assertTrue(processor.isActive());
+		processor.abort();
+		Assert.assertFalse(processor.isActive());
 	}
 
 	@Test
@@ -150,7 +158,7 @@ public class FeedProcessor_ImplTest {
 				Arrays.asList(feedResult));
 
 		processor.setFeedDaos(Arrays.asList(dao));
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		Show show = new Show();
 		show.setTitle("TITLE");
@@ -170,7 +178,7 @@ public class FeedProcessor_ImplTest {
 				.thenReturn(Arrays.asList(feedResult));
 
 		processor.setFeedDaos(Arrays.asList(dao, dao));
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		Show show = new Show();
 		show.setTitle("TITLE");
@@ -286,7 +294,7 @@ public class FeedProcessor_ImplTest {
 				FeedResultRejection.CONTAINS_COMPRESSED);
 
 		processor.setTorrentValidators(Arrays.asList(validator, validator));
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		FeedResult result = new FeedResult();
 
@@ -311,7 +319,7 @@ public class FeedProcessor_ImplTest {
 				.thenThrow(FeedValidationException.class);
 
 		processor.setTorrentValidators(Arrays.asList(validator, validator));
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		FeedResult result = new FeedResult();
 
@@ -386,7 +394,7 @@ public class FeedProcessor_ImplTest {
 				.thenReturn(torrent);
 
 		processor.setTorrentDao(dao);
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		Mockito.when(
@@ -435,7 +443,7 @@ public class FeedProcessor_ImplTest {
 		Torrent torrent = new Torrent();
 		Mockito.when(dao.read(Mockito.any(URI.class))).thenReturn(torrent);
 		processor.setTorrentDao(dao);
-		processor.setStatus(FeedProcessorStatus.STARTED);
+		processor.setActive(true);
 
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		Mockito.when(

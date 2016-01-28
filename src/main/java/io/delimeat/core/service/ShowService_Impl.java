@@ -57,14 +57,14 @@ public class ShowService_Impl implements ShowService {
             GuideEpisode guideEp = guideEpIt.next();
             
             Episode nextEp = createdShow.getNextEpisode();
-            if(nextEp != null && nextEp.getSeasonNum() == guideEp.getSeasonNum() && nextEp.getEpisodeNum() == guideEp.getEpisodeNum() ){
+            if(nextEp != null && nextEp.equals(guideEp) ){
               // do nothing because we alread have it
               //guideEpIt.remove();
               continue;
             }
            
             Episode prevEp = createdShow.getPreviousEpisode();
-            if(prevEp != null && prevEp.getSeasonNum() == guideEp.getSeasonNum() && prevEp.getEpisodeNum() == guideEp.getEpisodeNum() ){
+            if(prevEp != null && prevEp.equals(guideEp) ){
               // do nothing because we alread have it
               //guideEpIt.remove();
               continue;

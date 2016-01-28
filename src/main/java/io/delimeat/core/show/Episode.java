@@ -1,5 +1,6 @@
 package io.delimeat.core.show;
 
+import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.util.ArrayList;
@@ -26,6 +27,17 @@ public class Episode {
 
 	@XmlTransient
 	private Show show;
+  
+   public Episode(){
+     //do nothing;
+   }
+  
+   public Episode(GuideEpisode guideEp){
+     title = guideEp.getTitle();
+     airDate = guideEp.getAirDate();
+     seasonNum = guideEp.getSeasonNum();
+     episodeNum = guideEp.getEpisodeNum();
+   }
 
 	/**
 	 * @return the episodeId
@@ -174,5 +186,20 @@ public class Episode {
 				+ (show != null ? Long.toString(show.getShowId()) : null) + ", results=" + results + ", version="
 				+ version + "]";
 	}
+  
+ 	@Override
+  	public boolean equals(Object object)
+  	{
+     boolean equal = false;
+     if (object != null && object instanceof Episode)
+     {
+       Episode otherEp = (Episode)object;
+       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
+     }else if (object != null && object instanceof GuideEpisode){
+       Episode otherEp = new Episode((GuideEpisode)object);
+       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
+     }
+     return equal;
+  }
 
 }

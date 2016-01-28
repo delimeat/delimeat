@@ -10,12 +10,11 @@ import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.TorrentValidator;
-import io.delimeat.core.processor.FeedProcessor;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.TorrentDao;
 
-public class FeedProcessorFactory_Impl implements FeedProcessorFactory {
+public class FeedProcessorFactory_Impl implements ProcessorFactory {
 
 	private ShowDao showDao;
 	private List<FeedDao> feedDaos = new ArrayList<FeedDao>();
@@ -114,7 +113,7 @@ public class FeedProcessorFactory_Impl implements FeedProcessorFactory {
 	}
 
 	@Override
-	public FeedProcessor build(Show show, Config config) {
+	public Processor build(Show show, Config config) {
 		final FeedProcessor_Impl processor = new FeedProcessor_Impl();
 
 		processor.setShow(show);
