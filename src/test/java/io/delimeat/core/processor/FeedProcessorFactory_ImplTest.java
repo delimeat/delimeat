@@ -9,7 +9,6 @@ import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultWriter;
 import io.delimeat.core.feed.validation.FeedResultValidator;
 import io.delimeat.core.feed.validation.TorrentValidator;
-import io.delimeat.core.processor.FeedProcessor;
 import io.delimeat.core.processor.FeedProcessorFactory_Impl;
 import io.delimeat.core.processor.FeedProcessor_Impl;
 import io.delimeat.core.show.Show;
