@@ -78,16 +78,15 @@ public class GuideProcessor_Impl implements Processor{
 
                 // flag to update the show
                 boolean showDirty = false;
-                
-                // episodes to create or update
-                final List<Episode> createOrUpdateEps = new ArrayList<Episode>();
-
+                                
                 // update the airing status
                 if(lockedShow.isAiring() != info.isAiring()){
                   lockedShow.setAiring(info.isAiring());
                   showDirty = true;
                 }
-
+                
+                // episodes to create or update
+                final List<Episode> createOrUpdateEps = new ArrayList<Episode>();
 
                 // get the episodes and refresh them
                 final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
@@ -132,10 +131,18 @@ public class GuideProcessor_Impl implements Processor{
                   }
 
                   // if the show has no next episode and we have found one use that
-                  if(lockedShow.getNextEpisode() == null && prevGuideEp != null ){
-                    Episode nextEp = createOrUpdateEps.get(createOrUpdateEps.indexOf(prevGuideEp));
-                    lockedShow.setNextEpisode(nextEp);
-                    showDirty = true;
+                  if(lockedShow.getNextEpisode() == null && prevGuideEp != null ){  
+                    Episode nextEp = null;
+                    if(createOrUpdateEps.indexOf(prevGuideEp) != -1 ){
+                    		nextEp = createOrUpdateEps.get(createOrUpdateEps.indexOf(prevGuideEp));
+                    }else if(showEps.indexOf(prevGuideEp) != -1){
+                      	// this should never happen but just in case
+                    		nextEp = showEps.get(showEps.indexOf(prevGuideEp));
+                    }
+                    if(nextEp != null){
+                    	lockedShow.setNextEpisode(nextEp);
+                     showDirty = true;
+                    }
                   }
 
                 }

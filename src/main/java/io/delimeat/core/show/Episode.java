@@ -194,7 +194,14 @@ public class Episode {
      if (object != null && object instanceof Episode)
      {
        Episode otherEp = (Episode)object;
-       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
+       equal = (episodeId == otherEp.getEpisodeId() 
+                && seasonNum == otherEp.getSeasonNum() 
+                && episodeNum == otherEp.getEpisodeNum() 
+                && title == otherEp.getTitle() 
+                && (airDate != null && otherEp.getAirDate() != null ? airDate.equals(otherEp.getAirDate()) : false )  
+                && doubleEp == otherEp.isDoubleEp()
+                && show == otherEp.getShow()
+               );
      }else if (object != null && object instanceof GuideEpisode){
        Episode otherEp = new Episode((GuideEpisode)object);
        equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());

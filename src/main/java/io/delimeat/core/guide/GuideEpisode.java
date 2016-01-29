@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import io.delimeat.core.show.Episode;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 public class GuideEpisode implements Comparable<GuideEpisode> {
@@ -114,4 +115,19 @@ public class GuideEpisode implements Comparable<GuideEpisode> {
 		return "Title: " + title + " date: " + (airDate != null ? SDF.format(airDate) : "") + " s " + seasonNum + " e "
 				+ episodeNum + " p " + productionNum;
 	}
+  
+ 	@Override
+  	public boolean equals(Object object)
+  	{
+     boolean equal = false;
+     if (object != null && object instanceof Episode)
+     {
+       Episode otherEp = (Episode)object;
+       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
+     }else if (object != null && object instanceof GuideEpisode){
+       GuideEpisode otherEp = (GuideEpisode)object;
+       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
+     }
+     return equal;
+  }
 }

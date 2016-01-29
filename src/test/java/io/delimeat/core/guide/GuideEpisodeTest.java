@@ -1,5 +1,7 @@
 package io.delimeat.core.guide;
 
+import io.delimeat.core.show.Episode;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -273,4 +275,110 @@ public class GuideEpisodeTest {
 
 		Assert.assertEquals(0, ep.compareTo(mockedEpisode2));
 	}
+  
+  
+  	@Test
+  	public void equalsObjectTest(){
+   	Assert.assertFalse(ep.equals(new Object())); 
+  	}
+  
+  @Test
+  public void equalsGuideEpisodeTest() throws ParseException{
+    GuideEpisode otherEp = new GuideEpisode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(2);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertTrue(ep.equals(otherEp));
+  }
+  @Test
+  public void equalsGuideEpisodeSeasonNumTest() throws ParseException{
+    GuideEpisode otherEp = new GuideEpisode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(2);
+    otherEp.setEpisodeNum(2);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertFalse(ep.equals(otherEp));
+  }
+  
+  @Test
+  public void equalsGuideEpisodeEpisodeNumTest() throws ParseException{
+    GuideEpisode otherEp = new GuideEpisode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(1);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertFalse(ep.equals(otherEp));
+  }
+
+  @Test
+  public void equalsEpisodeTest() throws ParseException{
+    Episode otherEp = new Episode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(2);
+    otherEp.setEpisodeId(Long.MAX_VALUE);
+    otherEp.setVersion(Integer.MIN_VALUE);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertTrue(ep.equals(otherEp));
+  }
+  @Test
+  public void equalsEpisodeSeasonNumTest() throws ParseException{
+    Episode otherEp = new Episode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(2);
+    otherEp.setEpisodeNum(2);
+    otherEp.setEpisodeId(Long.MAX_VALUE);
+    otherEp.setVersion(Integer.MIN_VALUE);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertFalse(ep.equals(otherEp));
+  }
+  
+  @Test
+  public void equalsEpisodeEpisodeNumTest() throws ParseException{
+    Episode otherEp = new Episode();
+    otherEp.setTitle("OTHER");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(1);
+    otherEp.setEpisodeId(Long.MAX_VALUE);
+    otherEp.setVersion(Integer.MIN_VALUE);
+    
+    ep.setTitle("EP");
+    ep.setAirDate(SDF.parse("2000-01-28"));
+    ep.setSeasonNum(1);
+    ep.setEpisodeNum(2);
+    
+    Assert.assertFalse(ep.equals(otherEp));
+  }
 }
