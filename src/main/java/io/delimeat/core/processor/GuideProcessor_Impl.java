@@ -2,6 +2,7 @@ package io.delimeat.core.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import io.delimeat.core.guide.GuideEpisode;
@@ -75,14 +76,10 @@ public class GuideProcessor_Impl implements Processor{
               final GuideInfo info = guideDao.info(guideId);
               // only update if the info is newer than the last update we did
               if(info.getLastUpdated().after(show.getLastGuideUpdate()) == true){
-
-                // flag to update the show
-                boolean showDirty = false;
                                 
                 // update the airing status
                 if(lockedShow.isAiring() != info.isAiring()){
                   lockedShow.setAiring(info.isAiring());
-                  showDirty = true;
                 }
                 
                 // episodes to create or update
@@ -141,7 +138,6 @@ public class GuideProcessor_Impl implements Processor{
                     }
                     if(nextEp != null){
                     	lockedShow.setNextEpisode(nextEp);
-                     showDirty = true;
                     }
                   }
 
@@ -149,16 +145,14 @@ public class GuideProcessor_Impl implements Processor{
 
                 // if we're still active update the show
                 if(active == true){
-                  // update the show if its dirty
-                  if(showDirty == true){
-                     showDao.createOrUpdate(lockedShow);
-                  }
                   // create/update eps if any
                   if(DelimeatUtils.isCollectionNotEmpty(createOrUpdateEps) == true){
                     for(Episode ep: createOrUpdateEps){
                       showDao.createOrUpdateEpisode(ep);
                     }
                   }
+                  lockedShow.setLastGuideUpdate(new Date());
+                  showDao.createOrUpdate(lockedShow);
                 }
                 
               }

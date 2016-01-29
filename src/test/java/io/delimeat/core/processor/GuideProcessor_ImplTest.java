@@ -325,11 +325,13 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      Assert.assertTrue(show.isAiring());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisode(Mockito.any(Episode.class));
      
@@ -377,11 +379,13 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisode(Mockito.any(Episode.class));
      
@@ -434,11 +438,12 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisode(nextEp);
      
@@ -491,11 +496,12 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisode(nextEp);
      
@@ -548,11 +554,13 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisode(nextEp);
      
@@ -616,11 +624,12 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
      
      Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
     
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisode(Mockito.any(Episode.class));
      
