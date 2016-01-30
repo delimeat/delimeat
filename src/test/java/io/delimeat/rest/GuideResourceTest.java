@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericType;
@@ -29,6 +30,9 @@ import org.mockito.Mockito;
 public class GuideResourceTest extends JerseyTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+	static{
+		SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
 	private GuideService mockedGuideService = Mockito.mock(GuideService.class);
 

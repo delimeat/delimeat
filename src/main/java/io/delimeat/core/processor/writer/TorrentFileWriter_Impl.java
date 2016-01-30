@@ -1,6 +1,7 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor.writer;
 
 import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedException;
 import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
@@ -9,7 +10,7 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public class FeedResultFileWriter_Impl implements FeedResultWriter {
+public class TorrentFileWriter_Impl implements TorrentWriter {
 
 	private UrlHandler urlHandler;
 	

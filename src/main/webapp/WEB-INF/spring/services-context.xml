@@ -16,11 +16,12 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
   
 	<bean id="showServiceId" class="io.delimeat.core.service.ShowService_Impl">
         <property name="showDao" ref="showDaoId"/>
+        <property name="guideDao" ref="tvdbGuideDaoId"/>
     </bean>
     
     <bean id="guideServiceId" class="io.delimeat.core.service.GuideService_Impl">
 
-      <property name="infoDao" ref="tvdbGuideDaoId"/>
+      	<property name="infoDao" ref="tvdbGuideDaoId"/>
     	<property name="searchDao" ref="tvdbGuideDaoId"/>
 		<!--
     	<property name="infoDao" ref="tvmazeGuideDaoId"/>
@@ -29,6 +30,22 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 
     </bean>
   
+	<bean id="processorExecutorId" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <!--
+	    <property name="corePoolSize" value="1" />
+	    <property name="maxPoolSize" value="10" />
+	    <property name="queueCapacity" value="25" />
+	    !-->	
+	</bean>
+	
+	<bean id="processorServiceId" class="io.delimeat.core.service.ProcessorService_Impl">
+        <property name="showDao" ref="showDaoId"/>
+        <property name="configDao" ref="configDaoId"/>
+        <property name="guideProcessorFactory" ref="guideProcessorFactoryId"/>
+        <property name="feedProcessorFactory" ref="feedProcessorFactoryId"/>
+        <property name="executor" ref="processorExecutorId"/>
+    </bean>
+    
 
 
 </beans>

@@ -111,7 +111,7 @@ public class ShowJpaDao_Impl implements ShowDao {
 		try{
 	         return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
               			.setParameter("show", read(showId))
-              			.setParameter("airDate",date)
+              			.setParameter("airDateTime",date)
               			.setMaxResults(1)
               			.getSingleResult();
 			

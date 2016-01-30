@@ -1,7 +1,8 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.processor.validation.TorrentSizeValidator_Impl;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;

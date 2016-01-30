@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -20,10 +20,10 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 	private static final String DAY_REGEX = "(?<=\\d{4}[\\s\\.]\\d{2}[\\s\\.])\\d{2}";
 	
 	@Override
-	public void validate(List<FeedResult> results, Show show) throws FeedValidationException {
+	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final Date airDate;
 		if(show.getNextEpisode()!=null){
-			airDate = show.getNextEpisode().getAirDate();
+			airDate = show.getNextEpisode().getAirDateTime();
 		}else{
 			airDate = null;
 		}

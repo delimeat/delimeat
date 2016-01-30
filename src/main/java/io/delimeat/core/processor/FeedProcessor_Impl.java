@@ -22,10 +22,10 @@ import io.delimeat.core.feed.FeedDao;
 import io.delimeat.core.feed.FeedException;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
-import io.delimeat.core.feed.FeedResultWriter;
-import io.delimeat.core.feed.validation.FeedResultValidator;
-import io.delimeat.core.feed.validation.FeedValidationException;
-import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.processor.validation.FeedResultValidator;
+import io.delimeat.core.processor.validation.ValidationException;
+import io.delimeat.core.processor.validation.TorrentValidator;
+import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
@@ -50,7 +50,7 @@ public class FeedProcessor_Impl implements Processor {
     private List<FeedResultValidator> feedResultValidators;
     private List<TorrentValidator> torrentValidators;
     private Comparator<FeedResult> resultComparator;
-    private FeedResultWriter feedResultWriter;
+    private TorrentWriter torrentWriter;
 
     public void setShow(Show show) {
         this.show = show;
@@ -116,12 +116,12 @@ public class FeedProcessor_Impl implements Processor {
         this.resultComparator = resultComparator;
     }
 
-    public FeedResultWriter getFeedResultWriter() {
-        return feedResultWriter;
+    public TorrentWriter getTorrentWriter() {
+        return torrentWriter;
     }
 
-    public void setFeedResultWriter(FeedResultWriter feedResultWriter) {
-        this.feedResultWriter = feedResultWriter;
+    public void setTorrentWriter(TorrentWriter torrentWriter) {
+        this.torrentWriter = torrentWriter;
     }
 
     public void setActive(boolean active){
@@ -148,7 +148,7 @@ public class FeedProcessor_Impl implements Processor {
     }
     @Transactional
     @Override
-    public void process() throws ShowException, FeedValidationException, FeedException {
+    public void process() throws ShowException, ValidationException, FeedException {
         if (active == false) {
             try {
                 active = true;
@@ -171,7 +171,7 @@ public class FeedProcessor_Impl implements Processor {
                         final Torrent torrent = selectedResult.getTorrent();
                         final String fileName = torrent.getInfo().getName();
                         final byte[] bytes = torrent.getBytes();
-                        feedResultWriter.write(fileName, bytes, config);
+                        torrentWriter.write(fileName, bytes, config);
 
                         updateShow(lockedShow);
                     }
@@ -202,7 +202,7 @@ public class FeedProcessor_Impl implements Processor {
         return readResults;
     }
 
-    public List<FeedResult> validateFeedResults(List<FeedResult> results, Show show) throws FeedValidationException {
+    public List<FeedResult> validateFeedResults(List<FeedResult> results, Show show) throws ValidationException {
         final Iterator<FeedResultValidator> resultValidatorItr = feedResultValidators.iterator();
 
         while (active == true && resultValidatorItr.hasNext()) {
@@ -231,7 +231,7 @@ public class FeedProcessor_Impl implements Processor {
         return torrentDao.read(uri);
     }
 
-    public void validateTorrent(FeedResult result, Torrent torrent, Config config, Show show) throws FeedValidationException {
+    public void validateTorrent(FeedResult result, Torrent torrent, Config config, Show show) throws ValidationException {
 
         final Iterator<TorrentValidator> torrentValidatorItr = torrentValidators.iterator();
 
@@ -246,7 +246,7 @@ public class FeedProcessor_Impl implements Processor {
 
     }
 
-    public List<FeedResult> validateResultTorrents(List<FeedResult> inResults, Show show, Config config) throws FeedValidationException {
+    public List<FeedResult> validateResultTorrents(List<FeedResult> inResults, Show show, Config config) throws ValidationException {
 
         final List<FeedResult> outResults = new ArrayList<FeedResult>();
         final Iterator<FeedResult> foundResultsIterator = inResults.iterator();
@@ -297,7 +297,7 @@ public class FeedProcessor_Impl implements Processor {
     public void updateShow(Show show) throws ShowNotFoundException, ShowException {
         // set the next episode
         final Episode previousEp = show.getNextEpisode();
-        final Episode nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDate());
+        final Episode nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDateTime());
         show.setPreviousEpisode(previousEp);
         show.setNextEpisode(nextEp);
         show.setLastFeedUpdate(new Date());

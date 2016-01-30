@@ -1,7 +1,8 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.processor.validation.FeedResultDailyValidator_Impl;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 
@@ -31,7 +32,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -46,7 +47,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void emptyTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -72,7 +73,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noAirDateTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDate(null);
+		episode.setAirDateTime(null);
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -87,7 +88,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noYearRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -102,7 +103,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -116,7 +117,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noDayRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -130,7 +131,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongYearRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -144,7 +145,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongdMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -158,7 +159,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongDayRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -172,7 +173,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void validFeedResultTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -186,7 +187,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void validAndRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDate(SDF.parse("2012-02-03"));
+		episode.setAirDateTime(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result1 = new FeedResult();

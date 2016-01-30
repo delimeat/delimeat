@@ -8,31 +8,33 @@ import io.delimeat.core.show.ShowDao;
 
 public class GuideProcessorFactory_Impl implements ProcessorFactory {
 
-    private ShowDao showDao;
-    private GuideInfoDao guideDao;
+	private ShowDao showDao;
+	private GuideInfoDao guideDao;
 
-    public ShowDao getShowDao() {
-        return showDao;
-    }
+	public ShowDao getShowDao() {
+		return showDao;
+	}
 
-    public void setShowDao(ShowDao showDao) {
-        this.showDao = showDao;
-    }
+	public void setShowDao(ShowDao showDao) {
+		this.showDao = showDao;
+	}
 
-    public GuideInfoDao getGuideDao() {
-        return guideDao;
-    }
+	public GuideInfoDao getGuideDao() {
+		return guideDao;
+	}
 
-    public void setGuideDao(GuideInfoDao guideDao) {
-        this.guideDao = guideDao;
-    }
+	public void setGuideDao(GuideInfoDao guideDao) {
+		this.guideDao = guideDao;
+	}
 
-    @Override
-    public Processor build(Show show, Config config) {
-        GuideProcessor_Impl processor = new GuideProcessor_Impl();
-		  processor.setShow(show);
-        processor.setShowDao(showDao);
-        processor.setGuideDao(guideDao);
-        return processor;
-    }
+	@Override
+	public Processor build(Show show, Config config) {
+		
+		GuideProcessor_Impl processor = new GuideProcessor_Impl();
+		processor.setShow(show);
+		processor.setShowDao(showDao);
+		processor.setGuideDao(guideDao);
+		return processor;
+		
+	}
 }

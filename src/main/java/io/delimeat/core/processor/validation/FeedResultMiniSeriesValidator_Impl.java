@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -14,7 +14,7 @@ public class FeedResultMiniSeriesValidator_Impl implements FeedResultValidator {
 	private static final String MINI_SERIES_REGEX = "\\d{2}(?=[Oo][Ff]\\d{2})";
 	
 	@Override
-	public void validate(List<FeedResult> results, Show show) throws FeedValidationException {
+	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final int episodeNum;
 		if(show.getNextEpisode()!=null){
 			episodeNum = show.getNextEpisode().getEpisodeNum();

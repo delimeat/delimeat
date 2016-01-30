@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -9,7 +9,7 @@ import io.delimeat.core.torrent.TorrentInfo;
 public class TorrentFolderValidator_Impl implements TorrentValidator{
 
 	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException {
+	public boolean validate(Torrent torrent, Show show, Config config) throws ValidationException {
      final TorrentInfo info = torrent.getInfo();
      return (info.getFiles() == null || info.getFiles().isEmpty() );
 	}

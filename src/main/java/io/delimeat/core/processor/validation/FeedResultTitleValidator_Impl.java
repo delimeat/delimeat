@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -10,7 +10,7 @@ import java.util.List;
 public class FeedResultTitleValidator_Impl implements FeedResultValidator {
 	
 	@Override
-	public void validate(List<FeedResult> results, Show show) throws FeedValidationException {
+	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final String showTitle;
 		if( DelimeatUtils.isNotEmpty(show.getTitle()) ){
 			showTitle = show.getTitle().toLowerCase().replace(".", " ");

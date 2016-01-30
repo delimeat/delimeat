@@ -5,7 +5,7 @@ import io.delimeat.core.show.ShowException;
 
 public interface ProcessorService {
 
-  public void processAllFeedUpdates() throws ConfigException,ShowException;
+	public void processAllFeedUpdates() throws ConfigException, ShowException;
 
-  public void processAllGuideUpdates();
+	public void processAllGuideUpdates() throws ConfigException, ShowException;
 }

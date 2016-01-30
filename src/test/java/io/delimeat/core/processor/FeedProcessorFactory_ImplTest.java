@@ -6,11 +6,11 @@ import java.util.Comparator;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedDao;
 import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.FeedResultWriter;
-import io.delimeat.core.feed.validation.FeedResultValidator;
-import io.delimeat.core.feed.validation.TorrentValidator;
 import io.delimeat.core.processor.FeedProcessorFactory_Impl;
 import io.delimeat.core.processor.FeedProcessor_Impl;
+import io.delimeat.core.processor.validation.FeedResultValidator;
+import io.delimeat.core.processor.validation.TorrentValidator;
+import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowType;
@@ -114,10 +114,10 @@ public class FeedProcessorFactory_ImplTest {
 	
 	@Test
 	public void feedResultWriterTest(){
-		Assert.assertNull(factory.getFeedResultWriter());
-		FeedResultWriter writer = Mockito.mock(FeedResultWriter.class);
-		factory.setFeedResultWriter(writer);
-		Assert.assertEquals(writer, factory.getFeedResultWriter());
+		Assert.assertNull(factory.getTorrentWriter());
+		TorrentWriter writer = Mockito.mock(TorrentWriter.class);
+		factory.setTorrentWriter(writer);
+		Assert.assertEquals(writer, factory.getTorrentWriter());
 	}
 	
 	@Test
@@ -144,8 +144,8 @@ public class FeedProcessorFactory_ImplTest {
 		Comparator<FeedResult> comparator = Mockito.mock(Comparator.class);
 		factory.setPreferFilesComparator(comparator);
 		
-		FeedResultWriter writer = Mockito.mock(FeedResultWriter.class);
-		factory.setFeedResultWriter(writer);
+		TorrentWriter writer = Mockito.mock(TorrentWriter.class);
+		factory.setTorrentWriter(writer);
 		
 		Show show = new Show();
 		show.setShowType(ShowType.SEASON);
@@ -168,7 +168,7 @@ public class FeedProcessorFactory_ImplTest {
 		Assert.assertEquals(torrentValidator, castProcessor.getTorrentValidators().get(0));
 		Assert.assertEquals(folderTorrentValidator, castProcessor.getTorrentValidators().get(1));
 		Assert.assertEquals(comparator, castProcessor.getResultComparator());
-		Assert.assertEquals(writer, castProcessor.getFeedResultWriter());
+		Assert.assertEquals(writer, castProcessor.getTorrentWriter());
 	}
 	
 	@Test
@@ -192,8 +192,8 @@ public class FeedProcessorFactory_ImplTest {
 		Comparator<FeedResult> comparator = Mockito.mock(Comparator.class);
 		factory.setMaxSeedersComparator(comparator);
 		
-		FeedResultWriter writer = Mockito.mock(FeedResultWriter.class);
-		factory.setFeedResultWriter(writer);
+		TorrentWriter writer = Mockito.mock(TorrentWriter.class);
+		factory.setTorrentWriter(writer);
 		
 		Show show = new Show();
 		show.setShowType(ShowType.DAILY);
@@ -215,6 +215,6 @@ public class FeedProcessorFactory_ImplTest {
 		Assert.assertEquals(1, castProcessor.getTorrentValidators().size());
 		Assert.assertEquals(torrentValidator, castProcessor.getTorrentValidators().get(0));
 		Assert.assertEquals(comparator, castProcessor.getResultComparator());
-		Assert.assertEquals(writer, castProcessor.getFeedResultWriter());
+		Assert.assertEquals(writer, castProcessor.getTorrentWriter());
 	}
 }

@@ -17,6 +17,8 @@ xmlns:context="http://www.springframework.org/schema/context"
 	<import resource="guide-context.xml" />
 	<import resource="feed-context.xml" />
 	<import resource="show-context.xml" />
+	<import resource="torrent-context.xml" />
+	<import resource="processor-context.xml" />
 	<import resource="services-context.xml" />
 	<import resource="web-context.xml" />
 	

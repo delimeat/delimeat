@@ -1,4 +1,4 @@
-package io.delimeat.core.feed;
+package io.delimeat.core.processor.writer;
 
 import static org.mockito.Mockito.mock;
 
@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedException;
+import io.delimeat.core.processor.writer.TorrentFileWriter_Impl;
 import io.delimeat.util.UrlHandler;
 
 import org.junit.Assert;
@@ -14,13 +16,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class FeedResultFileWriter_ImplTest {
+public class TorrentFileWriter_ImplTest {
 
-	private FeedResultFileWriter_Impl writer;
+	private TorrentFileWriter_Impl writer;
 	
 	@Before
 	public void setUp(){
-		writer = new FeedResultFileWriter_Impl();
+		writer = new TorrentFileWriter_Impl();
 	}
 	
 	@Test

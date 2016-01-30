@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
@@ -346,6 +347,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -400,6 +402,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -412,7 +415,7 @@ public class GuideProcessor_ImplTest {
      nextEp.setSeasonNum(1);
      nextEp.setEpisodeNum(1);
      nextEp.setTitle("NEXT_EP");
-     nextEp.setAirDate(SDF.parse("2016-01-29"));
+     nextEp.setAirDateTime(SDF.parse("2016-01-29"));
      show.setNextEpisode(nextEp);
      processor.setShow(show);
      
@@ -458,6 +461,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -470,7 +474,7 @@ public class GuideProcessor_ImplTest {
      nextEp.setSeasonNum(1);
      nextEp.setEpisodeNum(1);
      nextEp.setTitle("NEXT_EP");
-     nextEp.setAirDate(SDF.parse("2016-01-29"));
+     nextEp.setAirDateTime(SDF.parse("2016-01-29"));
      show.setNextEpisode(nextEp);
      processor.setShow(show);
      
@@ -516,6 +520,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -528,7 +533,7 @@ public class GuideProcessor_ImplTest {
      nextEp.setSeasonNum(1);
      nextEp.setEpisodeNum(1);
      nextEp.setTitle("NEXT_EP");
-     nextEp.setAirDate(SDF.parse("2016-01-29"));
+     nextEp.setAirDateTime(SDF.parse("2016-01-29"));
      show.setNextEpisode(nextEp);
      processor.setShow(show);
      
@@ -575,6 +580,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -587,13 +593,13 @@ public class GuideProcessor_ImplTest {
      ep1.setSeasonNum(1);
      ep1.setEpisodeNum(1);
      ep1.setTitle("EP1");
-     ep1.setAirDate(SDF.parse("2015-01-01"));
+     ep1.setAirDateTime(SDF.parse("2015-01-01"));
      //show.setNextEpisode(ep1);
      Episode ep2 = new Episode();
      ep2.setSeasonNum(1);
      ep2.setEpisodeNum(2);
      ep2.setTitle("EP2");
-     ep2.setAirDate(SDF.parse("2016-01-29"));
+     ep2.setAirDateTime(SDF.parse("2016-01-29"));
      show.setPreviousEpisode(ep2);
      processor.setShow(show);
      
@@ -644,6 +650,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -656,13 +663,13 @@ public class GuideProcessor_ImplTest {
      ep1.setSeasonNum(1);
      ep1.setEpisodeNum(1);
      ep1.setTitle("EP1");
-     ep1.setAirDate(SDF.parse("2015-01-01"));
+     ep1.setAirDateTime(SDF.parse("2015-01-01"));
      //show.setNextEpisode(ep1);
      Episode ep2 = new Episode();
      ep2.setSeasonNum(1);
      ep2.setEpisodeNum(2);
      ep2.setTitle("EP2");
-     ep2.setAirDate(SDF.parse("2016-01-29"));
+     ep2.setAirDateTime(SDF.parse("2016-01-29"));
      //show.setPreviousEpisode(ep2);
      processor.setShow(show);
      
@@ -715,6 +722,7 @@ public class GuideProcessor_ImplTest {
        
      Show show = new Show();
      show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
      ShowGuideSource sgs1 = new ShowGuideSource();
      sgs1.setGuideId("GUIDEID");
      ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
@@ -727,13 +735,13 @@ public class GuideProcessor_ImplTest {
      ep1.setSeasonNum(1);
      ep1.setEpisodeNum(1);
      ep1.setTitle("EP1");
-     ep1.setAirDate(SDF.parse("2015-01-01"));
+     ep1.setAirDateTime(SDF.parse("2015-01-01"));
      //show.setNextEpisode(ep1);
      Episode ep2 = new Episode();
      ep2.setSeasonNum(1);
      ep2.setEpisodeNum(2);
      ep2.setTitle("EP2");
-     ep2.setAirDate(SDF.parse("2016-01-29"));
+     ep2.setAirDateTime(SDF.parse("2016-01-29"));
      //show.setPreviousEpisode(ep2);
      processor.setShow(show);
      
@@ -768,7 +776,7 @@ public class GuideProcessor_ImplTest {
      Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
      Assert.assertEquals(1, show.getNextEpisode().getEpisodeNum());
      Assert.assertEquals("EP1", show.getNextEpisode().getTitle());
-     Assert.assertEquals(SDF.parse("2015-01-01"), show.getNextEpisode().getAirDate());
+     Assert.assertEquals(SDF.parse("2015-01-01"), show.getNextEpisode().getAirDateTime());
      
      Assert.assertNull(show.getPreviousEpisode());
      

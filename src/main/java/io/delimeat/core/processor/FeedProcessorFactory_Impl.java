@@ -7,9 +7,9 @@ import java.util.List;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedDao;
 import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.FeedResultWriter;
-import io.delimeat.core.feed.validation.FeedResultValidator;
-import io.delimeat.core.feed.validation.TorrentValidator;
+import io.delimeat.core.processor.validation.FeedResultValidator;
+import io.delimeat.core.processor.validation.TorrentValidator;
+import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.TorrentDao;
@@ -25,7 +25,7 @@ public class FeedProcessorFactory_Impl implements ProcessorFactory {
 	private TorrentValidator folderTorrentValidator;
 	private Comparator<FeedResult> preferFilesComparator;
 	private Comparator<FeedResult> maxSeedersComparator;
-	private FeedResultWriter feedResultWriter;
+	private TorrentWriter torrentWriter;
 
 	public ShowDao getShowDao() {
 		return showDao;
@@ -104,12 +104,12 @@ public class FeedProcessorFactory_Impl implements ProcessorFactory {
 		this.maxSeedersComparator = maxSeedersComparator;
 	}
 
-	public FeedResultWriter getFeedResultWriter() {
-		return feedResultWriter;
+	public TorrentWriter getTorrentWriter() {
+		return torrentWriter;
 	}
 
-	public void setFeedResultWriter(FeedResultWriter feedResultWriter) {
-		this.feedResultWriter = feedResultWriter;
+	public void setTorrentWriter(TorrentWriter torrentWriter) {
+		this.torrentWriter = torrentWriter;
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class FeedProcessorFactory_Impl implements ProcessorFactory {
 		processor.setFeedDaos(feedDaos);
 		processor.setShowDao(showDao);
 		processor.setTorrentDao(torrentDao);
-		processor.setFeedResultWriter(feedResultWriter);
+		processor.setTorrentWriter(torrentWriter);
 
 		// set feed results validators
 		switch (show.getShowType()) {

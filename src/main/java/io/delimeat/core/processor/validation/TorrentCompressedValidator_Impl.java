@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -16,7 +16,7 @@ public class TorrentCompressedValidator_Impl implements TorrentValidator {
 	private static final String REGEX = "(zip|rar|tar)$";
   
 	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) throws FeedValidationException {
+	public boolean validate(Torrent torrent, Show show, Config config) throws ValidationException {
 		final Pattern fileTypePattern = Pattern.compile(REGEX);
 		final TorrentInfo info = torrent.getInfo();
 		Matcher fileTypeMatcher;

@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
@@ -15,7 +15,7 @@ public class FeedResultSeasonValidator_Impl implements FeedResultValidator {
 	private static final String EPISODE_REGEX = "(?<=[Ss]?\\d{1,2}[eExX])\\d{1,2}";
 
 	@Override
-	public void validate(List<FeedResult> results, Show show) throws FeedValidationException {
+	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final int seasonNum;
 		final int episodeNum;
 		if(show.getNextEpisode() != null){

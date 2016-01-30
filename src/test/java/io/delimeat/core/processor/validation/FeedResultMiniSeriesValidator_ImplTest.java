@@ -1,7 +1,8 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.processor.validation.FeedResultMiniSeriesValidator_Impl;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 

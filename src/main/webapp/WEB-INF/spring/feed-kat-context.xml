@@ -60,7 +60,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	
 	<bean id="katJaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="katJerseyClientFactoryId" factory-method="newClient"/>
 
-	<bean id="katGuideDaoId" class="io.delimeat.core.guide.TvdbJaxrsGuideDao_Impl">
+	<bean id="katGuideDaoId" class="io.delimeat.core.feed.KickAssJaxrsFeedDao_Impl">
 		<property name="client" ref="katJaxrsClientId" />
 		<property name="mediaType" value="APPLICATION_JSON_TYPE" />
 		<property name="baseUri" value="${io.delimeat.core.feed.kat.baseUri}"/>

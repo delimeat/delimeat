@@ -1,4 +1,4 @@
-package io.delimeat.core.feed.validation;
+package io.delimeat.core.processor.validation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +36,7 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
 	
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config)
-			throws FeedValidationException {
+			throws ValidationException {
      
      final byte[] infoHash = torrent.getInfo().getInfoHash();
      ScrapeResult scrape = null;

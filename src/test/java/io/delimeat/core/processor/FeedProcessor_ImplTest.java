@@ -14,11 +14,11 @@ import io.delimeat.core.feed.FeedDao;
 import io.delimeat.core.feed.FeedException;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
-import io.delimeat.core.feed.FeedResultWriter;
-import io.delimeat.core.feed.validation.FeedResultValidator;
-import io.delimeat.core.feed.validation.FeedValidationException;
-import io.delimeat.core.feed.validation.TorrentValidator;
 import io.delimeat.core.processor.FeedProcessor_Impl;
+import io.delimeat.core.processor.validation.FeedResultValidator;
+import io.delimeat.core.processor.validation.ValidationException;
+import io.delimeat.core.processor.validation.TorrentValidator;
+import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.torrent.Torrent;
@@ -128,10 +128,10 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void feedResultWriterTest() {
-		Assert.assertNull(processor.getFeedResultWriter());
-		FeedResultWriter mockedWriter = Mockito.mock(FeedResultWriter.class);
-		processor.setFeedResultWriter(mockedWriter);
-		Assert.assertEquals(mockedWriter, processor.getFeedResultWriter());
+		Assert.assertNull(processor.getTorrentWriter());
+		TorrentWriter mockedWriter = Mockito.mock(TorrentWriter.class);
+		processor.setTorrentWriter(mockedWriter);
+		Assert.assertEquals(mockedWriter, processor.getTorrentWriter());
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void validateFeedResultsNotStartedTest()
-			throws FeedValidationException {
+			throws ValidationException {
 		FeedResultValidator validator = Mockito.mock(FeedResultValidator.class);
 		processor.setFeedResultValidators(Arrays.asList(validator));
 		processor.abort();
@@ -203,7 +203,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void validateFeedResultsTest() throws FeedValidationException {
+	public void validateFeedResultsTest() throws ValidationException {
 		FeedResultValidator validator = Mockito.mock(FeedResultValidator.class);
 		processor.setFeedResultValidators(Arrays.asList(validator));
 
@@ -270,7 +270,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void validateTorrentNotStartedTest() throws FeedValidationException {
+	public void validateTorrentNotStartedTest() throws ValidationException {
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		processor.setTorrentValidators(Arrays.asList(validator));
 		processor.abort();
@@ -284,7 +284,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void validateTorrentTest() throws FeedValidationException {
+	public void validateTorrentTest() throws ValidationException {
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		Mockito.when(
 				validator.validate(Mockito.any(Torrent.class),
@@ -310,13 +310,13 @@ public class FeedProcessor_ImplTest {
 				.getFeedResultRejections().get(0));
 	}
 
-	@Test(expected = FeedValidationException.class)
-	public void validateTorrentExceptionTest() throws FeedValidationException {
+	@Test(expected = ValidationException.class)
+	public void validateTorrentExceptionTest() throws ValidationException {
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		Mockito.when(
 				validator.validate(Mockito.any(Torrent.class),
 						Mockito.any(Show.class), Mockito.any(Config.class)))
-				.thenThrow(FeedValidationException.class);
+				.thenThrow(ValidationException.class);
 
 		processor.setTorrentValidators(Arrays.asList(validator, validator));
 		processor.setActive(true);
@@ -362,7 +362,7 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void validateResultTorrentsNotStartedTest()
-			throws FeedValidationException {
+			throws ValidationException {
 		FeedResult result = new FeedResult();
 		processor.abort();
 
@@ -434,7 +434,7 @@ public class FeedProcessor_ImplTest {
 				.getFeedResultRejections().get(0));
 	}
 
-	@Test(expected = FeedValidationException.class)
+	@Test(expected = ValidationException.class)
 	public void validatResultTorrentsExceptionTest() throws Exception {
 		FeedResult result = new FeedResult();
 		result.setTorrentURL("http://test.com");
@@ -449,7 +449,7 @@ public class FeedProcessor_ImplTest {
 		Mockito.when(
 				validator.validate(Mockito.any(Torrent.class),
 						Mockito.any(Show.class), Mockito.any(Config.class)))
-				.thenThrow(FeedValidationException.class);
+				.thenThrow(ValidationException.class);
 		processor.setTorrentValidators(Arrays.asList(validator));
 
 		Config config = new Config();
