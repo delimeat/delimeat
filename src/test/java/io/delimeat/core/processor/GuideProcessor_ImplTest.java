@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.TimeZone;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;

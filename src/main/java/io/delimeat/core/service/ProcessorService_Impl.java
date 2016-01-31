@@ -3,7 +3,6 @@ package io.delimeat.core.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.logging.Log;
@@ -84,7 +83,6 @@ public class ProcessorService_Impl implements ProcessorService,
 		}
 		
 		final Config config = configDao.read();		
-		final int searchInterval = config.getSearchInterval();
 		
 		for (Show show : shows) {
 			
