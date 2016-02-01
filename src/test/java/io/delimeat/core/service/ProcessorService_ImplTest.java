@@ -1,13 +1,19 @@
 package io.delimeat.core.service;
 
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigDao;
+import io.delimeat.core.config.ConfigException;
+import io.delimeat.core.processor.Processor;
 import io.delimeat.core.processor.ProcessorFactory;
+import io.delimeat.core.show.Episode;
+import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
+import io.delimeat.core.show.ShowException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,30 +68,372 @@ public class ProcessorService_ImplTest {
 		service.setGuideProcessorFactory(factory);
 		Assert.assertEquals(factory, service.getGuideProcessorFactory());
 	}
-	
+  
+  	@Test
+  	public void processAllGuideUpdatesNullShowsTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenReturn(null);
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+      service.processAllGuideUpdates();
+     
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+  	@Test
+  	public void processAllGuideUpdatesNoShowsTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenReturn(Collections.<Show>emptyList());
+     	service.setShowDao(showDao);  
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+      service.processAllGuideUpdates();
+   
+      Assert.assertEquals(0, service.getProcessors().size()); 
+
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
 	@Test
-	public void test() throws Exception{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date date1 = sdf.parse("2016-01-30");
-		
-		sdf.setTimeZone(TimeZone.getTimeZone("EST"));
-		Date date2 = sdf.parse("2016-01-30");
-		
-		Date date3 = new Date();
-		
-		System.out.println(date1);
-		System.out.println(date2);
-		System.out.println(date3);
-		
-		long offset = -(5*60*60*1000);
-		Date date4 = new Date(date1.getTime() + offset);
-		System.out.println(date4);
-		
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date date5 = sdf.parse("2016-01-30");
-		System.out.println(date5);
-		
-		Date date6 = new Date(date5.getTime() - offset);
-		System.out.println(date6);
-	}
+  	public void processAllGuideUpdatesShowExceptionTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenThrow(ShowException.class);
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	try{
+      	service.processAllGuideUpdates();
+      }catch(Exception ex){
+        Assert.assertTrue(ex instanceof ShowException);
+      }
+     
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+
+	@Test
+  	public void processAllGuideUpdatesConfigExceptionTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Mockito.when(configDao.read()).thenThrow(ConfigException.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	try{
+      	service.processAllGuideUpdates();
+      }catch(Exception ex){
+        Assert.assertTrue(ex instanceof ConfigException);
+      }
+     
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllGuideUpdatesTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show,show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+      Processor processor = Mockito.mock(Processor.class);
+     	Mockito.when(factory.build(Mockito.any(Show.class),Mockito.any(Config.class))).thenReturn(processor);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllGuideUpdates();
+     
+     	Assert.assertEquals(2, service.getProcessors().size());
+      Assert.assertEquals(processor, service.getProcessors().get(0));
+      Assert.assertEquals(processor, service.getProcessors().get(1));     
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(2)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(2)).execute(Mockito.any(Runnable.class));
+   }
+  
+  	@Test
+  	public void processAllFeedUpdatesNullShowsTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenReturn(null);
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+      service.processAllFeedUpdates();
+     
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+  	@Test
+  	public void processAllFeedUpdatesNoShowsTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenReturn(Collections.<Show>emptyList());
+     	service.setShowDao(showDao);  
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+      service.processAllFeedUpdates();
+ 
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllFeedUpdatesShowExceptionTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Mockito.when(showDao.readAll()).thenThrow(ShowException.class);
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	try{
+      	service.processAllFeedUpdates();
+      }catch(Exception ex){
+        Assert.assertTrue(ex instanceof ShowException);
+      }
+
+      Assert.assertEquals(0, service.getProcessors().size()); 
+
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(0)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+
+	@Test
+  	public void processAllFeedUpdatesConfigExceptionTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Mockito.when(configDao.read()).thenThrow(ConfigException.class);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	try{
+      	service.processAllFeedUpdates();
+      }catch(Exception ex){
+        Assert.assertTrue(ex instanceof ConfigException);
+      }
+
+      Assert.assertEquals(0, service.getProcessors().size()); 
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllFeedUpdatesNoNextEpTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+     	show.setNextEpisode(null);
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+      Processor processor = Mockito.mock(Processor.class);
+     	Mockito.when(factory.build(Mockito.any(Show.class),Mockito.any(Config.class))).thenReturn(processor);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllFeedUpdates();
+     
+     	Assert.assertEquals(0, service.getProcessors().size());     
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllFeedUpdatesNextEpAfterNowTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+     	Episode episode = new Episode();
+      Date now = new Date();
+      Date later = new Date(now.getTime()+100000);
+     	episode.setAirDateTime(later);
+     	show.setNextEpisode(episode);
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+      Processor processor = Mockito.mock(Processor.class);
+     	Mockito.when(factory.build(Mockito.any(Show.class),Mockito.any(Config.class))).thenReturn(processor);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllFeedUpdates();
+     
+     	Assert.assertEquals(0, service.getProcessors().size());     
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllFeedUpdatesNextEpBeforeNowTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+     	Episode episode = new Episode();
+      Date now = new Date();
+      Date later = new Date(now.getTime()-100000);
+     	episode.setAirDateTime(later);
+     	show.setNextEpisode(episode);
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+      Processor processor = Mockito.mock(Processor.class);
+     	Mockito.when(factory.build(Mockito.any(Show.class),Mockito.any(Config.class))).thenReturn(processor);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllFeedUpdates();
+     
+     	Assert.assertEquals(1, service.getProcessors().size());     
+     	Assert.assertEquals(processor, service.getProcessors().get(0));
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(1)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(1)).execute(Mockito.any(Runnable.class));
+   }
+  
+  	@Test
+  	public void alertCompleteTest(){
+   	Processor processor = Mockito.mock(Processor.class);
+		service.getProcessors().add(processor);
+
+      Assert.assertEquals(1, service.getProcessors().size());     
+     	
+     	service.alertComplete(processor);
+      
+     	Assert.assertEquals(0, service.getProcessors().size());     
+     
+	   Mockito.verify(processor, Mockito.times(1)).removeListener(service); 
+   }
 }

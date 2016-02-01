@@ -72,6 +72,10 @@ public class ProcessorService_Impl implements ProcessorService,
 	public void setExecutor(Executor executor) {
 		this.executor = executor;
 	}
+  
+  	public List<Processor> getProcessors(){
+   	return processors;
+   }
 
 	@Override
 	public void processAllFeedUpdates() throws ConfigException, ShowException {
