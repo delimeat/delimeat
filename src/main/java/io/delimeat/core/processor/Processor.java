@@ -2,7 +2,7 @@ package io.delimeat.core.processor;
 
 public interface Processor {
 
-	public void process() throws Exception;
+	public boolean process() throws Exception;
 
 	public void abort();
 

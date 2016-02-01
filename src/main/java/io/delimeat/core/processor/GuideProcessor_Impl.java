@@ -63,7 +63,7 @@ public class GuideProcessor_Impl implements Processor {
 	}
 
 	@Override
-	public void process() throws ShowException, GuideException {
+	public boolean process() throws ShowException, GuideException {
 		if (active == false) {
 			try {
 				active = true;
@@ -187,6 +187,7 @@ public class GuideProcessor_Impl implements Processor {
 				}
 			}
 		}
+     	return true;
 	}
 
 	@Override

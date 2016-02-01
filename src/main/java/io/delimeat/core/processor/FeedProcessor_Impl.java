@@ -148,7 +148,7 @@ public class FeedProcessor_Impl implements Processor {
     }
     @Transactional
     @Override
-    public void process() throws ShowException, ValidationException, FeedException {
+    public boolean process() throws ShowException, ValidationException, FeedException {
         if (active == false) {
             try {
                 active = true;
@@ -183,6 +183,7 @@ public class FeedProcessor_Impl implements Processor {
                 }
             }
         }
+      	return true;
     }
 
     public List<FeedResult> fetchResults(Show show) {
