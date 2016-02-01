@@ -13,6 +13,7 @@ public class ProcessorThreadTest {
      
      	ProcessorThread thread = new ProcessorThread(processor,log);
      	thread.run();
+     
      	Mockito.verify(processor,Mockito.times(1)).process();
      	Mockito.verify(log, Mockito.times(0)).error(Mockito.anyString(),Mockito.any(Exception.class));
 	}
@@ -20,11 +21,12 @@ public class ProcessorThreadTest {
 	@Test
 	public void exceptionTest() throws Exception {
 		Processor processor = Mockito.mock(Processor.class);
-     	Mockito.when(processor.process()).thenThrow(Exception.class);
-		Log log = Mockito.mock(Log.class);
+     	Mockito.doThrow(Exception.class).when(processor).process();
+     	Log log = Mockito.mock(Log.class);
      
      	ProcessorThread thread = new ProcessorThread(processor,log);
      	thread.run();
+     
      	Mockito.verify(processor,Mockito.times(1)).process();
      	Mockito.verify(log, Mockito.times(1)).error(Mockito.anyString(),Mockito.any(Exception.class));
 	}
