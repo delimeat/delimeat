@@ -333,7 +333,7 @@ public class GuideEpisodeTest {
   public void equalsEpisodeTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
@@ -350,7 +350,7 @@ public class GuideEpisodeTest {
   public void equalsEpisodeSeasonNumTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(2);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
@@ -368,7 +368,7 @@ public class GuideEpisodeTest {
   public void equalsEpisodeEpisodeNumTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(1);
     otherEp.setEpisodeId(Long.MAX_VALUE);

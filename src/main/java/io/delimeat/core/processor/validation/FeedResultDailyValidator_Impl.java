@@ -23,7 +23,7 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final Date airDate;
 		if(show.getNextEpisode()!=null){
-			airDate = show.getNextEpisode().getAirDateTime();
+			airDate = show.getNextEpisode().getAirDate();
 		}else{
 			airDate = null;
 		}

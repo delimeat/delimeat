@@ -359,7 +359,7 @@ public class ProcessorService_ImplTest {
      	Episode episode = new Episode();
       Date now = new Date();
       Date later = new Date(now.getTime()+100000);
-     	episode.setAirDateTime(later);
+     	episode.setAirDate(later);
      	show.setNextEpisode(episode);
       Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
      	service.setShowDao(showDao);
@@ -394,7 +394,7 @@ public class ProcessorService_ImplTest {
      	Episode episode = new Episode();
       Date now = new Date();
       Date later = new Date(now.getTime()-100000);
-     	episode.setAirDateTime(later);
+     	episode.setAirDate(later);
      	show.setNextEpisode(episode);
       Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
      	service.setShowDao(showDao);

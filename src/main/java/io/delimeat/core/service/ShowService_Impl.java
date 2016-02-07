@@ -13,10 +13,8 @@ import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.TimeZone;
 
 import javax.transaction.Transactional;
 
@@ -53,9 +51,6 @@ public class ShowService_Impl implements ShowService {
     	  final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
          final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
          Collections.sort(guideEps);
-         
-		final int airTime = createdShow.getAirTime();
-		final long timeZoneOffset = TimeZone.getTimeZone(createdShow.getTimezone()).getRawOffset();
 
          ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
          while(guideEpIt.hasNext()){
@@ -84,14 +79,8 @@ public class ShowService_Impl implements ShowService {
               prevGuideEp.setTitle(newTitle);
               guideEpIt.remove();
             }*/
-            Episode ep = new Episode();
+            Episode ep = new Episode(guideEp);
             ep.setShow(createdShow);
-            ep.setTitle(guideEp.getTitle());
-            ep.setSeasonNum(guideEp.getSeasonNum());
-            ep.setEpisodeNum(guideEp.getEpisodeNum());
-			long epAirTime = guideEp.getAirDate().getTime();
-			Date epAirDateTime = new Date(epAirTime + airTime - timeZoneOffset);
-            ep.setAirDateTime(epAirDateTime);
             showDao.createOrUpdateEpisode(ep);
            
          }

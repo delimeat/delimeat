@@ -32,7 +32,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -47,7 +47,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void emptyTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -73,7 +73,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noAirDateTest() throws Exception{	
 		Episode episode = new Episode();
-		episode.setAirDateTime(null);
+		episode.setAirDate(null);
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -88,7 +88,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noYearRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -103,7 +103,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -117,7 +117,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void noDayRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -131,7 +131,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongYearRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -145,7 +145,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongdMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -159,7 +159,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void wrongDayRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -173,7 +173,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void validFeedResultTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result = new FeedResult();
@@ -187,7 +187,7 @@ public class FeedResultDailyValidator_ImplTest {
 	@Test
 	public void validAndRejectTest() throws Exception{
 		Episode episode = new Episode();
-		episode.setAirDateTime(SDF.parse("2012-02-03"));
+		episode.setAirDate(SDF.parse("2012-02-03"));
 		show.setNextEpisode(episode);
 		
 		FeedResult result1 = new FeedResult();

@@ -1,6 +1,7 @@
 package io.delimeat.core.show;
 
 import io.delimeat.core.guide.GuideEpisode;
+import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,13 +10,15 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Episode {
 
 	private long episodeId;
 	private String title;
-	private Date airDateTime;
+	@XmlJavaTypeAdapter(TvdbDateAdapter.class)
+	private Date airDate;
 	private int seasonNum;
 	private int episodeNum;
 	private boolean doubleEp;
@@ -31,7 +34,7 @@ public class Episode {
   
    public Episode(GuideEpisode guideEp){
      title = guideEp.getTitle();
-     airDateTime = guideEp.getAirDate();
+     airDate = guideEp.getAirDate();
      seasonNum = guideEp.getSeasonNum();
      episodeNum = guideEp.getEpisodeNum();
    }
@@ -67,18 +70,18 @@ public class Episode {
 	}
 
 	/**
-	 * @return the airDateTime
+	 * @return the airDate
 	 */
-	public Date getAirDateTime() {
-		return airDateTime;
+	public Date getAirDate() {
+		return airDate;
 	}
 
 	/**
-	 * @param airDateTime
-	 *            the airDateTime to set
+	 * @param airDate
+	 *            the airDate to set
 	 */
-	public void setAirDateTime(Date airDateTime) {
-		this.airDateTime = airDateTime;
+	public void setAirDate(Date airDate) {
+		this.airDate = airDate;
 	}
 
 	/**
@@ -178,7 +181,7 @@ public class Episode {
 	 */
 	@Override
 	public String toString() {
-		return "Episode [episodeId=" + episodeId + ", title=" + title + ", airDateTime=" + airDateTime + ", seasonNum="
+		return "Episode [episodeId=" + episodeId + ", title=" + title + ", airDate=" + airDate + ", seasonNum="
 				+ seasonNum + ", episodeNum=" + episodeNum + ", doubleEp=" + doubleEp + ", showId="
 				+ (show != null ? Long.toString(show.getShowId()) : null) + ", results=" + results + ", version="
 				+ version + "]";
@@ -195,7 +198,7 @@ public class Episode {
                 && seasonNum == otherEp.getSeasonNum() 
                 && episodeNum == otherEp.getEpisodeNum() 
                 && title == otherEp.getTitle() 
-                && (airDateTime != null && otherEp.getAirDateTime() != null ? airDateTime.equals(otherEp.getAirDateTime()) : false )  
+                && (airDate != null && otherEp.getAirDate() != null ? airDate.equals(otherEp.getAirDate()) : false )  
                 && doubleEp == otherEp.isDoubleEp()
                 && show == otherEp.getShow()
                );

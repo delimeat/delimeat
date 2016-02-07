@@ -31,7 +31,7 @@ public class EpisodeTest {
     guideEp.setSeasonNum(1);
     guideEp.setTitle("TITLE");
     episode = new Episode(guideEp);
-    Assert.assertEquals("2016-01-28",SDF.format(episode.getAirDateTime()));
+    Assert.assertEquals("2016-01-28",SDF.format(episode.getAirDate()));
     Assert.assertEquals(2, episode.getEpisodeNum());
     Assert.assertEquals(1, episode.getSeasonNum());
     Assert.assertEquals("TITLE",episode.getTitle());
@@ -53,9 +53,9 @@ public class EpisodeTest {
 
 	@Test
 	public void airDateTimeTest() throws ParseException {
-		Assert.assertNull(episode.getAirDateTime());
-		episode.setAirDateTime(SDF.parse("2015-11-06"));
-		Assert.assertEquals("2015-11-06", SDF.format(episode.getAirDateTime()));
+		Assert.assertNull(episode.getAirDate());
+		episode.setAirDate(SDF.parse("2015-11-06"));
+		Assert.assertEquals("2015-11-06", SDF.format(episode.getAirDate()));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class EpisodeTest {
     otherEp.setEpisodeNum(2);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2000-01-28"));
+    episode.setAirDate(SDF.parse("2000-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -137,7 +137,7 @@ public class EpisodeTest {
     otherEp.setEpisodeNum(2);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2000-01-28"));
+    episode.setAirDate(SDF.parse("2000-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -155,7 +155,7 @@ public class EpisodeTest {
     otherEp.setEpisodeNum(1);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2000-01-28"));
+    episode.setAirDate(SDF.parse("2000-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -168,14 +168,14 @@ public class EpisodeTest {
   public void equalsEpisodeTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("EP");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MAX_VALUE);
@@ -187,14 +187,14 @@ public class EpisodeTest {
   public void equalsEpisodeSeasonNumTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(2);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MAX_VALUE);
@@ -207,14 +207,14 @@ public class EpisodeTest {
   public void equalsEpisodeEpisodeNumTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(1);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MAX_VALUE);
@@ -227,14 +227,14 @@ public class EpisodeTest {
   public void equalsEpisodeTitleTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("OTHER");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MAX_VALUE);
@@ -248,14 +248,14 @@ public class EpisodeTest {
   public void equalsEpisodeEpisodeIdTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("EP");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -268,14 +268,14 @@ public class EpisodeTest {
   public void equalsEpisodeAirDateNullTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("EP");
-    otherEp.setAirDateTime(SDF.parse("2016-01-28"));
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(null);
+    episode.setAirDate(null);
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -288,14 +288,14 @@ public class EpisodeTest {
   public void equalsEpisodeOtherAirDateNullTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("EP");
-    otherEp.setAirDateTime(null);
+    otherEp.setAirDate(null);
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);
@@ -308,14 +308,14 @@ public class EpisodeTest {
   public void equalsEpisodeAirDateTest() throws ParseException{
     Episode otherEp = new Episode();
     otherEp.setTitle("EP");
-    otherEp.setAirDateTime(SDF.parse("2016-01-29"));
+    otherEp.setAirDate(SDF.parse("2016-01-29"));
     otherEp.setSeasonNum(1);
     otherEp.setEpisodeNum(2);
     otherEp.setEpisodeId(Long.MAX_VALUE);
     otherEp.setVersion(Integer.MIN_VALUE);
     
     episode.setTitle("EP");
-    episode.setAirDateTime(SDF.parse("2016-01-28"));
+    episode.setAirDate(SDF.parse("2016-01-28"));
     episode.setSeasonNum(1);
     episode.setEpisodeNum(2);
     episode.setEpisodeId(Long.MIN_VALUE);

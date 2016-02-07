@@ -93,7 +93,7 @@ public class ProcessorService_Impl implements ProcessorService,
 			if (show.getNextEpisode() != null) {
 				
 				Episode nextEp = show.getNextEpisode();
-				if (nextEp.getAirDateTime().before(now) == true) {
+				if (nextEp.getAirDate().before(now) == true) {
 					
 					Processor processor = feedProcessorFactory.build(show,config);
 					processor.addListener(this);

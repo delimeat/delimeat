@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
@@ -98,9 +97,6 @@ public class GuideProcessor_Impl implements Processor {
 							Collections.sort(guideEps);
 							// sort the episode from latest to earliest
 							Collections.reverse(guideEps);
-							
-							final int airTime = lockedShow.getAirTime();
-							final long timeZoneOffset = TimeZone.getTimeZone(lockedShow.getTimezone()).getRawOffset();
 
 							// loop through all the guide eps
 							GuideEpisode prevGuideEp = null;
@@ -112,23 +108,16 @@ public class GuideProcessor_Impl implements Processor {
 									// need to move the air date or update the
 									// title
 									Episode showEp = showEps.get(indexOf);
-									long epAirTime = guideEp.getAirDate().getTime();
-									Date epAirDateTime = new Date(epAirTime + airTime - timeZoneOffset);
+									Date epAirDate = guideEp.getAirDate();
 									if (showEp.getTitle() != guideEp.getTitle()
-											|| showEp.getAirDateTime().equals(epAirDateTime) == false) {
+											|| showEp.getAirDate().equals(epAirDate) == false) {
 										showEp.setTitle(guideEp.getTitle());
-										showEp.setAirDateTime(epAirDateTime);
+										showEp.setAirDate(epAirDate);
 										createOrUpdateEps.add(showEp);
 									}
 								} else {
 									// if we dont have the episode add it
-									Episode newEp = new Episode();
-									newEp.setTitle(guideEp.getTitle());
-									newEp.setSeasonNum(guideEp.getSeasonNum());
-									newEp.setEpisodeNum(guideEp.getEpisodeNum());
-									long epAirTime = guideEp.getAirDate().getTime();
-									Date epAirDateTime = new Date(epAirTime + airTime - timeZoneOffset);
-									newEp.setAirDateTime(epAirDateTime);
+									Episode newEp = new Episode(guideEp);
 									newEp.setShow(lockedShow);
 									createOrUpdateEps.add(newEp);
 								}

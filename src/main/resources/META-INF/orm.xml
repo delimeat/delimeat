@@ -22,7 +22,7 @@
 	</named-query>
  
 	<named-query name="Show.getEpisodeAfter">
-		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show and e.airDateTime > :airDateTime ORDER BY e.airDateTime ASC]]></query>
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show and e.airDate > :airDate ORDER BY e.airDate ASC]]></query>
 	</named-query>
 
 	<entity class="EpisodeResult" name="EpisodeResult">
@@ -78,8 +78,8 @@
 				<generated-value />
 			</id>
 
-			<basic name="airDateTime" optional="false">
-				<column name="AIR_DATE_TIME" nullable="false" />
+			<basic name="airDate" optional="false">
+				<column name="AIR_DATE" nullable="false" />
 				<temporal>DATE</temporal>
 			</basic>
 

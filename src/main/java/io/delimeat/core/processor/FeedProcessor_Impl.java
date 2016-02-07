@@ -298,7 +298,7 @@ public class FeedProcessor_Impl implements Processor {
     public void updateShow(Show show) throws ShowNotFoundException, ShowException {
         // set the next episode
         final Episode previousEp = show.getNextEpisode();
-        final Episode nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDateTime());
+        final Episode nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDate());
         show.setPreviousEpisode(previousEp);
         show.setNextEpisode(nextEp);
         show.setLastFeedUpdate(new Date());
