@@ -2,7 +2,6 @@ package io.delimeat.core.service;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigDao;
-import io.delimeat.core.config.ConfigNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,13 +26,6 @@ public class ConfigService_ImplTest {
 	}
 	
 	@Test
-	public void defaultOutputDirectoryTest() {
-		Assert.assertNull(service.getDefaultOutputDir());
-		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
-		Assert.assertEquals("DEFAULT_OUTPUT_DIR", service.getDefaultOutputDir());
-	}
-	
-	@Test
 	public void readTest() throws Exception {
 		ConfigDao mockedDao = Mockito.mock(ConfigDao.class);
 		Config mockedResult = Mockito.mock(Config.class);
@@ -42,20 +34,6 @@ public class ConfigService_ImplTest {
 		service.setConfigDao(mockedDao);
 
 		Assert.assertEquals(mockedResult, service.read());
-	}
-
-	@Test
-	public void readNotFoundTest() throws Exception {
-		ConfigDao mockedDao = Mockito.mock(ConfigDao.class);
-		ConfigNotFoundException exception = new ConfigNotFoundException(
-				"exception");
-		Mockito.when(mockedDao.read()).thenThrow(exception);
-
-		service.setConfigDao(mockedDao);
-
-		Assert.assertNotNull(service.read());
-		Mockito.verify(mockedDao).createOrUpdate(Mockito.any(Config.class));
-
 	}
 
 	@Test

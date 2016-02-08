@@ -73,6 +73,13 @@ public class JaxbConfigDao_ImplTest {
 		dao.setMarshaller(mockedMarshaller);
 		Assert.assertEquals(mockedMarshaller, dao.getMarshaller());
 	}
+	
+	@Test
+	public void defaultOutputDirectoryTest() {
+		Assert.assertNull(dao.getDefaultOutputDir());
+		dao.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
+		Assert.assertEquals("DEFAULT_OUTPUT_DIR", dao.getDefaultOutputDir());
+	}
 
 	@Test
 	public void urlTest() throws MalformedURLException {
