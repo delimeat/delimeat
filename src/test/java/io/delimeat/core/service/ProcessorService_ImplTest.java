@@ -356,9 +356,9 @@ public class ProcessorService_ImplTest {
   	public void processAllFeedUpdatesNextEpAfterNowTest() throws Exception{
      	ShowDao showDao = Mockito.mock(ShowDao.class);
       Show show = new Show();
+      show.setTimezone("EST");
      	Episode episode = new Episode();
-      Date now = new Date();
-      Date later = new Date(now.getTime()+100000);
+      Date later = new Date(System.currentTimeMillis() +100000);
      	episode.setAirDate(later);
      	show.setNextEpisode(episode);
       Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
@@ -391,10 +391,10 @@ public class ProcessorService_ImplTest {
   	public void processAllFeedUpdatesNextEpBeforeNowTest() throws Exception{
      	ShowDao showDao = Mockito.mock(ShowDao.class);
       Show show = new Show();
+      show.setTimezone("EST");
      	Episode episode = new Episode();
-      Date now = new Date();
-      Date later = new Date(now.getTime()-100000);
-     	episode.setAirDate(later);
+      Date earlier = new Date( 0 );
+     	episode.setAirDate(earlier);
      	show.setNextEpisode(episode);
       Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
      	service.setShowDao(showDao);

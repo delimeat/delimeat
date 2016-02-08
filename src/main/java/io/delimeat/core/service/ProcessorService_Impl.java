@@ -3,6 +3,7 @@ package io.delimeat.core.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.logging.Log;
@@ -87,13 +88,19 @@ public class ProcessorService_Impl implements ProcessorService,
 		}
 		
 		final Config config = configDao.read();		
-		
+		final long searchInterval = config.getSearchInterval();
 		for (Show show : shows) {
 			
 			if (show.getNextEpisode() != null) {
 				
 				Episode nextEp = show.getNextEpisode();
-				if (nextEp.getAirDate().before(now) == true) {
+            // horrible timezone hack
+            String timezone = show.getTimezone();
+            TimeZone tz = TimeZone.getTimeZone(timezone);
+           	int tzOffset = tz.getRawOffset();
+           	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - tzOffset + searchInterval);
+           
+				if (nextEpAirDateTime.before(now) == true) {
 					
 					Processor processor = feedProcessorFactory.build(show,config);
 					processor.addListener(this);
