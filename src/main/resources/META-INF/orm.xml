@@ -91,8 +91,8 @@
 				<column name="EPISODE_NUM" nullable="false" />
 			</basic>
 
-			<basic name="title" optional="false">
-				<column name="TITLE" nullable="false" />
+			<basic name="title" optional="true">
+				<column name="TITLE" nullable="true" />
 			</basic>
 
 			<basic name="doubleEp" optional="false">
