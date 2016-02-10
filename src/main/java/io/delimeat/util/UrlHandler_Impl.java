@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class UrlHandler_Impl implements UrlHandler {
 
@@ -18,11 +19,7 @@ public class UrlHandler_Impl implements UrlHandler {
 	@Override
 	public InputStream openInput(URL url, Map<String, String> headerProps) throws IOException {
 		URLConnection conn = openUrlConnection(url, headerProps);
-		InputStream input = conn.getInputStream();
-		if ("gzip".equals(conn.getContentEncoding())) {
-			input = new GZIPInputStream(input);
-		}
-		return input;
+		return openInput(conn);
 	}
 
 	@Override
@@ -80,5 +77,19 @@ public class UrlHandler_Impl implements UrlHandler {
 	public URLConnection openUrlConnection(URL url) throws IOException {
 		return openUrlConnection(url, null);
 	}
+  
+	@Override  
+  	public InputStream openInput(URLConnection connection) throws IOException{
+     final String contentType = connection.getContentType();
+     final InputStream input;
+     if("gzip".equalsIgnoreCase(contentType) == true){
+       input = new GZIPInputStream(connection.getInputStream());
+     }else if("deflate".equalsIgnoreCase(contentType) == true){
+       input = new InflaterInputStream(connection.getInputStream());
+     }else{
+       input = connection.getInputStream();
+     }
+     return input;
+   }
 
 }

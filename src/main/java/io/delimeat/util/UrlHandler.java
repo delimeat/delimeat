@@ -12,6 +12,8 @@ public interface UrlHandler {
 	public InputStream openInput(URL url) throws IOException;
 
 	public InputStream openInput(URL url, Map<String, String> headerProps) throws IOException;
+  
+  	public InputStream openInput(URLConnection connection) throws IOException;
 
 	public OutputStream openOutput(URL url) throws IOException;
 

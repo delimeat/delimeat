@@ -8,6 +8,7 @@ import io.delimeat.util.bencode.BencodeException;
 import io.delimeat.util.bencode.BencodeUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -45,10 +46,11 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			if(responseCode!=200){
            throw new TorrentException("Receieved response " + responseCode +" from " + scrapeURL);
          }
+     		final InputStream input = getUrlHandler().openInput(conn);
         
 			final BDictionary dictionary;
      		try{
-           dictionary = BencodeUtils.decode(conn.getInputStream());
+           dictionary = BencodeUtils.decode(input);
          }catch(BencodeException ex){
          	throw new TorrentException("Encountered an error unmarshalling torrent", ex);
          }

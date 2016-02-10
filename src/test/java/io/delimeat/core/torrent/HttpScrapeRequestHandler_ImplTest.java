@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,6 +79,7 @@ public class HttpScrapeRequestHandler_ImplTest {
       Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
       Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(scrapeResult.getBytes()));
 		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+     	Mockito.when(mockedHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(scrapeResult.getBytes()));
 		
 		scraper.setUrlHandler(mockedHandler);
 		ScrapeResult result = scraper.scrape(new URI("http://test/announce?test=true"), "....................".getBytes());
