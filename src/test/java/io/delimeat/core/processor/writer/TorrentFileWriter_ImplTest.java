@@ -80,12 +80,4 @@ public class TorrentFileWriter_ImplTest {
 		Assert.assertEquals("BYTES", baos.toString());
 	}
 	
-	@Test(expected=FeedException.class)
-	public void writeBadOutputTest() throws IOException, FeedException{
-		Config config = new Config();
-		config.setOutputDirectory("\"");
-		
-		writer.write("FILENAME", "BYTES".getBytes(), config);
-	}
-	
 }

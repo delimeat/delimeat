@@ -7,7 +7,6 @@ import io.delimeat.util.UrlHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 public class TorrentFileWriter_Impl implements TorrentWriter {
@@ -25,11 +24,13 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 		final String outputUrl = "file:" + outputDirectory + "/" + fileName;
 		try{
 			final URL url = new URL(outputUrl);
+			/*
 			try{
 				url.toURI();
 			}catch(URISyntaxException ex){
 				throw new FeedException("Unnable to write to malformed url " + outputUrl, ex);
 			}
+			*/
 			final OutputStream output = getUrlHandler().openOutput(url);
 			output.write(bytes);
 			output.flush();

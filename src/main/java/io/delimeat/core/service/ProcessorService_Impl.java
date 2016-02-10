@@ -101,7 +101,6 @@ public class ProcessorService_Impl implements ProcessorService,
            	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - tzOffset + searchInterval);
            
 				if (nextEpAirDateTime.before(now) == true) {
-					
 					Processor processor = feedProcessorFactory.build(show,config);
 					processor.addListener(this);
 					processors.add(processor);

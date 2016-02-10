@@ -11,7 +11,7 @@ public interface TorrentDao {
 	 * @return
 	 * @throws TorrentException
 	 */
-	public Torrent read(URI uri) throws IOException, TorrentException;
+	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException;
 	
 	/**
 	 * Perform a scrape

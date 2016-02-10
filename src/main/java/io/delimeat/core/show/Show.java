@@ -32,8 +32,8 @@ public class Show implements Comparable<Show> {
 	private Episode nextEpisode;
 	private Episode previousEpisode;
 	private boolean includeSpecials;
-   private int minSize;
-   private int maxSize;
+	private int minSize;
+	private int maxSize;
 	private int version;
 
 	/**

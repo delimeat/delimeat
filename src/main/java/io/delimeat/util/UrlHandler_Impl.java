@@ -80,11 +80,11 @@ public class UrlHandler_Impl implements UrlHandler {
   
 	@Override  
   	public InputStream openInput(URLConnection connection) throws IOException{
-     final String contentType = connection.getContentType();
+     final String encoding = connection.getContentEncoding();
      final InputStream input;
-     if("gzip".equalsIgnoreCase(contentType) == true){
+     if("gzip".equalsIgnoreCase(encoding) == true){
        input = new GZIPInputStream(connection.getInputStream());
-     }else if("deflate".equalsIgnoreCase(contentType) == true){
+     }else if("deflate".equalsIgnoreCase(encoding) == true){
        input = new InflaterInputStream(connection.getInputStream());
      }else{
        input = connection.getInputStream();

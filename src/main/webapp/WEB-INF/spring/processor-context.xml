@@ -10,37 +10,25 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="feedProcessorFactoryId" class="io.delimeat.core.processor.FeedProcessorFactory_Impl">
-		<property name="showDao" ref="showDaoId"/>
-		<property name="feedDaos">
-			<list>
-				<ref bean="katGuideDaoId"/>
-			</list>
-		</property>
-		<property name="torrentDao" ref="torrentDaoId"/>
-		<property name="dailyFeedResultValidators">
-			<list>
-				<ref bean="feedResultTitleValidatorId"/>
-				<ref bean="feedResultDailyValidatorId"/>
-			</list>
-		</property>	
-		<property name="seasonFeedResultValidators">
-			<list>
-				<ref bean="feedResultTitleValidatorId"/>
-				<ref bean="feedResultSeasonValidatorId"/>
-			</list>
-		</property>	
-		<property name="torrentValidators">
-			<list>
-				<ref bean="torrentCompressedValidatorId"/>
-				<ref bean="torrentFileTypeValidatorId"/>
-				<ref bean="torrentSeederValidatorId"/>
-				<ref bean="torrentSizeValidatorId"/>
-			</list>
-		</property>
 		<property name="folderTorrentValidator" ref="torrentFolderValidatorId"/>
 		<property name="preferFilesComparator" ref="preferFilesComparatorId"/>
 		<property name="maxSeedersComparator" ref="maxSeedersComparatorId"/>
-		<property name="torrentWriter" ref="torrentWriterId"/>			
+		<property name="processorTypes">
+			<map>
+				<entry key="SEASON">
+					<value>seasonFeedProcessorId</value>
+				</entry>
+				<entry key="ANIMATED">
+					<value>seasonFeedProcessorId</value>
+				</entry>
+				<entry key="DAILY">
+					<value>dailyFeedProcessorId</value>
+				</entry>
+				<entry key="MINI_SERIES">
+					<value>seasonFeedProcessorId</value>
+				</entry>
+			</map>
+		</property>
 	</bean>   
 	
 	<!-- Feed Result Validators -->
@@ -75,6 +63,44 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		<property name="urlHandler" ref="urlHandlerId"/>
 	</bean>
   
+    <bean id="abstractFeedProcessorId" class="io.delimeat.core.processor.FeedProcessor_Impl" abstract="true">
+    	<property name="torrentDao" ref="torrentDaoId"/>
+		<property name="torrentWriter" ref="torrentWriterId"/>	
+    	<property name="showDao" ref="showDaoId"/>
+    	<property name="feedDaos">
+    		 <list>
+    		 	<ref bean="katGuideDaoId"/>
+            </list>
+       </property>
+       
+		<property name="torrentValidators">
+			<list>
+				<ref bean="torrentCompressedValidatorId"/>
+				<ref bean="torrentFileTypeValidatorId"/>
+				<ref bean="torrentSeederValidatorId"/>
+				<ref bean="torrentSizeValidatorId"/>
+			</list>
+		</property>
+    </bean>
+    
+    <bean id="seasonFeedProcessorId" parent="abstractFeedProcessorId" scope="prototype">
+		<property name="feedResultValidators">
+    	    <list>
+				<ref bean="feedResultTitleValidatorId"/>
+				<ref bean="feedResultSeasonValidatorId"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="dailyFeedProcessorId" parent="abstractFeedProcessorId" scope="prototype">
+		<property name="feedResultValidators">
+    	    <list>
+				<ref bean="feedResultTitleValidatorId"/>
+				<ref bean="feedResultDailyValidatorId"/>
+            </list>
+        </property>
+    </bean>
+    
  	<bean id="guideProcessorFactoryId" class="io.delimeat.core.processor.GuideProcessorFactory_Impl">
 		<property name="showDao" ref="showDaoId"/>	
 		<property name="guideDao" ref="tvdbGuideDaoId"/>					

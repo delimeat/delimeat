@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -187,19 +188,20 @@ public class TorrentDao_ImplTest {
 		Assert.assertNull(torrent.getBytes());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void readTest() throws Exception {
 		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-      Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-      Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
-
+		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
 		dao.setUrlHandler(mockedUrlHandler);
-
+	
 		URI uri = new URI("http://test.com/");
-
+	
 		Torrent torrent = dao.read(uri);
 		Assert.assertEquals("TRACKER_1", torrent.getTracker());
 		Assert.assertEquals(4, torrent.getTrackers().size());
@@ -238,12 +240,13 @@ public class TorrentDao_ImplTest {
 		dao.read(new URI("udp://test.com"));
 	}
   
+	@SuppressWarnings("unchecked")
 	@Test(expected=TorrentException.class)
 	public void scrapeNotOKTest() throws Exception{
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
       HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
       Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 
 		dao.setUrlHandler(mockedUrlHandler);
 

@@ -12,6 +12,7 @@ import io.delimeat.util.bencode.BencodeException;
 import io.delimeat.util.bencode.BencodeUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.security.MessageDigest;
@@ -52,7 +53,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	}
 	
 	@Override
-	public Torrent read(URI uri) throws TorrentException, IOException {
+	public Torrent read(URI uri) throws TorrentNotFoundException, TorrentException, IOException {
 
      final String protocol = uri.getScheme();;
      if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
@@ -61,14 +62,17 @@ public class TorrentDao_Impl implements TorrentDao {
 
      final Map<String,String> headers = new HashMap<String,String>();
      headers.put("referer", uri.toASCIIString());
-     final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL());
-     if(conn.getResponseCode()!=200){
+     final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL(),headers);
+     final int responseCode = conn.getResponseCode();
+     if(responseCode == 404){
+    	throw new TorrentNotFoundException("Unnable to retrieve torrent at url "+  uri.toURL());
+     }else if(conn.getResponseCode()!=200){
        throw new TorrentException("Receieved response " + conn.getResponseCode() +" from " + uri.toURL());
      }
-
+     final InputStream input = getUrlHandler().openInput(conn);
 
      try{
-       final byte[] bytes = IOUtils.toByteArray(conn.getInputStream());
+       final byte[] bytes = IOUtils.toByteArray(input);
        final BDictionary dictionary = BencodeUtils.decode(bytes);
        final Torrent torrent = parseRootDictionary(dictionary);
        torrent.setBytes(bytes);

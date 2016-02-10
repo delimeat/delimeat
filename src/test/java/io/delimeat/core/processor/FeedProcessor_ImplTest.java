@@ -93,7 +93,8 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void feedResultValidatorsTest() {
-		Assert.assertNull(processor.getFeedResultValidators());
+		Assert.assertNotNull(processor.getFeedResultValidators());
+		Assert.assertTrue(processor.getFeedResultValidators().isEmpty());
 		FeedResultValidator mockedValidator = Mockito
 				.mock(FeedResultValidator.class);
 		processor.setFeedResultValidators(Arrays.asList(mockedValidator));
@@ -106,7 +107,8 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void torrentValidatorsTest() {
-		Assert.assertNull(processor.getTorrentValidators());
+		Assert.assertNotNull(processor.getTorrentValidators());
+		Assert.assertTrue(processor.getTorrentValidators().isEmpty());
 		TorrentValidator mockedValidator = Mockito.mock(TorrentValidator.class);
 		processor.setTorrentValidators(Arrays.asList(mockedValidator));
 		Assert.assertNotNull(processor.getTorrentValidators());

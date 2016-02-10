@@ -34,6 +34,7 @@ import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
+import io.delimeat.core.torrent.TorrentNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
 public class FeedProcessor_Impl implements Processor {
@@ -47,8 +48,8 @@ public class FeedProcessor_Impl implements Processor {
     private ShowDao showDao;
     private List<FeedDao> feedDaos;
     private TorrentDao torrentDao;
-    private List<FeedResultValidator> feedResultValidators;
-    private List<TorrentValidator> torrentValidators;
+    private List<FeedResultValidator> feedResultValidators = new ArrayList<FeedResultValidator>(); 
+    private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
     private Comparator<FeedResult> resultComparator;
     private TorrentWriter torrentWriter;
 
@@ -144,8 +145,9 @@ public class FeedProcessor_Impl implements Processor {
 
     @Override
     public void removeListener(ProcessorListener listener) {
-        listeners.add(listener);        
+        listeners.remove(listener);        
     }
+    
     @Transactional
     @Override
     public void process() throws ShowException, ValidationException, FeedException {
@@ -164,12 +166,13 @@ public class FeedProcessor_Impl implements Processor {
                     // select the best result
                     final FeedResult selectedResult = selectResult(validResults, config);
 
+                    LOG.error("selectedResult: "+ selectedResult);
                     // if something has been found and its valid output it
                     if (selectedResult != null && selectedResult.getTorrent() != null && selectedResult.getTorrent().getInfo() != null
-                        && DelimeatUtils.isEmpty(selectedResult.getTorrent().getInfo().getName())) {
+                        && DelimeatUtils.isNotEmpty(selectedResult.getTorrent().getInfo().getName())) {
 
                         final Torrent torrent = selectedResult.getTorrent();
-                        final String fileName = torrent.getInfo().getName();
+                        final String fileName = torrent.getInfo().getName() + ".torrent";
                         final byte[] bytes = torrent.getBytes();
                         torrentWriter.write(fileName, bytes, config);
 
@@ -178,8 +181,9 @@ public class FeedProcessor_Impl implements Processor {
                 }
             } finally {
                 active = false;
-                for(ProcessorListener listener: listeners){
-                  listener.alertComplete(this);
+                final List<ProcessorListener> threadListeners = new ArrayList<ProcessorListener>(listeners);
+                for(ProcessorListener listener: threadListeners){
+                	listener.alertComplete(this);
                 }
             }
         }
@@ -269,6 +273,9 @@ public class FeedProcessor_Impl implements Processor {
             } catch (IOException ex) {
                 result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
                 continue;
+            } catch (TorrentNotFoundException ex) {
+                result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
+                continue;
             } catch (TorrentException ex) {
                 result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
                 continue;
@@ -295,10 +302,15 @@ public class FeedProcessor_Impl implements Processor {
         return result;
     }
 
-    public void updateShow(Show show) throws ShowNotFoundException, ShowException {
+    public void updateShow(Show show) throws ShowException {
         // set the next episode
         final Episode previousEp = show.getNextEpisode();
-        final Episode nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDate());
+        Episode nextEp = null;
+        try{ 
+        	nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDate());
+        }catch(ShowNotFoundException e){
+        	// do nothing 
+        }
         show.setPreviousEpisode(previousEp);
         show.setNextEpisode(nextEp);
         show.setLastFeedUpdate(new Date());
