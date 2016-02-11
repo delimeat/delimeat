@@ -17,6 +17,7 @@ import io.delimeat.core.show.ShowGuideSourcePK;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 public class ShowService_ImplTest {
@@ -179,7 +180,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedGuideDao).episodes("2");// should be guideId = 2
 														// because that is the
 														// correct GuideSource
-		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
+		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
 		Assert.assertEquals(show, actualShow); // show returned by showDao
 												// should match the show
 												// returned by the service

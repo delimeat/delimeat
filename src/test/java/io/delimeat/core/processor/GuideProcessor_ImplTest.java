@@ -3,6 +3,7 @@ package io.delimeat.core.processor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
@@ -119,7 +120,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(0)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
@@ -154,7 +155,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
@@ -186,7 +187,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
@@ -229,7 +230,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
@@ -271,7 +272,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
@@ -316,7 +317,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -363,7 +364,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -418,7 +419,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -477,7 +478,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -536,7 +537,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -596,7 +597,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -666,7 +667,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -738,7 +739,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -814,7 +815,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -863,7 +864,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
@@ -914,7 +915,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
      Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
      Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Mockito.anyList());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
