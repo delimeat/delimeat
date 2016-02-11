@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -590,6 +591,38 @@ public class ShowJpaDao_ImplTest {
       dao.deleteEpisode(4);
       Episode ep = dao.readEpisode(4);
       System.out.println(ep);
+   }
+  
+   @Test
+  	public void createEpisodesTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+      
+      Show show = dao.read(1);
+     	Episode nextEpisode = show.getNextEpisode();
+     	nextEpisode.setTitle("UPDATED");
+		Episode newEpisode = new Episode();
+		newEpisode.setAirDate(SDF.parse("2000-01-01"));
+		newEpisode.setDoubleEp(true);
+		newEpisode.setEpisodeNum(99);
+		newEpisode.setSeasonNum(100);
+		newEpisode.setShow(show);
+		newEpisode.setTitle("TITLE_TWO");
+     
+      List<Episode> episodes = dao.createOrUpdateEpisodes(Arrays.asList(nextEpisode,newEpisode));
+     	Assert.assertEquals(2, episodes.size());
+     	
+		Assert.assertNotEquals(0, episodes.get(1).getEpisodeId());
+     	Assert.assertEquals(nextEpisode, episodes.get(0));
+		Assert.assertEquals("2000-01-01", SDF.format(episodes.get(1).getAirDate()));
+		Assert.assertTrue(episodes.get(1).isDoubleEp());
+		Assert.assertEquals(99, episodes.get(1).getEpisodeNum());
+		Assert.assertEquals(100,episodes.get(1).getSeasonNum());
+		Assert.assertEquals("TITLE_TWO", episodes.get(1).getTitle());
+     	Assert.assertEquals(show, episodes.get(1).getShow());
    }
 	
 }

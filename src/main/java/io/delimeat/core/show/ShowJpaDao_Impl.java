@@ -1,8 +1,10 @@
 package io.delimeat.core.show;
 
 import io.delimeat.core.show.Episode;
+import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -161,5 +163,15 @@ public class ShowJpaDao_Impl implements ShowDao {
 			throw new ShowException(ex);
 		}
 	}
+
+    @Override
+    public List<Episode> createOrUpdateEpisodes(List<Episode> episodes)
+            throws ShowConcurrencyException, ShowException {
+        final List<Episode> createdOrUpdatedEpisodes = new ArrayList<Episode>();
+        for(Episode episode: episodes){
+          createdOrUpdatedEpisodes.add(createOrUpdateEpisode(episode));
+        }
+        return createdOrUpdatedEpisodes;
+    }
 
 }

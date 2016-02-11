@@ -12,9 +12,9 @@ import io.delimeat.core.show.ShowGuideSource;
 import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.transaction.Transactional;
 
@@ -48,44 +48,31 @@ public class ShowService_Impl implements ShowService {
       final String guideId = DelimeatUtils.findGuideId(createdShow.getGuideSources(), guideDao.getGuideSource());
      
       if(DelimeatUtils.isNotEmpty(guideId) == true){
-    	  final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
-         final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
-         Collections.sort(guideEps);
+        final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
+        final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
+        Collections.sort(guideEps);
 
-         ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
-         while(guideEpIt.hasNext()){
-            
-            GuideEpisode guideEp = guideEpIt.next();
-            
-            Episode nextEp = createdShow.getNextEpisode();
-            if(nextEp != null && nextEp.equals(guideEp) ){
-              // do nothing because we alread have it
-              //guideEpIt.remove();
-              continue;
-            }
-           
-            Episode prevEp = createdShow.getPreviousEpisode();
-            if(prevEp != null && prevEp.equals(guideEp) ){
-              // do nothing because we alread have it
-              //guideEpIt.remove();
-              continue;
-            }
-           
-            /*
-            if(guideEpIt.hasPrevious() && guideEpIt.previous().getAirDate() == guideEp.getAirDate()){
-              //merge the double episode
-              GuideEpisode prevGuideEp = guideEpIt.previous();
-              String newTitle = prevGuideEp.getTitle() + " & " + guideEp.getTitle();
-              prevGuideEp.setTitle(newTitle);
-              guideEpIt.remove();
-            }*/
-            Episode ep = new Episode(guideEp);
-            ep.setShow(createdShow);
-            showDao.createOrUpdateEpisode(ep);
-           
-         }
+        final List<Episode> createEpisodes = new ArrayList<Episode>();
+        final Episode nextEp = createdShow.getNextEpisode();
+        final Episode prevEp = createdShow.getPreviousEpisode();
+        for(GuideEpisode guideEp: guideEps){
+
+          if(nextEp != null && nextEp.equals(guideEp) ){
+            // do nothing because we alread have it
+            continue;
+          }
+
+          if(prevEp != null && prevEp.equals(guideEp) ){
+            // do nothing because we alread have it
+            continue;
+          }
+
+          Episode ep = new Episode(guideEp);
+          ep.setShow(createdShow);
+          createEpisodes.add(ep);           
+        }
+        showDao.createOrUpdateEpisodes(createEpisodes);
         
-         
       }
       
 		return createdShow;

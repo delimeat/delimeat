@@ -84,16 +84,25 @@ public interface ShowDao {
 	public Episode readEpisode(long episodeId) throws ShowNotFoundException, ShowException;
   
   	/**
-	 * Create episode 
+	 * Create or Update episode 
 	 * 
-	 * @param episodeId
-	 * @param date
+	 * @param episode
 	 * @return episode
 	 * @throws ShowConcurrencyException
 	 * @throws ShowException
 	 */
 	 public Episode createOrUpdateEpisode(Episode episode) throws ShowConcurrencyException, ShowException;
 
+  	/**
+	 * Create or Update episodes 
+	 * 
+	 * @param episodes
+	 * @return episodes
+	 * @throws ShowConcurrencyException
+	 * @throws ShowException
+	 */
+	 public List<Episode> createOrUpdateEpisodes(List<Episode> episodes) throws ShowConcurrencyException, ShowException;
+  
   	/**
 	 * Delete an episode
 	 * 

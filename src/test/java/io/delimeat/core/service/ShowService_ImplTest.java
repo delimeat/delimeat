@@ -91,7 +91,7 @@ public class ShowService_ImplTest {
 	}
 
 	@Test
-	public void createGuideSourceTest() throws Exception {
+	public void createTest() throws Exception {
 		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
 		// this guide source should be ignored because it is does not match the
@@ -179,8 +179,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedGuideDao).episodes("2");// should be guideId = 2
 														// because that is the
 														// correct GuideSource
-		Mockito.verify(mockedShowDao, Mockito.times(2)).createOrUpdateEpisode(
-				Mockito.any(Episode.class));
+		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(Mockito.anyList());
 		Assert.assertEquals(show, actualShow); // show returned by showDao
 												// should match the show
 												// returned by the service

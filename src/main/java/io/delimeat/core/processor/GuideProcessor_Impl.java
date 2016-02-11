@@ -134,9 +134,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 						if (active == true) {
 							// create/update eps if any
 							if (DelimeatUtils.isCollectionNotEmpty(createOrUpdateEps) == true) {
-								for (Episode ep : createOrUpdateEps) {
-									showDao.createOrUpdateEpisode(ep);
-								}
+								showDao.createOrUpdateEpisodes(createOrUpdateEps);
 							}
 							lockedShow.setLastGuideUpdate(new Date());
 							showDao.createOrUpdate(lockedShow);
