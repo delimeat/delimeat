@@ -187,4 +187,8 @@ public class GuideProcessor_Impl implements Processor {
 	public void removeListener(ProcessorListener listener) {
 		listeners.remove(listener);
 	}
+  
+    public List<ProcessorListener> getListeners(){
+      return listeners;
+    }
 }

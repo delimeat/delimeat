@@ -64,6 +64,18 @@ public class GuideProcessor_ImplTest {
 		Assert.assertFalse(processor.isActive());
 	}
   
+    @Test
+    public void listenerTest(){
+        Assert.assertNotNull(processor.getListeners());
+        Assert.assertTrue(processor.getListeners().isEmpty());
+        ProcessorListener listener = Mockito.mock(ProcessorListener.class);
+        processor.addListener(listener);
+        Assert.assertEquals(1, processor.getListeners().size());
+        Assert.assertEquals(listener, processor.getListeners().get(0));
+        processor.removeListener(listener);
+        Assert.assertTrue(processor.getListeners().isEmpty());    
+    }
+  
   	@Test
   	public void processAlreadyActiveTest() throws Exception{
      ProcessorListener listener = Mockito.mock(ProcessorListener.class);

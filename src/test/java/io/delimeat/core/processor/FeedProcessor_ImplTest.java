@@ -122,8 +122,7 @@ public class FeedProcessor_ImplTest {
 	public void resultComparatorTest() {
 		Assert.assertNull(processor.getResultComparator());
 		@SuppressWarnings("unchecked")
-		Comparator<FeedResult> mockedComparator = Mockito
-				.mock(Comparator.class);
+		Comparator<FeedResult> mockedComparator = Mockito.mock(Comparator.class);
 		processor.setResultComparator(mockedComparator);
 		Assert.assertEquals(mockedComparator, processor.getResultComparator());
 	}
@@ -135,6 +134,18 @@ public class FeedProcessor_ImplTest {
 		processor.setTorrentWriter(mockedWriter);
 		Assert.assertEquals(mockedWriter, processor.getTorrentWriter());
 	}
+  
+    @Test
+    public void listenerTest(){
+        Assert.assertNotNull(processor.getListeners());
+        Assert.assertTrue(processor.getListeners().isEmpty());
+        ProcessorListener listener = Mockito.mock(ProcessorListener.class);
+        processor.addListener(listener);
+        Assert.assertEquals(1, processor.getListeners().size());
+        Assert.assertEquals(listener, processor.getListeners().get(0));
+        processor.removeListener(listener);
+        Assert.assertTrue(processor.getListeners().isEmpty());    
+    }
 
 	@Test
 	public void fetchResultsNotStartedTest() throws FeedException {
