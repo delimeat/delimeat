@@ -15,4 +15,9 @@ public class MaxSeederPreferFileFeedResultComparator_Impl implements Comparator<
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "MaxSeederPreferFileFeedResultComparator_Impl []";
+	}
+
 }

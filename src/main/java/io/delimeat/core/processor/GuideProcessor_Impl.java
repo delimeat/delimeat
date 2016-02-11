@@ -149,4 +149,11 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "GuideProcessor_Impl [show=" + show + ", config=" + config
+				+ ", active=" + active + ", listeners=" + listeners
+				+ ", showDao=" + showDao + ", guideDao=" + guideDao + "]";
+	}
+
 }

@@ -270,4 +270,16 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         showDao.createOrUpdate(show);
     }
 
+	@Override
+	public String toString() {
+		return "FeedProcessor_Impl [show=" + show + ", config=" + config
+				+ ", active=" + active + ", listeners=" + listeners 
+				+ ", showDao=" + showDao + ", feedDaos="
+				+ feedDaos + ", torrentDao=" + torrentDao
+				+ ", feedResultValidators=" + feedResultValidators
+				+ ", torrentValidators=" + torrentValidators
+				+ ", resultComparator=" + resultComparator + ", torrentWriter="
+				+ torrentWriter + "]";
+	}
+
 }

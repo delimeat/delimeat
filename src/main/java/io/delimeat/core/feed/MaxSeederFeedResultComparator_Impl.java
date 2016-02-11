@@ -9,4 +9,9 @@ public class MaxSeederFeedResultComparator_Impl implements Comparator<FeedResult
 		return Long.compare(result2.getSeeders(), result1.getSeeders());
 	}
 
+	@Override
+	public String toString() {
+		return "MaxSeederFeedResultComparator_Impl []";
+	}
+
 }
