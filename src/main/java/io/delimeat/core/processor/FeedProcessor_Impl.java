@@ -37,14 +37,10 @@ import io.delimeat.core.torrent.TorrentException;
 import io.delimeat.core.torrent.TorrentNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
-public class FeedProcessor_Impl implements Processor {
+public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
     private static final Log LOG = LogFactory.getLog(FeedProcessor_Impl.class);
 
-    private boolean active = false;
-    private final List<ProcessorListener> listeners = new ArrayList<ProcessorListener>();
-    private Show show;
-    private Config config;
     private ShowDao showDao;
     private List<FeedDao> feedDaos;
     private TorrentDao torrentDao;
@@ -52,22 +48,6 @@ public class FeedProcessor_Impl implements Processor {
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
     private Comparator<FeedResult> resultComparator;
     private TorrentWriter torrentWriter;
-
-    public void setShow(Show show) {
-        this.show = show;
-    }
-
-    public Show getShow() {
-        return show;
-    }
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public void setConfig(Config config) {
-        this.config = config;
-    }
 
     public ShowDao getShowDao() {
         return showDao;
@@ -124,33 +104,6 @@ public class FeedProcessor_Impl implements Processor {
     public void setTorrentWriter(TorrentWriter torrentWriter) {
         this.torrentWriter = torrentWriter;
     }
-
-    public void setActive(boolean active){
-      this.active = active;
-    }
-
-    public boolean isActive(){
-      return active;
-    }
-
-    @Override
-    public void abort() {
-        active = false;
-    }
- 
-    @Override
-    public void addListener(ProcessorListener listener) {
-       listeners.add(listener);    
-    }
-
-    @Override
-    public void removeListener(ProcessorListener listener) {
-        listeners.remove(listener);        
-    }
-  
-    public List<ProcessorListener> getListeners(){
-      return listeners;
-    }
     
     @Transactional
     @Override
@@ -184,11 +137,7 @@ public class FeedProcessor_Impl implements Processor {
                     }
                 }
             } finally {
-                active = false;
-                final List<ProcessorListener> threadListeners = new ArrayList<ProcessorListener>(listeners);
-                for(ProcessorListener listener: threadListeners){
-                	listener.alertComplete(this);
-                }
+					alertListenersComplete();
             }
         }
 

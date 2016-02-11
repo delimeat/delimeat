@@ -9,28 +9,17 @@ import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideInfoDao;
-import io.delimeat.core.processor.ProcessorListener;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
 import io.delimeat.util.DelimeatUtils;
 
-public class GuideProcessor_Impl implements Processor {
+public class GuideProcessor_Impl extends AbstractProcessor implements Processor {
 
-	private boolean active = false;
-	private final List<ProcessorListener> listeners = new ArrayList<ProcessorListener>();
-	private Show show;
 	private ShowDao showDao;
 	private GuideInfoDao guideDao;
 
-	public void setShow(Show show) {
-		this.show = show;
-	}
-
-	public Show getShow() {
-		return show;
-	}
 
 	public ShowDao getShowDao() {
 		return showDao;
@@ -46,19 +35,6 @@ public class GuideProcessor_Impl implements Processor {
 
 	public void setGuideDao(GuideInfoDao guideDao) {
 		this.guideDao = guideDao;
-	}
-
-	@Override
-	public void abort() {
-		active = false;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public boolean isActive() {
-		return active;
 	}
 
 	@Override
@@ -170,25 +146,9 @@ public class GuideProcessor_Impl implements Processor {
 
 				}
 			} finally {
-				active = false;
-				for (ProcessorListener listener : listeners) {
-					listener.alertComplete(this);
-				}
+				alertListenersComplete();
 			}
 		}
 	}
 
-	@Override
-	public void addListener(ProcessorListener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public void removeListener(ProcessorListener listener) {
-		listeners.remove(listener);
-	}
-  
-    public List<ProcessorListener> getListeners(){
-      return listeners;
-    }
 }

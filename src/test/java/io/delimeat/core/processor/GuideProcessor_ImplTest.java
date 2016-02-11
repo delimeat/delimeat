@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
@@ -37,6 +38,14 @@ public class GuideProcessor_ImplTest {
 		Show show = new Show();
 		processor.setShow(show);
 		Assert.assertEquals(show, processor.getShow());
+	}
+  
+	@Test
+	public void configTest() {
+		Assert.assertNull(processor.getConfig());
+		Config config = new Config();
+		processor.setConfig(config);
+		Assert.assertEquals(config, processor.getConfig());
 	}
 
 	@Test
@@ -74,6 +83,15 @@ public class GuideProcessor_ImplTest {
         Assert.assertEquals(listener, processor.getListeners().get(0));
         processor.removeListener(listener);
         Assert.assertTrue(processor.getListeners().isEmpty());    
+    }
+  
+    @Test
+    public void alertListenersCompleteTest(){
+      ProcessorListener listener = Mockito.mock(ProcessorListener.class);
+      processor.addListener(listener);
+      processor.alertListenersComplete();
+
+      Mockito.verify(listener).alertComplete(processor);
     }
   
   	@Test
