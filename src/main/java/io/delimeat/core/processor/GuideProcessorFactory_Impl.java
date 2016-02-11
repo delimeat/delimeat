@@ -1,39 +1,31 @@
 package io.delimeat.core.processor;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+
 import io.delimeat.core.config.Config;
-import io.delimeat.core.guide.GuideInfoDao;
 import io.delimeat.core.processor.Processor;
 import io.delimeat.core.show.Show;
-import io.delimeat.core.show.ShowDao;
 
-public class GuideProcessorFactory_Impl implements ProcessorFactory {
+public class GuideProcessorFactory_Impl implements ProcessorFactory, BeanFactoryAware {
 
-	private ShowDao showDao;
-	private GuideInfoDao guideDao;
-
-	public ShowDao getShowDao() {
-		return showDao;
+  	private BeanFactory beanFactory;
+  
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;		
 	}
-
-	public void setShowDao(ShowDao showDao) {
-		this.showDao = showDao;
-	}
-
-	public GuideInfoDao getGuideDao() {
-		return guideDao;
-	}
-
-	public void setGuideDao(GuideInfoDao guideDao) {
-		this.guideDao = guideDao;
+	
+	public BeanFactory getBeanFactory(){
+		return beanFactory;
 	}
 
 	@Override
 	public Processor build(Show show, Config config) {
 		
-		GuideProcessor_Impl processor = new GuideProcessor_Impl();
+		GuideProcessor_Impl processor = (GuideProcessor_Impl)beanFactory.getBean("guideProcessorId");
 		processor.setShow(show);
-		processor.setShowDao(showDao);
-		processor.setGuideDao(guideDao);
 		return processor;
 		
 	}
