@@ -105,8 +105,8 @@
 
 			<many-to-one name="show" optional="false">
 				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID"
-					updatable="false" insertable="false" />
-           <!--
+					updatable="false" />
+           		<!--
 				<cascade>
 					<cascade-merge />
 					<cascade-remove />

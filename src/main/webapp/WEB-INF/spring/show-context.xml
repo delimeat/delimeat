@@ -7,7 +7,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
   
 	<bean id="showJpaAdaptorId" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-   		<!--
+		<!-- 
    		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.DerbyPlatform" />
    		!-->
    		<property name="showSql" value="true" />
@@ -33,15 +33,16 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
                  
 				<prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
         		<prop key="eclipselink.ddl-generation.output-mode">database</prop>
+        		<!-- 
         		<prop key="eclipselink.logging.level">OFF</prop>
+        		!-->
         		
-        		<!--
 				<prop key="eclipselink.logging.level">ALL</prop>
 				<prop key="eclipselink.logging.thread">true</prop>
 				<prop key="eclipselink.logging.session">true</prop>
 				<prop key="eclipselink.logging.timestamp">true</prop>
 				<prop key="eclipselink.logging.exceptions">true"</prop>
-				!-->
+				
          </props>
       </property>
    </bean>

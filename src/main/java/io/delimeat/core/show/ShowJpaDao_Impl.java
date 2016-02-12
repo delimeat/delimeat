@@ -110,12 +110,12 @@ public class ShowJpaDao_Impl implements ShowDao {
 
     @Override
     public Episode readEpisodeAfter(long showId, Date date) throws ShowNotFoundException, ShowException {
-		try{
-	         return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
-              			.setParameter("show", read(showId))
-              			.setParameter("airDate",date)
-              			.setMaxResults(1)
-              			.getSingleResult();
+		try{	         
+			return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
+          			.setParameter("show", read(showId))
+          			.setParameter("airDate",date)
+          			.setMaxResults(1)
+          			.getSingleResult();
 			
 			} catch(NoResultException ex){  
 				throw new ShowNotFoundException(ex);

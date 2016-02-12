@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -443,7 +444,7 @@ public class ShowJpaDao_ImplTest {
 		InputStream is = System.class.getResourceAsStream(SQL_FILE);
 		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
      
-      Episode ep = dao.readEpisodeAfter(1,SDF.parse("1988-12-24"));
+		Episode ep = dao.readEpisodeAfter(1,new Date(0));
 		Assert.assertEquals(3, ep.getEpisodeId());
 		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
 		Assert.assertEquals(2, ep.getSeasonNum());
@@ -478,7 +479,7 @@ public class ShowJpaDao_ImplTest {
 		InputStream is = System.class.getResourceAsStream(SQL_FILE);
 		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
      
-      Episode ep = dao.readEpisode(3);
+		Episode ep = dao.readEpisode(3);
 		Assert.assertEquals(3, ep.getEpisodeId());
 		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
 		Assert.assertEquals(2, ep.getSeasonNum());
