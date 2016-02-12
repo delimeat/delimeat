@@ -108,7 +108,8 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		private StringBuffer xml;
 
 		public InfoJsonGenerator(String description, String guideid, String title, String status, String network,
-				String runtime, String airsDayOfWeek, String airsTime, String imdbId, List<String> genres, String firstAired) {
+				String runtime, String airsDayOfWeek, String airsTime, String imdbId, List<String> genres, String firstAired,
+				long lastUpdated) {
 			xml = new StringBuffer();
 			xml.append("{\"data\": {");
 			xml.append("\"overview\":\"" + description + "\",");
@@ -130,7 +131,8 @@ public class TvdbJaxrsGuideDao_ImplTest {
 				xml.append("\"" + genre + "\"");
 				first = false;
 			}
-			xml.append("]");
+			xml.append("],");
+			xml.append("\"lastUpdated\":" + lastUpdated + "");
 			xml.append("}");
 		}
 
@@ -525,7 +527,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 	@Test
 	public void infoTest() throws Exception {
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "Ended", "CBS", "45",
-				"Monday", "8:00pm", "IMDB", Arrays.asList("GENRE"),"2015-12-28");
+				"Monday", "8:00pm", "IMDB", Arrays.asList("GENRE"),"2015-12-28",1454486401);
 		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://test.com"));
@@ -554,7 +556,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals("GENRE", info.getGenres().get(0));
 		Assert.assertEquals("EST", info.getTimezone());
 		Assert.assertEquals(45, info.getRunningTime());
-
+		Assert.assertEquals("2016-02-03",SDF.format(info.getLastUpdated()));
 	}
 
 @Test(expected=GuideNotAuthorisedException.class)

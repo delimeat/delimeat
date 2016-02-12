@@ -117,6 +117,9 @@
 				<xml-element java-attribute="genres" xml-path="data/genre/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbGenreAdapter" />
 				</xml-element>
+				<xml-element java-attribute="lastUpdated" xml-path="data/lastUpdated/text()" >	
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbLastUpdatedAdapter" />		
+				</xml-element>
 			</java-attributes>
 		</java-type>
 

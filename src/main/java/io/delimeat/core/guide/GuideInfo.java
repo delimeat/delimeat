@@ -147,7 +147,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
 	public String toString() {
 		return "GuideInfo [title=" + title + ", guideIds=" + guideIds + ", airing=" + airing + ", airDays="
 				+ airDays + ", airTime=" + airTime + ", genres=" + genres + ", runningTime=" + runningTime
-				+ ", network=" + timezone + ", description=" + description + "]";
+				+ ", network=" + timezone + ", description=" + description + ", lastUpdated=" + lastUpdated + "]";
 	}
 
 	@Override
