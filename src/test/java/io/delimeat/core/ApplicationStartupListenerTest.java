@@ -61,7 +61,7 @@ public class ApplicationStartupListenerTest {
 				System.getProperty(ApplicationStartupListener.CONFIG_FILE_PROPERTY));
 		Assert.assertEquals("org.apache.derby.jdbc.EmbeddedDriver",
 				System.getProperty(ApplicationStartupListener.SHOW_DB_DRIVER_PROPERTY));
-		Assert.assertEquals("jdbc:derby:HOME_DIR/delimeat/db_bkup;create=true",
+		Assert.assertEquals("jdbc:derby:HOME_DIR/delimeat/db;create=true",
 				System.getProperty(ApplicationStartupListener.SHOW_DB_PROPERTY));
 	}
 

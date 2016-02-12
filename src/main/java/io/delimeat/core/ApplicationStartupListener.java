@@ -23,9 +23,9 @@ public class ApplicationStartupListener implements ServletContextListener {
 	private static final String CONFIG_FILE_URL = "file:APP_DIR/config.xml";
 	// show db stuff
 	public static final String SHOW_DB_PROPERTY = "io.delimeat.core.show.url";
-	private static final String SHOW_DB_URL = "jdbc:derby:APP_DIR/db_bkup;create=true";
+	private static final String SHOW_DB_URL = "jdbc:derby:APP_DIR/db;create=true";
 
-	public static final String SHOW_DB_DRIVER_PROPERTY = "io.delimeat.core.show.driverClassName";
+	public static final String SHOW_DB_DRIVER_PROPERTY = "io.delimeat.core.show.driver";
 	private static final String SHOW_DB_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 
 	private static Log LOG = LogFactory.getLog(ApplicationStartupListener.class);
