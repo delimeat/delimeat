@@ -10,7 +10,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
-public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideInfoDao, GuideSearchDao {
+public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideDao {
 
 	@Override
 	public GuideSource getGuideSource() {

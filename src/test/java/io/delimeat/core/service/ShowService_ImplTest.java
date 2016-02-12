@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.delimeat.core.guide.GuideEpisode;
-import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
@@ -48,7 +48,7 @@ public class ShowService_ImplTest {
 				.thenReturn(mockedShow);
 		service.setShowDao(mockedShowDao);
 
-		GuideInfoDao mockedGuideDao = Mockito.mock(GuideInfoDao.class);
+		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
 		service.setGuideDao(mockedGuideDao);
 
 		Show actualShow = service.create(new Show());
@@ -76,7 +76,7 @@ public class ShowService_ImplTest {
 				.thenReturn(show);
 		service.setShowDao(mockedShowDao);
 
-		GuideInfoDao mockedGuideDao = Mockito.mock(GuideInfoDao.class);
+		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
 		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(
 				GuideSource.TVDB);
 		service.setGuideDao(mockedGuideDao);
@@ -125,7 +125,7 @@ public class ShowService_ImplTest {
 				.thenReturn(show);
 		service.setShowDao(mockedShowDao);
 
-		GuideInfoDao mockedGuideDao = Mockito.mock(GuideInfoDao.class);
+		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
 		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(
 				GuideSource.TVDB);
 		// should be ignored becuase season = 0

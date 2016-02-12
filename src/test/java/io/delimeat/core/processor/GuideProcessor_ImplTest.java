@@ -13,7 +13,7 @@ import io.delimeat.core.config.Config;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
-import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
@@ -60,7 +60,7 @@ public class GuideProcessor_ImplTest {
 	@Test
 	public void guideDaoTest() {
 		Assert.assertNull(processor.getGuideDao());
-		GuideInfoDao mockedDao = Mockito.mock(GuideInfoDao.class);
+		GuideDao mockedDao = Mockito.mock(GuideDao.class);
 		processor.setGuideDao(mockedDao);
 		Assert.assertEquals(mockedDao, processor.getGuideDao());
 	}
@@ -103,7 +103,7 @@ public class GuideProcessor_ImplTest {
      ShowDao showDao = Mockito.mock(ShowDao.class);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      processor.setGuideDao(guideDao);
      
      Show show = new Show();
@@ -135,7 +135,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenThrow(ShowException.class);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      processor.setGuideDao(guideDao);
      
      Show show = new Show();
@@ -174,7 +174,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      processor.setGuideDao(guideDao);
      
@@ -212,7 +212,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      Mockito.when(guideDao.info("GUIDEID")).thenThrow(GuideException.class);
      processor.setGuideDao(guideDao);
@@ -256,7 +256,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2000-01-01"));
@@ -299,7 +299,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -344,7 +344,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -394,7 +394,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -454,7 +454,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -513,7 +513,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -572,7 +572,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -638,7 +638,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -708,7 +708,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -780,7 +780,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep2));
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -842,7 +842,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));
@@ -892,7 +892,7 @@ public class GuideProcessor_ImplTest {
      Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenThrow(ShowException.class);
      processor.setShowDao(showDao);
 
-     GuideInfoDao guideDao = Mockito.mock(GuideInfoDao.class);
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
  	  info.setLastUpdated(SDF.parse("2016-01-29"));

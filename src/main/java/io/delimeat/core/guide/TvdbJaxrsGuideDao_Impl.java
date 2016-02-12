@@ -14,7 +14,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.xml.bind.JAXBException;
 
-public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideInfoDao, GuideSearchDao {
+public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideDao {
 
     private String    apiKey;
     private TvdbToken token;

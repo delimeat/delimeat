@@ -21,11 +21,9 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
     
     <bean id="guideServiceId" class="io.delimeat.core.service.GuideService_Impl">
 
-      	<property name="infoDao" ref="tvdbGuideDaoId"/>
-    	<property name="searchDao" ref="tvdbGuideDaoId"/>
+    	<property name="guideDao" ref="tvdbGuideDaoId"/>
 		<!--
-    	<property name="infoDao" ref="tvmazeGuideDaoId"/>
-    	<property name="searchDao" ref="tvmazeGuideDaoId"/>
+    	<property name="guideDao" ref="tvmazeGuideDaoId"/>
     	!-->    	
 
     </bean>

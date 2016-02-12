@@ -8,7 +8,7 @@ import java.util.List;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
-import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
@@ -18,7 +18,7 @@ import io.delimeat.util.DelimeatUtils;
 public class GuideProcessor_Impl extends AbstractProcessor implements Processor {
 
 	private ShowDao showDao;
-	private GuideInfoDao guideDao;
+	private GuideDao guideDao;
 
 
 	public ShowDao getShowDao() {
@@ -29,11 +29,11 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 		this.showDao = showDao;
 	}
 
-	public GuideInfoDao getGuideDao() {
+	public GuideDao getGuideDao() {
 		return guideDao;
 	}
 
-	public void setGuideDao(GuideInfoDao guideDao) {
+	public void setGuideDao(GuideDao guideDao) {
 		this.guideDao = guideDao;
 	}
 

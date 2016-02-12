@@ -2,7 +2,7 @@ package io.delimeat.core.service;
 
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
-import io.delimeat.core.guide.GuideInfoDao;
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowConcurrencyException;
@@ -21,7 +21,7 @@ import javax.transaction.Transactional;
 public class ShowService_Impl implements ShowService {
 
 	private ShowDao showDao;
-	private GuideInfoDao guideDao;
+	private GuideDao guideDao;
 
 	public ShowDao getShowDao() {
 		return showDao;
@@ -31,11 +31,11 @@ public class ShowService_Impl implements ShowService {
 		this.showDao = showDao;
 	}
   
-	public GuideInfoDao getGuideDao() {
+	public GuideDao getGuideDao() {
 		return guideDao;
 	}
 
-	public void setGuideDao(GuideInfoDao guideDao) {
+	public void setGuideDao(GuideDao guideDao) {
 		this.guideDao = guideDao;
 	}
 
