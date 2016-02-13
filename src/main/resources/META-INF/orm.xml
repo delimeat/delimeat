@@ -103,17 +103,11 @@
 				<column name="VERSION" />
 			</version>
 
-			<many-to-one name="show" optional="false">
-				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID"
-					updatable="false" />
-           		<!--
+			<many-to-one name="show" target-entity="Show" optional="false">
+				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID" nullable="false"/>
 				<cascade>
-					<cascade-merge />
-					<cascade-remove />
-					<cascade-refresh />
-					<cascade-detach />
-				</cascade>
-				!-->
+					<cascade-all/>
+				</cascade>		
 			</many-to-one>
 
 			<one-to-many name="results" mapped-by="episode">
@@ -174,11 +168,11 @@
 				<column name="ENABLED" nullable="false" />
 			</basic>
         
-         <basic name="minSize" optional="false">
+	        <basic name="minSize" optional="false">
 				<column name="MIN_SIZE" nullable="false" />
 			</basic>
-        
-         <basic name="maxSize" optional="false">
+	       
+	        <basic name="maxSize" optional="false">
 				<column name="MAX_SIZE" nullable="false" />
 			</basic>
 
@@ -193,8 +187,8 @@
 					<cascade-refresh />
 					<cascade-detach />
 				</cascade>
-			</one-to-many>
-
+			</one-to-many>	
+			
 			<one-to-one name="previousEpisode" fetch="LAZY">
 				<join-column name="PREV_EPISODE_ID" />
 				<cascade>
@@ -214,6 +208,8 @@
 					<cascade-detach />
 				</cascade>
 			</one-to-one>
+			
+
 		</attributes>
 	</entity>
 

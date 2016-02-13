@@ -221,6 +221,7 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
 		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
 		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
+		
 	}
 
 	@Test(expected = ShowNotFoundException.class)

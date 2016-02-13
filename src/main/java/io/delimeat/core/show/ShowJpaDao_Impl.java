@@ -59,8 +59,13 @@ public class ShowJpaDao_Impl implements ShowDao {
 	@Override
 	public void delete(long showId) throws ShowNotFoundException, ShowException {
 		try{
-			
-			em.remove(read(showId));
+			final Show show = read(showId);
+			show.setNextEpisode(null);
+			show.setPreviousEpisode(null);
+			for(Episode ep: readAllEpisodes(showId)){
+				deleteEpisode(ep.getEpisodeId());
+			}
+			em.remove(show);
 			
 		} catch (EntityNotFoundException ex){
 			throw new ShowNotFoundException(ex);

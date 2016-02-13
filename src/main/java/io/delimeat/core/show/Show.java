@@ -35,7 +35,7 @@ public class Show implements Comparable<Show> {
 	private int minSize;
 	private int maxSize;
 	private int version;
-
+	
 	/**
 	 * @return the showId
 	 */
@@ -306,7 +306,7 @@ public class Show implements Comparable<Show> {
 				+ guideSources + ", nextEpisode=" + (nextEpisode != null ? nextEpisode : null) + ", previousEpisode="
 				+ (previousEpisode != null ? previousEpisode : null) + ", includeSpecials=" + includeSpecials
 				+ ", lastGuideUpdate=" + lastGuideUpdate + ", lastFeedUpdate=" + lastFeedUpdate + ", minSize=" + minSize 
-            + ", maxSize=" + maxSize + ", version=" + version+ "]";
+				+ ", maxSize=" + maxSize + ", version=" + version+ "]";
 	}
 
 }

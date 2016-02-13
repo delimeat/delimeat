@@ -191,7 +191,9 @@ public class Episode {
   	public boolean equals(Object object)
   	{
      boolean equal = false;
-     if (object != null && object instanceof Episode)
+     if(this == object){
+    	return true; 
+     } else if (object != null && object instanceof Episode)
      {
        Episode otherEp = (Episode)object;
        equal = (episodeId == otherEp.getEpisodeId() 
