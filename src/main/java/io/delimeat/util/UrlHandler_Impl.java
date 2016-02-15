@@ -35,7 +35,6 @@ public class UrlHandler_Impl implements UrlHandler {
 
 		} else {
 			URLConnection conn = openUrlConnection(url);
-			conn.setConnectTimeout(getTimeout());
 			os = conn.getOutputStream();
 		}
 		BufferedOutputStream bos = new BufferedOutputStream(os);

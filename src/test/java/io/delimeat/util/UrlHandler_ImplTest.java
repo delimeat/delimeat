@@ -7,9 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -18,7 +20,6 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-//TODO add additional tests for openOutput
 public class UrlHandler_ImplTest {
 
 	private UrlHandler_Impl handler;
@@ -293,5 +294,34 @@ public class UrlHandler_ImplTest {
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("RANDOM", "VALUE" );
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
 
+   }
+  
+  	@Test
+  	public void openOutputNotFileProtocolTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     OutputStream output = Mockito.mock(OutputStream.class);
+     Mockito.when(connection.getOutputStream()).thenReturn(output);
+     
+     OutputStream returnedOutput = handler.openOutput(url);
+     Assert.assertTrue(returnedOutput instanceof BufferedOutputStream); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+  	@Test
+  	public void openOutputFileProtocolTest() throws IOException{
+     URL url = this.getClass().getResource(this.getClass().getSimpleName()+".class");
+    
+     OutputStream returnedOutput = handler.openOutput(url);
+     Assert.assertTrue(returnedOutput instanceof BufferedOutputStream);     
    }
 }
