@@ -172,7 +172,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         // keep the valid results, ignore the rest
         final List<FeedResult> foundResults = new ArrayList<FeedResult>();
         for (FeedResult result : results) {
-            if (DelimeatUtils.isCollectionEmpty(result.getFeedResultRejections())) {
+            if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
                 foundResults.add(result);
             }
         }
@@ -193,7 +193,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
         final Iterator<TorrentValidator> torrentValidatorItr = torrentValidators.iterator();
 
-        while (active == true && DelimeatUtils.isCollectionEmpty(result.getFeedResultRejections()) && torrentValidatorItr.hasNext()) {
+        while (active == true && DelimeatUtils.isEmpty(result.getFeedResultRejections()) && torrentValidatorItr.hasNext()) {
 
             TorrentValidator validator = torrentValidatorItr.next();
 
@@ -239,7 +239,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
             validateTorrent(result, torrent, config, show);
 
             // if it aint rejected yet its valid!
-            if (DelimeatUtils.isCollectionEmpty(result.getFeedResultRejections())) {
+            if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
                 outResults.add(result);
             }
         }
@@ -248,7 +248,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
     public FeedResult selectResult(List<FeedResult> results, Config config) {
         FeedResult result = null;
-        if (DelimeatUtils.isCollectionNotEmpty(results) == true) {
+        if (DelimeatUtils.isNotEmpty(results) == true) {
             Collections.sort(results, resultComparator);
             result = results.get(0);// get the first one
         }

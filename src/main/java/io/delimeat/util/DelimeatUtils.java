@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class DelimeatUtils {
@@ -38,8 +37,8 @@ public class DelimeatUtils {
      *
      * @param value
      * @return true if collection is null or empty
-     */  
-	 public static boolean isCollectionEmpty(Collection<?> value){
+     */    
+	 public static boolean isEmpty(Collection<?> value){
 		 return value == null || value.isEmpty();
 	 }
   
@@ -49,8 +48,8 @@ public class DelimeatUtils {
      * @param value
      * @return true if collection is null or empty
      */  
-	 public static boolean isCollectionNotEmpty(Collection<?> value){
-		 return !isCollectionEmpty(value);
+	 public static boolean isNotEmpty(Collection<?> value){
+		 return !isEmpty(value);
 	 }
 
     /**
@@ -96,22 +95,22 @@ public class DelimeatUtils {
      */  
   public static List<GuideEpisode> cleanEpisodes(List<GuideEpisode> episodes){
     List<GuideEpisode> cleanEps = new ArrayList<GuideEpisode>();
-    Iterator<GuideEpisode> it = episodes.iterator();
-    while(it.hasNext()){
-      GuideEpisode ep = it.next();
-      if(ep.getSeasonNum() != null && ep.getSeasonNum() != 0 && ep.getAirDate() != null ){
-        cleanEps.add(ep);
-      }
+    if(isNotEmpty(episodes) == true){
+      for(GuideEpisode ep: episodes){
+        if(ep.getSeasonNum() != null && ep.getSeasonNum() != 0 && ep.getAirDate() != null ){
+          cleanEps.add(ep);
+        }
 
+      }
     }
     return cleanEps;
   }
 
   public static String findGuideId(List<ShowGuideSource> guideSources, GuideSource guideSource){
     String guideId = null;
-    if(isCollectionEmpty(guideSources) == false ){
+    if(isNotEmpty(guideSources) == true ){
       for(ShowGuideSource source: guideSources){
-        if(source.getId().getGuideSource() == guideSource){
+        if(source.getId() != null && source.getId().getGuideSource() == guideSource){
           guideId = source.getGuideId();
           break;
         }

@@ -83,7 +83,7 @@ public class ProcessorService_Impl implements ProcessorService,
 
 		final Date now = new Date();
 		final List<Show> shows = showDao.readAll();
-		if(DelimeatUtils.isCollectionEmpty(shows) == true){
+		if(DelimeatUtils.isEmpty(shows) == true){
 			return;
 		}
 		
@@ -114,7 +114,7 @@ public class ProcessorService_Impl implements ProcessorService,
 	public void processAllGuideUpdates() throws ConfigException, ShowException {
 		
 		final List<Show> shows = showDao.readAll();
-		if(DelimeatUtils.isCollectionEmpty(shows) == true){
+		if(DelimeatUtils.isEmpty(shows) == true){
 			return;
 		}
 		

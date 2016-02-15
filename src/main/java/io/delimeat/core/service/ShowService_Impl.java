@@ -103,7 +103,7 @@ public class ShowService_Impl implements ShowService {
 	}
 	
 	public Show prepareShow(Show show){
-		if (!DelimeatUtils.isCollectionEmpty(show.getGuideSources())) {
+		if (!DelimeatUtils.isEmpty(show.getGuideSources())) {
 			for (ShowGuideSource guideSource : show.getGuideSources()) {
 				guideSource.setShow(show);
 			}
