@@ -7,13 +7,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-//TODO add additional tests
+//TODO add additional tests for openOutput
 public class UrlHandler_ImplTest {
 
 	private UrlHandler_Impl handler;
@@ -30,16 +35,21 @@ public class UrlHandler_ImplTest {
 		Assert.assertEquals(Integer.MAX_VALUE, handler.getTimeout());
 	}
   
+	@Test  
   	public void openInputUrlConnectionGZIP() throws IOException{
    	URLConnection connection = Mockito.mock(URLConnection.class);
      	Mockito.when(connection.getContentEncoding()).thenReturn("gzip");
-     	InputStream input = Mockito.mock(InputStream.class);
+     	byte magicLeft = (byte)(GZIPInputStream.GZIP_MAGIC & 0xff);
+     	byte magicRight = (byte)((GZIPInputStream.GZIP_MAGIC >> 8) & 0xff);
+     	byte[] bytes = new byte[]{magicLeft,magicRight,8,0,0,0,0,0,0,0};
+     	ByteArrayInputStream input = new ByteArrayInputStream(bytes);
      	Mockito.when(connection.getInputStream()).thenReturn(input);
      
      	InputStream returnedInput = handler.openInput(connection);
      	Assert.assertTrue(returnedInput instanceof GZIPInputStream); 
    }
-  
+
+	@Test
   	public void openInputUrlConnectionDeflate() throws IOException{
    	URLConnection connection = Mockito.mock(URLConnection.class);
      	Mockito.when(connection.getContentEncoding()).thenReturn("deflate");
@@ -49,7 +59,8 @@ public class UrlHandler_ImplTest {
      	InputStream returnedInput = handler.openInput(connection);
      	Assert.assertTrue(returnedInput instanceof InflaterInputStream); 
    }
-  
+
+	@Test
   	public void openInputUrlConnectionNull() throws IOException{
    	URLConnection connection = Mockito.mock(URLConnection.class);
      	Mockito.when(connection.getContentEncoding()).thenReturn(null);
@@ -59,7 +70,8 @@ public class UrlHandler_ImplTest {
      	InputStream returnedInput = handler.openInput(connection);
      	Assert.assertEquals(input, returnedInput); 
    }
-  
+ 
+	@Test
   	public void openInputUrlConnectionNotDeflateOrGZIP() throws IOException{
    	URLConnection connection = Mockito.mock(URLConnection.class);
      	Mockito.when(connection.getContentEncoding()).thenReturn("JIbberIsh");
@@ -68,5 +80,205 @@ public class UrlHandler_ImplTest {
      
      	InputStream returnedInput = handler.openInput(connection);
      	Assert.assertEquals(input, returnedInput); 
+   }
+  
+	@Test  
+  	public void openUrlConnectionNoHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     
+     URLConnection returnedConnection = handler.openUrlConnection(url);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+
+	@Test  
+  	public void openUrlConnectionEmptyHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Map<String,String> headers = new HashMap<String,String>();
+     URLConnection returnedConnection = handler.openUrlConnection(url,headers);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+	@Test  
+  	public void openUrlConnectionUserAgentHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Map<String,String> headers = new HashMap<String,String>();
+     headers.put("user-agent","USERAGENTVALUE");
+     URLConnection returnedConnection = handler.openUrlConnection(url,headers);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent","USERAGENTVALUE" );
+   }
+  
+	@Test  
+  	public void openUrlConnectionNoUserAgentHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Map<String,String> headers = new HashMap<String,String>();
+     headers.put("RANDOM","VALUE");
+     URLConnection returnedConnection = handler.openUrlConnection(url,headers);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("RANDOM","VALUE" );
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT  );
+   }
+  
+	@Test  
+  	public void openUrlConnectionNullHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+
+     URLConnection returnedConnection = handler.openUrlConnection(url,null);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+	@Test
+  	public void openInputNoHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     InputStream input = Mockito.mock(InputStream.class);
+     Mockito.when(connection.getInputStream()).thenReturn(input);
+
+     InputStream returnedInput = handler.openInput(url);
+     Assert.assertEquals(input, returnedInput); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+
+   }
+  
+	@Test
+  	public void openInputNullHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     InputStream input = Mockito.mock(InputStream.class);
+     Mockito.when(connection.getInputStream()).thenReturn(input);
+
+     InputStream returnedInput = handler.openInput(url,null);
+     Assert.assertEquals(input, returnedInput); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+
+	@Test
+  	public void openInputEmptyHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     InputStream input = Mockito.mock(InputStream.class);
+     Mockito.when(connection.getInputStream()).thenReturn(input);
+
+     Map<String,String> headers = new HashMap<String,String>();
+     
+     InputStream returnedInput = handler.openInput(url,headers);
+     Assert.assertEquals(input, returnedInput); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+	@Test
+  	public void openInputUserAgentHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     InputStream input = Mockito.mock(InputStream.class);
+     Mockito.when(connection.getInputStream()).thenReturn(input);
+
+     Map<String,String> headers = new HashMap<String,String>();
+     headers.put("user-agent","USERAGENTVALUE");
+     
+     InputStream returnedInput = handler.openInput(url,headers);
+     Assert.assertEquals(input, returnedInput); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", "USERAGENTVALUE" );
+   }
+  
+	@Test
+  	public void openInputNoUserAgentHeadersTest() throws IOException{
+     final URLConnection connection = Mockito.mock(URLConnection.class);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+     Mockito.when(connection.getContentEncoding()).thenReturn(null);
+     InputStream input = Mockito.mock(InputStream.class);
+     Mockito.when(connection.getInputStream()).thenReturn(input);
+
+     Map<String,String> headers = new HashMap<String,String>();
+     headers.put("RANDOM","VALUE");
+     
+     InputStream returnedInput = handler.openInput(url,headers);
+     Assert.assertEquals(input, returnedInput); 
+     
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("RANDOM", "VALUE" );
+     Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+
    }
 }

@@ -13,7 +13,7 @@ import java.util.zip.InflaterInputStream;
 
 public class UrlHandler_Impl implements UrlHandler {
 
-	private static final String DEFAULT_USER_AGENT = "delimeat.io " + System.getProperty("os.name");
+	public static final String DEFAULT_USER_AGENT = "delimeat.io " + System.getProperty("os.name");
 	private int timeout;
 
 	@Override
