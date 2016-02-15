@@ -96,6 +96,8 @@ public class UrlHandler_ImplTest {
      URLConnection returnedConnection = handler.openUrlConnection(url);
      
      Assert.assertEquals(connection, returnedConnection);
+     
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
 
@@ -113,6 +115,8 @@ public class UrlHandler_ImplTest {
      URLConnection returnedConnection = handler.openUrlConnection(url,headers);
      
      Assert.assertEquals(connection, returnedConnection);
+     
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
@@ -131,6 +135,8 @@ public class UrlHandler_ImplTest {
      URLConnection returnedConnection = handler.openUrlConnection(url,headers);
      
      Assert.assertEquals(connection, returnedConnection);
+     
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent","USERAGENTVALUE" );
    }
   
@@ -149,6 +155,8 @@ public class UrlHandler_ImplTest {
      URLConnection returnedConnection = handler.openUrlConnection(url,headers);
      
      Assert.assertEquals(connection, returnedConnection);
+     
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("RANDOM","VALUE" );
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent",UrlHandler_Impl.DEFAULT_USER_AGENT  );
    }
@@ -187,6 +195,7 @@ public class UrlHandler_ImplTest {
      InputStream returnedInput = handler.openInput(url);
      Assert.assertEquals(input, returnedInput); 
      
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
 
    }
@@ -208,6 +217,7 @@ public class UrlHandler_ImplTest {
      InputStream returnedInput = handler.openInput(url,null);
      Assert.assertEquals(input, returnedInput); 
      
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
@@ -231,6 +241,7 @@ public class UrlHandler_ImplTest {
      InputStream returnedInput = handler.openInput(url,headers);
      Assert.assertEquals(input, returnedInput); 
      
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
@@ -254,6 +265,7 @@ public class UrlHandler_ImplTest {
      InputStream returnedInput = handler.openInput(url,headers);
      Assert.assertEquals(input, returnedInput); 
      
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", "USERAGENTVALUE" );
    }
   
@@ -277,6 +289,7 @@ public class UrlHandler_ImplTest {
      InputStream returnedInput = handler.openInput(url,headers);
      Assert.assertEquals(input, returnedInput); 
      
+     Mockito.verify(connection,Mockito.times(1)).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("RANDOM", "VALUE" );
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
 
