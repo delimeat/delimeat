@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,16 +44,19 @@ public class UDPScrapeRequestHandler_ImpTest {
 
 	@Test
 	public void createScrapeRequestTest() {
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,
-				Integer.MIN_VALUE, "INFO_HASH".getBytes());
-		Assert.assertEquals(25, req.length);
+				Integer.MIN_VALUE, infoHash);
+		Assert.assertEquals(36, req.length);
 		ByteBuffer buf = ByteBuffer.wrap(req);
 		Assert.assertEquals(Long.MAX_VALUE, buf.getLong());
 		Assert.assertEquals(2, buf.getInt());
 		Assert.assertEquals(Integer.MIN_VALUE, buf.getInt());
-		byte[] infoHashBytes = new byte[9];
+		byte[] infoHashBytes = new byte[20];
 		buf.get(infoHashBytes);
-		Assert.assertEquals("INFO_HASH", new String(infoHashBytes));
+     	System.out.println(infoHashBytes.length);
+     	System.out.println(infoHash.getBytes().length);  
+		Assert.assertTrue(Arrays.equals(infoHash.getBytes(),infoHashBytes));
 	}
 
 	@Test(expected = TorrentException.class)
@@ -240,7 +244,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);
 
 		final ByteBuffer connSendBuf = ByteBuffer.allocate(16);
-		final ByteBuffer scapeSendBuf = ByteBuffer.allocate(25);
+		final ByteBuffer scapeSendBuf = ByteBuffer.allocate(36);
 		Mockito.doAnswer(new Answer() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
@@ -288,8 +292,9 @@ public class UDPScrapeRequestHandler_ImpTest {
 		}).when(mockedSocket).receive(Mockito.any(DatagramPacket.class));
 
 		scraper.setSocket(mockedSocket);
-		ScrapeResult result = scraper.scrape(new URI("udp://test.com:8080"),
-				"info_hash".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+
+		ScrapeResult result = scraper.scrape(new URI("udp://test.com:8080"),infoHash);
 		Assert.assertEquals(200, result.getSeeders());
 		Assert.assertEquals(100, result.getLeechers());
 	}

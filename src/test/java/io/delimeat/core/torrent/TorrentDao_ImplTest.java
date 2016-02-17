@@ -103,8 +103,7 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals("2_part_1" + sep + "2_file_name", info.getFiles()
 				.get(1).getName());
 		Assert.assertEquals(56789, info.getFiles().get(1).getLength());
-		Assert.assertEquals("��^�&�Mm��x�Q�(�",
-				new String(info.getInfoHash()));
+		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", info.getInfoHash().getHex());
 	}
 
 	@Test
@@ -183,8 +182,7 @@ public class TorrentDao_ImplTest {
 				.getFiles().get(1).getName());
 		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1)
 				.getLength());
-		Assert.assertEquals("��^�&�Mm��x�Q�(�", new String(torrent.getInfo()
-				.getInfoHash()));
+		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
 		Assert.assertNull(torrent.getBytes());
 	}
 
@@ -220,8 +218,7 @@ public class TorrentDao_ImplTest {
 				.getFiles().get(1).getName());
 		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1)
 				.getLength());
-		Assert.assertEquals("��^�&�Mm��x�Q�(�", new String(torrent.getInfo()
-				.getInfoHash()));
+		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
 		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));
 	}
 
@@ -232,7 +229,8 @@ public class TorrentDao_ImplTest {
 		dao.getScrapeReqeustHandlers().put("http", mockedScraper);
 
 		URI scrapeUri = new URI("udp://scrape.me:8080");
-		dao.scrape(scrapeUri, "INFO_HASH".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		dao.scrape(scrapeUri, infoHash);
 	}
   
 	@Test(expected=TorrentException.class)
@@ -260,12 +258,12 @@ public class TorrentDao_ImplTest {
 				.mock(ScrapeRequestHandler.class);
 		Mockito.when(
 				mockedScraper.scrape(Mockito.any(URI.class),
-						Mockito.any(byte[].class))).thenReturn(mockedResult);
+						Mockito.any(InfoHash.class))).thenReturn(mockedResult);
 		dao.getScrapeReqeustHandlers().put("HTTP", mockedScraper);
 
 		URI uri = new URI("http://scrape.me.com");
-		Assert.assertEquals(mockedResult,
-				dao.scrape(uri, "INFO_HASH".getBytes()));
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		Assert.assertEquals(mockedResult,dao.scrape(uri, infoHash));
 	}
 
 }

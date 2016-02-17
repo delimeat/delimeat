@@ -33,7 +33,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	}
 	
 	@Override
-	public ScrapeResult scrape(URI uri, byte[] infoHash) throws UnhandledScrapeException, TorrentException, IOException{
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException{
 
          final String protocol = uri.getScheme();
          if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
@@ -60,9 +60,9 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			if(dictionary.containsKey(FILES_KEY) && dictionary.get(FILES_KEY) instanceof BDictionary){
 				
             BDictionary infoHashDictionary = (BDictionary)dictionary.get(FILES_KEY);
-				if(infoHashDictionary.containsKey(new BString(infoHash)) && infoHashDictionary.get(infoHash) instanceof BDictionary){
+				if(infoHashDictionary.containsKey(new BString(infoHash.getBytes())) && infoHashDictionary.get(infoHash.getBytes()) instanceof BDictionary){
 					
-               BDictionary resultDictionary = (BDictionary)infoHashDictionary.get(infoHash);
+               BDictionary resultDictionary = (BDictionary)infoHashDictionary.get(infoHash.getBytes());
                if(resultDictionary.containsKey(COMPLETE_KEY) && resultDictionary.get(COMPLETE_KEY) instanceof BInteger){
                  BInteger complete = (BInteger)resultDictionary.get(COMPLETE_KEY);
                  seeders = complete.longValue();
@@ -79,7 +79,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 	}
 	
-	public URL generateScrapeURL(URI uri, byte[] infoHash) throws UnhandledScrapeException, TorrentException{
+	public URL generateScrapeURL(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException{
 		
       String path;
 		if(uri.getPath().contains("announce")){
@@ -90,7 +90,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			throw new UnhandledScrapeException("Unable to scrape URI: " + uri.toString());
 		}
      
-		final String infoHashString = new String(infoHash);
+		final String infoHashString = new String(infoHash.getBytes());
 		final String infoHashQuery;
       try{
         infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
@@ -99,14 +99,14 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
     	}
      
 		final String query;
-		if(uri.getQuery()==null){
+		if(uri.getRawQuery()==null){
 			query = infoHashQuery;
 		}
-		else if(uri.getQuery().contains(infoHashQuery)){
-			query = uri.getQuery();
+		else if(uri.getRawQuery().contains(infoHashQuery)){
+			query = uri.getRawQuery();
 		}
 		else{
-			query = uri.getQuery() + "&" + infoHashQuery;
+			query = uri.getRawQuery() + "&" + infoHashQuery;
 		}
      
       final URL url;

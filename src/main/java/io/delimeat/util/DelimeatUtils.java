@@ -58,12 +58,11 @@ public class DelimeatUtils {
      * @param bytes
      * @return sha1 of the byte array
      */
-    public static String getSHA1(byte[] bytes) {
+    public static byte[] getSHA1(byte[] bytes) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update(bytes, 0, bytes.length);
-            byte[] digest = md.digest();
-            return toHex(digest);
+            return  md.digest();
         } catch (NoSuchAlgorithmException t) {
             throw new RuntimeException(t);
         }

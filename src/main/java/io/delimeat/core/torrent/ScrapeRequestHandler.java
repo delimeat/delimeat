@@ -13,5 +13,5 @@ public interface ScrapeRequestHandler {
 	 * @throws UnhandledScrapeException
 	 * @throws TorrentException
 	 */
-	public ScrapeResult scrape(URI uri, byte[] infoHash) throws IOException, UnhandledScrapeException, TorrentException;
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException;
 }

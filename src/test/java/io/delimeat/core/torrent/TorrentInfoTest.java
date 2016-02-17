@@ -46,7 +46,8 @@ public class TorrentInfoTest {
 	@Test
 	public void infoHashTest() {
 		Assert.assertNull(torrentInfo.getInfoHash());
-		torrentInfo.setInfoHash("INFO_HASH".getBytes());
-		Assert.assertEquals("INFO_HASH", new String(torrentInfo.getInfoHash()));
+     	InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		torrentInfo.setInfoHash(infoHash);
+		Assert.assertEquals(infoHash, torrentInfo.getInfoHash());
 	}
 }

@@ -4,6 +4,7 @@ import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.TorrentSeederValidator_Impl;
 import io.delimeat.core.show.Show;
+import io.delimeat.core.torrent.InfoHash;
 import io.delimeat.core.torrent.ScrapeResult;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
@@ -47,13 +48,14 @@ public class TorrentSeederValidator_ImplTest {
 	@Test
 	public void singleTrackerAboveMinTest() throws Exception {
       TorrentInfo info = new TorrentInfo();
-      info.setInfoHash("INFOHASH".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+      info.setInfoHash(infoHash);
 		torrent.setInfo(info);
 		torrent.setTracker("http://test.com");
 
 		TorrentDao mockedTorrentDao = Mockito.mock(TorrentDao.class);
       ScrapeResult scrape = new ScrapeResult(21,Long.MIN_VALUE);
-		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(byte[].class))).thenReturn(scrape);
+		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentDao(mockedTorrentDao);
      
 		Assert.assertTrue(validator.validate(torrent, show, config));		
@@ -62,13 +64,14 @@ public class TorrentSeederValidator_ImplTest {
 	@Test
 	public void singleTrackerBelowMinTest() throws Exception {
       TorrentInfo info = new TorrentInfo();
-      info.setInfoHash("INFOHASH".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+      info.setInfoHash(infoHash);
 		torrent.setInfo(info);
 		torrent.setTracker("http://test.com");
 
 		TorrentDao mockedTorrentDao = Mockito.mock(TorrentDao.class);
       ScrapeResult scrape = new ScrapeResult(19,Long.MIN_VALUE);
-		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(byte[].class))).thenReturn(scrape);
+		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentDao(mockedTorrentDao);
      
 		Assert.assertFalse(validator.validate(torrent, show, config));		
@@ -77,7 +80,8 @@ public class TorrentSeederValidator_ImplTest {
 	@Test
 	public void multipleTrackersAboveMinTest() throws Exception {
       TorrentInfo info = new TorrentInfo();
-      info.setInfoHash("INFOHASH".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+      info.setInfoHash(infoHash);
 		torrent.setInfo(info);
       torrent.getTrackers().add("http://test.com");
       torrent.getTrackers().add("udp://test.com:8080");
@@ -85,7 +89,7 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentDao mockedTorrentDao = Mockito.mock(TorrentDao.class);
       ScrapeResult scrape = new ScrapeResult(21,Long.MIN_VALUE);
-		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(byte[].class))).thenReturn(scrape);
+		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentDao(mockedTorrentDao);
      
 		Assert.assertTrue(validator.validate(torrent, show, config));		
@@ -94,7 +98,8 @@ public class TorrentSeederValidator_ImplTest {
 	@Test
 	public void multipleTrackersBelowMinTest() throws Exception {
       TorrentInfo info = new TorrentInfo();
-      info.setInfoHash("INFOHASH".getBytes());
+      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+      info.setInfoHash(infoHash);
 		torrent.setInfo(info);
       torrent.getTrackers().add("http://test.com");
       torrent.getTrackers().add("udp://test.com:8080");
@@ -102,7 +107,7 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentDao mockedTorrentDao = Mockito.mock(TorrentDao.class);
       ScrapeResult scrape = new ScrapeResult(19,Long.MIN_VALUE);
-		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(byte[].class))).thenReturn(scrape);
+		Mockito.when(mockedTorrentDao.scrape(Mockito.any(URI.class),Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentDao(mockedTorrentDao);
      
 		Assert.assertFalse(validator.validate(torrent, show, config));		

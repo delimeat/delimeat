@@ -30,7 +30,7 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	}
 	
 	@Override
-	public ScrapeResult scrape(URI uri, byte[] infoHash) throws UnhandledScrapeException, TorrentException, IOException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);
@@ -57,12 +57,12 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		return buf.array();
 	}
 	
-	public byte[] createScrapeRequest(long connId, int transId, byte[] infoHash ){
-		ByteBuffer buf = ByteBuffer.allocate(16+infoHash.length);
+	public byte[] createScrapeRequest(long connId, int transId, InfoHash infoHash ){
+		ByteBuffer buf = ByteBuffer.allocate(16+infoHash.getBytes().length);
 		buf.putLong(connId);
 		buf.putInt(ACTION_SCRAPE);
 		buf.putInt(transId);
-		buf.put(infoHash);
+		buf.put(infoHash.getBytes());
 		return buf.array();
 	}
 	

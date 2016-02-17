@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +83,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	}
 
 	@Override
-	public ScrapeResult scrape(URI uri, byte[] infoHash) throws UnhandledScrapeException, TorrentException, IOException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
 
 		final String protocol = uri.getScheme().toUpperCase();
 		if(getScrapeReqeustHandlers().containsKey(protocol)){
@@ -135,14 +133,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	
 	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
 		final TorrentInfo info = new TorrentInfo();
-		final MessageDigest md;
-     	try{
-        md = MessageDigest.getInstance("SHA-1");
-      }catch(NoSuchAlgorithmException ex){
-      	throw new RuntimeException(ex);
-      }
-		final byte[] bytes = BencodeUtils.encode(infoDictionary);
-		info.setInfoHash(md.digest(bytes));
+		info.setInfoHash(new InfoHash(infoDictionary));
 		if (infoDictionary.containsKey(NAME_KEY) && infoDictionary.get(NAME_KEY) instanceof BString) {
 			BString nameValue = (BString)infoDictionary.get(NAME_KEY);
 			info.setName(nameValue.toString());

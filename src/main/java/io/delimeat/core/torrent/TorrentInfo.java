@@ -7,7 +7,7 @@ import java.util.List;
 public class TorrentInfo extends TorrentFile {
 	
 	private List<TorrentFile> files = new ArrayList<TorrentFile>();
-	private byte[] infoHash;
+	private InfoHash infoHash;
 	
 
 	public List<TorrentFile> getFiles() {
@@ -17,17 +17,17 @@ public class TorrentInfo extends TorrentFile {
 		this.files = files;
 	}
 
-	public byte[] getInfoHash() {
+	public InfoHash getInfoHash() {
 		return infoHash;
 	}
 
-	public void setInfoHash(byte[] infoHash){
+	public void setInfoHash(InfoHash infoHash){
 		this.infoHash = infoHash;
 	}
 	
 	@Override
 	public String toString() {
-		return "TorrentInfo [name=" + name + ", length="
+		return "TorrentInfo [ infoHash:" + infoHash + ", name=" + name + ", length="
 				+ length + " files=" + files + "]";
 	}
 
