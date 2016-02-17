@@ -37,7 +37,7 @@ public class InfoHash {
 
     @Override
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof InfoHash)  )
+        if(other == null || (other instanceof InfoHash) == false )
           return false;
 
         if(this == other)
