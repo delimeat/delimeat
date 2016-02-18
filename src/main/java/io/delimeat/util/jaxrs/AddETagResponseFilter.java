@@ -4,12 +4,15 @@ import io.delimeat.util.DelimeatUtils;
 
 import java.io.IOException;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response;
 
 @ETag
+@Priority(Priorities.HEADER_DECORATOR)
 public class AddETagResponseFilter implements ContainerResponseFilter {
 
     private static final String ENTITY_TAG = "ETag";
