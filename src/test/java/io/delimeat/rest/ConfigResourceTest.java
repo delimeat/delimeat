@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -42,7 +43,7 @@ public class ConfigResourceTest extends JerseyTest {
 	}
 
 	@Test
-	public void readTest() throws IOException, Exception {
+	public void readNoEtagTest() throws IOException, Exception {
 		Config expectedConfig = new Config();
 		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
 		expectedConfig.setIgnoreFolders(false);
@@ -53,18 +54,65 @@ public class ConfigResourceTest extends JerseyTest {
 
 		Response response = target("config").request().get();
 		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",
-				response.getHeaderString("Content-Type"));
+		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
+          	
+     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
+     
 		Config actualConfig = response.readEntity(Config.class);
 		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE",
-				actualConfig.getIgnoredFileTypes().get(0));
+		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
 		Assert.assertFalse(actualConfig.isIgnoreFolders());
 		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
 		Assert.assertTrue(actualConfig.isPreferFiles());
 		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
 	}
 
+	@Test
+	public void readNoMatchingEtagTest() throws IOException, Exception {
+		Config expectedConfig = new Config();
+		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
+		expectedConfig.setIgnoreFolders(false);
+		expectedConfig.setOutputDirectory("OUTPUTDIR");
+		expectedConfig.setPreferFiles(true);
+		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
+
+		Response response = target("config").request().header("If-None-Match", "\"INVALID_ETAG\"").get();
+		Assert.assertEquals(200, response.getStatus());
+		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
+          	
+     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
+     
+		Config actualConfig = response.readEntity(Config.class);
+		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
+		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
+		Assert.assertFalse(actualConfig.isIgnoreFolders());
+		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
+		Assert.assertTrue(actualConfig.isPreferFiles());
+		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
+	}
+  
+
+	@Test
+	public void readMatchingEtagTest() throws IOException, Exception {
+		Config expectedConfig = new Config();
+		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
+		expectedConfig.setIgnoreFolders(false);
+		expectedConfig.setOutputDirectory("OUTPUTDIR");
+		expectedConfig.setPreferFiles(true);
+		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
+
+     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+
+		Response response = target("config").request().header("If-None-Match", "\""+etag.getValue() +"\"").get();
+		Assert.assertEquals(304, response.getStatus());
+          	
+     	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
+	}
+  
 	@Test
 	public void updateTest() throws ConfigException {
 		Config expectedConfig = new Config();
@@ -75,15 +123,16 @@ public class ConfigResourceTest extends JerseyTest {
 		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
 		Mockito.when(mockedConfigService.update(Mockito.any(Config.class))).thenReturn(expectedConfig);
 
-		Response response = target("config").request().put(
-				Entity.entity(expectedConfig, MediaType.APPLICATION_JSON_TYPE));
+		Response response = target("config").request().put(Entity.entity(expectedConfig, MediaType.APPLICATION_JSON_TYPE));
 		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",
-				response.getHeaderString("Content-Type"));
+		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
+          	
+     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
+     
 		Config actualConfig = response.readEntity(Config.class);
 		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE",
-				actualConfig.getIgnoredFileTypes().get(0));
+		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
 		Assert.assertFalse(actualConfig.isIgnoreFolders());
 		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
 		Assert.assertTrue(actualConfig.isPreferFiles());
