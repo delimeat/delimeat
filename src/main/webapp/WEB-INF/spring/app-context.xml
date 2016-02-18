@@ -20,7 +20,7 @@ xmlns:context="http://www.springframework.org/schema/context"
 	<import resource="torrent-context.xml" />
 	<import resource="processor-context.xml" />
 	<import resource="services-context.xml" />
-	<import resource="web-context.xml" />
+	<import resource="cache-context.xml" />
 	
 	 
 	<context:component-scan base-package="io.delimeat.core.service"/>
