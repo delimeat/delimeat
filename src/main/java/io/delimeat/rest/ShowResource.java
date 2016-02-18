@@ -3,6 +3,7 @@ package io.delimeat.rest;
 import io.delimeat.core.service.ShowService;
 import io.delimeat.core.show.Show;
 import io.delimeat.util.DelimeatUtils;
+import io.delimeat.util.jaxrs.ETag;
 
 import java.util.List;
 
@@ -18,7 +19,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -32,7 +32,8 @@ public class ShowResource {
 	private ShowService showService;
 
 	@GET
-	public Response getAll(@Context Request request) throws Exception {
+  	@ETag
+	public List<Show> getAll(@Context Request request) throws Exception {
        List<Show> shows = showService.readAll();
        EntityTag etag = createShowsEtag(shows);
        Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
@@ -40,27 +41,28 @@ public class ShowResource {
          throw new WebApplicationException(rb.build());
        }
      
-       return Response.ok(new GenericEntity<List<Show>>(shows){}).tag(etag).build();
+       return shows;
 	}
 
 	@Path("{id}")
 	@GET
-	public Response read(@PathParam("id") Long id, @Context Request request) throws Exception {
+  	@ETag
+	public Show read(@PathParam("id") Long id, @Context Request request) throws Exception {
        Show show = showService.read(id);
        EntityTag etag = createShowEtag(show);
+     	 System.out.println("ETAG:" + etag);
        Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
        if (rb != null) {
          throw new WebApplicationException(rb.build());
        }
-       return Response.ok(show).tag(etag).build();
+       return show;
 	}
 
 	@Path("{id}")
 	@PUT
-	public Response update(Show show) throws Exception {
-       Show updatedShow = showService.update(show);
-       EntityTag etag = createShowEtag(updatedShow);
-       return Response.ok(updatedShow).tag(etag).build();
+  	@ETag
+	public Show update(Show show) throws Exception {
+       return showService.update(show);
 	}
 
 	@Path("{id}")
@@ -70,32 +72,21 @@ public class ShowResource {
 	}
 
 	@POST
-	public Response create(Show show) throws Exception {
-       Show createdShow = showService.create(show);
-       EntityTag etag = createShowEtag(createdShow);
-       return Response.ok(createdShow).tag(etag).build();
+  	@ETag
+	public Show create(Show show) throws Exception {
+       return showService.create(show);
 	}
   
   public static EntityTag createShowEtag(Show show) {
-    	StringBuilder builder = new StringBuilder();
-    	builder.append(show.getVersion());
-    	builder.append(";");
-    	builder.append(show.getShowId());
-		byte[] sha1 = DelimeatUtils.getSHA1(builder.toString().getBytes());
-    	String hex = DelimeatUtils.toHex(sha1);
-    	return new EntityTag(hex);
+    byte[] sha1 = DelimeatUtils.getSHA1(show.toString().getBytes());
+    String hex = DelimeatUtils.toHex(sha1);
+    return new EntityTag(hex);
   }
   
   public static EntityTag createShowsEtag(List<Show> shows) {
-    	StringBuilder builder = new StringBuilder();
-    	for(Show show: shows){
-        builder.append(show.getVersion());
-        builder.append(";");
-        builder.append(show.getShowId());
-      }
-		byte[] sha1 = DelimeatUtils.getSHA1(builder.toString().getBytes());
-    	String hex = DelimeatUtils.toHex(sha1);
-    	return new EntityTag(hex);
+    byte[] sha1 = DelimeatUtils.getSHA1(shows.toString().getBytes());
+    String hex = DelimeatUtils.toHex(sha1);
+    return new EntityTag(hex);
   }
 
 }

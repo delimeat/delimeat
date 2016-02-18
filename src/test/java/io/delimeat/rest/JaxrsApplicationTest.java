@@ -1,5 +1,6 @@
 package io.delimeat.rest;
 
+import io.delimeat.util.jaxrs.AddETagResponseFilter;
 import io.delimeat.util.jaxrs.CORSResponseFilter;
 import io.delimeat.util.jaxrs.GenericExceptionMapper;
 import io.delimeat.util.jaxrs.GuideExceptionMapper;
@@ -21,7 +22,7 @@ public class JaxrsApplicationTest {
 	
 	@Test
 	public void classesTest(){
-		Assert.assertEquals(7, application.getClasses().size());
+		Assert.assertEquals(8, application.getClasses().size());
 		Assert.assertTrue(application.getClasses().contains(ShowResource.class));
 		Assert.assertTrue(application.getClasses().contains(ConfigResource.class));
 		Assert.assertTrue(application.getClasses().contains(GuideResource.class));
@@ -29,6 +30,7 @@ public class JaxrsApplicationTest {
 		Assert.assertTrue(application.getClasses().contains(GenericExceptionMapper.class));
 		Assert.assertTrue(application.getClasses().contains(GuideExceptionMapper.class));
 		Assert.assertTrue(application.getClasses().contains(ShowExceptionMapper.class));
+		Assert.assertTrue(application.getClasses().contains(AddETagResponseFilter.class));     
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package io.delimeat.rest;
 
+import io.delimeat.util.jaxrs.AddETagResponseFilter;
 import io.delimeat.util.jaxrs.CORSResponseFilter;
 import io.delimeat.util.jaxrs.GenericExceptionMapper;
 import io.delimeat.util.jaxrs.GuideExceptionMapper;
@@ -25,6 +26,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(new LoggingFilter(LOGGER, true));
 		property(ServerProperties.TRACING, "ALL");
 		register(CORSResponseFilter.class);
+		register(AddETagResponseFilter.class);     
 		register(ShowExceptionMapper.class);
 		register(GuideExceptionMapper.class);
 		register(GenericExceptionMapper.class);	
