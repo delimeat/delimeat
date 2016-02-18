@@ -1,7 +1,6 @@
 package io.delimeat.core.torrent;
 
-import org.apache.commons.io.IOUtils;
-
+import com.google.common.io.ByteStreams;
 import io.delimeat.util.UrlHandler;
 import io.delimeat.util.bencode.BDictionary;
 import io.delimeat.util.bencode.BInteger;
@@ -53,7 +52,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	@Override
 	public Torrent read(URI uri) throws TorrentNotFoundException, TorrentException, IOException {
 
-     final String protocol = uri.getScheme();;
+     final String protocol = uri.getScheme();
      if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
        throw new TorrentException("Unsupported protocol " + protocol + " expected one of HTTP or HTTPS");
      }
@@ -70,7 +69,7 @@ public class TorrentDao_Impl implements TorrentDao {
      final InputStream input = getUrlHandler().openInput(conn);
 
      try{
-       final byte[] bytes = IOUtils.toByteArray(input);
+       final byte[] bytes = ByteStreams.toByteArray(input);
        final BDictionary dictionary = BencodeUtils.decode(bytes);
        final Torrent torrent = parseRootDictionary(dictionary);
        torrent.setBytes(bytes);
