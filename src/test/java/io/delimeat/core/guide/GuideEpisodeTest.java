@@ -3,16 +3,20 @@
   import io.delimeat.core.show.Episode;
 
   import java.text.ParseException;
-  import java.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
   import org.junit.Assert;
-  import org.junit.Before;
-  import org.junit.Test;
+import org.junit.Before;
+import org.junit.Test;
 
   public class GuideEpisodeTest {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
+	static{
+		SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	
     private GuideEpisode ep;
 
     @Before
@@ -328,6 +332,6 @@
       ep.setSeasonNum(1);
       ep.setEpisodeNum(2);  
 		
-      Assert.assertEquals("GuideEpisode{title=EP, airDate=Fri Jan 28 00:00:00 UTC 2000, seasonNum=1, episodeNum=2}", ep.toString());
+      Assert.assertEquals("GuideEpisode{title=EP, airDate=949017600000, seasonNum=1, episodeNum=2}", ep.toString());
     }
 }

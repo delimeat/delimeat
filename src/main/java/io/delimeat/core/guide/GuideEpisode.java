@@ -117,7 +117,7 @@ public class GuideEpisode implements Comparable<GuideEpisode> {
     public String toString() {
       return MoreObjects.toStringHelper(this)
         .add("title", title)
-        .add("airDate", airDate)  
+        .add("airDate", (airDate != null ? airDate.getTime() : null))  
         .add("seasonNum", seasonNum)
         .add("episodeNum", episodeNum)
         .toString();

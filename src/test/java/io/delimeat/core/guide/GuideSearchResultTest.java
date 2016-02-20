@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +14,9 @@ import org.junit.Test;
 public class GuideSearchResultTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
+	static{
+		SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 	private GuideSearchResult result;
 
 	@Before
@@ -137,6 +140,6 @@ public class GuideSearchResultTest {
 		result.setGuideIds(Arrays.asList(id));
 		result.setFirstAired(SDF.parse("2005-04-03"));
      	result.setLastUpdated(SDF.parse("2016-02-19"));
-     	Assert.assertEquals("GuideSearchResult{title=TITLE, firstAired=Sun Apr 03 00:00:00 UTC 2005, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], description=DESCRIPTION, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", result.toString());
+     	Assert.assertEquals("GuideSearchResult{title=TITLE, firstAired=1112486400000, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], description=DESCRIPTION, lastUpdated=1455840000000}", result.toString());
    }
 }

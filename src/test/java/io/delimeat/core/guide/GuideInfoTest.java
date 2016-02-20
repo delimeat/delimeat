@@ -3,6 +3,7 @@ package io.delimeat.core.guide;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,7 +12,10 @@ import org.junit.Test;
 public class GuideInfoTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
+	static{
+		SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	
 	private GuideInfo info;
 
 	@Before
@@ -191,6 +195,6 @@ public class GuideInfoTest {
 		info.setAirTime(10000);
 		info.setFirstAired(SDF.parse("2005-04-03"));
      	info.setLastUpdated(SDF.parse("2016-02-19"));
-     	Assert.assertEquals("GuideInfo{title=TITLE, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", info.toString());
+     	Assert.assertEquals("GuideInfo{title=TITLE, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, lastUpdated=1455840000000}", info.toString());
    }
 }

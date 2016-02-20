@@ -180,6 +180,6 @@ public class ShowTest {
 		show.setMinSize(Integer.MAX_VALUE);
 		show.setMaxSize(Integer.MAX_VALUE);
      	System.out.println(show.toString());
-		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideSources=[ShowGuideSource [pk=null, guideId=null, version=0]], nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, results=[], version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=Fri Nov 06 00:00:00 UTC 2015, lastFeedUpdate=Fri Nov 06 00:00:00 UTC 2015, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
+		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideSources=[ShowGuideSource [pk=null, guideId=null, version=0]], nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, results=[], version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=1446728400000, lastFeedUpdate=1446728400000, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
    }
 }

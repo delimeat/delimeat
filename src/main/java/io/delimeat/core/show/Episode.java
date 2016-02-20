@@ -188,7 +188,7 @@ public class Episode {
       return MoreObjects.toStringHelper(this)
         .add("episodeId", episodeId)
         .add("title", title)  
-        .add("airDate", airDate)
+        .add("airDate", (airDate != null ? airDate.getTime() : null))
         .add("seasonNum", seasonNum)
         .add("episodeNum", episodeNum)
         .add("doubleEp", doubleEp)

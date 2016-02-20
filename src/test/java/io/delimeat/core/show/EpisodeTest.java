@@ -342,7 +342,7 @@ public class EpisodeTest {
      episode.setEpisodeId(Long.MIN_VALUE);
      episode.setVersion(Integer.MIN_VALUE);  
 		
-      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=Thu Jan 28 00:00:00 UTC 2016, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, results=[], version=-2147483648}", episode.toString());
+      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=1453899600000, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, results=[], version=-2147483648}", episode.toString());
     }
 
 }

@@ -167,7 +167,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
         .add("runningTime", runningTime)
         .add("timezone", timezone)
         .add("description", description)
-        .add("lastUpdated", lastUpdated)
+        .add("lastUpdated", (lastUpdated != null ? lastUpdated.getTime() : null))
         .toString();     
     }
 
