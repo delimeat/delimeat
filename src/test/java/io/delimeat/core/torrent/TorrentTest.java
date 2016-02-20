@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TorrentTest {
 
@@ -38,10 +37,10 @@ public class TorrentTest {
 	public void infoTest() {
 		Assert.assertNull(torrent.getInfo());
 		
-		TorrentInfo mockedTorrentInfo = Mockito.mock(TorrentInfo.class);
-		torrent.setInfo(mockedTorrentInfo);
+		TorrentInfo info = new TorrentInfo();
+		torrent.setInfo(info);
 		
-		Assert.assertEquals(mockedTorrentInfo, torrent.getInfo());
+		Assert.assertEquals(info, torrent.getInfo());
 	}
 
 	@Test
@@ -50,4 +49,15 @@ public class TorrentTest {
 		torrent.setBytes("BYTES".getBytes());
 		Assert.assertEquals("BYTES", new String(torrent.getBytes()));
 	}
+  
+  	@Test
+  	public void toStringTest(){
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1","TRACKER_2"));
+		TorrentInfo info = new TorrentInfo();
+		torrent.setInfo(info);
+		torrent.setBytes("BYTES".getBytes());
+     	System.out.println(torrent);
+     	Assert.assertEquals("Torrent{tracker=TRACKER, trackers=[TRACKER_1, TRACKER_2], info=TorrentInfo{infoHash=null, name=null, length=0, files=[]}}", torrent.toString());
+   }
 }

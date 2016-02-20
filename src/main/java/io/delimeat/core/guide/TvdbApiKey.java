@@ -1,5 +1,9 @@
 package io.delimeat.core.guide;
 
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
+
 public class TvdbApiKey {
 
 	private String value;
@@ -19,6 +23,13 @@ public class TvdbApiKey {
 	 */
 	@Override
 	public String toString() {
-		return "TVDBApiKey [value=" + value + "]";
+      return MoreObjects.toStringHelper(this)
+        .add("value", value)
+        .toString();
 	}
+
+    @Override 
+    public int hashCode() {
+      return Objects.hash(value);
+    }
 }

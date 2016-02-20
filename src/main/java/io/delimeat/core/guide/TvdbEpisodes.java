@@ -1,7 +1,10 @@
 package io.delimeat.core.guide;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TvdbEpisodes {
 
@@ -93,8 +96,18 @@ public class TvdbEpisodes {
 	 */
 	@Override
 	public String toString() {
-		return "TvdbEpisodes [first=" + first + ", last=" + last + ", next=" + next + ", previous=" + previous
-				+ ", episodes=" + episodes + "]";
+      return MoreObjects.toStringHelper(this)
+        .add("first", first)
+        .add("last", last)  
+        .add("next", next)
+        .add("previous", previous)
+        .add("episodes", episodes)
+        .toString(); 
 	}
+  
+    @Override 
+    public int hashCode() {
+      return Objects.hash(first,last,next,previous,episodes);
+    }
 
 }

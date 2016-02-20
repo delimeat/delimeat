@@ -1,7 +1,10 @@
 package io.delimeat.core.config;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -74,9 +77,17 @@ public class Config {
 
 	@Override
 	public String toString() {
-		return "Config [outputDirectory=" + outputDirectory
-				+ ", searchInterval=" + searchInterval + ", preferFiles="
-				+ preferFiles + ", ignoreFolders=" + ignoreFolders
-				+ ", ignoredFileTypes=" + ignoredFileTypes + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("outputDirectory", outputDirectory)
+              .add("searchInterval", searchInterval)  
+              .add("preferFiles", preferFiles)
+              .add("ignoreFolders", ignoreFolders)
+              .add("ignoredFileTypes", ignoredFileTypes)
+              .toString();
 	}
+
+  @Override 
+  public int hashCode() {
+    return Objects.hash(outputDirectory, searchInterval, preferFiles, ignoreFolders, ignoredFileTypes);
+  }
 }

@@ -1,5 +1,7 @@
 package io.delimeat.core.torrent;
 
+import com.google.common.base.MoreObjects;
+
 public class ScrapeResult {
 
 	private final long seeders;
@@ -20,8 +22,10 @@ public class ScrapeResult {
 
 	@Override
 	public String toString() {
-		return "ScrapeResult [seeders=" + seeders + ", leechers=" + leechers
-				+ "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("seeders", seeders)
+              .add("leechers", leechers)
+              .toString();
 	}
 
 }

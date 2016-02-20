@@ -85,5 +85,11 @@ public class InfoHashTest {
      	InfoHash infoHash1 = new InfoHash("OTHER_VALUE".getBytes()); 
      	Assert.assertFalse(infoHash.equals(infoHash1));
    } 
+  
+  	@Test
+  	public void toStringTest(){
+     InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+     Assert.assertEquals("InfoHash{value=601492e054f9540eb0129c35deb385baa2faf0fe}",infoHash.toString());
+   }
   	
 }

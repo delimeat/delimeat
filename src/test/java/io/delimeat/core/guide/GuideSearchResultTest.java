@@ -3,6 +3,7 @@ package io.delimeat.core.guide;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -22,7 +23,6 @@ public class GuideSearchResultTest {
 
 	@Test
 	public void descriptionTest() {
-
 		Assert.assertEquals(null, result.getDescription());
 		result.setDescription("DESCRIPTION");
 		Assert.assertEquals("DESCRIPTION", result.getDescription());
@@ -45,27 +45,31 @@ public class GuideSearchResultTest {
 
 	@Test
 	public void firstAiredTest() throws ParseException {
-
 		Assert.assertEquals(null, result.getFirstAired());
-
 		result.setFirstAired(SDF.parse("2005-04-03"));
 		Assert.assertEquals("2005-04-03", SDF.format(result.getFirstAired()));
 	}
 
 	@Test
 	public void titleTest() {
-
 		Assert.assertEquals(null, result.getTitle());
 		result.setTitle("TITLE");
 		Assert.assertEquals("TITLE", result.getTitle());
 	}
 
 	@Test
+	public void lasUpdatedTest() throws ParseException {
+		Assert.assertEquals(null, result.getLastUpdated());
+		result.setLastUpdated(SDF.parse("2005-04-03"));
+		Assert.assertEquals("2005-04-03", SDF.format(result.getLastUpdated()));
+	}
+  
+	@Test
 	public void compareTitleMatchTest() {
 		result.setTitle("ABC");
 		GuideSearchResult result2 = new GuideSearchResult();
 		result2.setTitle("ABC");
-
+     
 		Assert.assertEquals(0, result.compareTo(result2));
 	}
 
@@ -115,4 +119,24 @@ public class GuideSearchResultTest {
 
 		Assert.assertEquals(1, result.compareTo(result2));
 	}
+  
+	@Test
+  	public void hashCodeTest() throws ParseException{
+     	result.setTitle("TITLE");
+     	result.setLastUpdated(SDF.parse("2016-02-19"));
+     	Assert.assertEquals(-1974036005, result.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest() throws ParseException{
+     	result.setTitle("TITLE");
+		result.setDescription("DESCRIPTION");
+		GuideIdentifier id = new GuideIdentifier();
+		id.setSource(GuideSource.TVDB);
+		id.setValue("GUIDEID");
+		result.setGuideIds(Arrays.asList(id));
+		result.setFirstAired(SDF.parse("2005-04-03"));
+     	result.setLastUpdated(SDF.parse("2016-02-19"));
+     	Assert.assertEquals("GuideSearchResult{title=TITLE, firstAired=Sun Apr 03 00:00:00 UTC 2005, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], description=DESCRIPTION, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", result.toString());
+   }
 }

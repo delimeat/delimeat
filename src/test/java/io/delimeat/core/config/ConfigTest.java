@@ -54,4 +54,24 @@ public class ConfigTest {
 		config.setOutputDirectory("OUTPUTDIR");
 		Assert.assertEquals("OUTPUTDIR", config.getOutputDirectory());
 	}
+  
+  	@Test
+  	public void hashCodeTest(){
+     	config.setSearchInterval(100);
+		config.setPreferFiles(false);
+		config.setIgnoreFolders(true);
+		config.getIgnoredFileTypes().add("MKV");
+		config.setOutputDirectory("OUTPUTDIR");
+		Assert.assertEquals(993502270, config.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest(){
+     	config.setSearchInterval(100);
+		config.setPreferFiles(false);
+		config.setIgnoreFolders(true);
+		config.getIgnoredFileTypes().add("MKV");
+		config.setOutputDirectory("OUTPUTDIR");
+     	Assert.assertEquals("Config{outputDirectory=OUTPUTDIR, searchInterval=100, preferFiles=true, ignoreFolders=true, ignoredFileTypes=[MKV]}",config.toString());
+   }
 }

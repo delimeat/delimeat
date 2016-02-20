@@ -1,11 +1,15 @@
 package io.delimeat.core.show;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -181,34 +185,56 @@ public class Episode {
 	 */
 	@Override
 	public String toString() {
-		return "Episode [episodeId=" + episodeId + ", title=" + title + ", airDate=" + airDate + ", seasonNum="
-				+ seasonNum + ", episodeNum=" + episodeNum + ", doubleEp=" + doubleEp + ", showId="
-				+ (show != null ? Long.toString(show.getShowId()) : null) + ", results=" + results + ", version="
-				+ version + "]";
+      return MoreObjects.toStringHelper(this)
+        .add("episodeId", episodeId)
+        .add("title", title)  
+        .add("airDate", airDate)
+        .add("seasonNum", seasonNum)
+        .add("episodeNum", episodeNum)
+        .add("doubleEp", doubleEp)
+        .add("showId", (show != null ? show.getShowId() : null))
+        .add("results", results)
+        .add("version", version)
+        .toString(); 
 	}
   
  	@Override
   	public boolean equals(Object object)
   	{
-     boolean equal = false;
-     if(this == object){
-    	return true; 
-     } else if (object != null && object instanceof Episode)
-     {
-       Episode otherEp = (Episode)object;
-       equal = (episodeId == otherEp.getEpisodeId() 
-                && seasonNum == otherEp.getSeasonNum() 
-                && episodeNum == otherEp.getEpisodeNum() 
-                && title == otherEp.getTitle() 
-                && (airDate != null && otherEp.getAirDate() != null ? airDate.equals(otherEp.getAirDate()) : false )  
-                && doubleEp == otherEp.isDoubleEp()
-                && show == otherEp.getShow()
-               );
-     }else if (object != null && object instanceof GuideEpisode){
-       Episode otherEp = new Episode((GuideEpisode)object);
-       equal = (seasonNum == otherEp.getSeasonNum() && episodeNum == otherEp.getEpisodeNum());
-     }
-     return equal;
+      if(object ==null){
+        return false;
+      }
+      
+      if(this == object){
+        return true;
+      }
+      
+      if (object instanceof Episode)
+      {
+        Episode otherEp = (Episode)object;
+        return ComparisonChain.start()
+                 .compare(this.episodeId, otherEp.getEpisodeId())
+                 .compare(this.seasonNum, otherEp.getSeasonNum())
+                 .compare(this.seasonNum, otherEp.getSeasonNum())
+                 .compare(this.title, otherEp.getTitle())
+                 .compare(this.airDate, otherEp.getAirDate(), Ordering.natural().nullsFirst())
+                 .compareFalseFirst(this.doubleEp, otherEp.isDoubleEp())
+                 .compare(show, show, Ordering.natural().nullsFirst())
+                 .result() == 0 ? true : false;
+      }else if (object instanceof GuideEpisode){
+        GuideEpisode otherEp = (GuideEpisode)object;
+        return ComparisonChain.start()
+                 .compare(new Integer(this.seasonNum), otherEp.getSeasonNum())
+                 .compare(new Integer(this.episodeNum), otherEp.getEpisodeNum())
+                 .result() == 0 ? true : false;
+      }
+      return false;
+  }
+
+
+  @Override 
+  public int hashCode() {
+    return Objects.hash(episodeId, version);
   }
 
 }

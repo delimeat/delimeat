@@ -27,4 +27,10 @@ public class TorrentFileTest {
 		Assert.assertEquals("NAME", torrentFile.getName());
 	}
 
+	@Test
+	public void toStringTest() {
+		torrentFile.setLength(Long.MAX_VALUE);
+		torrentFile.setName("NAME");
+		Assert.assertEquals("TorrentFile{name=NAME, length=9223372036854775807}", torrentFile.toString());
+	}
 }

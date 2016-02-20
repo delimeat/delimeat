@@ -1,20 +1,21 @@
 package io.delimeat.core.feed;
 
+import com.google.common.base.MoreObjects;
 import io.delimeat.core.torrent.Torrent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FeedResult {
 
-	protected String torrentURL;
-	protected String title;
-	protected long contentLength;
-	protected long seeders;
-	protected long leechers;
-	
-	protected List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
-	protected Torrent torrent;
+	private String torrentURL;
+	private String title;
+	private long contentLength;
+	private long seeders;
+	private long leechers;	
+	private List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
+	private Torrent torrent;
 
 	public String getTorrentURL() {
 		return torrentURL;
@@ -75,12 +76,20 @@ public class FeedResult {
 
 	@Override
 	public String toString() {
-		return "FeedResult [title=" + title + ", torrentURL=" + torrentURL
-				+ ", contentLength=" + contentLength + ", seeders=" + seeders
-				+ ", leechers=" + leechers + ", torrent="
-				+ (torrent != null ? torrent : null)
-				+ ", feedResultRejections=" + feedResultRejections
-				 + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("title", title)  
+              .add("torrentURL", torrentURL)
+              .add("contentLength", contentLength)
+              .add("seeders", seeders)
+              .add("leechers", leechers)
+              .add("torrent", torrent)
+              .add("feedResultRejections", feedResultRejections)
+              .toString();
 	}
+
+  @Override 
+  public int hashCode() {
+    return Objects.hash(title, torrentURL, contentLength, seeders, leechers, torrent);
+  }
 
 }

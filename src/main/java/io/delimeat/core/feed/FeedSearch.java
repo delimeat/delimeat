@@ -1,7 +1,10 @@
 package io.delimeat.core.feed;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FeedSearch {
 
@@ -17,7 +20,14 @@ public class FeedSearch {
 
 	@Override
 	public String toString() {
-		return "FeedSearch [results=" + results + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("results", results)  
+              .toString();
 	}
+
+  @Override 
+  public int hashCode() {
+    return Objects.hash(results);
+  }
 
 }

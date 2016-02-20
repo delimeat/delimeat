@@ -23,7 +23,18 @@ public class FeedSearchTest {
 		Assert.assertFalse(search.getResults().isEmpty());
 		Assert.assertEquals(1, search.getResults().size());
 		Assert.assertEquals(result, search.getResults().get(0));
-		
 	}
+  
+  	@Test
+  	public void hashCodeTest(){
+   	search.getResults().add(new FeedResult());
+		Assert.assertEquals(887503743,search.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest(){
+		search.getResults().add(new FeedResult());
+     	Assert.assertEquals("FeedSearch{results=[FeedResult{title=null, torrentURL=null, contentLength=0, seeders=0, leechers=0, torrent=null, feedResultRejections=[]}]}",search.toString());
+   }
 
 }

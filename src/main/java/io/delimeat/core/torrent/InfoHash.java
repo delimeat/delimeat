@@ -3,6 +3,7 @@ package io.delimeat.core.torrent;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.google.common.base.MoreObjects;
 import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.bencode.BDictionary;
 import io.delimeat.util.bencode.BencodeException;
@@ -27,22 +28,28 @@ public class InfoHash {
    }
   
   	public String getHex(){
-     return toString();
+     return DelimeatUtils.toHex(sha1Bytes);
    }
   
   	@Override
   	public String toString(){
-     return DelimeatUtils.toHex(sha1Bytes);
+     	return MoreObjects.toStringHelper(this)
+              .add("value", getHex())
+              .toString();
    }
 
     @Override
     public boolean equals(Object other) {
-        if(other == null || (other instanceof InfoHash) == false )
+        if(other == null)
           return false;
 
         if(this == other)
           return true;
-        InfoHash otherInfoHash = (InfoHash)other;
-        return Arrays.equals(sha1Bytes,otherInfoHash.sha1Bytes);
+      
+        if(other instanceof InfoHash){
+          InfoHash otherInfoHash = (InfoHash)other;
+          return Arrays.equals(sha1Bytes,otherInfoHash.sha1Bytes);
+        }
+        return false;
     }
 }

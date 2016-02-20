@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class FeedResultTest {
 
@@ -68,10 +67,30 @@ public class FeedResultTest {
 	@Test
 	public void torrentTest(){
 		Assert.assertNull(result.getTorrent());
-		
-		Torrent mockedTorrent = Mockito.mock(Torrent.class);
-		result.setTorrent(mockedTorrent);
-		
-		Assert.assertEquals(mockedTorrent, result.getTorrent());
+		Torrent torrent = new Torrent();
+		result.setTorrent(torrent);
+		Assert.assertEquals(torrent, result.getTorrent());
 	}
+  
+  	@Test
+  	public void hashCodeTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+     	Assert.assertEquals(293493943,result.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+     	Assert.assertEquals("FeedResult{title=FILE_NAME, torrentURL=TORRENT_LOCATION, contentLength=9223372036854775807, seeders=-9223372036854775808, leechers=9223372036854775807, torrent=null, feedResultRejections=[CONTAINS_COMPRESSED]}",result.toString());
+   }
 }

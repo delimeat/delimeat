@@ -1,9 +1,6 @@
 package io.delimeat.core.guide;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,11 +47,31 @@ public class TvdbEpisodesTest {
 	public void episodesTest() {
 		Assert.assertNotNull(episodes.getEpisodes());
 		Assert.assertEquals(0, episodes.getEpisodes().size());
-		List<GuideEpisode> list = new ArrayList<GuideEpisode>();
-		GuideEpisode mockedEpisode = mock(GuideEpisode.class);
-		list.add(mockedEpisode);
-		episodes.setEpisodes(list);
+		GuideEpisode episode = new GuideEpisode();
+		episodes.setEpisodes(Arrays.asList(episode));
 		Assert.assertEquals(1, episodes.getEpisodes().size());
-		Assert.assertEquals(mockedEpisode, episodes.getEpisodes().get(0));
+		Assert.assertEquals(episode, episodes.getEpisodes().get(0));
 	}
+  
+  	@Test	
+  	public void hashCodeTest(){
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		GuideEpisode episode = new GuideEpisode();
+		episodes.setEpisodes(Arrays.asList(episode)); 
+     	Assert.assertEquals(28598399,episodes.hashCode());
+   }
+  
+  	@Test	
+  	public void toStringTest(){
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		GuideEpisode episode = new GuideEpisode();
+		episodes.setEpisodes(Arrays.asList(episode)); 
+     	Assert.assertEquals("TvdbEpisodes{first=2147483647, last=2147483647, next=2147483647, previous=2147483647, episodes=[GuideEpisode{title=null, airDate=null, seasonNum=0, episodeNum=0}]}",episodes.toString());
+   }
 }

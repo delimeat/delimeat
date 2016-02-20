@@ -3,7 +3,6 @@ package io.delimeat.rest;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.service.ConfigService;
-import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.jaxrs.ETag;
 
 import javax.inject.Inject;
@@ -31,12 +30,11 @@ public class ConfigResource {
     @ETag
     public Config get(@Context Request request) throws ConfigException {
       Config config = service.read();
-      EntityTag etag = createConfigEtag(config);
+      EntityTag etag = new EntityTag(Integer.toString(config.hashCode()));
       Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
       if (rb != null) {
         throw new WebApplicationException(rb.build());
       }
-
       return config;
     }
 
@@ -44,12 +42,6 @@ public class ConfigResource {
     @ETag
     public Config update(Config config) throws ConfigException {
       return service.update(config);
-    }
-
-    public static EntityTag createConfigEtag(Config config) {
-      byte[] sha1 = DelimeatUtils.getSHA1(config.toString().getBytes());
-      String hex = DelimeatUtils.toHex(sha1);
-    	return new EntityTag(hex);
     }
 
 }

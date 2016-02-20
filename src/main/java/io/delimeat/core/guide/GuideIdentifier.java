@@ -1,5 +1,7 @@
 package io.delimeat.core.guide;
 
+import com.google.common.base.MoreObjects;
+
 public class GuideIdentifier {
 
 	private GuideSource source;
@@ -42,7 +44,9 @@ public class GuideIdentifier {
 	 */
 	@Override
 	public String toString() {
-		return "GuideId [source=" + source + ", value=" + value + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("source", source)
+              .add("value", value)  
+              .toString();
 	}
-
 }

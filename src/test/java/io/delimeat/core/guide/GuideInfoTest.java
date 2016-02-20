@@ -2,8 +2,7 @@ package io.delimeat.core.guide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,9 +23,7 @@ public class GuideInfoTest {
 	public void setAirDayTest() {
 		Assert.assertNotNull(info.getAirDays());
 		Assert.assertEquals(0, info.getAirDays().size());
-		List<AiringDay> list = new ArrayList<AiringDay>();
-		list.add(AiringDay.FRIDAY);
-		info.setAirDays(list);
+		info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		Assert.assertNotNull(info.getAirDays());
 		Assert.assertEquals(1, info.getAirDays().size());
 		Assert.assertEquals(AiringDay.FRIDAY, info.getAirDays().get(0));
@@ -44,12 +41,10 @@ public class GuideInfoTest {
 	public void GuideIdsTest() {
 		Assert.assertNotNull(info.getGuideIds());
 		Assert.assertEquals(0, info.getGuideIds().size());
-		List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
 		GuideIdentifier id = new GuideIdentifier();
 		id.setSource(GuideSource.TVDB);
 		id.setValue("GUIDEID");
-		guideIds.add(id);
-		info.setGuideIds(guideIds);
+		info.setGuideIds(Arrays.asList(id));
 		Assert.assertEquals(1, info.getGuideIds().size());
 		Assert.assertEquals("GUIDEID", info.getGuideIds().get(0).getValue());
 		Assert.assertEquals(GuideSource.TVDB, info.getGuideIds().get(0).getSource());
@@ -66,15 +61,13 @@ public class GuideInfoTest {
 
 	@Test
 	public void setTimezoneTest() {
-
 		Assert.assertEquals(null, info.getTimezone());
-		info.setTimezone("SciFi");
-		Assert.assertEquals("SciFi", info.getTimezone());
+		info.setTimezone("TIMEZONE");
+		Assert.assertEquals("TIMEZONE", info.getTimezone());
 	}
 
 	@Test
 	public void setRunningTimeTest() {
-
 		Assert.assertEquals(0, info.getRunningTime());
 		info.setRunningTime(60);
 		Assert.assertEquals(60, info.getRunningTime());
@@ -83,9 +76,7 @@ public class GuideInfoTest {
 	@Test
 	public void setGenresTest() {
 		Assert.assertEquals(0, info.getGenres().size());
-		List<String> genres = new ArrayList<String>();
-		genres.add("GENRE1");
-		info.setGenres(genres);
+		info.setGenres(Arrays.asList("GENRE1"));
 		Assert.assertEquals(1, info.getGenres().size());
 		Assert.assertEquals("GENRE1", info.getGenres().get(0));
 	}
@@ -112,21 +103,14 @@ public class GuideInfoTest {
 		info.setFirstAired(SDF.parse("2005-04-03"));
 		Assert.assertEquals("2005-04-03", SDF.format(info.getFirstAired()));
 	}
-	/*
-	 * @Test public void episodesTest(){ Assert.assertEquals(0,
-	 * info.getEpisodes().size()); GuideEpisode ep1 =mock(GuideEpisode.class);
-	 * when(ep1.getAirDate()).thenReturn(new Date()); GuideEpisode ep2
-	 * =mock(GuideEpisode.class); when(ep2.getAirDate()).thenReturn(null);
-	 * 
-	 * info.getEpisodes().add(ep1);
-	 * 
-	 * Assert.assertEquals(1, info.getEpisodes().size());
-	 * 
-	 * info.getEpisodes().add(ep2);
-	 * 
-	 * Assert.assertEquals(2, info.getEpisodes().size()); }
-	 */
 
+	@Test
+	public void lasUpdatedTest() throws ParseException {
+		Assert.assertEquals(null, info.getLastUpdated());
+		info.setLastUpdated(SDF.parse("2005-04-03"));
+		Assert.assertEquals("2005-04-03", SDF.format(info.getLastUpdated()));
+	}
+  
 	@Test
 	public void compareTitleMatchTest() {
 		info.setTitle("ABC");
@@ -182,5 +166,31 @@ public class GuideInfoTest {
 
 		Assert.assertEquals(1, info.compareTo(info2));
 	}
-
+  
+  	
+	@Test
+  	public void hashCodeTest() throws ParseException{
+     	info.setTitle("TITLE");
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     	Assert.assertEquals(-1974036005, info.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest() throws ParseException{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		GuideIdentifier id = new GuideIdentifier();
+		id.setSource(GuideSource.TVDB);
+		id.setValue("GUIDEID");
+		info.setGuideIds(Arrays.asList(id));
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     	Assert.assertEquals("GuideInfo{title=TITLE, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", info.toString());
+   }
 }

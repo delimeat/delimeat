@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class ShowTest {
 
@@ -45,10 +44,10 @@ public class ShowTest {
 	public void guideSourcesTest() {
 		Assert.assertNotNull(show.getGuideSources());
 		Assert.assertEquals(0, show.getGuideSources().size());
-		ShowGuideSource mockedSource = Mockito.mock(ShowGuideSource.class);
-		show.setGuideSources(Arrays.asList(new ShowGuideSource[] { mockedSource }));
+		ShowGuideSource source = new ShowGuideSource();
+		show.setGuideSources(Arrays.asList(source));
 		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals(mockedSource, show.getGuideSources().get(0));
+		Assert.assertEquals(source, show.getGuideSources().get(0));
 	}
 
 	@Test
@@ -96,17 +95,17 @@ public class ShowTest {
 	@Test
 	public void nextEpisodeTest() {
 		Assert.assertNull(show.getNextEpisode());
-		Episode mockedEpisode = Mockito.mock(Episode.class);
-		show.setNextEpisode(mockedEpisode);
-		Assert.assertEquals(mockedEpisode, show.getNextEpisode());
+		Episode episode = new Episode();
+		show.setNextEpisode(episode);
+		Assert.assertEquals(episode, show.getNextEpisode());
 	}
 
 	@Test
 	public void previousEpisodeTest() {
 		Assert.assertNull(show.getPreviousEpisode());
-		Episode mockedEpisode = Mockito.mock(Episode.class);
-		show.setPreviousEpisode(mockedEpisode);
-		Assert.assertEquals(mockedEpisode, show.getPreviousEpisode());
+		Episode episode = new Episode();
+		show.setPreviousEpisode(episode);
+		Assert.assertEquals(episode, show.getPreviousEpisode());
 	}
 
 	@Test
@@ -137,4 +136,50 @@ public class ShowTest {
 		Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
 	}
 
+  	@Test
+  	public void hashCodeTest() throws ParseException{
+		show.setShowId(Long.MAX_VALUE);
+		show.setAirTime(Integer.MIN_VALUE);
+		show.setTimezone("TIMEZONE");
+		ShowGuideSource source = new ShowGuideSource();
+		show.setGuideSources(Arrays.asList(source));
+		show.setTitle("TITLE");
+		show.setAiring(true);
+		show.setShowType(ShowType.ANIMATED);
+		show.setLastGuideUpdate(SDF.parse("2015-11-06"));
+		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
+		show.setEnabled(true);
+		Episode episode = new Episode();
+		show.setNextEpisode(episode);
+     	show.setPreviousEpisode(null);
+		show.setIncludeSpecials(true);
+		show.setVersion(Integer.MIN_VALUE);
+		show.setMinSize(Integer.MAX_VALUE);
+		show.setMaxSize(Integer.MAX_VALUE);
+		Assert.assertEquals(961, show.hashCode());
+   }
+  
+  	@Test
+  	public void toStringTest() throws ParseException{
+		show.setShowId(Long.MAX_VALUE);
+		show.setAirTime(Integer.MIN_VALUE);
+		show.setTimezone("TIMEZONE");
+		ShowGuideSource source = new ShowGuideSource();
+		show.setGuideSources(Arrays.asList(source));
+		show.setTitle("TITLE");
+		show.setAiring(true);
+		show.setShowType(ShowType.ANIMATED);
+		show.setLastGuideUpdate(SDF.parse("2015-11-06"));
+		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
+		show.setEnabled(true);
+		Episode episode = new Episode();
+		show.setNextEpisode(episode);
+     	show.setPreviousEpisode(null);
+		show.setIncludeSpecials(true);
+		show.setVersion(Integer.MAX_VALUE);
+		show.setMinSize(Integer.MAX_VALUE);
+		show.setMaxSize(Integer.MAX_VALUE);
+     	System.out.println(show.toString());
+		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideSources=[ShowGuideSource [pk=null, guideId=null, version=0]], nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, results=[], version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=Fri Nov 06 00:00:00 UTC 2015, lastFeedUpdate=Fri Nov 06 00:00:00 UTC 2015, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
+   }
 }

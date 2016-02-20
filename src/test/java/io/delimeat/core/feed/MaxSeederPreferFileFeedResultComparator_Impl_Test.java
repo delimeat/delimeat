@@ -56,8 +56,8 @@ public class MaxSeederPreferFileFeedResultComparator_Impl_Test {
 		
 		Collections.sort(results, comparator);
 		
-		Assert.assertEquals(result1, results.get(0));
-		Assert.assertEquals(result2, results.get(1));
-		Assert.assertEquals(result3, results.get(2));
+		Assert.assertEquals("0",result1, results.get(0));
+		Assert.assertEquals("1",result2, results.get(1));
+		Assert.assertEquals("2",result3, results.get(2));
 	}
 }

@@ -1,23 +1,24 @@
 package io.delimeat.core.feed;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
+
 import java.util.Comparator;
 
 public class MaxSeederPreferFileFeedResultComparator_Impl implements Comparator<FeedResult> {
 
 	@Override
 	public int compare(FeedResult result1, FeedResult result2) {
-		if(result1.getTorrent().getInfo().getFiles().size() == 0 && result2.getTorrent().getInfo().getFiles().size()>0){
-			return -1;
-		}else if(result1.getTorrent().getInfo().getFiles().size() > 0 && result2.getTorrent().getInfo().getFiles().size()==0){
-			return 1;
-		}else{
-			return Long.compare(result2.getSeeders(), result1.getSeeders());
-		}
+     return ComparisonChain.start()
+       			.compare(result1.getTorrent().getInfo().getFiles().size(),result2.getTorrent().getInfo().getFiles().size())
+        			.compare(result2.getSeeders(),result1.getSeeders())
+      			.result();
 	}
 
 	@Override
 	public String toString() {
-		return "MaxSeederPreferFileFeedResultComparator_Impl []";
+		 return MoreObjects.toStringHelper(this)
+         		.toString();
 	}
 
 }

@@ -26,4 +26,12 @@ public class GuideIdentifierTest {
 		id.setValue("VALUE");
 		Assert.assertEquals("VALUE", id.getValue());
 	}
+  
+  	@Test
+  	public void toStringTest(){
+		id.setSource(GuideSource.TVDB);
+		id.setValue("VALUE");
+		Assert.assertEquals("GuideIdentifier{source=TVDB, value=VALUE}",id.toString());
+
+   }
 }

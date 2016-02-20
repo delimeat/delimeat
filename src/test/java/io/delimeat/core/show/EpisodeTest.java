@@ -4,13 +4,11 @@ import io.delimeat.core.guide.GuideEpisode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class EpisodeTest {
 
@@ -89,21 +87,19 @@ public class EpisodeTest {
 	@Test
 	public void showTest() {
 		Assert.assertNull(episode.getShow());
-		Show mockedShow = Mockito.mock(Show.class);
-		episode.setShow(mockedShow);
-		Assert.assertEquals(mockedShow, episode.getShow());
+		Show show = new Show();
+		episode.setShow(show);
+		Assert.assertEquals(show, episode.getShow());
 	}
 
 	@Test
 	public void resultsTest() {
 		Assert.assertNotNull(episode.getResults());
 		Assert.assertEquals(0, episode.getResults().size());
-		List<EpisodeResult> results = new ArrayList<EpisodeResult>();
-		EpisodeResult mockedEpisodeResult = Mockito.mock(EpisodeResult.class);
-		results.add(mockedEpisodeResult);
-		episode.setResults(results);
+		EpisodeResult result = new EpisodeResult();
+		episode.setResults(Arrays.asList(result));
 		Assert.assertEquals(1, episode.getResults().size());
-		Assert.assertEquals(mockedEpisodeResult, episode.getResults().get(0));
+		Assert.assertEquals(result, episode.getResults().get(0));
 	}
   
   	@Test
@@ -323,4 +319,30 @@ public class EpisodeTest {
     
     Assert.assertFalse(episode.equals(otherEp));
   }
+  
+  	@Test
+  	public void hashTest() throws ParseException{
+     episode.setTitle("EP");
+     episode.setAirDate(SDF.parse("2016-01-28"));
+     episode.setSeasonNum(1);
+     episode.setEpisodeNum(2);
+     episode.setEpisodeId(Long.MIN_VALUE);
+     episode.setVersion(Integer.MIN_VALUE);
+     
+     Assert.assertEquals(961,episode.hashCode());
+     
+   }
+  
+    @Test
+    public void toStringTest() throws ParseException{
+     episode.setTitle("EP");
+     episode.setAirDate(SDF.parse("2016-01-28"));
+     episode.setSeasonNum(1);
+     episode.setEpisodeNum(2);
+     episode.setEpisodeId(Long.MIN_VALUE);
+     episode.setVersion(Integer.MIN_VALUE);  
+		
+      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=Thu Jan 28 00:00:00 UTC 2016, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, results=[], version=-2147483648}", episode.toString());
+    }
+
 }

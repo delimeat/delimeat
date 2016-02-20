@@ -1,102 +1,121 @@
 package io.delimeat.core.guide;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class GuideSearchResult implements Comparable<GuideSearchResult> {
 
-	protected String description;
-	@XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
-	protected Date firstAired;
-	protected List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
-	protected String title;
+    private String description;
+    @XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
+    private Date firstAired;
+    private List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
+    private String title;
+    private Date lastUpdated;
 
-	/**
-	 * @return The description of the show
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+      * @return The description of the show
+      */
+    public String getDescription() {
+      return description;
+    }
 
-	/**
-	 * @return The date the show first aired
-	 */
-	public Date getFirstAired() {
-		return firstAired;
-	}
+    /**
+      * @return The date the show first aired
+      */
+    public Date getFirstAired() {
+      return firstAired;
+    }
 
-	/**
-	 * @return the guideIds
-	 */
-	public List<GuideIdentifier> getGuideIds() {
-		return guideIds;
-	}
+    /**
+      * @return the guideIds
+      */
+    public List<GuideIdentifier> getGuideIds() {
+      return guideIds;
+    }
 
-	/**
-	 * @return The title of the show
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+      * @return The title of the show
+      */
+    public String getTitle() {
+      return title;
+    }
 
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    /**
+      * @param description
+      *            the description to set
+      */
+    public void setDescription(String description) {
+      this.description = description;
+    }
 
-	/**
-	 * @param firstAired
-	 *            the firstAired to set
-	 */
-	public void setFirstAired(Date firstAired) {
-		this.firstAired = firstAired;
-	}
+    /**
+      * @param firstAired
+      *            the firstAired to set
+      */
+    public void setFirstAired(Date firstAired) {
+      this.firstAired = firstAired;
+    }
 
-	/**
-	 * @param guideIds
-	 *            the guideIds to set
-	 */
-	public void setGuideIds(List<GuideIdentifier> guideIds) {
-		this.guideIds = guideIds;
-	}
+    /**
+      * @param guideIds
+      *            the guideIds to set
+      */
+    public void setGuideIds(List<GuideIdentifier> guideIds) {
+      this.guideIds = guideIds;
+    }
 
-	/**
-	 * @param title
-	 *            the title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /**
+      * @param title
+      *            the title to set
+      */
+    public void setTitle(String title) {
+      this.title = title;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "GuideSearchResult [title=" + title + ", firstAired=" + firstAired + ", guideIds=" + guideIds + "]";
-	}
 
-	@Override
-	public int compareTo(GuideSearchResult other) {
-		if (this.getTitle() == null && other.getTitle() != null) {
-			return -1;
-		} else if (this.getTitle() != null && other.getTitle() == null) {
-			return 1;
-		} else if (this.getTitle() == null && other.getTitle() == null) {
-			return 0;
-		} else {
-			return this.getTitle().compareToIgnoreCase(other.getTitle());
-		}
-	}
+    public Date getLastUpdated() {
+      return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+      this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public int compareTo(GuideSearchResult other) {
+      return ComparisonChain.start()
+        .compare(this.title, other.title, Ordering.natural().nullsFirst())
+        .result();
+    }
+
+    /*
+      * (non-Javadoc)
+      * 
+      * @see java.lang.Object#toString()
+      */
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+        .add("title", title)
+        .add("firstAired", firstAired)
+        .add("guideIds", guideIds)
+        .add("description", description)
+        .add("lastUpdated", lastUpdated)
+        .toString();
+    }
+
+    @Override 
+    public int hashCode() {
+      return Objects.hash(title, lastUpdated);
+    }
 
 }

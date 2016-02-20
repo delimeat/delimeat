@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxrs;
 
-import io.delimeat.util.DelimeatUtils;
-
 import java.io.IOException;
 
 import javax.annotation.Priority;
@@ -26,9 +24,7 @@ public class AddETagResponseFilter implements ContainerResponseFilter {
 
       final Object entity = responseContext.getEntity();
       if(entity != null){
-        byte[] sha1 = DelimeatUtils.getSHA1(entity.toString().getBytes());
-        String hex = DelimeatUtils.toHex(sha1);
-        String eTag = "\"" + hex + "\"";
+        String eTag = "\"" + Integer.toString(entity.hashCode()) + "\"";
         responseContext.getHeaders().add(ENTITY_TAG, eTag);  
       } 
 

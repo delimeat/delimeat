@@ -2,7 +2,6 @@ package io.delimeat.rest;
 
 import io.delimeat.core.service.ShowService;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.jaxrs.ETag;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class ShowResource {
   	@ETag
 	public List<Show> getAll(@Context Request request) throws Exception {
        List<Show> shows = showService.readAll();
-       EntityTag etag = createShowsEtag(shows);
+       EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
        Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
        if (rb != null) {
          throw new WebApplicationException(rb.build());
@@ -49,7 +48,7 @@ public class ShowResource {
   	@ETag
 	public Show read(@PathParam("id") Long id, @Context Request request) throws Exception {
        Show show = showService.read(id);
-       EntityTag etag = createShowEtag(show);
+       EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      	 System.out.println("ETAG:" + etag);
        Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
        if (rb != null) {
@@ -76,17 +75,5 @@ public class ShowResource {
 	public Show create(Show show) throws Exception {
        return showService.create(show);
 	}
-  
-  public static EntityTag createShowEtag(Show show) {
-    byte[] sha1 = DelimeatUtils.getSHA1(show.toString().getBytes());
-    String hex = DelimeatUtils.toHex(sha1);
-    return new EntityTag(hex);
-  }
-  
-  public static EntityTag createShowsEtag(List<Show> shows) {
-    byte[] sha1 = DelimeatUtils.getSHA1(shows.toString().getBytes());
-    String hex = DelimeatUtils.toHex(sha1);
-    return new EntityTag(hex);
-  }
 
 }

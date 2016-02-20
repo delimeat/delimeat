@@ -11,7 +11,6 @@ import io.delimeat.util.jaxrs.AddETagResponseFilter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -112,7 +111,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
      	
-     	EntityTag etag = ShowResource.createShowsEtag(shows);
+     	EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
 		
 		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
@@ -215,7 +214,7 @@ public class ShowResourceTest extends JerseyTest{
 		shows.add(show);
 		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
 		
-     	EntityTag etag = ShowResource.createShowsEtag(shows);
+     	EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
 		Response response = target("shows").request().header("If-None-Match", "\""+etag.getValue()+"\"").get();
 		Assert.assertEquals(304, response.getStatus());
      
@@ -278,7 +277,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
 		
      	
-     	EntityTag etag = ShowResource.createShowsEtag(shows);
+     	EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
      
 		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
@@ -383,7 +382,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
           	
-     	EntityTag etag = ShowResource.createShowEtag(show);
+     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
 		
 		Show actualShow = response.readEntity(Show.class);
@@ -485,7 +484,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
           	
-		EntityTag etag = ShowResource.createShowEtag(show);
+		EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
 		
 		Show actualShow = response.readEntity(Show.class);
@@ -583,8 +582,7 @@ public class ShowResourceTest extends JerseyTest{
 		
 		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
 		  
-     	EntityTag etag = ShowResource.createShowEtag(show);
-     	System.out.println("TEST: "+ etag);
+     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      
 		Response response = target("shows").path("1").request().header("If-None-Match", "\""+ etag.getValue() +  "\"").get();
 		Assert.assertEquals(304, response.getStatus());
@@ -646,7 +644,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
        	
-     	EntityTag etag = ShowResource.createShowEtag(show);
+     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
      
 		Show actualShow = response.readEntity(Show.class);
@@ -756,7 +754,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
 		          	
-     	EntityTag etag = ShowResource.createShowEtag(show);
+     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      	Assert.assertEquals(etag.toString(), response.getHeaderString("ETag"));
      
 		Show actualShow = response.readEntity(Show.class);
@@ -804,22 +802,4 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertNull(actualSgs.getShow());
 		Assert.assertEquals(99, actualSgs.getVersion());		
 	}
-  
-  	@Test
-  	public void createShowEtagTest(){
-     	Show show = new Show();
-		show.setShowId(Long.MIN_VALUE);
-     	show.setVersion(97);
-     	EntityTag etag = ShowResource.createShowEtag(show);
-      Assert.assertEquals("cd5d8f931ff1c5fb10e215ed42d09d77b2ae0888",etag.getValue());
-   }
-  
-  	@Test
-  	public void createShowsEtagTest(){
-     	Show show = new Show();
-		show.setShowId(Long.MIN_VALUE);
-     	show.setVersion(97);
-     	EntityTag etag = ShowResource.createShowsEtag(Arrays.asList(show));
-      Assert.assertEquals("e834bce83e9da3f05561ed380480bdad1d68e0ef",etag.getValue());
-   }
 }

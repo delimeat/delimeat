@@ -1,5 +1,7 @@
 package io.delimeat.core.torrent;
 
+import com.google.common.base.MoreObjects;
+
 public class TorrentFile {
 
 	protected long length;
@@ -23,7 +25,10 @@ public class TorrentFile {
 
 	@Override
 	public String toString() {
-		return "TorrentFile [length=" + length + ", name=" + name + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("name", name)
+              .add("length", length)
+              .toString();
 	}
 	
 }

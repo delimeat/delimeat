@@ -58,7 +58,7 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
           	
-     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	EntityTag etag = new EntityTag(Integer.toString(expectedConfig.hashCode()));
      	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
      
 		Config actualConfig = response.readEntity(Config.class);
@@ -84,7 +84,7 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
           	
-     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	EntityTag etag = new EntityTag(Integer.toString(expectedConfig.hashCode()));
      	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
      
 		Config actualConfig = response.readEntity(Config.class);
@@ -107,7 +107,7 @@ public class ConfigResourceTest extends JerseyTest {
 		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
 		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
-     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	EntityTag etag = new EntityTag(Integer.toString(expectedConfig.hashCode()));
 
 		Response response = target("config").request().header("If-None-Match", "\""+etag.getValue() +"\"").get();
 		Assert.assertEquals(304, response.getStatus());
@@ -129,7 +129,7 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(200, response.getStatus());
 		Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
           	
-     	EntityTag etag = ConfigResource.createConfigEtag(expectedConfig);
+     	EntityTag etag = new EntityTag(Integer.toString(expectedConfig.hashCode()));
      	Assert.assertEquals("\""+etag.getValue() +"\"", response.getHeaderString("ETag"));
      
 		Config actualConfig = response.readEntity(Config.class);

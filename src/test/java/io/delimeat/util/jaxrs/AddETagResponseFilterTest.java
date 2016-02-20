@@ -66,7 +66,7 @@ public class AddETagResponseFilterTest {
 		filter.filter(mockedRequestContext, mockedResponseContext);
      
      	Assert.assertFalse(headers.isEmpty());
-     	Assert.assertEquals("\"da5aba16204ebd88821d2bbf3642268c4231fb1f\"",headers.getFirst("ETag"));
+     	Assert.assertEquals("\"-1838656495\"",headers.getFirst("ETag"));
      	Mockito.verify(mockedResponseContext, Mockito.times(1)).getEntity();
      
    }

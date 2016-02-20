@@ -1,5 +1,7 @@
 package io.delimeat.core.torrent;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +46,11 @@ public class Torrent {
 
 	@Override
 	public String toString() {
-		return "Torrent [tracker=" + tracker + ", trackers=" + trackers
-				+ ", info=" + (info != null ? info : null) + "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("tracker", tracker)
+              .add("trackers", trackers)
+              .add("info", info)
+              .toString();
 	}
 
 }

@@ -1,10 +1,13 @@
 package io.delimeat.core.show;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
 import io.delimeat.util.jaxb.AirTimeAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -277,21 +280,15 @@ public class Show implements Comparable<Show> {
 	}
 
 	@Override
-	public int compareTo(Show otherShow) {
-		if (this.getTitle() == null && otherShow.getTitle() != null) {
-			return -1;
-		} else if (this.getTitle() != null && otherShow.getTitle() == null) {
-			return 1;
-		} else if (this.getTitle() == null && otherShow.getTitle() == null) {
-			return 0;
-		} else {
-			return this.getTitle().compareToIgnoreCase(otherShow.getTitle());
-		}
+	public int compareTo(Show other) {
+     return ComparisonChain.start()
+       			.compare(this.title, other.title)
+       			.result();
 	}
 
 	@Override
 	public boolean equals(Object other) {
-		return (other instanceof Show && showId == ((Show) other).showId);
+     return (other instanceof Show && showId == ((Show) other).showId);
 	}
 
 	/*
@@ -301,12 +298,29 @@ public class Show implements Comparable<Show> {
 	 */
 	@Override
 	public String toString() {
-		return "Show [showId=" + showId + ", title=" + title + ", showType=" + showType + ", enabled=" + enabled
-				+ ", airing=" + airing + ", airTime=" + airTime + ", timezone=" + timezone + ", guideSources="
-				+ guideSources + ", nextEpisode=" + (nextEpisode != null ? nextEpisode : null) + ", previousEpisode="
-				+ (previousEpisode != null ? previousEpisode : null) + ", includeSpecials=" + includeSpecials
-				+ ", lastGuideUpdate=" + lastGuideUpdate + ", lastFeedUpdate=" + lastFeedUpdate + ", minSize=" + minSize 
-				+ ", maxSize=" + maxSize + ", version=" + version+ "]";
+     	return MoreObjects.toStringHelper(this)
+              .add("showId", showId)
+              .add("title", title)  
+              .add("showType", showType)
+              .add("enabled", enabled)
+              .add("airing", airing)
+              .add("airTime", airTime)
+              .add("timezone", timezone)
+              .add("guideSources", guideSources)
+              .add("nextEpisode", nextEpisode)
+              .add("previousEpisode", previousEpisode)
+              .add("includeSpecials", includeSpecials)
+              .add("lastGuideUpdate", lastGuideUpdate)
+              .add("lastFeedUpdate", lastFeedUpdate)
+              .add("minSize", minSize)
+              .add("maxSize", maxSize)
+              .add("version", version)
+              .toString();
 	}
+  
+  @Override 
+  public int hashCode() {
+    return Objects.hash(showId, version);
+  }
 
 }
