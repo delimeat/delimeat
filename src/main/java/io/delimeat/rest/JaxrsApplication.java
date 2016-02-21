@@ -5,6 +5,7 @@ import io.delimeat.util.jaxrs.CORSResponseFilter;
 import io.delimeat.util.jaxrs.GenericExceptionMapper;
 import io.delimeat.util.jaxrs.GuideExceptionMapper;
 import io.delimeat.util.jaxrs.ShowExceptionMapper;
+import io.delimeat.util.jaxrs.WebApplicationExceptionMapper;
 
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(AddETagResponseFilter.class);     
 		register(ShowExceptionMapper.class);
 		register(GuideExceptionMapper.class);
+		register(WebApplicationExceptionMapper.class);
 		register(GenericExceptionMapper.class);	
 	}
 }
