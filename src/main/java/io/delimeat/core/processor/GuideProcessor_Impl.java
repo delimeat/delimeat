@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
@@ -37,6 +39,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 		this.guideDao = guideDao;
 	}
 
+    @Transactional
 	@Override
 	public void process() throws ShowException, GuideException {
 		if (active == false) {
@@ -49,8 +52,8 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 				if (active == true && DelimeatUtils.isNotEmpty(guideId) == true) {
 					// get the info
 					final GuideInfo info = guideDao.info(guideId);
-					// only update if the info is newer than the last update
-					if (info.getLastUpdated().after(show.getLastGuideUpdate()) == true) {
+					// only update if the info is newer than the last update					
+					if (info.getLastUpdated() == null || show.getLastGuideUpdate() == null || info.getLastUpdated().after(show.getLastGuideUpdate()) == true) {
 
 						// update the airing status
 						lockedShow.setAiring(info.isAiring());
@@ -85,7 +88,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									// title
 									Episode showEp = showEps.get(indexOf);
 									Date epAirDate = guideEp.getAirDate();
-									if (showEp.getTitle() != guideEp.getTitle()
+									if (showEp.getTitle().equals(guideEp.getTitle()) == false
 											|| showEp.getAirDate().equals(epAirDate) == false) {
 										showEp.setTitle(guideEp.getTitle());
 										showEp.setAirDate(epAirDate);

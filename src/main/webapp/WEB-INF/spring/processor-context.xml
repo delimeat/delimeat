@@ -101,7 +101,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
         </property>
     </bean>
     
-    <bean id="guideProcessorId" scope="prototype">
+    <bean id="guideProcessorId" class="io.delimeat.core.processor.GuideProcessor_Impl" scope="prototype">
 		<property name="showDao" ref="showDaoId"/>	
 		<property name="guideDao" ref="tvdbGuideDaoId"/>	
     </bean>

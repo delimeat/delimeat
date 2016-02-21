@@ -44,17 +44,16 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
         <property name="executor" ref="processorExecutorId"/>
     </bean>
     
-	<task:scheduler id="feedSchedulerId" pool-size="1" />
+	<task:scheduler id="processorSchedulerId" pool-size="1" />
 
-	<task:scheduled-tasks scheduler="feedSchedulerId">
-		<task:scheduled ref="processorServiceId" method="processAllFeedUpdates"
-			fixed-delay="60000" initial-delay="60000" />
+	<task:scheduled-tasks scheduler="processorSchedulerId">
+		<task:scheduled ref="processorServiceId" method="processAllGuideUpdates"
+			fixed-delay="${io.delimeat.core.processor.guide.schedule}" initial-delay="${io.delimeat.core.processor.guide.schedule.initial}" />
 	</task:scheduled-tasks>
-	<!--  
-	<task:scheduled-tasks scheduler="feedSchedulerId">
+	
+	<task:scheduled-tasks scheduler="processorSchedulerId">
 		<task:scheduled ref="processorServiceId" method="processAllFeedUpdates"
-			fixed-delay="${io.delimeat.core.services.schedule}" initial-delay="${io.delimeat.core.services.schedule.initial}" />
+			fixed-delay="${io.delimeat.core.processor.feed.schedule}" initial-delay="${io.delimeat.core.processor.feed.schedule.initial}" />
 	</task:scheduled-tasks>
-	!-->
 	
 </beans>
