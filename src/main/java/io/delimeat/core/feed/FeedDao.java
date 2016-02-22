@@ -7,6 +7,6 @@ public interface FeedDao {
 
 	public FeedSource getFeedSource();
 	
-	public List<FeedResult> read(String showTitle) throws FeedException;
+	public List<FeedResult> read(String title) throws FeedException;
 	
 }

@@ -119,11 +119,10 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
                 // select all the valid results based on the torrent files
                 final List<FeedResult> validResults = validateResultTorrents(foundResults, lockedShow, config);
 
-                if (active == true) {
+                if (active == true && validResults.isEmpty() == false) {
                     // select the best result
                     final FeedResult selectedResult = selectResult(validResults, config);
 
-                    LOG.error("selectedResult: "+ selectedResult);
                     // if something has been found and its valid output it
                     if (selectedResult != null && selectedResult.getTorrent() != null && selectedResult.getTorrent().getInfo() != null
                         && DelimeatUtils.isNotEmpty(selectedResult.getTorrent().getInfo().getName())) {
