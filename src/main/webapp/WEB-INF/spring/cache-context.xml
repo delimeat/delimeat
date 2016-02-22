@@ -38,8 +38,8 @@
     </aop:config>
   
     <cache:advice id="feedCacheAdvice" cache-manager="cacheManagerId">
-      <cache:caching cache="torrent">
-        <cache:cacheable method="read" key="#showTitle"/>
+      <cache:caching cache="feed">
+        <cache:cacheable method="read" key="#title"/>
       </cache:caching>
     </cache:advice>
 
