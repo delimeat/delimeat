@@ -35,7 +35,7 @@ public class GuideSearchTest {
   	public void toStringTest(){
 		search.getResults().add(new GuideSearchResult());
      	System.out.println(search.toString());
-     	Assert.assertEquals("GuideSearch{results=[GuideSearchResult{title=null, firstAired=null, guideIds=[], description=null, lastUpdated=null}]}",search.toString());
+     	Assert.assertEquals("GuideSearch{results=[GuideSearchResult{title=null, firstAired=null, guideId=null, description=null, lastUpdated=null}]}",search.toString());
    }
 
 }

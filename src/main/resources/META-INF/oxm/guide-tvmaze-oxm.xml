@@ -22,20 +22,7 @@
 				<xml-element java-attribute="firstAired" xml-path="show/premiered/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" name="show/id/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvMazeIdentifierAdapter" />
-				</xml-element>
-				<xml-element java-attribute="guideIds"
-					xml-path="show/externals/thetvdb/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
-				</xml-element>
-				<xml-element java-attribute="guideIds"
-					xml-path="show/externals/tvrage/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvRageIdentifierAdapter" />
-				</xml-element>
+				<xml-element java-attribute="guideId" name="show/id/text()"/>
 				<xml-element java-attribute="title" name="show/name/text()" />
 			</java-attributes>
 		</java-type>
@@ -43,18 +30,7 @@
 		<java-type name="GuideInfo">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="guideIds" name="id">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvMazeIdentifierAdapter" />
-				</xml-element>	
-				<xml-element java-attribute="guideIds" xml-path="externals/thetvdb/text()" type="java.lang.Integer">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
-				</xml-element>
-				<xml-element java-attribute="guideIds"  xml-path="externals/tvrage/text()"  type="java.lang.Integer" >
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvRageIdentifierAdapter" />
-				</xml-element>
+				<xml-element java-attribute="guideId" name="id"/>
 				<xml-element java-attribute="title" name="name" />
 				<xml-element java-attribute="description" name="summary">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.JaxbStringAdapter" />

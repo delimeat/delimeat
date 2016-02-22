@@ -5,9 +5,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -17,7 +15,7 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
     private String description;
     @XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
     private Date firstAired;
-    private List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
+    private String guideId;
     private String title;
     private Date lastUpdated;
 
@@ -36,10 +34,10 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
     }
 
     /**
-      * @return the guideIds
+      * @return the guideId
       */
-    public List<GuideIdentifier> getGuideIds() {
-      return guideIds;
+    public String getGuideId() {
+      return guideId;
     }
 
     /**
@@ -69,8 +67,8 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
       * @param guideIds
       *            the guideIds to set
       */
-    public void setGuideIds(List<GuideIdentifier> guideIds) {
-      this.guideIds = guideIds;
+    public void setGuideId(String guideId) {
+      this.guideId = guideId;
     }
 
     /**
@@ -107,7 +105,7 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
       return MoreObjects.toStringHelper(this)
         .add("title", title)
         .add("firstAired", (firstAired != null ? firstAired.getTime() : null))
-        .add("guideIds", guideIds)
+        .add("guideId", guideId)
         .add("description", description)
         .add("lastUpdated", (lastUpdated != null ? lastUpdated.getTime() : null))
         .toString();

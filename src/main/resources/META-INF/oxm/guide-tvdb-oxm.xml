@@ -35,10 +35,7 @@
 				<xml-element java-attribute="firstAired" xml-path="firstAired/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
 				</xml-element>
-				<xml-element java-attribute="guideIds" name="id/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
-				</xml-element>
+				<xml-element java-attribute="guideId" name="id/text()"/>
 				<xml-element java-attribute="title" name="seriesName/text()" />
 			</java-attributes>
 		</java-type>
@@ -87,14 +84,7 @@
 		<java-type name="GuideInfo">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="guideIds" name="data/id/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.TvdbIdentifierAdapter" />
-				</xml-element>
-				<xml-element java-attribute="guideIds" name="data/imdbId/text()">
-					<xml-java-type-adapter
-						value="io.delimeat.util.jaxb.IMDBIdentifierAdapter" />
-				</xml-element>
+				<xml-element java-attribute="guideId" name="data/id/text()"/>
 				<xml-element java-attribute="firstAired" xml-path="data/firstAired/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbDateAdapter" />
 				</xml-element>

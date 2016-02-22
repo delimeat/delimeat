@@ -2,9 +2,6 @@ package io.delimeat.core.guide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Assert;
@@ -33,17 +30,9 @@ public class GuideSearchResultTest {
 
 	@Test
 	public void GuideIdsTest() {
-		Assert.assertNotNull(result.getGuideIds());
-		Assert.assertEquals(0, result.getGuideIds().size());
-		List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TVDB);
-		id.setValue("GUIDEID");
-		guideIds.add(id);
-		result.setGuideIds(guideIds);
-		Assert.assertEquals(1, result.getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVDB, result.getGuideIds().get(0).getSource());
-		Assert.assertEquals("GUIDEID", result.getGuideIds().get(0).getValue());
+		Assert.assertNull(result.getGuideId());
+		result.setGuideId("GUIDEID");
+		Assert.assertEquals("GUIDEID", result.getGuideId());
 	}
 
 	@Test
@@ -134,12 +123,9 @@ public class GuideSearchResultTest {
   	public void toStringTest() throws ParseException{
      	result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TVDB);
-		id.setValue("GUIDEID");
-		result.setGuideIds(Arrays.asList(id));
+		result.setGuideId("GUIDEID");
 		result.setFirstAired(SDF.parse("2005-04-03"));
      	result.setLastUpdated(SDF.parse("2016-02-19"));
-     	Assert.assertEquals("GuideSearchResult{title=TITLE, firstAired=1112486400000, guideIds=[GuideIdentifier{source=TVDB, value=GUIDEID}], description=DESCRIPTION, lastUpdated=1455840000000}", result.toString());
+     	Assert.assertEquals("GuideSearchResult{title=TITLE, firstAired=1112486400000, guideId=GUIDEID, description=DESCRIPTION, lastUpdated=1455840000000}", result.toString());
    }
 }

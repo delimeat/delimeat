@@ -447,10 +447,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		List<GuideSearchResult> results = dao.search("TITLE");
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
-		Assert.assertNotNull(results.get(0).getGuideIds());
-		Assert.assertEquals(1, results.get(0).getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVDB, results.get(0).getGuideIds().get(0).getSource());
-		Assert.assertEquals("GUIDEID", results.get(0).getGuideIds().get(0).getValue());
+		Assert.assertEquals("GUIDEID", results.get(0).getGuideId());
 		Assert.assertEquals("DESCRIPTION", results.get(0).getDescription());
 		Assert.assertEquals("TITLE", results.get(0).getTitle());
 		Assert.assertEquals("2005-03-11", SDF.format(results.get(0).getFirstAired()));
@@ -539,12 +536,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		GuideInfo info = dao.info("ID");
 		Assert.assertNotNull(info);
-		Assert.assertNotNull(info.getGuideIds());
-		Assert.assertEquals(2, info.getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVDB, info.getGuideIds().get(0).getSource());
-		Assert.assertEquals("GUIDEID", info.getGuideIds().get(0).getValue());
-		Assert.assertEquals(GuideSource.IMDB, info.getGuideIds().get(1).getSource());
-		Assert.assertEquals("IMDB", info.getGuideIds().get(1).getValue());
+		Assert.assertEquals("GUIDEID", info.getGuideId());
 		Assert.assertEquals("DESCRIPTION", info.getDescription());
 		Assert.assertEquals("TITLE", info.getTitle());
 		Assert.assertEquals("2015-12-28", SDF.format(info.getFirstAired()));

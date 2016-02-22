@@ -28,7 +28,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
     private String title;
     @XmlJavaTypeAdapter(value=AirTimeAdapter.class)
     private int airTime;
-    private List<GuideIdentifier> guideIds = new ArrayList<GuideIdentifier>();
+    private String guideId;
     private Date lastUpdated;
 
     /**
@@ -87,8 +87,8 @@ public class GuideInfo implements Comparable<GuideInfo> {
       return airTime;
     }
 
-    public List<GuideIdentifier> getGuideIds() {
-      return guideIds;
+    public String getGuideId() {
+      return guideId;
     }
 
     public void setDescription(String description) {
@@ -123,8 +123,8 @@ public class GuideInfo implements Comparable<GuideInfo> {
       this.airTime = airTime;
     }
 
-    public void setGuideIds(List<GuideIdentifier> guideIds) {
-      this.guideIds = guideIds;
+    public void setGuideId(String guideId) {
+      this.guideId = guideId;
     }
 
     public Date getFirstAired() {
@@ -159,7 +159,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
     public String toString() {
       return MoreObjects.toStringHelper(this)
         .add("title", title)
-        .add("guideIds", guideIds)  
+        .add("guideId", guideId)  
         .add("airing", airing)
         .add("airDays", airDays)
         .add("airTime", airTime)

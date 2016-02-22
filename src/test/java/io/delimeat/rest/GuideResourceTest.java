@@ -2,10 +2,8 @@ package io.delimeat.rest;
 
 import io.delimeat.core.guide.AiringDay;
 import io.delimeat.core.guide.GuideEpisode;
-import io.delimeat.core.guide.GuideIdentifier;
 import io.delimeat.core.guide.GuideInfo;
 import io.delimeat.core.guide.GuideSearchResult;
-import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.service.GuideService;
 import io.delimeat.util.jaxrs.AddETagResponseFilter;
 
@@ -57,10 +55,7 @@ public class GuideResourceTest extends JerseyTest {
 		GuideSearchResult result = new GuideSearchResult();
 		result.setDescription("DESCRIPTION");
 		result.setFirstAired(SDF.parse("2015-12-01"));
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TVMAZE);
-		id.setValue("VALUE");
-		result.getGuideIds().add(id);
+		result.setGuideId("VALUE");
 		result.setTitle("TITLE");
 		List<GuideSearchResult> expectedResults = new ArrayList<GuideSearchResult>();
 		expectedResults.add(result);
@@ -78,9 +73,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(1, actualResults.size());
 		Assert.assertEquals("DESCRIPTION", actualResults.get(0).getDescription());
 		Assert.assertEquals("2015-12-01",SDF.format(actualResults.get(0).getFirstAired()));
-		Assert.assertEquals(1, actualResults.get(0).getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVMAZE, actualResults.get(0).getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualResults.get(0).getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualResults.get(0).getGuideId());
 		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
 	}
 
@@ -89,10 +82,8 @@ public class GuideResourceTest extends JerseyTest {
 		GuideSearchResult result = new GuideSearchResult();
 		result.setDescription("DESCRIPTION");
 		result.setFirstAired(SDF.parse("2015-12-01"));
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TVMAZE);
-		id.setValue("VALUE");
-		result.getGuideIds().add(id);
+		result.setGuideId("VALUE");
+
 		result.setTitle("TITLE");
 		List<GuideSearchResult> expectedResults = new ArrayList<GuideSearchResult>();
 		expectedResults.add(result);
@@ -110,9 +101,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(1, actualResults.size());
 		Assert.assertEquals("DESCRIPTION", actualResults.get(0).getDescription());
 		Assert.assertEquals("2015-12-01",SDF.format(actualResults.get(0).getFirstAired()));
-		Assert.assertEquals(1, actualResults.get(0).getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVMAZE, actualResults.get(0).getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualResults.get(0).getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualResults.get(0).getGuideId());
 		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
 	}
 	
@@ -122,10 +111,7 @@ public class GuideResourceTest extends JerseyTest {
 		GuideSearchResult result = new GuideSearchResult();
 		result.setDescription("DESCRIPTION");
 		result.setFirstAired(SDF.parse("2015-12-01"));
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TVMAZE);
-		id.setValue("VALUE");
-		result.getGuideIds().add(id);
+		result.setGuideId("VALUE");
 		result.setTitle("TITLE");
 		List<GuideSearchResult> expectedResults = new ArrayList<GuideSearchResult>();
 		expectedResults.add(result);
@@ -144,9 +130,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(1, actualResults.size());
 		Assert.assertEquals("DESCRIPTION", actualResults.get(0).getDescription());
 		Assert.assertEquals("2015-12-01",SDF.format(actualResults.get(0).getFirstAired()));
-		Assert.assertEquals(1, actualResults.get(0).getGuideIds().size());
-		Assert.assertEquals(GuideSource.TVMAZE, actualResults.get(0).getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualResults.get(0).getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualResults.get(0).getGuideId());
 		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
 	}
 	
@@ -158,10 +142,7 @@ public class GuideResourceTest extends JerseyTest {
 		expectedInfo.setAirTime(9900000);
 		expectedInfo.setDescription("DESCRIPTION");
 		expectedInfo.getGenres().add("GENRE");
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TMDB);
-		id.setValue("VALUE");
-		expectedInfo.getGuideIds().add(id);
+		expectedInfo.setGuideId("VALUE");
 		expectedInfo.setTimezone("TIMEZONE");
 		expectedInfo.setRunningTime(Integer.MIN_VALUE);
 		expectedInfo.setTitle("TITLE");
@@ -185,10 +166,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertNotNull(actualInfo.getGenres());
 		Assert.assertEquals(1, actualInfo.getGenres().size());
 		Assert.assertEquals("GENRE", actualInfo.getGenres().get(0));
-		Assert.assertNotNull(actualInfo.getGuideIds());
-		Assert.assertEquals(1, actualInfo.getGuideIds().size());
-		Assert.assertEquals(GuideSource.TMDB, actualInfo.getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualInfo.getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualInfo.getGuideId());
 		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
 		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
 		Assert.assertEquals("TITLE", actualInfo.getTitle());	
@@ -202,10 +180,7 @@ public class GuideResourceTest extends JerseyTest {
 		expectedInfo.setAirTime(9900000);
 		expectedInfo.setDescription("DESCRIPTION");
 		expectedInfo.getGenres().add("GENRE");
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TMDB);
-		id.setValue("VALUE");
-		expectedInfo.getGuideIds().add(id);
+		expectedInfo.setGuideId("VALUE");
 		expectedInfo.setTimezone("TIMEZONE");
 		expectedInfo.setRunningTime(Integer.MIN_VALUE);
 		expectedInfo.setTitle("TITLE");
@@ -229,10 +204,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertNotNull(actualInfo.getGenres());
 		Assert.assertEquals(1, actualInfo.getGenres().size());
 		Assert.assertEquals("GENRE", actualInfo.getGenres().get(0));
-		Assert.assertNotNull(actualInfo.getGuideIds());
-		Assert.assertEquals(1, actualInfo.getGuideIds().size());
-		Assert.assertEquals(GuideSource.TMDB, actualInfo.getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualInfo.getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualInfo.getGuideId());
 		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
 		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
 		Assert.assertEquals("TITLE", actualInfo.getTitle());	
@@ -246,10 +218,7 @@ public class GuideResourceTest extends JerseyTest {
 		expectedInfo.setAirTime(9900000);
 		expectedInfo.setDescription("DESCRIPTION");
 		expectedInfo.getGenres().add("GENRE");
-		GuideIdentifier id = new GuideIdentifier();
-		id.setSource(GuideSource.TMDB);
-		id.setValue("VALUE");
-		expectedInfo.getGuideIds().add(id);
+		expectedInfo.setGuideId("VALUE");
 		expectedInfo.setTimezone("TIMEZONE");
 		expectedInfo.setRunningTime(Integer.MIN_VALUE);
 		expectedInfo.setTitle("TITLE");
@@ -274,10 +243,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertNotNull(actualInfo.getGenres());
 		Assert.assertEquals(1, actualInfo.getGenres().size());
 		Assert.assertEquals("GENRE", actualInfo.getGenres().get(0));
-		Assert.assertNotNull(actualInfo.getGuideIds());
-		Assert.assertEquals(1, actualInfo.getGuideIds().size());
-		Assert.assertEquals(GuideSource.TMDB, actualInfo.getGuideIds().get(0).getSource());
-		Assert.assertEquals("VALUE", actualInfo.getGuideIds().get(0).getValue());
+		Assert.assertEquals("VALUE", actualInfo.getGuideId());
 		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
 		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
 		Assert.assertEquals("TITLE", actualInfo.getTitle());	
