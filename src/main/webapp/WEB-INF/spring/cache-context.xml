@@ -11,7 +11,7 @@
    http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <cache:advice id="cacheAdvice" cache-manager="cacheManagerId">
+    <cache:advice id="guideCacheAdvice" cache-manager="cacheManagerId">
       <cache:caching cache="guide-search">
         <cache:cacheable method="search" key="#title"/>
       </cache:caching>
@@ -24,7 +24,27 @@
     </cache:advice>
 
     <aop:config>
-      <aop:advisor advice-ref="cacheAdvice" pointcut="execution(* io.delimeat.core.guide.GuideDao.*(..))"/>
+      <aop:advisor advice-ref="guideCacheAdvice" pointcut="execution(* io.delimeat.core.guide.GuideDao.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="torrentCacheAdvice" cache-manager="cacheManagerId">
+      <cache:caching cache="torrent">
+        <cache:cacheable method="read" key="#uri"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="torrentCacheAdvice" pointcut="execution(* io.delimeat.core.torrent.TorrentDao.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="feedCacheAdvice" cache-manager="cacheManagerId">
+      <cache:caching cache="torrent">
+        <cache:cacheable method="read" key="#showTitle"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="feedCacheAdvice" pointcut="execution(* io.delimeat.core.feed.FeedDao.*(..))"/>
     </aop:config>
 
     <bean id="cacheManagerId" class="org.springframework.cache.guava.GuavaCacheManager">
