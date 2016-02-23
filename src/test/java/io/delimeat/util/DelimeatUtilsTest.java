@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-//TODO add tests for SHA1 hash and toHex
 public class DelimeatUtilsTest {
 
   @Test
@@ -131,6 +130,18 @@ public class DelimeatUtilsTest {
     Assert.assertNotNull(results);
     Assert.assertEquals(1, results.size());
     Assert.assertEquals(ep, results.get(0));
+  }
+  
+  
+  @Test
+  public void sha1HashTest(){
+    byte[] expectedBytes = new byte[]{50,82,79,-89,112,-96,70,-88,123,28,107,-61,15,99,-84,52,18,-84,-125,37};
+    Assert.assertTrue(Arrays.equals(expectedBytes,DelimeatUtils.getSHA1("byes".getBytes())));
+  }
+  
+  @Test
+  public void toHexTest(){
+    Assert.assertEquals("6279746573", DelimeatUtils.toHex("bytes".getBytes()));
   }
 
 }
