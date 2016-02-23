@@ -1,13 +1,9 @@
 package io.delimeat.core.show;
 
-import io.delimeat.core.feed.FeedSource;
-import io.delimeat.core.guide.GuideSource;
-
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -85,16 +81,7 @@ public class ShowJpaDao_ImplTest {
 		show.setAiring(true);
 		show.setAirTime(1);
 
-		List<ShowGuideSource> guideSources = new ArrayList<ShowGuideSource>();
-		ShowGuideSource source1 = new ShowGuideSource();
-		source1.setGuideId("ID1");
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(show.getShowId());
-		source1.setId(pk);
-		source1.setShow(show);
-		guideSources.add(source1);
-		show.setGuideSources(guideSources);
+		show.setGuideId("ID1");
 
 		show.setLastFeedUpdate(SDF.parse("2015-10-17"));
 		show.setLastGuideUpdate(SDF.parse("2015-10-16"));
@@ -130,11 +117,7 @@ public class ShowJpaDao_ImplTest {
       Assert.assertEquals(Integer.MIN_VALUE, show.getMinSize());
       Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
 
-		Assert.assertNotNull(show.getGuideSources());
-		Assert.assertEquals(1, newShow.getGuideSources().size());
-		Assert.assertEquals("ID1", newShow.getGuideSources().get(0).getGuideId());
-		Assert.assertEquals(GuideSource.IMDB, newShow.getGuideSources().get(0).getId().getGuideSource());
-		Assert.assertEquals(newShow.getShowId(), newShow.getGuideSources().get(0).getShow().getShowId());
+		Assert.assertEquals("ID1", newShow.getGuideId());
 
 		Assert.assertEquals("2015-10-17", SDF.format(newShow.getLastFeedUpdate()));
 		Assert.assertEquals("2015-10-16", SDF.format(newShow.getLastGuideUpdate()));
@@ -205,23 +188,8 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(4, show.getPreviousEpisode().getVersion());
 		Assert.assertNotNull(show.getPreviousEpisode().getShow());
 		Assert.assertEquals(1, show.getPreviousEpisode().getShow().getShowId());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().size());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().get(0).getEpisodeResultId());
-		Assert.assertEquals(FeedSource.KAT, show.getPreviousEpisode().getResults().get(0).getSource());
-		Assert.assertEquals("http://www.test.com", show.getPreviousEpisode().getResults().get(0).getUrl());
-		Assert.assertEquals("BYTES", show.getPreviousEpisode().getResults().get(0).getResult());
-		Assert.assertTrue(show.getPreviousEpisode().getResults().get(0).isValid());
-		Assert.assertEquals(99, show.getPreviousEpisode().getResults().get(0).getVersion());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults().get(0).getEpisode());
-		Assert.assertEquals(3, show.getPreviousEpisode().getResults().get(0).getEpisode().getEpisodeId());
 
-		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals("GUIDEID", show.getGuideSources().get(0).getGuideId());
-		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
-		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
-		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
-		
+		Assert.assertEquals("GUIDEID", show.getGuideId());		
 	}
 
 	@Test(expected = ShowNotFoundException.class)
@@ -247,12 +215,7 @@ public class ShowJpaDao_ImplTest {
 
 		Assert.assertNull(entityManager.find(Show.class, new Long(1)));
 		Assert.assertNull(entityManager.find(Episode.class, 2L));
-		Assert.assertNull(entityManager.find(Episode.class, 3L));
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(1L);
-		Assert.assertNull(entityManager.find(ShowGuideSource.class, pk));
-		
+		Assert.assertNull(entityManager.find(Episode.class, 3L));		
 	}
 
 	@Test
@@ -304,23 +267,8 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(4, show.getPreviousEpisode().getVersion());
 		Assert.assertNotNull(show.getPreviousEpisode().getShow());
 		Assert.assertEquals(1, show.getPreviousEpisode().getShow().getShowId());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().size());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().get(0).getEpisodeResultId());
-		Assert.assertEquals(FeedSource.KAT, show.getPreviousEpisode().getResults().get(0).getSource());
-		Assert.assertEquals("http://www.test.com", show.getPreviousEpisode().getResults().get(0).getUrl());
-		Assert.assertEquals("BYTES", show.getPreviousEpisode().getResults().get(0).getResult());
-		Assert.assertTrue(show.getPreviousEpisode().getResults().get(0).isValid());
-		Assert.assertEquals(99, show.getPreviousEpisode().getResults().get(0).getVersion());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults().get(0).getEpisode());
-		Assert.assertEquals(3, show.getPreviousEpisode().getResults().get(0).getEpisode().getEpisodeId());
 
-		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals("GUIDEID", show.getGuideSources().get(0).getGuideId());
-		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
-		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
-		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
-
+		Assert.assertEquals("GUIDEID", show.getGuideId());
 	}
 
 	@Test
@@ -333,20 +281,20 @@ public class ShowJpaDao_ImplTest {
 
 		Show show = dao.read(1);
 		show.setTitle("UPDATED TITLE");
-		show.getGuideSources().remove(0);
+		show.setGuideId(null);
 		show.setNextEpisode(null);
 		show.getPreviousEpisode().setTitle("UPDATED PREV EP");
 		Show updatedShow = dao.createOrUpdate(show);
 
 		Assert.assertEquals("UPDATED TITLE", updatedShow.getTitle());
-		Assert.assertEquals(0, updatedShow.getGuideSources().size());
+		Assert.assertEquals(null, updatedShow.getGuideId());
 		Assert.assertNull(updatedShow.getNextEpisode());
 		Assert.assertEquals("UPDATED PREV EP", updatedShow.getPreviousEpisode().getTitle());
 
 
 		Show readShow = dao.read(1);
 		Assert.assertEquals("UPDATED TITLE", readShow.getTitle());
-		Assert.assertEquals(0, readShow.getGuideSources().size());
+		Assert.assertEquals(null, readShow.getGuideId());
 		Assert.assertNull(readShow.getNextEpisode());
 		Assert.assertEquals("UPDATED PREV EP", readShow.getPreviousEpisode().getTitle());
 
@@ -398,22 +346,8 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(4, show.getPreviousEpisode().getVersion());
 		Assert.assertNotNull(show.getPreviousEpisode().getShow());
 		Assert.assertEquals(1, show.getPreviousEpisode().getShow().getShowId());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().size());
-		Assert.assertEquals(1, show.getPreviousEpisode().getResults().get(0).getEpisodeResultId());
-		Assert.assertEquals(FeedSource.KAT, show.getPreviousEpisode().getResults().get(0).getSource());
-		Assert.assertEquals("http://www.test.com", show.getPreviousEpisode().getResults().get(0).getUrl());
-		Assert.assertEquals("BYTES", show.getPreviousEpisode().getResults().get(0).getResult());
-		Assert.assertTrue(show.getPreviousEpisode().getResults().get(0).isValid());
-		Assert.assertEquals(99, show.getPreviousEpisode().getResults().get(0).getVersion());
-		Assert.assertNotNull(show.getPreviousEpisode().getResults().get(0).getEpisode());
-		Assert.assertEquals(3, show.getPreviousEpisode().getResults().get(0).getEpisode().getEpisodeId());
 
-		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals("GUIDEID", show.getGuideSources().get(0).getGuideId());
-		Assert.assertEquals(3, show.getGuideSources().get(0).getVersion());
-		Assert.assertEquals(1, show.getGuideSources().get(0).getId().getShowId());
-		Assert.assertEquals(GuideSource.IMDB, show.getGuideSources().get(0).getId().getGuideSource());
+		Assert.assertEquals("GUIDEID", show.getGuideId());
 	}
 	
 	@Test
@@ -455,16 +389,6 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(4, ep.getVersion());
 		Assert.assertNotNull(ep.getShow());
 		Assert.assertEquals(1, ep.getShow().getShowId());
-		Assert.assertNotNull(ep.getResults());
-		Assert.assertEquals(1, ep.getResults().size());
-		Assert.assertEquals(1, ep.getResults().get(0).getEpisodeResultId());
-		Assert.assertEquals(FeedSource.KAT, ep.getResults().get(0).getSource());
-		Assert.assertEquals("http://www.test.com", ep.getResults().get(0).getUrl());
-		Assert.assertEquals("BYTES", ep.getResults().get(0).getResult());
-		Assert.assertTrue(ep.getResults().get(0).isValid());
-		Assert.assertEquals(99, ep.getResults().get(0).getVersion());
-		Assert.assertNotNull(ep.getResults().get(0).getEpisode());
-		Assert.assertEquals(3, ep.getResults().get(0).getEpisode().getEpisodeId());
    }
   
 	@Test(expected=ShowNotFoundException.class)
@@ -490,16 +414,6 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(4, ep.getVersion());
 		Assert.assertNotNull(ep.getShow());
 		Assert.assertEquals(1, ep.getShow().getShowId());
-		Assert.assertNotNull(ep.getResults());
-		Assert.assertEquals(1, ep.getResults().size());
-		Assert.assertEquals(1, ep.getResults().get(0).getEpisodeResultId());
-		Assert.assertEquals(FeedSource.KAT, ep.getResults().get(0).getSource());
-		Assert.assertEquals("http://www.test.com", ep.getResults().get(0).getUrl());
-		Assert.assertEquals("BYTES", ep.getResults().get(0).getResult());
-		Assert.assertTrue(ep.getResults().get(0).isValid());
-		Assert.assertEquals(99, ep.getResults().get(0).getVersion());
-		Assert.assertNotNull(ep.getResults().get(0).getEpisode());
-		Assert.assertEquals(3, ep.getResults().get(0).getEpisode().getEpisodeId());
    }
   
 	@Test(expected=ShowNotFoundException.class)

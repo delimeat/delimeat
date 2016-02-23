@@ -6,9 +6,7 @@ import com.google.common.collect.Ordering;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -27,7 +25,6 @@ public class Episode {
 	private int episodeNum;
 	private boolean doubleEp;
 	private int version;
-	private List<EpisodeResult> results = new ArrayList<EpisodeResult>();
 
 	@XmlTransient
 	private Show show;
@@ -163,21 +160,6 @@ public class Episode {
 		this.show = show;
 	}
 
-	/**
-	 * @return the results
-	 */
-	public List<EpisodeResult> getResults() {
-		return results;
-	}
-
-	/**
-	 * @param results
-	 *            the results to set
-	 */
-	public void setResults(List<EpisodeResult> results) {
-		this.results = results;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -193,7 +175,6 @@ public class Episode {
         .add("episodeNum", episodeNum)
         .add("doubleEp", doubleEp)
         .add("showId", (show != null ? show.getShowId() : null))
-        .add("results", results)
         .add("version", version)
         .toString(); 
 	}

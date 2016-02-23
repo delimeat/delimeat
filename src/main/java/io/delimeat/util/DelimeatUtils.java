@@ -1,8 +1,6 @@
 package io.delimeat.util;
 
 import io.delimeat.core.guide.GuideEpisode;
-import io.delimeat.core.guide.GuideSource;
-import io.delimeat.core.show.ShowGuideSource;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -103,19 +101,6 @@ public class DelimeatUtils {
       }
     }
     return cleanEps;
-  }
-
-  public static String findGuideId(List<ShowGuideSource> guideSources, GuideSource guideSource){
-    String guideId = null;
-    if(isNotEmpty(guideSources) == true ){
-      for(ShowGuideSource source: guideSources){
-        if(source.getId() != null && source.getId().getGuideSource() == guideSource){
-          guideId = source.getGuideId();
-          break;
-        }
-      }
-  	 }
-    return guideId;
   }
   	
 }

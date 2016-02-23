@@ -11,8 +11,6 @@ import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
-import io.delimeat.core.show.ShowGuideSource;
-import io.delimeat.core.show.ShowGuideSourcePK;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,55 +59,10 @@ public class ShowService_ImplTest {
 	}
 
 	@Test
-	public void createWrongGuideSourceTest() throws Exception {
-		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
-		Show show = new Show();
-		// this guide source should be ignored because it is does not match the
-		// guideDao
-		ShowGuideSource sgs1 = new ShowGuideSource();
-		sgs1.setGuideId("1");
-		ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
-		sgs1pk.setGuideSource(GuideSource.IMDB);
-		sgs1.setId(sgs1pk);
-		show.getGuideSources().add(sgs1);
-		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class)))
-				.thenReturn(show);
-		service.setShowDao(mockedShowDao);
-
-		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
-		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(
-				GuideSource.TVDB);
-		service.setGuideDao(mockedGuideDao);
-
-		Show actualShow = service.create(new Show());
-		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
-		Mockito.verify(mockedShowDao, Mockito.times(0)).createOrUpdateEpisode(
-				Mockito.any(Episode.class));
-		Mockito.verify(mockedGuideDao, Mockito.times(0)).episodes(
-				Mockito.anyString());
-
-		Assert.assertEquals(show, actualShow);
-	}
-
-	@Test
 	public void createTest() throws Exception {
 		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
-		// this guide source should be ignored because it is does not match the
-		// guideDao
-		ShowGuideSource sgs1 = new ShowGuideSource();
-		sgs1.setGuideId("1");
-		ShowGuideSourcePK sgs1pk = new ShowGuideSourcePK();
-		sgs1pk.setGuideSource(GuideSource.IMDB);
-		sgs1.setId(sgs1pk);
-		show.getGuideSources().add(sgs1);
-		// this guide source should be used because it matches guideDao
-		ShowGuideSource sgs2 = new ShowGuideSource();
-		sgs2.setGuideId("2");
-		ShowGuideSourcePK sgs2pk = new ShowGuideSourcePK();
-		sgs2pk.setGuideSource(GuideSource.TVDB);
-		sgs2.setId(sgs2pk);
-		show.getGuideSources().add(sgs2);
+		show.setGuideId("2");
 		// next ep to verify we dont re-add it
 		Episode nextEp = new Episode();
 		nextEp.setSeasonNum(99);
@@ -235,10 +188,8 @@ public class ShowService_ImplTest {
 	@Test
 	public void prepareShowTest() {
 		Show show = new Show();
-		ShowGuideSource showGuideSource = new ShowGuideSource();
-		show.getGuideSources().add(showGuideSource);
 
-		Episode nextEpisode = new Episode();
+     	Episode nextEpisode = new Episode();
 		show.setNextEpisode(nextEpisode);
 
 		Episode prevEpisode = new Episode();
@@ -248,10 +199,6 @@ public class ShowService_ImplTest {
 
 		Assert.assertNotNull(updatedShow);
 		Assert.assertEquals(updatedShow, show);
-		Assert.assertNotNull(show.getGuideSources());
-		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals(showGuideSource, show.getGuideSources().get(0));
-		Assert.assertEquals(show, show.getGuideSources().get(0).getShow());
 
 		Assert.assertNotNull(show.getNextEpisode());
 		Assert.assertEquals(show, show.getNextEpisode().getShow());

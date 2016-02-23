@@ -2,7 +2,6 @@ package io.delimeat.core.show;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.TimeZone;
 
 import org.junit.Assert;
@@ -45,13 +44,10 @@ public class ShowTest {
 	}
 
 	@Test
-	public void guideSourcesTest() {
-		Assert.assertNotNull(show.getGuideSources());
-		Assert.assertEquals(0, show.getGuideSources().size());
-		ShowGuideSource source = new ShowGuideSource();
-		show.setGuideSources(Arrays.asList(source));
-		Assert.assertEquals(1, show.getGuideSources().size());
-		Assert.assertEquals(source, show.getGuideSources().get(0));
+	public void guideIdTest() {
+		Assert.assertNull(show.getGuideId());
+		show.setGuideId("GUIDEID");
+		Assert.assertEquals("GUIDEID", show.getGuideId());
 	}
 
 	@Test
@@ -145,8 +141,7 @@ public class ShowTest {
 		show.setShowId(Long.MAX_VALUE);
 		show.setAirTime(Integer.MIN_VALUE);
 		show.setTimezone("TIMEZONE");
-		ShowGuideSource source = new ShowGuideSource();
-		show.setGuideSources(Arrays.asList(source));
+		show.setGuideId("GUIDEID");
 		show.setTitle("TITLE");
 		show.setAiring(true);
 		show.setShowType(ShowType.ANIMATED);
@@ -168,8 +163,7 @@ public class ShowTest {
 		show.setShowId(Long.MAX_VALUE);
 		show.setAirTime(Integer.MIN_VALUE);
 		show.setTimezone("TIMEZONE");
-		ShowGuideSource source = new ShowGuideSource();
-		show.setGuideSources(Arrays.asList(source));
+		show.setGuideId("GUIDEID");
 		show.setTitle("TITLE");
 		show.setAiring(true);
 		show.setShowType(ShowType.ANIMATED);
@@ -184,6 +178,6 @@ public class ShowTest {
 		show.setMinSize(Integer.MAX_VALUE);
 		show.setMaxSize(Integer.MAX_VALUE);
      	System.out.println(show.toString());
-		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideSources=[ShowGuideSource [pk=null, guideId=null, version=0]], nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, results=[], version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=1446768000000, lastFeedUpdate=1446768000000, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
+		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideId=GUIDEID, nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=1446768000000, lastFeedUpdate=1446768000000, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
    }
 }

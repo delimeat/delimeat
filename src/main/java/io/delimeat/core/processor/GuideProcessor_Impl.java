@@ -47,7 +47,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 				active = true;
 				final Show lockedShow = showDao.readAndLock(show.getShowId());
 
-				final String guideId = DelimeatUtils.findGuideId(lockedShow.getGuideSources(), guideDao.getGuideSource());
+				final String guideId = lockedShow.getGuideId();
 
 				if (active == true && DelimeatUtils.isNotEmpty(guideId) == true) {
 					// get the info

@@ -4,9 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import io.delimeat.util.jaxb.AirTimeAdapter;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,7 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "showId", "title", "showType", "enabled", "airing", "airTime", "timezone", "guideSources",
+@XmlType(propOrder = { "showId", "title", "showType", "enabled", "airing", "airTime", "timezone", "guideId",
 		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate", "lastFeedUpdate", "minSize", "maxSize", "version" })
 public class Show implements Comparable<Show> {
 
@@ -25,7 +23,7 @@ public class Show implements Comparable<Show> {
 	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
 	private int airTime;
 	private String timezone;
-	private List<ShowGuideSource> guideSources = new ArrayList<ShowGuideSource>();
+	private String guideId;
 	private String title;
 	private boolean airing;
 	private ShowType showType;
@@ -102,16 +100,16 @@ public class Show implements Comparable<Show> {
 	/**
 	 * @return the guideSources
 	 */
-	public List<ShowGuideSource> getGuideSources() {
-		return guideSources;
+	public String getGuideId() {
+		return guideId;
 	}
 
 	/**
 	 * @param guideSources
 	 *            the guideSources to set
 	 */
-	public void setGuideSources(List<ShowGuideSource> guideSources) {
-		this.guideSources = guideSources;
+	public void setGuideId(String guideId) {
+		this.guideId = guideId;
 	}
 
 	/**
@@ -306,7 +304,7 @@ public class Show implements Comparable<Show> {
               .add("airing", airing)
               .add("airTime", airTime)
               .add("timezone", timezone)
-              .add("guideSources", guideSources)
+              .add("guideId", guideId)
               .add("nextEpisode", nextEpisode)
               .add("previousEpisode", previousEpisode)
               .add("includeSpecials", includeSpecials)

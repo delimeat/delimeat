@@ -1,11 +1,8 @@
 package io.delimeat.rest;
 
-import io.delimeat.core.guide.GuideSource;
 import io.delimeat.core.service.ShowService;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
-import io.delimeat.core.show.ShowGuideSource;
-import io.delimeat.core.show.ShowGuideSourcePK;
 import io.delimeat.core.show.ShowType;
 import io.delimeat.util.jaxrs.AddETagResponseFilter;
 
@@ -92,16 +89,8 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setTitle("PREV_EP_TITLE");
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
-		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+
+		show.setGuideId("GUIDE_ID");
 		
 		List<Show> shows = new ArrayList<Show>();
 		shows.add(show);
@@ -151,16 +140,8 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertNull(actualPrevEp.getShow());
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
+
 	}
   
 	@Test
@@ -200,15 +181,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		List<Show> shows = new ArrayList<Show>();
 		shows.add(show);
@@ -258,15 +231,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		List<Show> shows = new ArrayList<Show>();
 		shows.add(show);
@@ -318,15 +283,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
 		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
 	}
   
 	@Test
@@ -366,15 +323,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
 		
@@ -420,15 +369,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
 		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());	
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
 	}
     
 	@Test
@@ -468,15 +409,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
 		  
@@ -522,15 +455,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
 		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());	
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());	
 	}
 
 	@Test
@@ -569,16 +494,8 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setTitle("PREV_EP_TITLE");
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
-		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+
+     show.setGuideId("GUIDE_ID");
 		
 		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
 		  
@@ -628,15 +545,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		Mockito.when(mockedShowService.update(Mockito.any(Show.class))).thenReturn(show);
 			
@@ -682,15 +591,7 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
 		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());	
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
 	}
 	
 	@Test
@@ -738,15 +639,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
 		
-		ShowGuideSource sgs = new ShowGuideSource();
-		ShowGuideSourcePK pk = new ShowGuideSourcePK();
-		pk.setGuideSource(GuideSource.IMDB);
-		pk.setShowId(Long.MIN_VALUE);
-		sgs.setId(pk);
-		sgs.setGuideId("GUIDE_ID");
-		sgs.setShow(show);
-		sgs.setVersion(99);
-		show.getGuideSources().add(sgs);
+		show.setGuideId("GUIDE_ID");
 		
 		Mockito.when(mockedShowService.create(Mockito.any(Show.class))).thenReturn(show);
 			
@@ -792,14 +685,6 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
 		Assert.assertEquals(4, actualPrevEp.getVersion());
 		
-		Assert.assertNotNull(actualShow.getGuideSources());
-		Assert.assertEquals(1, actualShow.getGuideSources().size());
-		ShowGuideSource actualSgs = actualShow.getGuideSources().get(0);
-		Assert.assertEquals("GUIDE_ID", actualSgs.getGuideId());
-		Assert.assertNotNull(actualSgs.getId());
-		Assert.assertEquals(GuideSource.IMDB, sgs.getId().getGuideSource());
-		Assert.assertEquals(Long.MIN_VALUE,sgs.getId().getShowId());
-		Assert.assertNull(actualSgs.getShow());
-		Assert.assertEquals(99, actualSgs.getVersion());		
+		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());		
 	}
 }

@@ -4,7 +4,6 @@ import io.delimeat.core.guide.GuideEpisode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.TimeZone;
 
 import org.junit.Assert;
@@ -94,16 +93,6 @@ public class EpisodeTest {
 		Show show = new Show();
 		episode.setShow(show);
 		Assert.assertEquals(show, episode.getShow());
-	}
-
-	@Test
-	public void resultsTest() {
-		Assert.assertNotNull(episode.getResults());
-		Assert.assertEquals(0, episode.getResults().size());
-		EpisodeResult result = new EpisodeResult();
-		episode.setResults(Arrays.asList(result));
-		Assert.assertEquals(1, episode.getResults().size());
-		Assert.assertEquals(result, episode.getResults().get(0));
 	}
   
   	@Test
@@ -346,7 +335,7 @@ public class EpisodeTest {
      episode.setEpisodeId(Long.MIN_VALUE);
      episode.setVersion(Integer.MIN_VALUE);  
 		
-      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=1453939200000, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, results=[], version=-2147483648}", episode.toString());
+      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=1453939200000, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, version=-2147483648}", episode.toString());
     }
 
 }

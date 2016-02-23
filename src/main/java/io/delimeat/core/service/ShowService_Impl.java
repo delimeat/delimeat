@@ -8,7 +8,6 @@ import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.core.show.ShowGuideSource;
 import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
@@ -45,7 +44,7 @@ public class ShowService_Impl implements ShowService {
      
       final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
       
-      final String guideId = DelimeatUtils.findGuideId(createdShow.getGuideSources(), guideDao.getGuideSource());
+      final String guideId = createdShow.getGuideId();
      
       if(DelimeatUtils.isNotEmpty(guideId) == true){
         final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
@@ -103,12 +102,6 @@ public class ShowService_Impl implements ShowService {
 	}
 	
 	public Show prepareShow(Show show){
-		if (!DelimeatUtils.isEmpty(show.getGuideSources())) {
-			for (ShowGuideSource guideSource : show.getGuideSources()) {
-				guideSource.setShow(show);
-			}
-		}
-		
 		if (show.getNextEpisode() != null) {
 			show.getNextEpisode().setShow(show);
 		}
