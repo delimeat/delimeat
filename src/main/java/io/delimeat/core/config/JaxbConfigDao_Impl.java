@@ -33,10 +33,9 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
   
 	@Override
 	public Config read() throws ConfigException {
-        try {
-          
-          	InputStream input;
-        		try{
+		InputStream input = null;
+		try {
+        	try{
               input = getUrlHandler().openInput(getUrl());
             }catch(FileNotFoundException ex){
               Config config = new Config();
@@ -50,6 +49,14 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
             throw new ConfigException(ex);
         } catch (JAXBException ex) {
             throw new ConfigException(ex);
+        } finally{
+        	if(input != null){
+        		try{
+        			input.close();
+        		}catch(IOException ex){
+        			throw new ConfigException(ex);
+        		}
+        	}
         }
 	}
 

@@ -35,47 +35,72 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	@Override
 	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException{
 
-         final String protocol = uri.getScheme();
-         if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
-           throw new TorrentException("Unsupported protocol " + protocol + " expected one of HTTP or HTTPS");
-         }
-        
-			final URL scrapeURL = generateScrapeURL(uri, infoHash);     
-         final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(scrapeURL);
-         final int responseCode = conn.getResponseCode();
-			if(responseCode!=200){
-           throw new TorrentException("Receieved response " + responseCode +" from " + scrapeURL);
-         }
-     		final InputStream input = getUrlHandler().openInput(conn);
-        
-			final BDictionary dictionary;
-     		try{
-           dictionary = BencodeUtils.decode(input);
-         }catch(BencodeException ex){
-         	throw new TorrentException("Encountered an error unmarshalling torrent", ex);
-         }
-			
-         long seeders = 0;
-			long leechers = 0;
-			if(dictionary.containsKey(FILES_KEY) && dictionary.get(FILES_KEY) instanceof BDictionary){
-				
-            BDictionary infoHashDictionary = (BDictionary)dictionary.get(FILES_KEY);
-				if(infoHashDictionary.containsKey(new BString(infoHash.getBytes())) && infoHashDictionary.get(infoHash.getBytes()) instanceof BDictionary){
-					
-               BDictionary resultDictionary = (BDictionary)infoHashDictionary.get(infoHash.getBytes());
-               if(resultDictionary.containsKey(COMPLETE_KEY) && resultDictionary.get(COMPLETE_KEY) instanceof BInteger){
-                 BInteger complete = (BInteger)resultDictionary.get(COMPLETE_KEY);
-                 seeders = complete.longValue();
-               }
-              
-               if(resultDictionary.containsKey(INCOMPLETE_KEY) && resultDictionary.get(INCOMPLETE_KEY) instanceof BInteger){
-                 BInteger incomplete = (BInteger)resultDictionary.get(INCOMPLETE_KEY);
-                 leechers = incomplete.longValue();
-               }
-					
-				}
+		final String protocol = uri.getScheme();
+		if (!"HTTP".equalsIgnoreCase(protocol)
+				&& !"HTTPS".equalsIgnoreCase(protocol)) {
+			throw new TorrentException("Unsupported protocol " + protocol
+					+ " expected one of HTTP or HTTPS");
+		}
+		final URL scrapeURL = generateScrapeURL(uri, infoHash);
+		HttpURLConnection conn = null;
+		InputStream input = null;
+		final BDictionary dictionary;
+		try{
+			conn = (HttpURLConnection) getUrlHandler()
+					.openUrlConnection(scrapeURL);
+			final int responseCode = conn.getResponseCode();
+			if (responseCode != 200) {
+				throw new TorrentException("Receieved response " + responseCode
+						+ " from " + scrapeURL);
 			}
-			return new ScrapeResult(seeders, leechers);
+			input = getUrlHandler().openInput(conn);
+	
+			
+			try {
+				dictionary = BencodeUtils.decode(input);
+			} catch (BencodeException ex) {
+				throw new TorrentException(
+						"Encountered an error unmarshalling torrent", ex);
+			}
+		}finally{
+			
+			if(input != null)
+				input.close();
+			
+			if(conn != null)
+				conn.disconnect();
+		}
+		
+		long seeders = 0;
+		long leechers = 0;
+		if (dictionary.containsKey(FILES_KEY)
+				&& dictionary.get(FILES_KEY) instanceof BDictionary) {
+
+			BDictionary infoHashDictionary = (BDictionary) dictionary
+					.get(FILES_KEY);
+			if (infoHashDictionary
+					.containsKey(new BString(infoHash.getBytes()))
+					&& infoHashDictionary.get(infoHash.getBytes()) instanceof BDictionary) {
+
+				BDictionary resultDictionary = (BDictionary) infoHashDictionary
+						.get(infoHash.getBytes());
+				if (resultDictionary.containsKey(COMPLETE_KEY)
+						&& resultDictionary.get(COMPLETE_KEY) instanceof BInteger) {
+					BInteger complete = (BInteger) resultDictionary
+							.get(COMPLETE_KEY);
+					seeders = complete.longValue();
+				}
+
+				if (resultDictionary.containsKey(INCOMPLETE_KEY)
+						&& resultDictionary.get(INCOMPLETE_KEY) instanceof BInteger) {
+					BInteger incomplete = (BInteger) resultDictionary
+							.get(INCOMPLETE_KEY);
+					leechers = incomplete.longValue();
+				}
+
+			}
+		}
+		return new ScrapeResult(seeders, leechers);
 
 	}
 	
