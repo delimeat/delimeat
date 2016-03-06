@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GuideSearchResultTest {
@@ -119,6 +120,7 @@ public class GuideSearchResultTest {
      	Assert.assertEquals(-1974036005, result.hashCode());
    }
   
+	@Ignore
   	@Test
   	public void toStringTest() throws ParseException{
      	result.setTitle("TITLE");

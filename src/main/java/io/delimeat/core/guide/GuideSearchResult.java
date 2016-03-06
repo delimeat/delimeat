@@ -104,10 +104,10 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
     public String toString() {
       return MoreObjects.toStringHelper(this)
         .add("title", title)
-        .add("firstAired", (firstAired != null ? firstAired.getTime() : null))
+        .add("firstAired", (firstAired != null ? firstAired : null))
         .add("guideId", guideId)
         .add("description", description)
-        .add("lastUpdated", (lastUpdated != null ? lastUpdated.getTime() : null))
+        .add("lastUpdated", (lastUpdated != null ? lastUpdated : null))
         .toString();
     }
 

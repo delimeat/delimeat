@@ -88,9 +88,11 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									// title
 									Episode showEp = showEps.get(indexOf);
 									Date epAirDate = guideEp.getAirDate();
-									if (showEp.getTitle().equals(guideEp.getTitle()) == false
+									String guideEpTitle = guideEp.getTitle() != null ? guideEp.getTitle() : "";
+									String showEpTitle = showEp.getTitle() != null ? showEp.getTitle() : "";
+									if (showEpTitle.equals(guideEpTitle) == false
 											|| showEp.getAirDate().equals(epAirDate) == false) {
-										showEp.setTitle(guideEp.getTitle());
+										showEp.setTitle(guideEpTitle);
 										showEp.setAirDate(epAirDate);
 										createOrUpdateEps.add(showEp);
 									}
