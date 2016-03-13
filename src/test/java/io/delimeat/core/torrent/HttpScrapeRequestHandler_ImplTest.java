@@ -1,5 +1,6 @@
 package io.delimeat.core.torrent;
 
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +14,6 @@ import java.net.URLConnection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mockito.Mockito;
 
 public class HttpScrapeRequestHandler_ImplTest {
@@ -43,39 +43,44 @@ public class HttpScrapeRequestHandler_ImplTest {
 	@Test
 	public void validGenerateScrapeURIAnnounceTest() throws Exception{
 		URI announceURI = new URI("http://test/announce");
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
      	URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%3F%3FT%3FT%0E%3F%12%3F5%3F%3F%3F%3F%3F%3F%3F", scrapeURL.toString());
+		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
 	}
 	
 	@Test
 	public void validGenerateScrapeURITest() throws Exception{
 		URI announceURI = new URI("http://test/scrape");
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%3F%3FT%3FT%0E%3F%12%3F5%3F%3F%3F%3F%3F%3F%3F", scrapeURL.toString());
+		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
 	}
 	
 	@Test
 	public void validGenerateScrapeURIIncludesInfoHashTest() throws Exception{
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-    	URI announceURI = new URI("http://test/scrape?info_hash=%60%14%3F%3FT%3FT%0E%3F%12%3F5%3F%3F%3F%3F%3F%3F%3F");
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+    	URI announceURI = new URI("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE");
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%3F%3FT%3FT%0E%3F%12%3F5%3F%3F%3F%3F%3F%3F%3F", scrapeURL.toString());
+		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
 	}
 	
 	@Test
 	public void validGenerateScrapeURIIncludesQueryTest() throws Exception{
 		URI announceURI = new URI("http://test/scrape?test=true");
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?test=true&info_hash=%60%14%3F%3FT%3FT%0E%3F%12%3F5%3F%3F%3F%3F%3F%3F%3F", scrapeURL.toString());
+		Assert.assertEquals("http://test/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
 	}
 	
 	@Test
 	public void scrapeTest() throws URISyntaxException, Exception{
 		UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
-      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
 
      	ByteArrayOutputStream baos = new ByteArrayOutputStream();
      	baos.write("d5:filesd20:".getBytes());

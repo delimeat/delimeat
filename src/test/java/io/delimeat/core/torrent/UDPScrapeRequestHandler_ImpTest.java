@@ -1,5 +1,7 @@
 package io.delimeat.core.torrent;
 
+import io.delimeat.util.DelimeatUtils;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -44,7 +46,8 @@ public class UDPScrapeRequestHandler_ImpTest {
 
 	@Test
 	public void createScrapeRequestTest() {
-      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
 		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,
 				Integer.MIN_VALUE, infoHash);
 		Assert.assertEquals(36, req.length);

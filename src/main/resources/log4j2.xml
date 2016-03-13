@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
-  <Appenders>
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-    </Console>
-  </Appenders>
-  <Loggers>
-	<logger name="io.delimeat" level="ALL" additivity="false">
-		<AppenderRef ref="Console"/> 
-	</logger>
-	<logger name="org.glassfish.jersey" level="ALL" additivity="false">
-		<AppenderRef ref="Console"/> 
-	</logger>	
-    <Root level="ERROR" additivity="false">
-      <AppenderRef ref="Console"/>
-    </Root>
-  </Loggers>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<File name="File" fileName="logs/delimeat.log">
+			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n " />
+		</File>
+	</Appenders>
+	<Loggers>
+		<logger name="io.delimeat" level="ALL" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</logger>
+		<logger name="org.glassfish.jersey" level="ALL" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</logger>
+		<Root level="ERROR" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</Root>
+	</Loggers>
 </Configuration>

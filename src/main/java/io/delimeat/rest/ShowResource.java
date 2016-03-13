@@ -49,7 +49,6 @@ public class ShowResource {
 	public Show read(@PathParam("id") Long id, @Context Request request) throws Exception {
        Show show = showService.read(id);
        EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
-     	 System.out.println("ETAG:" + etag);
        Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
        if (rb != null) {
          throw new WebApplicationException(rb.build());

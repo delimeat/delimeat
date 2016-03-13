@@ -74,7 +74,8 @@
 		<org.jsoup.version>1.8.3</org.jsoup.version>
 		<org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
 		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
-      <com.google.guava.version>19.0</com.google.guava.version>
+      	<com.google.guava.version>19.0</com.google.guava.version>
+      	<commons-codec.version>1.10</commons-codec.version>
 	</properties>
 
 	<dependencies>
@@ -239,21 +240,31 @@
        </dependency>
 
        <!-- LOGGING ! -->
-       <dependency>
-         <groupId>commons-logging</groupId>
-         <artifactId>commons-logging</artifactId>
-         <version>${org.apache.commons.logging.version}</version>
-       </dependency>
-       <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-jcl</artifactId>
-         <version>${org.apache.logging.log4j.version}</version>
-       </dependency>
-       <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-web</artifactId>
-         <version>${org.apache.logging.log4j.version}</version>
-       </dependency>
+	<dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+		<version>${org.apache.commons.logging.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-core</artifactId>
+		<version>${org.apache.logging.log4j.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-jcl</artifactId>
+		<version>${org.apache.logging.log4j.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-web</artifactId>
+		<version>${org.apache.logging.log4j.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-jul</artifactId>
+		<version>${org.apache.logging.log4j.version}</version>
+	</dependency>
 
        <!-- OTHER ! -->
        <dependency>
@@ -266,6 +277,11 @@
          <artifactId>guava</artifactId>
          <version>${com.google.guava.version}</version>
        </dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons-codec.version}</version>
+		</dependency>
      
 	</dependencies>
 </project>

@@ -1,6 +1,8 @@
 package io.delimeat.core.torrent;
 
 import com.google.common.io.ByteStreams;
+
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 import io.delimeat.util.bencode.BDictionary;
 import io.delimeat.util.bencode.BInteger;
@@ -132,15 +134,21 @@ public class TorrentDao_Impl implements TorrentDao {
 	
 	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
 		final TorrentInfo info = new TorrentInfo();
-		info.setInfoHash(new InfoHash(infoDictionary));
+		byte[] rawBytes = BencodeUtils.encode(infoDictionary);
+		byte[] sha1Bytes = DelimeatUtils.getSHA1(rawBytes);
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+		info.setInfoHash(infoHash);
+		
 		if (infoDictionary.containsKey(NAME_KEY) && infoDictionary.get(NAME_KEY) instanceof BString) {
 			BString nameValue = (BString)infoDictionary.get(NAME_KEY);
 			info.setName(nameValue.toString());
 		}
+		
 		if (infoDictionary.containsKey(LENGTH_KEY) && infoDictionary.get(LENGTH_KEY) instanceof BInteger) {
 			BInteger lenghtValue =(BInteger)infoDictionary.get(LENGTH_KEY);
 			info.setLength(lenghtValue.longValue());
 		}
+		
 		if (infoDictionary.containsKey(FILES_KEY) && infoDictionary.get(FILES_KEY) instanceof BList) {
 			// get the files list
 			BList filesValue = (BList)infoDictionary.get(FILES_KEY);
@@ -152,6 +160,7 @@ public class TorrentDao_Impl implements TorrentDao {
 				}
 			}
 		}
+		
 		return info;
 	}
 	

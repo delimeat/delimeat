@@ -13,7 +13,6 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 
 @ApplicationPath("api")
 public class JaxrsApplication extends ResourceConfig {
@@ -25,7 +24,6 @@ public class JaxrsApplication extends ResourceConfig {
 		register(GuideResource.class);
 		register(ConfigResource.class);
 		register(new LoggingFilter(LOGGER, true));
-		property(ServerProperties.TRACING, "ALL");
 		register(CORSResponseFilter.class);
 		register(AddETagResponseFilter.class);     
 		register(ShowExceptionMapper.class);

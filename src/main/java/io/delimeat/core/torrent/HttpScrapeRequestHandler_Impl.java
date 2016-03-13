@@ -115,13 +115,15 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			throw new UnhandledScrapeException("Unable to scrape URI: " + uri.toString());
 		}
      
-		final String infoHashString = new String(infoHash.getBytes());
 		final String infoHashQuery;
-      try{
-        infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
-      } catch (UnsupportedEncodingException ex) {
-      	throw new RuntimeException(ex);
-    	}
+                
+		try {
+			final String infoHashString = new String(infoHash.getBytes(),"ISO-8859-1");
+			infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
+    	
      
 		final String query;
 		if(uri.getRawQuery()==null){
