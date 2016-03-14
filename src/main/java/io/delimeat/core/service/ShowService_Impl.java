@@ -112,4 +112,10 @@ public class ShowService_Impl implements ShowService {
 		return show;
 	}
 
+	@Override
+	@Transactional
+	public List<Episode> readAllEpisodes(Long id) throws ShowNotFoundException, ShowException {
+		return getShowDao().readAllEpisodes(id);
+	}
+
 }

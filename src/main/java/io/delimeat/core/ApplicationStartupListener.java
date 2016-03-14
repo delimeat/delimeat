@@ -1,12 +1,16 @@
 package io.delimeat.core;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class ApplicationStartupListener implements ServletContextListener {
 
@@ -43,6 +47,11 @@ public class ApplicationStartupListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
+		LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+		Logger.getLogger("global").setLevel(Level.FINEST);
+		
 		LOG.debug("Entering contextInitialized");
 
 		if (System.getProperty(CONFIG_FILE_PROPERTY) == null) {

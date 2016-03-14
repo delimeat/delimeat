@@ -1,6 +1,7 @@
 package io.delimeat.rest;
 
 import io.delimeat.core.service.ShowService;
+import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.util.jaxrs.ETag;
 
@@ -74,5 +75,19 @@ public class ShowResource {
 	public Show create(Show show) throws Exception {
        return showService.create(show);
 	}
+	
+	@Path("{id}/episodes")
+	@GET
+	@ETag
+	public List<Episode> getAllEpisodes(@PathParam("id") Long id, @Context Request request) throws Exception {
+       List<Episode> episodes = showService.readAllEpisodes(id);
+       EntityTag etag = new EntityTag(Integer.toString(episodes.hashCode()));
+       Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
+       if (rb != null) {
+         throw new WebApplicationException(rb.build());
+       }
+       return episodes;		
+	}
+
 
 }
