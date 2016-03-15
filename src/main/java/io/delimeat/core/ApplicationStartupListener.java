@@ -7,9 +7,11 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+@WebListener
 public class ApplicationStartupListener implements ServletContextListener {
 
 	// supported os types
@@ -30,7 +32,6 @@ public class ApplicationStartupListener implements ServletContextListener {
 	public static final String SHOW_DB_DRIVER_PROPERTY = "io.delimeat.core.show.driver";
 	private static final String SHOW_DB_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 
-	//private static Log LOG = LogFactory.getLog(ApplicationStartupListener.class);
   	private static Logger LOGGER = Logger.getLogger(ApplicationStartupListener.class.getSimpleName());
 
 	private String appPath;
@@ -50,30 +51,25 @@ public class ApplicationStartupListener implements ServletContextListener {
 		SLF4JBridgeHandler.install();
 		Logger.getLogger("global").setLevel(Level.FINEST);
 		
-		//LOG.debug("Entering contextInitialized");
-      LOGGER.log(Level.FINE, "Entering contextInitialized");
+      LOGGER.log(Level.FINEST, "Entering contextInitialized");
 
 		if (System.getProperty(CONFIG_FILE_PROPERTY) == null) {
 			System.setProperty(CONFIG_FILE_PROPERTY, CONFIG_FILE_URL.replace("APP_DIR", getAppPath()));
 		}
-		//LOG.debug(CONFIG_FILE_PROPERTY + " = " + System.getProperty(CONFIG_FILE_PROPERTY));
-      LOGGER.log(Level.FINE, CONFIG_FILE_PROPERTY + " = " + System.getProperty(CONFIG_FILE_PROPERTY));
+      LOGGER.log(Level.FINEST, CONFIG_FILE_PROPERTY + " = " + System.getProperty(CONFIG_FILE_PROPERTY));
 
 		if (System.getProperty(SHOW_DB_PROPERTY) == null) {
 			System.setProperty(SHOW_DB_PROPERTY, SHOW_DB_URL.replace("APP_DIR", getAppPath()));
 		}
-		//LOG.debug(SHOW_DB_PROPERTY + " = " + System.getProperty(SHOW_DB_PROPERTY));
-      LOGGER.log(Level.FINE, SHOW_DB_PROPERTY + " = " + System.getProperty(SHOW_DB_PROPERTY));
+      LOGGER.log(Level.FINEST, SHOW_DB_PROPERTY + " = " + System.getProperty(SHOW_DB_PROPERTY));
 
 		if (System.getProperty(SHOW_DB_DRIVER_PROPERTY) == null) {
 			System.setProperty(SHOW_DB_DRIVER_PROPERTY, SHOW_DB_DRIVER);
 		}
-		//LOG.debug(SHOW_DB_DRIVER_PROPERTY + " = " + System.getProperty(SHOW_DB_DRIVER_PROPERTY));
-      LOGGER.log(Level.FINE, SHOW_DB_DRIVER_PROPERTY + " = " + System.getProperty(SHOW_DB_DRIVER_PROPERTY));
+      LOGGER.log(Level.FINEST, SHOW_DB_DRIVER_PROPERTY + " = " + System.getProperty(SHOW_DB_DRIVER_PROPERTY));
 
 
-		//LOG.debug("Exiting contextInitialized");
-     	LOGGER.log(Level.FINE,"Exiting contextInitialized");
+     	LOGGER.log(Level.FINEST,"Exiting contextInitialized");
 
 	}
 

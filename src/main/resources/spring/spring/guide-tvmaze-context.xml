@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="tvmazeGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="lazyInit" value="true" />
+		<property name="classesToBeBound">
+			<list>
+				<value>io.delimeat.core.guide.GuideSearchResult</value>
+				<value>io.delimeat.core.guide.GuideEpisode</value>
+				<value>io.delimeat.core.guide.GuideInfo</value>
+				<value>io.delimeat.core.guide.GuideError</value>
+			</list>
+		</property>
+		<property name="jaxbContextProperties">
+			<map>
+				<entry key="eclipselink.oxm.metadata-source">
+					<value type="java.io.InputStream">classpath://META-INF/oxm/guide-tvmaze-oxm.xml</value>
+				</entry>
+				<entry key="eclipselink.media-type">
+					<value>application/json</value>
+				</entry>
+				<entry key="eclipselink.json.include-root">
+					<value type="java.lang.Boolean">false</value>
+				</entry>
+				<entry key="jaxb.formatted.output">
+					<value type="java.lang.Boolean">true</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+    
+	<bean id="tvmazeJaxbContextId" class="javax.xml.bind.JAXBContext" factory-bean="tvmazeGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
+	
+	<bean id="tvmazeJaxbContextResolverId" class="io.delimeat.util.jaxrs.JaxbContextResolver">
+		<property name="context" ref="tvmazeJaxbContextId"/>
+		<property name="classes">
+			<list>
+				<value>io.delimeat.core.guide.GuideSearchResult</value>
+				<value>io.delimeat.core.guide.GuideEpisode</value>
+				<value>io.delimeat.core.guide.GuideInfo</value>
+				<value>io.delimeat.core.guide.GuideError</value>
+			</list>		
+		</property>
+	</bean>
+	
+   <bean id="tvmazeJsonProviderId" class="io.delimeat.util.jaxrs.CustomMOXyJsonProvider"/>
+  
+	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
+		<property name="providers">
+			<list>
+				<ref bean="tvmazeJaxbContextResolverId"/>
+			</list>
+		</property>
+		<property name="providerClasses">
+			<list>
+				<value>io.delimeat.util.jaxrs.CustomMOXyJsonProvider</value>
+			</list>
+		</property>
+		<property name="properties">
+        <map>
+          <entry key="jersey.config.disableMoxyJson">
+            <value type="java.lang.Boolean">true</value>
+          </entry>
+        </map>
+		</property>
+	</bean>
+	
+	<bean id="tvmazeJaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="tvmazeJerseyClientFactoryId" factory-method="newClient"/>
+
+	<bean id="tvmazeGuideDaoId" class="io.delimeat.core.guide.TvMazeJaxrsGuideDao_Impl">
+		<property name="client" ref="tvmazeJaxrsClientId" />
+		<property name="mediaType" value="APPLICATION_JSON_TYPE" />
+		<property name="baseUri" value="${io.delimeat.core.guide.tvmaze.baseUri}"/>
+	</bean>
+    
+</beans>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:cache="http://www.springframework.org/schema/cache"
+   xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <cache:advice id="guideCacheAdvice" cache-manager="cacheManagerId">
+      <cache:caching cache="guide-search">
+        <cache:cacheable method="search" key="#title"/>
+      </cache:caching>
+      <cache:caching cache="guide-info">
+        <cache:cacheable method="info" key="#guideId"/>
+      </cache:caching>
+      <cache:caching cache="guide-episodes">
+        <cache:cacheable method="episodes" key="#guideId"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="guideCacheAdvice" pointcut="execution(* io.delimeat.core.guide.GuideDao.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="torrentCacheAdvice" cache-manager="cacheManagerId">
+      <cache:caching cache="torrent">
+        <cache:cacheable method="read" key="#uri"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="torrentCacheAdvice" pointcut="execution(* io.delimeat.core.torrent.TorrentDao.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="feedCacheAdvice" cache-manager="cacheManagerId">
+      <cache:caching cache="feed">
+        <cache:cacheable method="read" key="#title"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="feedCacheAdvice" pointcut="execution(* io.delimeat.core.feed.FeedDao.*(..))"/>
+    </aop:config>
+
+    <bean id="cacheManagerId" class="org.springframework.cache.guava.GuavaCacheManager">
+      <property name="cacheBuilder" ref="cacheBuilderId"/>
+    </bean>
+
+    <bean id="cacheBuilderId" class="com.google.common.cache.CacheBuilder" factory-method="from">
+      <constructor-arg value="maximumSize=30, expireAfterAccess=10m, expireAfterWrite=1h" />
+    </bean>
+</beans>
