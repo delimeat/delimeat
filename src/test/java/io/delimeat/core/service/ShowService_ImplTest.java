@@ -206,4 +206,17 @@ public class ShowService_ImplTest {
 		Assert.assertNotNull(show.getPreviousEpisode());
 		Assert.assertEquals(show, show.getPreviousEpisode().getShow());
 	}
+  
+  	@Test
+  	public void readAllEpisodesTest() throws Exception{
+     	Episode ep = new Episode();
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+     	Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep));
+     	service.setShowDao(showDao);
+     
+     	List<Episode> episodes = service.readAllEpisodes(Long.MAX_VALUE);
+     	Assert.assertNotNull(episodes);
+     	Assert.assertEquals(1, episodes.size());
+     	Assert.assertEquals(ep, episodes.get(0));
+   }
 }

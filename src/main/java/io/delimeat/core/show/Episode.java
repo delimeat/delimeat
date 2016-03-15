@@ -197,7 +197,7 @@ public class Episode {
                  .compare(this.episodeId, otherEp.getEpisodeId())
                  .compare(this.seasonNum, otherEp.getSeasonNum())
                  .compare(this.seasonNum, otherEp.getSeasonNum())
-                 .compare(this.title, otherEp.getTitle())
+                 .compare(this.title, otherEp.getTitle(),Ordering.natural().nullsFirst())
                  .compare(this.airDate, otherEp.getAirDate(), Ordering.natural().nullsFirst())
                  .compareFalseFirst(this.doubleEp, otherEp.isDoubleEp())
                  .compare(show, show, Ordering.natural().nullsFirst())
