@@ -48,7 +48,7 @@ public class ApplicationStartupListener implements ServletContextListener {
 		java.util.logging.LogManager.getLogManager().reset();
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
-		java.util.logging.Logger.getLogger("global").setLevel(java.util.logging.Level.FINEST);
+		java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME).setLevel(java.util.logging.Level.FINEST);
 		
 		LOGGER.debug("Entering contextInitialized");
 

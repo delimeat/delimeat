@@ -95,7 +95,7 @@ public class JerseyClientFactory {
         configuration.property(key, properties.get(key));
       }
      
-		Logger logger = Logger.getLogger("Logger");
+		Logger logger = Logger.getLogger(this.getClass().getName());
 		LoggingFilter loggingFilter = new LoggingFilter(logger, true);
 		configuration.register(loggingFilter);
 		
