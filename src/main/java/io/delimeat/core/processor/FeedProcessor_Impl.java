@@ -259,7 +259,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         final Episode previousEp = show.getNextEpisode();
         Episode nextEp = null;
         try{ 
-        	nextEp = showDao.readEpisodeAfter(show.getShowId(), previousEp.getAirDate());
+        	nextEp = showDao.readNextEpisode(previousEp);
         }catch(ShowNotFoundException e){
         	// do nothing 
         }

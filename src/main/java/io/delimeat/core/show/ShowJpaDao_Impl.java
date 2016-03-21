@@ -3,9 +3,9 @@ package io.delimeat.core.show;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowException;
+import io.delimeat.core.show.ShowNotFoundException;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -112,22 +112,6 @@ public class ShowJpaDao_Impl implements ShowDao {
 				throw new ShowException(ex);
 			}
 	}
-
-    @Override
-    public Episode readEpisodeAfter(long showId, Date date) throws ShowNotFoundException, ShowException {
-		try{	         
-			return em.createNamedQuery("Show.getEpisodeAfter",Episode.class)
-          			.setParameter("show", read(showId))
-          			.setParameter("airDate",date)
-          			.setMaxResults(1)
-          			.getSingleResult();
-			
-			} catch(NoResultException ex){  
-				throw new ShowNotFoundException(ex);
-    		} catch (PersistenceException ex){
-				throw new ShowException(ex);
-			}
-    }
   
 	@Override
 	public Episode readEpisode(long episodeId) throws ShowNotFoundException, ShowException {
@@ -177,6 +161,23 @@ public class ShowJpaDao_Impl implements ShowDao {
           createdOrUpdatedEpisodes.add(createOrUpdateEpisode(episode));
         }
         return createdOrUpdatedEpisodes;
+    }
+
+    @Override
+    public Episode readNextEpisode(Episode episode) throws ShowNotFoundException, ShowException {
+		try{	         
+			return em.createNamedQuery("Show.getNextEpisode",Episode.class)
+          			.setParameter("show", episode.getShow())
+          			.setParameter("seasonNum",episode.getSeasonNum())
+          			.setParameter("episodeNum",episode.getEpisodeNum())
+          			.setMaxResults(1)
+          			.getSingleResult();
+			
+			} catch(NoResultException ex){  
+				throw new ShowNotFoundException(ex);
+    		} catch (PersistenceException ex){
+				throw new ShowException(ex);
+			}
     }
 
 }

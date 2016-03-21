@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -371,30 +370,6 @@ public class ShowJpaDao_ImplTest {
     	Assert.assertEquals(0,episodes.size());
    }
    
-   @Test
-   public void readEpisodeAfterTest() throws Exception{
-     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
-				.getConnection();
-
-		InputStream is = System.class.getResourceAsStream(SQL_FILE);
-		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
-     
-		Episode ep = dao.readEpisodeAfter(1,new Date(0));
-		Assert.assertEquals(3, ep.getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
-		Assert.assertEquals(2, ep.getSeasonNum());
-		Assert.assertEquals(3, ep.getEpisodeNum());
-		Assert.assertEquals("PREVIOUS EPISODE", ep.getTitle());
-		Assert.assertTrue(ep.isDoubleEp());
-		Assert.assertEquals(4, ep.getVersion());
-		Assert.assertNotNull(ep.getShow());
-		Assert.assertEquals(1, ep.getShow().getShowId());
-   }
-  
-	@Test(expected=ShowNotFoundException.class)
-   public void readEpisodeAfterNoResultTest() throws Exception{ 
-      dao.readEpisodeAfter(1,SDF.parse("1988-12-25"));
-   }
 
    @Test
    public void readEpisodeTest() throws Exception{
@@ -539,6 +514,28 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertEquals(100,episodes.get(1).getSeasonNum());
 		Assert.assertEquals("TITLE_TWO", episodes.get(1).getTitle());
      	Assert.assertEquals(show, episodes.get(1).getShow());
+   }
+  
+	@Test
+   public void readNextEpisodeTest() throws Exception{
+     		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
+				.getConnection();
+
+		InputStream is = System.class.getResourceAsStream(SQL_FILE);
+		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
+     
+     	Show show = dao.read(1);
+     
+		Episode ep = dao.readNextEpisode(show.getNextEpisode());
+		Assert.assertEquals(3, ep.getEpisodeId());
+		Assert.assertEquals("1988-12-25", SDF.format(ep.getAirDate()));
+		Assert.assertEquals(2, ep.getSeasonNum());
+		Assert.assertEquals(3, ep.getEpisodeNum());
+		Assert.assertEquals("PREVIOUS EPISODE", ep.getTitle());
+		Assert.assertTrue(ep.isDoubleEp());
+		Assert.assertEquals(4, ep.getVersion());
+		Assert.assertNotNull(ep.getShow());
+		Assert.assertEquals(1, ep.getShow().getShowId());
    }
 	
 }
