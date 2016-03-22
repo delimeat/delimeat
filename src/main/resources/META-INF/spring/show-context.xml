@@ -12,12 +12,18 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
    		!-->
    		<property name="showSql" value="true" />
 	</bean>
-
-   	<bean id="showDataSourceId" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+  
+   <bean id="showDataSourceId" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
 		<property name="url" value="${io.delimeat.core.show.url}" />
 		<property name="driverClassName" value="${io.delimeat.core.show.driver}" />
 	</bean>
-	
+  	<!--
+   <bean id="showDataSourceId" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="url" value="${io.delimeat.core.show.url}" />
+		<property name="driverClassName" value="${io.delimeat.core.show.driver}" />
+	</bean>
+	!-->
+  
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
       <property name="mappingResources" value="META-INF/orm.xml"></property>
       <property name="dataSource" ref="showDataSourceId"/>
@@ -25,16 +31,16 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       <property name="jpaProperties">
          <props>
          		
-                <prop key="eclipselink.weaving">false</prop>
+           <prop key="eclipselink.weaving">false</prop>
                 
-                <!-- 
-                <prop key="eclipselink.ddl-generation">drop-and-create-tables</prop>
-                !-->
-                 
-				<prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
-        		<prop key="eclipselink.ddl-generation.output-mode">database</prop>
+           <!-- 
+           <prop key="eclipselink.ddl-generation">drop-and-create-tables</prop>
+           !-->
 
-        		<prop key="eclipselink.logging.level">OFF</prop>
+           <prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
+           <prop key="eclipselink.ddl-generation.output-mode">database</prop>
+
+           <prop key="eclipselink.logging.level">OFF</prop>
         		<!--
 				<prop key="eclipselink.logging.level">ALL</prop>
 				<prop key="eclipselink.logging.thread">true</prop>

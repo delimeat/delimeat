@@ -24,11 +24,8 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.6</version>
         <configuration>
-          <!--
           <warName>delimeat</warName>
-			 !-->
           <failOnMissingWebXml>false</failOnMissingWebXml>
-
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifest>
@@ -75,12 +72,16 @@
  	
 		<!-- Runtime versions ! -->
 		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
+     
 		<org.eclipse.persistence.version>2.6.2</org.eclipse.persistence.version>
-		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
+     	<org.apache.tomcat.version>8.0.32</org.apache.tomcat.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
+
+		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
+     
 		<org.jsoup.version>1.8.3</org.jsoup.version>
-      	<com.google.guava.version>19.0</com.google.guava.version>
-      	<commons-codec.version>1.10</commons-codec.version>
+      <com.google.guava.version>19.0</com.google.guava.version>
+      <commons-codec.version>1.10</commons-codec.version>
 	</properties>
 
 	<dependencies>
@@ -144,7 +145,12 @@
 			<artifactId>derbyclient</artifactId>
 			<version>${org.apache.derby.version}</version>
 		</dependency>
-
+      <dependency>
+         <groupId>org.apache.tomcat</groupId>
+         <artifactId>tomcat-jdbc</artifactId>
+         <version>${org.apache.tomcat.version}</version>
+      </dependency>
+     
 		<!-- REST ! -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -336,5 +342,6 @@
 			<version>${commons-codec.version}</version>
 		</dependency>
 
+     
 	</dependencies>
 </project>
