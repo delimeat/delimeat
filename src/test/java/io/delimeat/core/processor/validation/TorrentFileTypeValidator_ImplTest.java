@@ -38,12 +38,14 @@ public class TorrentFileTypeValidator_ImplTest {
 		config.getIgnoredFileTypes().add("AVI");
      
 		TorrentInfo info = new TorrentInfo();
-      info.setName("VALIDFILE_TYPE.WMV");
+      info.setName("MP4_VALIDFILE_AVI_TYPE.WMV");
 
 		torrent.setInfo(info);
      
 		Assert.assertTrue(validator.validate(torrent, show, config));			
 	}
+  
+
 	
 	@Test
 	public void singleFileInvalidTest() throws Exception{

@@ -17,7 +17,7 @@ public class TorrentFileTypeValidator_Impl implements TorrentValidator {
 	@Override
 	public boolean validate(Torrent torrent, Show show, Config config)
 			throws ValidationException {
-		String regex = "";
+		String regex = "(";
       Iterator<String> it = config.getIgnoredFileTypes().iterator();
 		while(it.hasNext()){
         regex += it.next();
@@ -25,6 +25,7 @@ public class TorrentFileTypeValidator_Impl implements TorrentValidator {
           regex += "|";
         }
       }
+     	regex += ")$";
 
 		if(!DelimeatUtils.isEmpty(regex)){ //only do it if there is any file types excluded
 			final Pattern pattern = Pattern.compile(regex.toLowerCase());
