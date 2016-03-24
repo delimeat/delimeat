@@ -1,52 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>io.delimeat</groupId>
-  <artifactId>delimeat</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <packaging>war</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.delimeat</groupId>
+	<artifactId>delimeat</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 
-  <build>
-    <plugins>
+	<build>
+		<plugins>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <warName>delimeat</warName>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-          <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-            </manifest>
-          </archive>
-          
-			 <!-- Copy Source files into war!-->
-          <webResources>
-            <resource>
-              <directory>${project.build.sourceDirectory}</directory>
-              <targetPath>WEB-INF/classes</targetPath>
-            </resource>
-          </webResources>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<warName>delimeat</warName>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
 
-        </configuration>
-      </plugin>
+					<!-- Copy Source files into war! -->
+					<webResources>
+						<resource>
+							<directory>${project.build.sourceDirectory}</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+						</resource>
+					</webResources>
 
-    </plugins>
-  </build>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 
 	<properties>
 		<!-- Project specific stuff ! -->
@@ -54,34 +55,34 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<node.version>v4.2.3</node.version>
 		<npm.version>3.5.2</npm.version>
-		
+
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.0.36-beta</org.mockito.version>
 
-      	<!-- Servelet versions !-->
+		<!-- Servelet versions ! -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
-		
-		<!-- Transaction versions !-->
+
+		<!-- Transaction versions ! -->
 		<javax.transaction.version>1.2</javax.transaction.version>
 
-     	<!-- Logging versions !-->
-     	<org.slf4j.version>1.7.18</org.slf4j.version>
+		<!-- Logging versions ! -->
+		<org.slf4j.version>1.7.18</org.slf4j.version>
 		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
 		<org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
- 	
+
 		<!-- Runtime versions ! -->
 		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
-     
+
 		<org.eclipse.persistence.version>2.6.2</org.eclipse.persistence.version>
-     	<org.apache.tomcat.version>8.0.32</org.apache.tomcat.version>
+		<org.apache.tomcat.version>8.0.32</org.apache.tomcat.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 
 		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
-     
+
 		<org.jsoup.version>1.8.3</org.jsoup.version>
-      <com.google.guava.version>19.0</com.google.guava.version>
-      <commons-codec.version>1.10</commons-codec.version>
+		<com.google.guava.version>19.0</com.google.guava.version>
+		<commons-codec.version>1.10</commons-codec.version>
 	</properties>
 
 	<dependencies>
@@ -145,12 +146,18 @@
 			<artifactId>derbyclient</artifactId>
 			<version>${org.apache.derby.version}</version>
 		</dependency>
-      <dependency>
-         <groupId>org.apache.tomcat</groupId>
-         <artifactId>tomcat-jdbc</artifactId>
-         <version>${org.apache.tomcat.version}</version>
-      </dependency>
-     
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+			<version>${org.apache.tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>2.4.5</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<!-- REST ! -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -342,6 +349,6 @@
 			<version>${commons-codec.version}</version>
 		</dependency>
 
-     
+
 	</dependencies>
 </project>

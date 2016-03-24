@@ -12,11 +12,18 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
    		!-->
    		<property name="showSql" value="true" />
 	</bean>
-  
+ 	
+	<bean id="showDataSourceId" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="jdbcUrl" value="${io.delimeat.core.show.url}" />
+		<property name="driverClassName" value="${io.delimeat.core.show.driver}" />
+	</bean>
+	
+  	<!--  
    <bean id="showDataSourceId" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
 		<property name="url" value="${io.delimeat.core.show.url}" />
 		<property name="driverClassName" value="${io.delimeat.core.show.driver}" />
 	</bean>
+	!-->
   	<!--
    <bean id="showDataSourceId" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="url" value="${io.delimeat.core.show.url}" />

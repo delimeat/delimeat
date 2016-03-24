@@ -627,6 +627,71 @@ public class GuideProcessor_ImplTest {
    }
 
 	@Test
+  	public void processStopBeforePrevEpTest() throws Exception{
+     ProcessorListener listener = Mockito.mock(ProcessorListener.class);
+     processor.addListener(listener);
+       
+     Show show = new Show();
+     show.setShowId(Long.MAX_VALUE);
+     show.setTimezone("ETC");
+     show.setGuideId("GUIDEID");
+     show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setAiring(true);
+     Episode ep1 = new Episode();
+     ep1.setSeasonNum(2);
+     ep1.setEpisodeNum(1);
+     ep1.setTitle("EP1");
+     ep1.setAirDate(SDF.parse("2015-01-01"));
+     //show.setNextEpisode(ep1);
+     Episode ep2 = new Episode();
+     ep2.setSeasonNum(2);
+     ep2.setEpisodeNum(2);
+     ep2.setTitle("EP2");
+     ep2.setAirDate(SDF.parse("2016-01-29"));
+     show.setPreviousEpisode(ep2);
+     processor.setShow(show);
+     
+     ShowDao showDao = Mockito.mock(ShowDao.class);
+     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
+     processor.setShowDao(showDao);
+
+     GuideDao guideDao = Mockito.mock(GuideDao.class);
+     Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
+     GuideInfo info = new GuideInfo();
+ 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+     info.setAiring(true);
+     Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
+     GuideEpisode guideEp1 = new GuideEpisode();
+     guideEp1.setSeasonNum(1);
+     guideEp1.setEpisodeNum(1);
+     guideEp1.setTitle("EP1");
+     guideEp1.setAirDate(SDF.parse("2016-01-01"));
+     GuideEpisode guideEp2 = new GuideEpisode();
+     guideEp2.setSeasonNum(1);
+     guideEp2.setEpisodeNum(2);
+     guideEp2.setTitle("EP2");
+     guideEp2.setAirDate(SDF.parse("2016-01-29"));
+     Mockito.when(guideDao.episodes("GUIDEID")).thenReturn(Arrays.asList(guideEp2,guideEp1));
+     processor.setGuideDao(guideDao);
+     
+     processor.process();
+     
+     Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     
+     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+    
+     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
+     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
+     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
+     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     
+     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
+     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+   }
+	
+	@Test
   	public void processSetNextEpAlreadyExistsTest() throws Exception{
      ProcessorListener listener = Mockito.mock(ProcessorListener.class);
      processor.addListener(listener);
