@@ -75,7 +75,6 @@
 		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
 
 		<org.eclipse.persistence.version>2.6.2</org.eclipse.persistence.version>
-		<org.apache.tomcat.version>8.0.32</org.apache.tomcat.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 
 		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
@@ -136,6 +135,7 @@
 			<artifactId>org.eclipse.persistence.moxy</artifactId>
 			<version>${org.eclipse.persistence.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
@@ -145,17 +145,6 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
 			<version>${org.apache.derby.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
-			<version>${org.apache.tomcat.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>2.4.5</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<!-- REST ! -->

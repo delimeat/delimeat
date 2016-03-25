@@ -124,7 +124,7 @@
 			</basic>
         
 	      <basic name="guideId" optional="false">
-				<column name="GUIDE_ID" length="255" nullable="false" />
+				<column name="GUIDE_ID" length="255" nullable="false" unique="true"/>
 			</basic>
 
 			<version name="version" >
