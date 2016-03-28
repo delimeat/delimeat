@@ -91,7 +91,7 @@ public class ProcessorService_Impl implements ProcessorService,
 		final long searchInterval = config.getSearchInterval();
 		for (Show show : shows) {
 			
-			if (show.getNextEpisode() != null) {
+			if (show.isEnabled() == true && show.getNextEpisode() != null) {
 				
 				Episode nextEp = show.getNextEpisode();
             // horrible timezone hack
@@ -120,11 +120,12 @@ public class ProcessorService_Impl implements ProcessorService,
 		
 		final Config config = configDao.read();
 		for (Show show : shows) {
-			
-			Processor processor = guideProcessorFactory.build(show,config);
-			processor.addListener(this);
-			processors.add(processor);
-			executor.execute(new ProcessorThread(processor,LOG));
+			if(show.isEnabled() == true){
+				Processor processor = guideProcessorFactory.build(show,config);
+				processor.addListener(this);
+				processors.add(processor);
+           	executor.execute(new ProcessorThread(processor,LOG));
+         }
 		}
 
 	}

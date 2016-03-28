@@ -183,6 +183,7 @@ public class ProcessorService_ImplTest {
   	public void processAllGuideUpdatesTest() throws Exception{
      	ShowDao showDao = Mockito.mock(ShowDao.class);
       Show show = new Show();
+     	show.setEnabled(true);
       Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show,show));
      	service.setShowDao(showDao);
      
@@ -209,6 +210,35 @@ public class ProcessorService_ImplTest {
       Mockito.verify(configDao, Mockito.times(1)).read();
       Mockito.verify(factory,  Mockito.times(2)).build(Mockito.any(Show.class),Mockito.any(Config.class));
       Mockito.verify(executor, Mockito.times(2)).execute(Mockito.any(Runnable.class));
+   }
+
+	@Test
+  	public void processAllGuideUpdatesDisabledTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+     	show.setEnabled(false);
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setGuideProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllGuideUpdates();
+     
+     	Assert.assertEquals(0, service.getProcessors().size());    
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
    }
   
   	@Test
@@ -391,6 +421,7 @@ public class ProcessorService_ImplTest {
   	public void processAllFeedUpdatesNextEpBeforeNowTest() throws Exception{
      	ShowDao showDao = Mockito.mock(ShowDao.class);
       Show show = new Show();
+     	show.setEnabled(true);
       show.setTimezone("EST");
      	Episode episode = new Episode();
       Date earlier = new Date( 0 );
@@ -421,6 +452,39 @@ public class ProcessorService_ImplTest {
       Mockito.verify(configDao, Mockito.times(1)).read();
       Mockito.verify(factory,  Mockito.times(1)).build(Mockito.any(Show.class),Mockito.any(Config.class));
       Mockito.verify(executor, Mockito.times(1)).execute(Mockito.any(Runnable.class));
+   }
+  
+	@Test
+  	public void processAllFeedUpdatesDisabledTest() throws Exception{
+     	ShowDao showDao = Mockito.mock(ShowDao.class);
+      Show show = new Show();
+     	show.setEnabled(false);
+     	Episode episode = new Episode();
+      Date earlier = new Date( 0 );
+     	episode.setAirDate(earlier);
+     	show.setNextEpisode(episode);
+      Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+     	service.setShowDao(showDao);
+     
+      ConfigDao configDao = Mockito.mock(ConfigDao.class);
+      Config config = new Config();
+      Mockito.when(configDao.read()).thenReturn(config);
+      service.setConfigDao(configDao);
+     
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+     	service.setFeedProcessorFactory(factory);
+     
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+     
+     	service.processAllFeedUpdates();
+     
+     	Assert.assertEquals(0, service.getProcessors().size());     
+     
+      Mockito.verify(showDao, Mockito.times(1)).readAll();
+      Mockito.verify(configDao, Mockito.times(1)).read();
+      Mockito.verify(factory,  Mockito.times(0)).build(Mockito.any(Show.class),Mockito.any(Config.class));
+      Mockito.verify(executor, Mockito.times(0)).execute(Mockito.any(Runnable.class));
    }
   
   	@Test
