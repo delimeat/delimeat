@@ -17,7 +17,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 @ApplicationPath("api")
 public class JaxrsApplication extends ResourceConfig {
 
-	private Logger LOGGER = Logger.getLogger(this.getClass().getName());
+	private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
 
 	public JaxrsApplication(){
 		register(ShowResource.class);

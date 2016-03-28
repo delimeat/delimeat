@@ -15,10 +15,12 @@ import org.glassfish.jersey.filter.LoggingFilter;
 
 public class JerseyClientFactory {
 
+	private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+
 	private ConnectorProvider connectorProvider;
 	private List<Object> providers = new ArrayList<Object>();
-   private List<Class<?>> providerClasses = new ArrayList<Class<?>>();
-   private Map<String,Object> properties = new HashMap<String,Object>();
+	private List<Class<?>> providerClasses = new ArrayList<Class<?>>();
+	private Map<String,Object> properties = new HashMap<String,Object>();
 
 	/**
 	 * @return the connectorProvider
@@ -82,28 +84,27 @@ public class JerseyClientFactory {
 
 	public Client newClient() {
 		final ClientConfig configuration = new ClientConfig();
-		
-     for (Object provider : providers) {
+
+		for (Object provider : providers) {
 			configuration.register(provider);
 		}
-		
-      for (Class<?> provider : providerClasses) {
+
+		for (Class<?> provider : providerClasses) {
 			configuration.register(provider);
 		}
-      
-      for(String key: properties.keySet()){
-        configuration.property(key, properties.get(key));
-      }
-     
-		Logger logger = Logger.getLogger(this.getClass().getName());
-		LoggingFilter loggingFilter = new LoggingFilter(logger, true);
+
+		for (String key : properties.keySet()) {
+			configuration.property(key, properties.get(key));
+		}
+
+		LoggingFilter loggingFilter = new LoggingFilter(LOGGER, true);
 		configuration.register(loggingFilter);
-		
-      if (connectorProvider != null) {
+
+		if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);
 		}
-		
-      return JerseyClientBuilder.createClient(configuration);
+
+		return JerseyClientBuilder.createClient(configuration);
 	}
 
 }

@@ -4,9 +4,11 @@
     <Property name="filename">delimeat</Property>
   </Properties>
   <Appenders>
+  
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n" />
     </Console>
+    
     <RollingFile name="MainLog" fileName="logs/${filename}.log" filePattern="logs/${filename}-%d{yyyy-MM-dd}-%i.log.gz" >
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n" />
       <Policies>
@@ -15,6 +17,16 @@
       </Policies>
       <DefaultRolloverStrategy max="7"/>
     </RollingFile>
+    
+    <RollingFile name="RestLog" fileName="logs/${filename}-rest.log" filePattern="logs/${filename}-rest-%d{yyyy-MM-dd}-%i.log.gz" >
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n" />
+      <Policies>
+      	<TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy />
+      </Policies>
+      <DefaultRolloverStrategy max="7"/>
+    </RollingFile>
+    
   </Appenders>
   <Loggers>
     <logger name="io.delimeat" level="ALL" additivity="false">
@@ -24,6 +36,7 @@
     <logger name="org.glassfish.jersey" level="ALL" additivity="false">
       <AppenderRef ref="Console" />
       <AppenderRef ref="MainLog" />
+      <AppenderRef ref="RestLog" />
     </logger>
     <Root level="ERROR" additivity="false">
       <AppenderRef ref="Console" />

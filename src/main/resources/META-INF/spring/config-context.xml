@@ -33,12 +33,17 @@ xmlns:context="http://www.springframework.org/schema/context"
     <bean id="configUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="configJaxb2marshallerId" factory-method="createUnmarshaller" />
     <bean id="configMarshallerId" class="javax.xml.bind.Marshaller" factory-bean="configJaxb2marshallerId" factory-method="createMarshaller" />
 
+
 	<bean id="configDaoId" class="io.delimeat.core.config.JaxbConfigDao_Impl">
 		<property name="unmarshaller" ref="configUnmarshallerId" />
 		<property name="marshaller" ref="configMarshallerId" />
-      <property name="defaultOutputDir" value="${user.home}"/>	
+      	<property name="defaultOutputDir" value="${user.home}"/>	
 		<property name="urlHandler" ref="urlHandlerId" />
-		<property name="url" value="${io.delimeat.core.config.url}"/>	
+		<property name="url">
+			<bean id="configUrl" class="org.springframework.jndi.JndiObjectFactoryBean">
+			    <property name="jndiName" value="java:comp/env/delimeatConfigUrl"/>
+			</bean>
+		</property>
 	</bean>
 
 </beans>
