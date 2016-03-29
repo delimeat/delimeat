@@ -52,6 +52,6 @@
     </bean>
 
     <bean id="cacheBuilderId" class="com.google.common.cache.CacheBuilder" factory-method="from">
-      <constructor-arg value="maximumSize=30, expireAfterAccess=10m, expireAfterWrite=1h" />
+      <constructor-arg value="maximumSize=100, expireAfterAccess=10m, expireAfterWrite=1h" />
     </bean>
 </beans>
