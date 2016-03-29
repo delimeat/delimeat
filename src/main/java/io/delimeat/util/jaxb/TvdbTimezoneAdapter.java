@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class TvdbTimezoneAdapter extends XmlAdapter<String, String> {
 
-   private static final String DEFAULT = "EST";
+   private static final String DEFAULT = "PST";
   
 	@Override
 	public String marshal(String value) throws Exception {

@@ -546,7 +546,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(72000000, info.getAirTime());
 		Assert.assertEquals(1, info.getGenres().size());
 		Assert.assertEquals("GENRE", info.getGenres().get(0));
-		Assert.assertEquals("EST", info.getTimezone());
+		Assert.assertEquals("PST", info.getTimezone());
 		Assert.assertEquals(45, info.getRunningTime());
 		Assert.assertEquals("2016-02-03",SDF.format(info.getLastUpdated()));
 	}

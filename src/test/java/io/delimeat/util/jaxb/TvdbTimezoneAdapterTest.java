@@ -25,7 +25,7 @@ public class TvdbTimezoneAdapterTest {
 	
 	@Test
 	public void testNotExistsUnmarshal() throws Exception {
-		Assert.assertEquals("EST", adapter.unmarshal("RANDOM"));
+		Assert.assertEquals("PST", adapter.unmarshal("RANDOM"));
 	}
 	
 	@Test
