@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.guide.GuideEpisode;
@@ -917,5 +918,31 @@ public class GuideProcessor_ImplTest {
      
      Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
      Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+   }
+  
+  	@Test
+  	public void test(){
+     GuideEpisode guideEp = new GuideEpisode();
+     guideEp.setAirDate(new Date(0));
+     guideEp.setEpisodeNum(2);
+     //guideEp.setProductionNum(3);
+     guideEp.setSeasonNum(1);
+     //guideEp.setTitle("GUIDEEP");
+     
+     //Episode showEp = new Episode(guideEp);
+     Episode showEp = new Episode();
+     showEp.setEpisodeNum(2);
+     showEp.setSeasonNum(1);
+     showEp.setTitle("TBA");
+     
+     Episode showEp2 = new Episode();
+     showEp2.setEpisodeNum(1);
+     showEp2.setSeasonNum(1);
+     showEp2.setTitle("TBA");
+     
+     System.out.println(guideEp.hashCode());
+     System.out.println(showEp.hashCode());
+     
+     System.out.println(Arrays.asList(showEp2,showEp).indexOf(guideEp));
    }
 }

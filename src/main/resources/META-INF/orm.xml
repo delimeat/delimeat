@@ -26,7 +26,13 @@
 	</named-query>
   
 	<entity class="Episode" name="Episode">
-		<table name="EPISODE" />
+		<table name="EPISODE" >
+      	<unique-constraint>
+            <column-name>SEASON_NUM</column-name>
+            <column-name>EPISODE_NUM</column-name>
+           	<column-name>SHOW_ID</column-name>
+        </unique-constraint>
+     	</table>
 		<attributes>
 
 			<id name="episodeId">

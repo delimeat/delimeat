@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.transaction.Transactional;
 
@@ -80,10 +81,13 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 							Collections.reverse(guideEps);
 							
 							// loop through all the guide eps
-							GuideEpisode prevGuideEp = null;
-							for (GuideEpisode guideEp : guideEps) {
+                    	ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
+                    	boolean reachedPrevEp = false;
+                    	while(reachedPrevEp == false && guideEpIt.hasNext()){
+                       	
+                       	GuideEpisode guideEp = guideEpIt.next();
 								
-								// stop when we reach the previous episode
+                       	// stop when we reach the previous episode
 								if (lockedShow.getPreviousEpisode() != null) {
 									
 									int guideSeasonNum = guideEp.getSeasonNum();
@@ -95,10 +99,11 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									                 .compare(guideEpisodeNum, prevEpisodeNum)
 									                 .result();
 									if(compare <= 0){
-										break;
+										reachedPrevEp = true;
+                             	continue;
 									}
-								}
-								
+								}  
+                       
 								// see if we already have the episode
 								int indexOf = showEps.indexOf(guideEp);
 
@@ -125,16 +130,15 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									currentEp.setShow(lockedShow);
 									createOrUpdateEps.add(currentEp);
 								}
-								
-								//keep this episode
-								prevGuideEp = guideEp;
-							}
-
+                       
+                     }
+                    
 							// if the show has no next episode and we have found
 							// one use that
 							if (lockedShow.getNextEpisode() == null
-									&& prevGuideEp != null) {
-								
+									&& guideEpIt.hasPrevious() == true) {
+                       
+								GuideEpisode prevGuideEp = guideEpIt.previous();
 								Episode nextEp = null;
 								if (createOrUpdateEps.indexOf(prevGuideEp) != -1) {
 									

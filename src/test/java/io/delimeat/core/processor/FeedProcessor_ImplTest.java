@@ -479,4 +479,5 @@ public class FeedProcessor_ImplTest {
 
 		processor.validateResultTorrents(Arrays.asList(result), null, config);
 	}
+
 }
