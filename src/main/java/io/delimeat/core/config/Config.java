@@ -1,6 +1,8 @@
 package io.delimeat.core.config;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name="config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder={"outputDirectory", "preferFiles", "ignoreFolders", "ignoredFileTypes", "searchInterval"})
-public class Config {
+public class Config implements Comparable<Config>{
 
 	private String outputDirectory; 
 	private int searchInterval = 60*60*1000; // default to 1 hour
@@ -85,9 +87,41 @@ public class Config {
               .add("ignoredFileTypes", ignoredFileTypes)
               .toString();
 	}
+  
+    @Override
+    public boolean equals(Object object)
+    {
+      if(object ==null){
+        return false;
+      }
+      
+      if(this == object){
+        return true;
+      }
+      
+      if (object instanceof Config)
+      {
+        Config otherConfig = (Config)object;
+        return this.compareTo(otherConfig) == 0 ? true : false;
+      }
+      return false;
+    }
+  
+  @Override
+  public int compareTo(Config other){
+		return ComparisonChain.start()
+                 .compare(this.outputDirectory, other.outputDirectory)
+                 .compare(this.searchInterval, other.searchInterval)
+                 .compareFalseFirst(this.preferFiles, other.preferFiles)
+                 .compareFalseFirst(this.ignoreFolders, other.ignoreFolders)
+                 .compare(this.ignoredFileTypes, other.ignoredFileTypes, Ordering.<String>natural().lexicographical())
+                 .result();    
+  }
 
   @Override 
   public int hashCode() {
     return Objects.hash(outputDirectory, searchInterval, preferFiles, ignoreFolders, ignoredFileTypes);
   }
+
+
 }

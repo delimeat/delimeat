@@ -143,6 +143,36 @@ public class GuideInfo implements Comparable<GuideInfo> {
       this.lastUpdated = lastUpdated;
     }
 
+    @Override
+    public boolean equals(Object object)
+    {
+      if(object ==null){
+        return false;
+      }
+      
+      if(this == object){
+        return true;
+      }
+      
+      if (object instanceof GuideInfo)
+      {
+        GuideInfo other = (GuideInfo)object;
+        return ComparisonChain.start()
+        				.compare(this.title, other.title, Ordering.natural().nullsFirst())
+        				.compare(this.guideId, other.guideId, Ordering.natural().nullsFirst())
+          			.compareFalseFirst(this.airing, other.airing)
+          			.compare(this.airDays, other.airDays, Ordering.<AiringDay>natural().lexicographical())
+          			.compare(this.airTime,other.airTime,Ordering.natural().nullsFirst())
+          			.compare(this.genres, other.genres, Ordering.<String>natural().lexicographical())
+          			.compare(this.runningTime,other.runningTime,Ordering.natural().nullsFirst())
+          			.compare(this.timezone,other.timezone,Ordering.natural().nullsFirst())
+        				.compare(this.description, other.description, Ordering.natural().nullsFirst())
+        				.compare(this.firstAired, other.firstAired, Ordering.natural().nullsFirst())
+        				.compare(this.lastUpdated, other.lastUpdated, Ordering.natural().nullsFirst())
+        				.result() == 0 ? true : false;
+      }
+      return false;
+    }
 
     @Override
     public int compareTo(GuideInfo other) {
@@ -167,6 +197,7 @@ public class GuideInfo implements Comparable<GuideInfo> {
         .add("runningTime", runningTime)
         .add("timezone", timezone)
         .add("description", description)
+        .add("firstAired",  (firstAired != null ? firstAired : null))
         .add("lastUpdated", (lastUpdated != null ? lastUpdated : null))
         .toString();     
     }

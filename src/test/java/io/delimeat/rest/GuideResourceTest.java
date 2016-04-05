@@ -9,6 +9,7 @@ import io.delimeat.core.service.GuideService;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -50,13 +51,42 @@ public class GuideResourceTest extends JerseyTest {
 		return config;
 	}
 
-	@Test
-	public void searchNoETagTest() throws IOException, Exception {
+  	private GuideSearchResult createSearchResult(){
 		GuideSearchResult result = new GuideSearchResult();
 		result.setDescription("DESCRIPTION");
-		result.setFirstAired(SDF.parse("2015-12-01"));
+		result.setFirstAired(new Date(0));
 		result.setGuideId("VALUE");
 		result.setTitle("TITLE");
+     return result;
+   }
+  
+  	public GuideInfo createInfo(){
+		GuideInfo expectedInfo = new GuideInfo();
+		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
+		expectedInfo.setAiring(false);
+		expectedInfo.setAirTime(9900000);
+		expectedInfo.setDescription("DESCRIPTION");
+		expectedInfo.getGenres().add("GENRE");
+		expectedInfo.setGuideId("VALUE");
+		expectedInfo.setTimezone("TIMEZONE");
+		expectedInfo.setRunningTime(Integer.MIN_VALUE);
+		expectedInfo.setTitle("TITLE");
+     	return expectedInfo;
+   }
+  
+  	private GuideEpisode createEpisode(){
+		GuideEpisode expectedEp = new GuideEpisode();
+		expectedEp.setAirDate(new Date(0));
+		expectedEp.setEpisodeNum(1);
+		expectedEp.setProductionNum(2);
+		expectedEp.setSeasonNum(3);
+		expectedEp.setTitle("TITLE");
+     	return expectedEp;
+   }
+  
+	@Test
+	public void searchNoETagTest() throws IOException, Exception {
+		GuideSearchResult result = createSearchResult();
 		List<GuideSearchResult> expectedResults = Arrays.asList(result);
 		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
 
@@ -72,19 +102,14 @@ public class GuideResourceTest extends JerseyTest {
      	
 		List<GuideSearchResult> actualResults = response.readEntity(new GenericType<List<GuideSearchResult>>() {});
 		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals("DESCRIPTION", actualResults.get(0).getDescription());
-		Assert.assertEquals("2015-12-01",SDF.format(actualResults.get(0).getFirstAired()));
-		Assert.assertEquals("VALUE", actualResults.get(0).getGuideId());
-		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
+		Assert.assertEquals(result, actualResults.get(0));
+     
+     	Mockito.verify(mockedGuideService).readLike("title");
 	}
 
 	@Test
 	public void searchNoMatchingETagTest() throws IOException, Exception {
-		GuideSearchResult result = new GuideSearchResult();
-		result.setDescription("DESCRIPTION");
-		result.setFirstAired(SDF.parse("2015-12-01"));
-		result.setGuideId("VALUE");
-		result.setTitle("TITLE");
+		GuideSearchResult result = createSearchResult();
 		List<GuideSearchResult> expectedResults = Arrays.asList(result);
 		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
 
@@ -103,20 +128,15 @@ public class GuideResourceTest extends JerseyTest {
      	
 		List<GuideSearchResult> actualResults = response.readEntity(new GenericType<List<GuideSearchResult>>() {});
 		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals("DESCRIPTION", actualResults.get(0).getDescription());
-		Assert.assertEquals("2015-12-01",SDF.format(actualResults.get(0).getFirstAired()));
-		Assert.assertEquals("VALUE", actualResults.get(0).getGuideId());
-		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
+		Assert.assertEquals(result, actualResults.get(0));
+     
+     	Mockito.verify(mockedGuideService).readLike("title");
 	}
 	
 
 	@Test
 	public void searchMatchingETagTest() throws IOException, Exception {
-		GuideSearchResult result = new GuideSearchResult();
-		result.setDescription("DESCRIPTION");
-		result.setFirstAired(SDF.parse("2015-12-01"));
-		result.setGuideId("VALUE");
-		result.setTitle("TITLE");
+		GuideSearchResult result = createSearchResult();
 		List<GuideSearchResult> expectedResults = Arrays.asList(result);
 		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
 
@@ -132,20 +152,13 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
      	Assert.assertFalse(response.hasEntity());    
      	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
+     
+     	Mockito.verify(mockedGuideService).readLike("title");
 	}
 	
 	@Test
 	public void infoNoETagTest()  throws IOException, Exception {
-		GuideInfo expectedInfo = new GuideInfo();
-		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
-		expectedInfo.setAiring(false);
-		expectedInfo.setAirTime(9900000);
-		expectedInfo.setDescription("DESCRIPTION");
-		expectedInfo.getGenres().add("GENRE");
-		expectedInfo.setGuideId("VALUE");
-		expectedInfo.setTimezone("TIMEZONE");
-		expectedInfo.setRunningTime(Integer.MIN_VALUE);
-		expectedInfo.setTitle("TITLE");
+		GuideInfo expectedInfo = createInfo();
 		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
 
 		Response response = target("guide")
@@ -159,33 +172,14 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		GuideInfo actualInfo = response.readEntity(GuideInfo.class);
-		Assert.assertNotNull(actualInfo.getAirDays());
-		Assert.assertEquals(1, actualInfo.getAirDays().size());
-		Assert.assertEquals(AiringDay.FRIDAY, actualInfo.getAirDays().get(0));
-		Assert.assertFalse(actualInfo.isAiring());
-		Assert.assertEquals(9900000, actualInfo.getAirTime());
-		Assert.assertEquals("DESCRIPTION", actualInfo.getDescription());
-		Assert.assertNotNull(actualInfo.getGenres());
-		Assert.assertEquals(1, actualInfo.getGenres().size());
-		Assert.assertEquals("GENRE", actualInfo.getGenres().get(0));
-		Assert.assertEquals("VALUE", actualInfo.getGuideId());
-		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
-		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
-		Assert.assertEquals("TITLE", actualInfo.getTitle());	
+     	Assert.assertEquals(expectedInfo, actualInfo);
+     
+     	Mockito.verify(mockedGuideService).read("ID");
 	}
 	
 	@Test
 	public void infoNoMatchingETagTest()  throws IOException, Exception {
-		GuideInfo expectedInfo = new GuideInfo();
-		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
-		expectedInfo.setAiring(false);
-		expectedInfo.setAirTime(9900000);
-		expectedInfo.setDescription("DESCRIPTION");
-		expectedInfo.getGenres().add("GENRE");
-		expectedInfo.setGuideId("VALUE");
-		expectedInfo.setTimezone("TIMEZONE");
-		expectedInfo.setRunningTime(Integer.MIN_VALUE);
-		expectedInfo.setTitle("TITLE");	
+		GuideInfo expectedInfo = createInfo();
 		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
 
      	EntityTag etag = new EntityTag("INVALID_ETAG");
@@ -202,33 +196,14 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		GuideInfo actualInfo = response.readEntity(GuideInfo.class);
-		Assert.assertNotNull(actualInfo.getAirDays());
-		Assert.assertEquals(1, actualInfo.getAirDays().size());
-		Assert.assertEquals(AiringDay.FRIDAY, actualInfo.getAirDays().get(0));
-		Assert.assertFalse(actualInfo.isAiring());
-		Assert.assertEquals(9900000, actualInfo.getAirTime());
-		Assert.assertEquals("DESCRIPTION", actualInfo.getDescription());
-		Assert.assertNotNull(actualInfo.getGenres());
-		Assert.assertEquals(1, actualInfo.getGenres().size());
-		Assert.assertEquals("GENRE", actualInfo.getGenres().get(0));
-		Assert.assertEquals("VALUE", actualInfo.getGuideId());
-		Assert.assertEquals("TIMEZONE", actualInfo.getTimezone());
-		Assert.assertEquals(Integer.MIN_VALUE, actualInfo.getRunningTime());
-		Assert.assertEquals("TITLE", actualInfo.getTitle());	
+     	Assert.assertEquals(expectedInfo, actualInfo);
+     
+     	Mockito.verify(mockedGuideService).read("ID");	
 	}
 	
 	@Test
 	public void infoMatchingETagTest()  throws IOException, Exception {
-		GuideInfo expectedInfo = new GuideInfo();
-		expectedInfo.getAirDays().add(AiringDay.FRIDAY);
-		expectedInfo.setAiring(false);
-		expectedInfo.setAirTime(9900000);
-		expectedInfo.setDescription("DESCRIPTION");
-		expectedInfo.getGenres().add("GENRE");
-		expectedInfo.setGuideId("VALUE");
-		expectedInfo.setTimezone("TIMEZONE");
-		expectedInfo.setRunningTime(Integer.MIN_VALUE);
-		expectedInfo.setTitle("TITLE");
+		GuideInfo expectedInfo = createInfo();
 		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
 
      	EntityTag etag = new EntityTag(Integer.toString(expectedInfo.hashCode()));
@@ -243,17 +218,13 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
      	Assert.assertFalse(response.hasEntity());   
      	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
-		
+		    
+     	Mockito.verify(mockedGuideService).read("ID");
 	}
 		
 	@Test
 	public void episodesNoETagTest() throws IOException, Exception{
-		GuideEpisode expectedEp = new GuideEpisode();
-		expectedEp.setAirDate(SDF.parse("2015-12-21"));
-		expectedEp.setEpisodeNum(1);
-		expectedEp.setProductionNum(2);
-		expectedEp.setSeasonNum(3);
-		expectedEp.setTitle("TITLE");
+		GuideEpisode expectedEp = createEpisode();
 		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
 		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(expectedEps);
 		
@@ -271,21 +242,14 @@ public class GuideResourceTest extends JerseyTest {
 		List<GuideEpisode> actualResults = response.readEntity(new GenericType<List<GuideEpisode>>() {});
 		Assert.assertNotNull(actualResults);
 		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals("2015-12-21", SDF.format(actualResults.get(0).getAirDate()));
-		Assert.assertEquals(1, actualResults.get(0).getEpisodeNum().intValue());
-		Assert.assertEquals(2, actualResults.get(0).getProductionNum().intValue());
-		Assert.assertEquals(3, actualResults.get(0).getSeasonNum().intValue());
-		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
+		Assert.assertEquals(expectedEp, actualResults.get(0));
+     
+		Mockito.verify(mockedGuideService).readEpisodes("ID");
 	}
 	
 	@Test
 	public void episodesNoMatchingETagTest() throws IOException, Exception{
-		GuideEpisode expectedEp = new GuideEpisode();
-		expectedEp.setAirDate(SDF.parse("2015-12-21"));
-		expectedEp.setEpisodeNum(1);
-		expectedEp.setProductionNum(2);
-		expectedEp.setSeasonNum(3);
-		expectedEp.setTitle("TITLE");
+		GuideEpisode expectedEp = createEpisode();
 		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
 		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(expectedEps);
 		
@@ -306,11 +270,9 @@ public class GuideResourceTest extends JerseyTest {
 		List<GuideEpisode> actualResults = response.readEntity(new GenericType<List<GuideEpisode>>() {});
 		Assert.assertNotNull(actualResults);
 		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals("2015-12-21", SDF.format(actualResults.get(0).getAirDate()));
-		Assert.assertEquals(1, actualResults.get(0).getEpisodeNum().intValue());
-		Assert.assertEquals(2, actualResults.get(0).getProductionNum().intValue());
-		Assert.assertEquals(3, actualResults.get(0).getSeasonNum().intValue());
-		Assert.assertEquals("TITLE", actualResults.get(0).getTitle());
+		Assert.assertEquals(expectedEp, actualResults.get(0));
+     
+		Mockito.verify(mockedGuideService).readEpisodes("ID");
 	}
 	
 	@Test
@@ -337,5 +299,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
       Assert.assertFalse(response.hasEntity());
 	 	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
+     
+		Mockito.verify(mockedGuideService).readEpisodes("ID");
 	}
 }

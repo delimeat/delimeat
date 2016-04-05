@@ -60,7 +60,13 @@ public class ShowResource {
 	@Path("{id}")
 	@PUT
   	@ETag
-	public Show update(Show show) throws Exception {
+	public Show update(@PathParam("id") Long id, Show show, @Context Request request) throws Exception {
+      Show oldShow = showService.read(id);  	
+      EntityTag etag = new EntityTag(Integer.toString(oldShow.hashCode()));
+      Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
+      if (rb != null) {
+        throw new WebApplicationException(rb.build());
+      }
        return showService.update(show);
 	}
 

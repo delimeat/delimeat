@@ -44,14 +44,18 @@ public class ConfigResourceTest extends JerseyTest {
 		return config;
 	}
 
+  	private Config createConfig(){
+		Config config = new Config();
+		config.getIgnoredFileTypes().add("FILETYPE");
+		config.setIgnoreFolders(false);
+		config.setOutputDirectory("OUTPUTDIR");
+		config.setPreferFiles(true);
+		config.setSearchInterval(Integer.MAX_VALUE);
+     	return config;
+   }
 	@Test
 	public void readNoEtagTest() throws IOException, Exception {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Config expectedConfig = createConfig();
 		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
 		Response response = target("config")
@@ -63,22 +67,14 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Config actualConfig = response.readEntity(Config.class);
-		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
-		Assert.assertFalse(actualConfig.isIgnoreFolders());
-		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
-		Assert.assertTrue(actualConfig.isPreferFiles());
-		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
+     	Assert.assertEquals(expectedConfig, actualConfig);
+     
+     	Mockito.verify(mockedConfigService).read();
 	}
 
 	@Test
 	public void readNoMatchingEtagTest() throws IOException, Exception {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Config expectedConfig = createConfig();
 		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
      	EntityTag etag = new EntityTag("INVALID_ETAG");
@@ -93,23 +89,15 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
           	    
 		Config actualConfig = response.readEntity(Config.class);
-		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
-		Assert.assertFalse(actualConfig.isIgnoreFolders());
-		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
-		Assert.assertTrue(actualConfig.isPreferFiles());
-		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
+     	Assert.assertEquals(expectedConfig, actualConfig);
+     
+     	Mockito.verify(mockedConfigService).read();
 	}
   
 
 	@Test
 	public void readMatchingEtagTest() throws IOException, Exception {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Config expectedConfig = createConfig();
 		Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
      	EntityTag etag = new EntityTag(Integer.toString(expectedConfig.hashCode()));
@@ -122,46 +110,35 @@ public class ConfigResourceTest extends JerseyTest {
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
      	Assert.assertFalse(response.hasEntity());     
      	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
+          
+     	Mockito.verify(mockedConfigService).read();
 	}
   
 	@Test
 	public void updateNoEtagTest() throws ConfigException {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Config expectedConfig = createConfig();
 		Mockito.when(mockedConfigService.update(Mockito.any(Config.class))).thenReturn(expectedConfig);
      	Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
 		Response response = target("config")
         								.request()
-        								.put(Entity.entity(expectedConfig, MediaType.APPLICATION_JSON_TYPE));
+        								.put(Entity.entity(new Config(), MediaType.APPLICATION_JSON_TYPE));
      
 		Assert.assertEquals(Status.OK, response.getStatusInfo());
      	Assert.assertTrue(response.hasEntity());
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Config actualConfig = response.readEntity(Config.class);
-		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
-		Assert.assertFalse(actualConfig.isIgnoreFolders());
-		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
-		Assert.assertTrue(actualConfig.isPreferFiles());
-		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
+     	Assert.assertEquals(expectedConfig, actualConfig);
+     
+     	Mockito.verify(mockedConfigService).read();
+     	Mockito.verify(mockedConfigService).update(Mockito.any(Config.class));
 	}
   
   
 	@Test
 	public void updateNoMatchingEtagTest() throws ConfigException {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
-		Mockito.when(mockedConfigService.update(Mockito.any(Config.class))).thenReturn(expectedConfig);
+		Config expectedConfig = createConfig();
      	Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
      	EntityTag etag = new EntityTag("INVALID_ETAG");
@@ -173,17 +150,15 @@ public class ConfigResourceTest extends JerseyTest {
      
 		Assert.assertEquals(Status.PRECONDITION_FAILED, response.getStatusInfo());
      	Assert.assertFalse(response.hasEntity());
+        
+     	Mockito.verify(mockedConfigService).read();
+     	Mockito.verify(mockedConfigService, Mockito.times(0)).update(Mockito.any(Config.class));
 
 	}
   
 	@Test
 	public void updateMatchingEtagTest() throws ConfigException {
-		Config expectedConfig = new Config();
-		expectedConfig.getIgnoredFileTypes().add("FILETYPE");
-		expectedConfig.setIgnoreFolders(false);
-		expectedConfig.setOutputDirectory("OUTPUTDIR");
-		expectedConfig.setPreferFiles(true);
-		expectedConfig.setSearchInterval(Integer.MAX_VALUE);
+		Config expectedConfig = createConfig();
 		Mockito.when(mockedConfigService.update(Mockito.any(Config.class))).thenReturn(expectedConfig);
      	Mockito.when(mockedConfigService.read()).thenReturn(expectedConfig);
 
@@ -194,17 +169,14 @@ public class ConfigResourceTest extends JerseyTest {
         							.header(HttpHeaders.IF_MATCH, etag)
         							.put(Entity.entity(expectedConfig, MediaType.APPLICATION_JSON_TYPE));
      
-     	
 		Assert.assertEquals(Status.OK, response.getStatusInfo());
      	Assert.assertTrue(response.hasEntity());
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Config actualConfig = response.readEntity(Config.class);
-		Assert.assertEquals(1, actualConfig.getIgnoredFileTypes().size());
-		Assert.assertEquals("FILETYPE", actualConfig.getIgnoredFileTypes().get(0));
-		Assert.assertFalse(actualConfig.isIgnoreFolders());
-		Assert.assertEquals("OUTPUTDIR", actualConfig.getOutputDirectory());
-		Assert.assertTrue(actualConfig.isPreferFiles());
-		Assert.assertEquals(Integer.MAX_VALUE, actualConfig.getSearchInterval());
+     	Assert.assertEquals(expectedConfig, actualConfig);
+     
+     	Mockito.verify(mockedConfigService).read();
+     	Mockito.verify(mockedConfigService).update(Mockito.any(Config.class));
 	}
 }

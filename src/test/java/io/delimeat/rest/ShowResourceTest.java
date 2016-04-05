@@ -5,22 +5,21 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowType;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.Assert;
@@ -28,8 +27,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class ShowResourceTest extends JerseyTest{
-
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
 	private ShowService mockedShowService = Mockito.mock(ShowService.class);
 
@@ -45,22 +42,20 @@ public class ShowResourceTest extends JerseyTest{
 			}
 
 		});
-		EncodingFilter.enableFor(config, GZipEncoder.class);
 
 		enable(TestProperties.LOG_TRAFFIC);
 		enable(TestProperties.DUMP_ENTITY);
 		return config;
 	}
-	
-	@Test
-	public void readAllNoEtagTest() throws Exception{
+  
+  	private Show createShow() {
 		Show show = new Show();
 		show.setAiring(true);
 		show.setAirTime(9900000);
 		show.setEnabled(false);
 		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
+		show.setLastFeedUpdate(new Date(0));
+		show.setLastGuideUpdate(new Date(0));
 		show.setShowId(Long.MIN_VALUE);
 		show.setShowType(ShowType.MINI_SERIES);
 		show.setTimezone("TIMEZONE");
@@ -68,7 +63,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setVersion(97);
 		
 		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
+		nextEp.setAirDate(new Date(0));
 		nextEp.setDoubleEp(true);
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
@@ -79,7 +74,7 @@ public class ShowResourceTest extends JerseyTest{
 		show.setNextEpisode(nextEp);
 		
 		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
+		prevEp.setAirDate(new Date(0));
 		prevEp.setDoubleEp(true);
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
@@ -90,490 +85,207 @@ public class ShowResourceTest extends JerseyTest{
 		show.setPreviousEpisode(prevEp);		
 
 		show.setGuideId("GUIDE_ID");
-		
-		List<Show> shows = new ArrayList<Show>();
-		shows.add(show);
+     	return show;
+   }
+	
+	@Test
+	public void readAllNoEtagTest() throws Exception{
+		Show show = createShow();
+		List<Show> shows = Arrays.asList(show);
 		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
 		
-		Response response = target("shows").request().get();
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+		Response response = target("shows")
+        								.request()
+        								.get();
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
 		Assert.assertNotNull(actualShows);
 		Assert.assertEquals(1, actualShows.size());
-		Show actualShow = actualShows.get(0);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
-
+		Assert.assertEquals(show, actualShows.get(0));
+     
+     	Mockito.verify(mockedShowService).readAll();
 	}
   
 	@Test
 	public void readAllMatchingEtagTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
-		List<Show> shows = new ArrayList<Show>();
-		shows.add(show);
+		Show show = createShow();		
+		List<Show> shows = Arrays.asList(show);
 		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
 		
      	EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
-		Response response = target("shows").request().header("If-None-Match", "\""+etag.getValue()+"\"").get();
-		Assert.assertEquals(304, response.getStatus());
      
+		Response response = target("shows")
+        								.request()
+        								.header(HttpHeaders.IF_NONE_MATCH, etag)
+        								.get();
+     
+		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
+     	Assert.assertFalse(response.hasEntity());
+     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG)); 
+     
+     	Mockito.verify(mockedShowService).readAll();
 	}
   
 	@Test
 	public void readAllNotMatchingEtagTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
-		List<Show> shows = new ArrayList<Show>();
-		shows.add(show);
+		Show show = createShow();
+		List<Show> shows = Arrays.asList(show);
 		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
+     
+     	EntityTag etag = new EntityTag("INVALID_ETAG");
+
+		Response response = target("shows")
+        								.request()
+        								.header(HttpHeaders.IF_NONE_MATCH, etag)
+        								.get();
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
-		Response response = target("shows").request().header("If-None-Match", "\"INVALID_ETAG\"").get();
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
-		     
 		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
 		Assert.assertNotNull(actualShows);
 		Assert.assertEquals(1, actualShows.size());
-		Show actualShow = actualShows.get(0);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
+		Assert.assertEquals(show, actualShows.get(0));
+     
+     	Mockito.verify(mockedShowService).readAll();
 	}
   
 	@Test
 	public void readNoEtagTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
+		Show show = createShow();
+		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
 		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
-		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
-		
-		Response response = target("shows").path("1").request().get();
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+		Response response = target("shows")
+        								.path("1")
+        								.request()
+        								.get();
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		Show actualShow = response.readEntity(Show.class);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
+		Assert.assertEquals(show, actualShow);
+     
+     	Mockito.verify(mockedShowService).read(1l);
 	}
     
 	@Test
 	public void readNoMatchingEtagTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
-		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
+		Show show = createShow();
+		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
 		  
-		Response response = target("shows").path("1").request().header("If-None-Match", "\"INVALID_ETAG\"").get();
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+     	EntityTag etag = new EntityTag("INVALID_ETAG");
+
+		Response response = target("shows")
+        								.path("1")	
+        								.request()
+        								.header(HttpHeaders.IF_NONE_MATCH, etag)
+        								.get();
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		Show actualShow = response.readEntity(Show.class);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());	
+		Assert.assertEquals(show, actualShow);	
+
+     Mockito.verify(mockedShowService).read(1l);
 	}
 
 	@Test
 	public void readMatchingEtagTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-
-     show.setGuideId("GUIDE_ID");
-		
-		Mockito.when(mockedShowService.read(Mockito.anyLong())).thenReturn(show);
+		Show show = createShow();
+		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
 		  
      	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
      
-		Response response = target("shows").path("1").request().header("If-None-Match", "\""+ etag.getValue() +  "\"").get();
-		Assert.assertEquals(304, response.getStatus());
-          				
+		Response response = target("shows")
+        								.path("1")
+        								.request()
+        								.header(HttpHeaders.IF_NONE_MATCH, etag)
+        								.get();
+     
+		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
+     	Assert.assertFalse(response.hasEntity());
+     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));  
+     
+     	Mockito.verify(mockedShowService).read(1l);
 	}
   
 	@Test
-	public void updateTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
+	public void updateNoEtagTest() throws Exception{
+		Show show = createShow();
 		Mockito.when(mockedShowService.update(Mockito.any(Show.class))).thenReturn(show);
+     	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
 			
-		Response response = target("shows").path("1").request().put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+		Response response = target("shows")
+        								.path("1")
+        								.request()
+        								.put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Show actualShow = response.readEntity(Show.class);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());
+     	Assert.assertEquals(show, actualShow);
+     
+     	Mockito.verify(mockedShowService).read(1l);
+     	Mockito.verify(mockedShowService).update(Mockito.any(Show.class));
 	}
-	
+	  
+  	@Test
+  	public void updateNoMatchingEtagTest() throws Exception{
+		Show show = createShow();
+     	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
+			
+		EntityTag etag = new EntityTag("INVALID_ETAG");
+     
+		Response response = target("shows")
+        								.path("1")
+        								.request()
+        								.header(HttpHeaders.IF_MATCH, etag)
+        								.put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
+     
+		Assert.assertEquals(Status.PRECONDITION_FAILED, response.getStatusInfo());
+     	Assert.assertFalse(response.hasEntity());
+     
+     	Mockito.verify(mockedShowService).read(1l);
+     	Mockito.verify(mockedShowService, Mockito.times(0)).update(Mockito.any(Show.class));
+   }
+  
+  	@Test
+  	public void updateMatchingEtagTest() throws Exception{
+		Show show = createShow();
+		Mockito.when(mockedShowService.update(Mockito.any(Show.class))).thenReturn(show);
+     	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
+			
+     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
+     
+		Response response = target("shows")
+        								.path("1")
+        								.request()
+        								.header(HttpHeaders.IF_MATCH, etag)
+        								.put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
+     
+		Show actualShow = response.readEntity(Show.class);
+     	Assert.assertEquals(show, actualShow);
+     
+     	Mockito.verify(mockedShowService).read(1l);
+     	Mockito.verify(mockedShowService).update(Mockito.any(Show.class));
+
+   }
+  
 	@Test
 	public void deleteTest() throws Exception{
 		Response response = target("shows").path("1").request().delete();
@@ -584,105 +296,45 @@ public class ShowResourceTest extends JerseyTest{
 
 	@Test
 	public void createTest() throws Exception{
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(SDF.parse("2015-12-03"));
-		show.setLastGuideUpdate(SDF.parse("2015-12-03"));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(SDF.parse("2015-12-03"));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
-		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(SDF.parse("2015-12-04"));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-		
-		show.setGuideId("GUIDE_ID");
-		
+		Show show = createShow();
 		Mockito.when(mockedShowService.create(Mockito.any(Show.class))).thenReturn(show);
 			
-		Response response = target("shows").request().post(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
+		Response response = target("shows")
+        								.request()
+        								.post(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
+     
+		Assert.assertEquals(Status.OK, response.getStatusInfo());
+     	Assert.assertTrue(response.hasEntity());
+		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Show actualShow = response.readEntity(Show.class);
-		Assert.assertTrue(actualShow.isAiring());
-		Assert.assertEquals(9900000, actualShow.getAirTime());
-		Assert.assertFalse(actualShow.isEnabled());
-		Assert.assertTrue(actualShow.isIncludeSpecials());
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-12-03", SDF.format(actualShow.getLastGuideUpdate()));
-		Assert.assertEquals(Long.MIN_VALUE, actualShow.getShowId());
-		Assert.assertEquals(ShowType.MINI_SERIES, actualShow.getShowType());
-		Assert.assertEquals("TIMEZONE", actualShow.getTimezone());
-		Assert.assertEquals("TITLE", actualShow.getTitle());
-		Assert.assertEquals(97, actualShow.getVersion());
-		
-		Assert.assertNotNull(actualShow.getNextEpisode());
-		Episode actualNextEp = actualShow.getNextEpisode();
-		Assert.assertEquals("2015-12-03", SDF.format(actualNextEp.getAirDate()));
-		Assert.assertTrue(actualNextEp.isDoubleEp());
-		Assert.assertEquals(Long.MAX_VALUE, actualNextEp.getEpisodeId());
-		Assert.assertEquals(101, actualNextEp.getEpisodeNum());
-		Assert.assertEquals(2, actualNextEp.getSeasonNum());
-		Assert.assertNull(actualNextEp.getShow());
-		Assert.assertEquals("NEXT_EP_TITLE", actualNextEp.getTitle());
-		Assert.assertEquals(3, actualNextEp.getVersion());
-		
-		Assert.assertNotNull(actualShow.getPreviousEpisode());
-		Episode actualPrevEp = actualShow.getPreviousEpisode();
-		Assert.assertEquals("2015-12-04", SDF.format(actualPrevEp.getAirDate()));
-		Assert.assertTrue(actualPrevEp.isDoubleEp());
-		Assert.assertEquals(Long.MIN_VALUE, actualPrevEp.getEpisodeId());
-		Assert.assertEquals(102, actualPrevEp.getEpisodeNum());
-		Assert.assertEquals(3, actualPrevEp.getSeasonNum());
-		Assert.assertNull(actualPrevEp.getShow());
-		Assert.assertEquals("PREV_EP_TITLE", actualPrevEp.getTitle());
-		Assert.assertEquals(4, actualPrevEp.getVersion());
-		
-		Assert.assertEquals("GUIDE_ID", actualShow.getGuideId());		
+     	Assert.assertEquals(show, actualShow);
+     
+     	Mockito.verify(mockedShowService).create(Mockito.any(Show.class));	
 	}
   
   	@Test
   	public void readAllEpisodesNoEtagTest() throws Exception{
      Episode ep = new Episode();
      List<Episode> episodes = Arrays.asList(ep);
-     Mockito.when(mockedShowService.readAllEpisodes(Mockito.any(Long.class))).thenReturn(episodes);
+     Mockito.when(mockedShowService.readAllEpisodes(1L)).thenReturn(episodes);
 
-		Response response = target("shows")
-        								.path("1")
-        								.path("episodes")
-        								.request()
-        								.get();
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
-     
+     Response response = target("shows")
+                             .path("1")
+                             .path("episodes")
+                             .request()
+                             .get();
+
+     Assert.assertEquals(Status.OK, response.getStatusInfo());
+     Assert.assertTrue(response.hasEntity());
+     Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
+
      List<Episode> actualEpisodes = response.readEntity(new GenericType<List<Episode>>() {});
      Assert.assertNotNull(actualEpisodes);
      Assert.assertEquals(1, actualEpisodes.size());
      Assert.assertEquals(ep, actualEpisodes.get(0));
+     
+     Mockito.verify(mockedShowService).readAllEpisodes(1L);	
    }
   
   	@Test
@@ -691,20 +343,25 @@ public class ShowResourceTest extends JerseyTest{
      List<Episode> episodes = Arrays.asList(ep);
      Mockito.when(mockedShowService.readAllEpisodes(Mockito.any(Long.class))).thenReturn(episodes);
 
-		Response response = target("shows")
-        								.path("1")
-        								.path("episodes")
-        								.request()
-										.header("If-None-Match", "\"WRONGETAG\"")
-        								.get();
-     
-		Assert.assertEquals(200, response.getStatus());
-		Assert.assertEquals("application/json",response.getHeaderString("Content-Type"));
-     
+     EntityTag etag = new EntityTag("INVALID_ETAG");
+
+     Response response = target("shows")
+                             .path("1")
+                             .path("episodes")
+                             .request()
+                             .header(HttpHeaders.IF_NONE_MATCH, etag)
+                             .get();
+
+     Assert.assertEquals(Status.OK, response.getStatusInfo());
+     Assert.assertTrue(response.hasEntity());
+     Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
+
      List<Episode> actualEpisodes = response.readEntity(new GenericType<List<Episode>>() {});
      Assert.assertNotNull(actualEpisodes);
      Assert.assertEquals(1, actualEpisodes.size());
      Assert.assertEquals(ep, actualEpisodes.get(0));
+
+     Mockito.verify(mockedShowService).readAllEpisodes(1L);
    }
   
     @Test
@@ -719,12 +376,13 @@ public class ShowResourceTest extends JerseyTest{
                             .path("1")
                             .path("episodes")
                             .request()
-                            .header("If-None-Match", "\""+etag.getValue()+"\"")
+                            .header(HttpHeaders.IF_NONE_MATCH, etag)
                             .get();
 
-      Assert.assertEquals(304, response.getStatus());
-      Assert.assertNull(response.getHeaderString("Content-Type"));
-
+      Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
       Assert.assertFalse(response.hasEntity());
+     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG)); 
+
+      Mockito.verify(mockedShowService).readAllEpisodes(1L);
     }
 }

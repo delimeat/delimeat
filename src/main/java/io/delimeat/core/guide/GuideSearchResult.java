@@ -88,6 +88,32 @@ public class GuideSearchResult implements Comparable<GuideSearchResult> {
       this.lastUpdated = lastUpdated;
     }
 
+  	
+    @Override
+    public boolean equals(Object object)
+    {
+      if(object ==null){
+        return false;
+      }
+      
+      if(this == object){
+        return true;
+      }
+      
+      if (object instanceof GuideSearchResult)
+      {
+        GuideSearchResult other = (GuideSearchResult)object;
+        return ComparisonChain.start()
+        				.compare(this.title, other.title, Ordering.natural().nullsFirst())
+        				.compare(this.firstAired, other.firstAired, Ordering.natural().nullsFirst())
+        				.compare(this.guideId, other.guideId, Ordering.natural().nullsFirst())
+        				.compare(this.description, other.description, Ordering.natural().nullsFirst())
+        				.compare(this.lastUpdated, other.lastUpdated, Ordering.natural().nullsFirst())
+        				.result() == 0 ? true : false;
+      }
+      return false;
+    }
+  
     @Override
     public int compareTo(GuideSearchResult other) {
       return ComparisonChain.start()
