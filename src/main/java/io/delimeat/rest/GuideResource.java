@@ -32,7 +32,7 @@ public class GuideResource {
 
 	@Path("search/{title}")
 	@GET
-    @ETag
+   @ETag
 	public List<GuideSearchResult> get(@PathParam("title") String title, @Context Request request) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		List<GuideSearchResult> results = service.readLike(title);
 		EntityTag etag = new EntityTag(Integer.toString(results.hashCode()));
@@ -45,7 +45,7 @@ public class GuideResource {
 
 	@Path("info/{id}")
 	@GET
-    @ETag
+   @ETag
 	public GuideInfo getInfo(@PathParam("id") String guideId, @Context Request request) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		GuideInfo info = service.read(guideId);
 		EntityTag etag = new EntityTag(Integer.toString(info.hashCode()));
@@ -58,7 +58,7 @@ public class GuideResource {
 	
 	@Path("info/{id}/episodes")
 	@GET
-    @ETag
+   @ETag
 	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId, @Context Request request) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		List<GuideEpisode> episodes = service.readEpisodes(guideId);
 		EntityTag etag = new EntityTag(Integer.toString(episodes.hashCode()));

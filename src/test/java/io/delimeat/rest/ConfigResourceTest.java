@@ -120,8 +120,7 @@ public class ConfigResourceTest extends JerseyTest {
         								.get();
      
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());
-     
+     	Assert.assertFalse(response.hasEntity());     
      	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
 	}
   

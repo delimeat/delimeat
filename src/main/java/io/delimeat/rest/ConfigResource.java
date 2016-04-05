@@ -43,7 +43,6 @@ public class ConfigResource {
     public Config update(Config config, @Context Request request) throws ConfigException {
       Config oldConfig = service.read();
       EntityTag etag = new EntityTag(Integer.toString(oldConfig.hashCode()));
-      System.out.println(etag);
       Response.ResponseBuilder rb = request.evaluatePreconditions(etag);
       if (rb != null) {
         throw new WebApplicationException(rb.build());
