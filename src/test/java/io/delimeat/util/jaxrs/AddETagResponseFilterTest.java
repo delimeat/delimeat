@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
@@ -54,7 +56,7 @@ public class AddETagResponseFilterTest {
    }
     
   	@Test
-  	public void successfulEntityResponsetest() throws IOException{
+  	public void successfulEntityNoEtagResponsetest() throws IOException{
      	ContainerRequestContext mockedRequestContext = Mockito.mock(ContainerRequestContext.class);
      
      	ContainerResponseContext mockedResponseContext = Mockito.mock(ContainerResponseContext.class);
@@ -66,8 +68,26 @@ public class AddETagResponseFilterTest {
 		filter.filter(mockedRequestContext, mockedResponseContext);
      
      	Assert.assertFalse(headers.isEmpty());
-     	Assert.assertEquals("\"-1838656495\"",headers.getFirst("ETag"));
+     	Assert.assertEquals(new EntityTag("-1838656495"),headers.getFirst(HttpHeaders.ETAG));
      	Mockito.verify(mockedResponseContext, Mockito.times(1)).getEntity();
+   }
+  
+  	@Test
+  	public void successfulEntityEtagResponsetest() throws IOException{
+     	ContainerRequestContext mockedRequestContext = Mockito.mock(ContainerRequestContext.class);
      
+     	ContainerResponseContext mockedResponseContext = Mockito.mock(ContainerResponseContext.class);
+		Mockito.when(mockedResponseContext.getStatusInfo()).thenReturn(Status.OK);
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<String, Object>();
+     	EntityTag etag = new EntityTag("JIBERISH_ETAG");
+     	headers.add(HttpHeaders.ETAG, etag);
+		Mockito.when(mockedResponseContext.getHeaders()).thenReturn(headers);
+     	Mockito.when(mockedResponseContext.getEntity()).thenReturn("STRING");
+        
+		filter.filter(mockedRequestContext, mockedResponseContext);
+     
+     	Assert.assertFalse(headers.isEmpty());
+     	Assert.assertEquals(etag,headers.getFirst(HttpHeaders.ETAG));
+     	Mockito.verify(mockedResponseContext, Mockito.times(1)).getEntity();
    }
 }
