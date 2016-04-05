@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import io.delimeat.core.service.ProcessorService;
 
@@ -41,8 +42,12 @@ public class ProcessorResourceTest extends JerseyTest {
 	@Test
 	public void processAllGuideTest() throws Exception{
 	
-		Response response = target("process/guide").request().get();
-		Assert.assertEquals(204, response.getStatus());
+		Response response = target("process/guide")
+        							.request()
+        							.head();
+     
+		Assert.assertEquals(Status.NO_CONTENT, response.getStatusInfo());
+     	Assert.assertFalse(response.hasEntity());
 		
      	Mockito.verify(mockedService,Mockito.times(1)).processAllGuideUpdates();
 	}
@@ -50,9 +55,13 @@ public class ProcessorResourceTest extends JerseyTest {
 	@Test
 	public void processAllFeedTest() throws Exception{
 	
-		Response response = target("process/feed").request().get();
-		Assert.assertEquals(204, response.getStatus());
-		
+		Response response = target("process/feed")
+        								.request()
+        								.head();
+     
+		Assert.assertEquals(Status.NO_CONTENT, response.getStatusInfo());
+     	Assert.assertFalse(response.hasEntity());
+
      	Mockito.verify(mockedService,Mockito.times(1)).processAllFeedUpdates();
 	}
 }
