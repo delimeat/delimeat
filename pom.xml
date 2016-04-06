@@ -59,7 +59,10 @@
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.0.36-beta</org.mockito.version>
-
+     	
+     	<!-- Travis versions ! -->
+     	<org.jacoco.maven.version>0.7.6.201602180812</org.jacoco.maven.version>
+		<org.eluder.coveralls.version>4.1.0</org.eluder.coveralls.version>
 		<!-- Servelet versions ! -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
 
@@ -338,6 +341,31 @@
 			<version>${commons-codec.version}</version>
 		</dependency>
 
-
 	</dependencies>
+  
+  <profiles>
+    <profile>
+      <id>travis</id>
+      <activation>
+        <property>
+          <name>env.TRAVIS</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${maven.jacoco.version}</version>
+          </plugin>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>2.2.0</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
