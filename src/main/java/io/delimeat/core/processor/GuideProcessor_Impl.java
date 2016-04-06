@@ -82,79 +82,79 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 							
 							// loop through all the guide eps
                     	ListIterator<GuideEpisode> guideEpIt = guideEps.listIterator();
-                    	boolean reachedPrevEp = false;
-                    	while(reachedPrevEp == false && guideEpIt.hasNext()){
+                    	GuideEpisode prevGuideEp = null;
+                    	while(guideEpIt.hasNext()){
                        	
-                       	GuideEpisode guideEp = guideEpIt.next();
+                    		GuideEpisode guideEp = guideEpIt.next();
 								
-                       	// stop when we reach the previous episode
-								if (lockedShow.getPreviousEpisode() != null) {
-									
-									int guideSeasonNum = guideEp.getSeasonNum();
-									int guideEpisodeNum = guideEp.getEpisodeNum();
-									int prevSeasonNum = lockedShow.getPreviousEpisode().getSeasonNum();
-									int prevEpisodeNum = lockedShow.getPreviousEpisode().getEpisodeNum();
-									int compare = ComparisonChain.start()
-									                 .compare(guideSeasonNum, prevSeasonNum)
-									                 .compare(guideEpisodeNum, prevEpisodeNum)
-									                 .result();
-									if(compare <= 0){
-										reachedPrevEp = true;
-                             	continue;
-									}
-								}  
-                       
-								// see if we already have the episode
-								int indexOf = showEps.indexOf(guideEp);
-
-								if (indexOf >= 0) {
-
-									// if we do have the episode check if we
-									// need to move the air date or update the
-									// title
-									Episode showEp = showEps.get(indexOf);
-									Date epAirDate = guideEp.getAirDate();
-									String guideEpTitle = guideEp.getTitle() != null ? guideEp.getTitle() : "";
-									String showEpTitle = showEp.getTitle() != null ? showEp.getTitle() : "";
-									if (showEpTitle.equals(guideEpTitle) == false
-											|| showEp.getAirDate().equals(epAirDate) == false) {
-										showEp.setTitle(guideEpTitle);
-										showEp.setAirDate(epAirDate);
-										createOrUpdateEps.add(showEp);
-
-									}
-								} else {
-									
-									// if we dont have the episode add it
-									Episode currentEp = new Episode(guideEp);
-									currentEp.setShow(lockedShow);
-									createOrUpdateEps.add(currentEp);
-								}
-                       
-                     }
-                    
-							// if the show has no next episode and we have found
-							// one use that
-							if (lockedShow.getNextEpisode() == null
-									&& guideEpIt.hasPrevious() == true) {
-                       
-								GuideEpisode prevGuideEp = guideEpIt.previous();
-								Episode nextEp = null;
-								if (createOrUpdateEps.indexOf(prevGuideEp) != -1) {
-									
-									int indexOf = createOrUpdateEps.indexOf(prevGuideEp);
-									nextEp = createOrUpdateEps.get(indexOf);
-								} else if (showEps.indexOf(prevGuideEp) != -1) {
-									
-									// this should never happen but just in case
-									int indexOf = showEps.indexOf(prevGuideEp);
-									nextEp = showEps.get(indexOf);
-								}
+                       		// stop when we reach the previous episode
+							if (lockedShow.getPreviousEpisode() != null) {
 								
-								if (nextEp != null) {
-									lockedShow.setNextEpisode(nextEp);
+								int guideSeasonNum = guideEp.getSeasonNum();
+								int guideEpisodeNum = guideEp.getEpisodeNum();
+								int prevSeasonNum = lockedShow.getPreviousEpisode().getSeasonNum();
+								int prevEpisodeNum = lockedShow.getPreviousEpisode().getEpisodeNum();
+								int compare = ComparisonChain.start()
+								                 .compare(guideSeasonNum, prevSeasonNum)
+								                 .compare(guideEpisodeNum, prevEpisodeNum)
+								                 .result();
+								if(compare <= 0){
+									//reachedPrevEp = true;
+									continue;
 								}
+							}  
+                       
+							// see if we already have the episode
+							int indexOf = showEps.indexOf(guideEp);
+
+							if (indexOf >= 0) {
+
+								// if we do have the episode check if we
+								// need to move the air date or update the
+								// title
+								Episode showEp = showEps.get(indexOf);
+								Date epAirDate = guideEp.getAirDate();
+								String guideEpTitle = guideEp.getTitle() != null ? guideEp.getTitle() : "";
+								String showEpTitle = showEp.getTitle() != null ? showEp.getTitle() : "";
+								if (showEpTitle.equals(guideEpTitle) == false
+										|| showEp.getAirDate().equals(epAirDate) == false) {
+									showEp.setTitle(guideEpTitle);
+									showEp.setAirDate(epAirDate);
+									createOrUpdateEps.add(showEp);
+	
+								}
+							} else {
+								
+								// if we dont have the episode add it
+								Episode currentEp = new Episode(guideEp);
+								currentEp.setShow(lockedShow);
+								createOrUpdateEps.add(currentEp);
 							}
+							prevGuideEp = guideEp;
+                    	}
+                    
+                    	
+						// if the show has no next episode and we have found
+						// one use that
+						if (lockedShow.getNextEpisode() == null
+								&& prevGuideEp != null) {
+							
+							Episode nextEp = null;
+							if (createOrUpdateEps.indexOf(prevGuideEp) != -1) {
+								
+								int indexOf = createOrUpdateEps.indexOf(prevGuideEp);
+								nextEp = createOrUpdateEps.get(indexOf);
+							} else if (showEps.indexOf(prevGuideEp) != -1) {
+								
+								// this should never happen but just in case
+								int indexOf = showEps.indexOf(prevGuideEp);
+								nextEp = showEps.get(indexOf);
+							}
+							
+							if (nextEp != null ) {
+								lockedShow.setNextEpisode(nextEp);
+							}
+						}
 
 						}
 
