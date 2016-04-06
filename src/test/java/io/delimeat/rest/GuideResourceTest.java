@@ -7,6 +7,7 @@ import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.service.GuideService;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,10 +52,10 @@ public class GuideResourceTest extends JerseyTest {
 		return config;
 	}
 
-  	private GuideSearchResult createSearchResult(){
+  	private GuideSearchResult createSearchResult() throws ParseException{
 		GuideSearchResult result = new GuideSearchResult();
 		result.setDescription("DESCRIPTION");
-		result.setFirstAired(new Date(0));
+		result.setFirstAired(SDF.parse("2016-04-05"));
 		result.setGuideId("VALUE");
 		result.setTitle("TITLE");
      return result;
@@ -277,29 +278,25 @@ public class GuideResourceTest extends JerseyTest {
 	
 	@Test
 	public void episodesMatchingETagTest() throws IOException, Exception{
-		GuideEpisode expectedEp = new GuideEpisode();
-		expectedEp.setAirDate(SDF.parse("2015-12-21"));
-		expectedEp.setEpisodeNum(1);
-		expectedEp.setProductionNum(2);
-		expectedEp.setSeasonNum(3);
-		expectedEp.setTitle("TITLE");
+		GuideEpisode expectedEp = createEpisode();
 		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
-		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(expectedEps);
-		
-	 	EntityTag etag = new EntityTag(Integer.toString(expectedEps.hashCode()));
+		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(
+				expectedEps);
+
+		EntityTag etag = new EntityTag(Integer.toString(expectedEps.hashCode()));
 
 		Response response = target("guide")
-        								.path("info")
-        								.path("ID")
-        								.path("episodes")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH,etag)
-        								.get();
-     
+								.path("info")
+								.path("ID")
+								.path("episodes")
+								.request()
+								.header(HttpHeaders.IF_NONE_MATCH, etag)
+								.get();
+
 		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-      Assert.assertFalse(response.hasEntity());
-	 	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
-     
+		Assert.assertFalse(response.hasEntity());
+		Assert.assertEquals(etag.toString(),response.getHeaderString(HttpHeaders.ETAG));
+
 		Mockito.verify(mockedGuideService).readEpisodes("ID");
 	}
 }
