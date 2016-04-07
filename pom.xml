@@ -7,6 +7,20 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
+	<licenses>
+     <license>
+       <name>The MIT License (MIT)</name>
+       <url>http://opensource.org/licenses/MIT</url>
+       <distribution>repo</distribution>
+     </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:git:git://github.com/delimeat/delimeat.git</connection>
+    <developerConnection>scm:git:git://github.com/delimeat/delimeat.git</developerConnection>
+    <url>https://github.com/delimeat/delimeat</url>
+  </scm>
+  
 	<build>
 		<plugins>
 
