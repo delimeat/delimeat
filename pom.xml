@@ -59,10 +59,7 @@
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.0.36-beta</org.mockito.version>
-     	
-     	<!-- Travis versions ! -->
-     	<org.jacoco.maven.version>0.7.6.201602180812</org.jacoco.maven.version>
-		<org.eluder.coveralls.version>4.1.0</org.eluder.coveralls.version>
+
 		<!-- Servelet versions ! -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
 
@@ -354,24 +351,22 @@
       </activation>
       <build>
         <plugins>
-          <plugin>
-              <groupId>org.jacoco</groupId>
-              <artifactId>jacoco-maven-plugin</artifactId>
-              <version>${org.jacoco.maven.version}</version>
-              <executions>
-                  <execution>
-                      <id>prepare-agent</id>
-                      <goals>
-                          <goal>prepare-agent</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.eluder.coveralls</groupId>
-            <artifactId>coveralls-maven-plugin</artifactId>
-            <version>${org.eluder.coveralls.version}</version>
-          </plugin>
+				<plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <format>xml</format>
+                    <maxmem>256m</maxmem>
+                    <!-- aggregated reports for multi-module projects -->
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
         </plugins>
       </build>
     </profile>
