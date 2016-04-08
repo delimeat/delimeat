@@ -266,6 +266,18 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		dao.setBaseUri(uri);
 		Assert.assertEquals(uri, dao.getBaseUri());
 	}
+  
+	@Test
+	public void encodingTest() {
+		Assert.assertEquals("UTF-8",dao.getEncoding());
+		dao.setEncoding("ENCODING");
+		Assert.assertEquals("ENCODING", dao.getEncoding());
+	}
+  
+  	@Test
+  	public void guideSourceTest(){
+     	Assert.assertEquals(GuideSource.TVMAZE, dao.getGuideSource());
+   }
 
 	@Test
 	public void infoTest() throws IOException, Exception {
@@ -333,6 +345,13 @@ public class TvMazeJaxrsGuideDao_ImplTest {
          throw ex;
       }
 	}
+  
+	@Test(expected=RuntimeException.class)
+	public void infoUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.info("TITLE");
+	}
 
 	@Test
 	public void episodesTest() throws Exception {
@@ -387,6 +406,13 @@ public class TvMazeJaxrsGuideDao_ImplTest {
       }
 	}
 
+	@Test(expected=RuntimeException.class)
+	public void episodesUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.episodes("TITLE");
+	}
+  
 	@Test
 	public void searchTest() throws IOException, Exception {
 		SearchJsonGenerator generator = new SearchJsonGenerator();
@@ -419,5 +445,13 @@ public class TvMazeJaxrsGuideDao_ImplTest {
          Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
          throw ex;
       }
+	}
+  
+  
+	@Test(expected=RuntimeException.class)
+	public void searchUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.search("TITLE");
 	}
 }

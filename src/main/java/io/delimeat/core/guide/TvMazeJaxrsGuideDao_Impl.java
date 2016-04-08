@@ -23,7 +23,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
         try {
             encodedTitle = URLEncoder.encode(title, getEncoding());
         } catch (UnsupportedEncodingException ex) {
-            encodedTitle = title;
+            throw new RuntimeException(ex);
         }
      
         try {
@@ -44,7 +44,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
         try {
             encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
-            encodedGuideId = guideId;
+            throw new RuntimeException(ex);
         }
      
         try {
@@ -67,7 +67,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
         try {
             encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
-            encodedGuideId = guideId;
+            throw new RuntimeException(ex);
         }
      
         try {

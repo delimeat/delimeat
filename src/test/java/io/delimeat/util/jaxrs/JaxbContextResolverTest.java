@@ -8,6 +8,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class JaxbContextResolverTest {
 
 	private JaxbContextResolver resolver;
@@ -21,7 +24,8 @@ public class JaxbContextResolverTest {
 	public void jaxbContextTest() {
 		JAXBContext mockedContext = mock(JAXBContext.class);
 		resolver.setContext(mockedContext);
-		resolver.getClasses().add(Class.class);
+     	List<Class<?>> classes = Arrays.<Class<?>>asList(Class.class);
+		resolver.setClasses(classes);
 		Assert.assertEquals(mockedContext, resolver.getContext(Class.class));
 	}
 }
