@@ -1,9 +1,10 @@
 package io.delimeat.util;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import io.delimeat.core.guide.GuideEpisode;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -57,13 +58,9 @@ public class DelimeatUtils {
      * @return sha1 of the byte array
      */
     public static byte[] getSHA1(byte[] bytes) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(bytes, 0, bytes.length);
-            return  md.digest();
-        } catch (NoSuchAlgorithmException t) {
-            throw new RuntimeException(t);
-        }
+        MessageDigest md = DigestUtils.getSha1Digest();
+        md.update(bytes, 0, bytes.length);
+        return  md.digest();
     }
 
     /**

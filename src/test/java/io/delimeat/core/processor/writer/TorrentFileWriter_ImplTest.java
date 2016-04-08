@@ -47,6 +47,18 @@ public class TorrentFileWriter_ImplTest {
 		
 		Assert.assertEquals("BYTES", baos.toString());
 	}
+  
+	@Test(expected=FeedException.class)
+	public void writeIOExceptionTest() throws IOException, FeedException{
+		Config config = new Config();
+		config.setOutputDirectory("OUTPUT");
+		
+		UrlHandler handler = Mockito.mock(UrlHandler.class);
+		Mockito.when(handler.openOutput(new URL("file:OUTPUT/FILENAME"))).thenThrow(new IOException());
+		writer.setUrlHandler(handler);
+		
+		writer.write("FILENAME", "BYTES".getBytes(), config);
+	}
 	
 	@Test
 	public void writeNullOutputDirTest() throws IOException, FeedException{

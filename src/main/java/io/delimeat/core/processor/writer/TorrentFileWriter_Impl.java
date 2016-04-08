@@ -24,17 +24,12 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 		final String outputUrl = "file:" + outputDirectory + "/" + fileName;
 		try{
 			final URL url = new URL(outputUrl);
-			/*
-			try{
-				url.toURI();
-			}catch(URISyntaxException ex){
-				throw new FeedException("Unnable to write to malformed url " + outputUrl, ex);
-			}
-			*/
-			final OutputStream output = getUrlHandler().openOutput(url);
-			output.write(bytes);
-			output.flush();
-			output.close();
+
+			try(OutputStream output = getUrlHandler().openOutput(url)){
+				output.write(bytes);   
+           	output.flush();
+         }
+
 		}catch(IOException ex){
 			throw new FeedException("Unnable to write to " + outputUrl ,ex);
 		}
