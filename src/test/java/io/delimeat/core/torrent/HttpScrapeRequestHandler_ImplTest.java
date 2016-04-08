@@ -103,6 +103,24 @@ public class HttpScrapeRequestHandler_ImplTest {
 	}
   
 	@Test(expected=TorrentException.class)
+	public void scrapeBencodeExceptionTest() throws URISyntaxException, Exception{
+		UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+      byte[] scrapeResult = "x".getBytes();
+
+      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+      Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+      Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(scrapeResult));
+		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
+     	Mockito.when(mockedHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(scrapeResult));	
+		scraper.setUrlHandler(mockedHandler);
+
+		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+	}
+  
+	@Test(expected=TorrentException.class)
 	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		scraper.scrape(new URI("udp://test.com"), infoHash);

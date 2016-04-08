@@ -202,6 +202,8 @@ public class JaxbConfigDao_ImplTest {
      	dao.setUnmarshaller(unmarshaller);
      
      	dao.read();
+     
+     	Mockito.verify(inputStream).close();
 	}
   
 	@Test

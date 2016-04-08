@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 public class ConfigTest {
 	
 	private Config config;
@@ -41,8 +43,7 @@ public class ConfigTest {
 	@Test
 	public void setIgnoredFileTypes() {
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
-		config.getIgnoredFileTypes().add("AVI");
-		config.getIgnoredFileTypes().add("MKV");
+     	config.setIgnoredFileTypes(Arrays.asList("AVI","MKV"));
 		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
 		Assert.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
 		Assert.assertEquals("MKV", config.getIgnoredFileTypes().get(1));
@@ -73,5 +74,26 @@ public class ConfigTest {
 		config.getIgnoredFileTypes().add("MKV");
 		config.setOutputDirectory("OUTPUTDIR");
      	Assert.assertEquals("Config{outputDirectory=OUTPUTDIR, searchInterval=100, preferFiles=true, ignoreFolders=true, ignoredFileTypes=[MKV]}",config.toString());
+   }
+  
+  	@Test
+  	public void equalsNullTest(){
+     	Assert.assertFalse(config.equals(null));
+   }
+  
+  	@Test
+  	public void equalsThisTest(){
+     	Assert.assertTrue(config.equals(config));
+   }
+  
+  	@Test
+  	public void equalsOtherObjectTest(){
+     	Assert.assertFalse(config.equals(new Object()));
+   }
+  
+  	@Test
+  	public void equalsTest(){
+     	Config other = new Config();
+     	Assert.assertTrue(config.equals(other));
    }
 }
