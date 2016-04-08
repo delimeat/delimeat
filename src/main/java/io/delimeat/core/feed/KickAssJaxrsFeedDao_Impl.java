@@ -19,9 +19,9 @@ public class KickAssJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper implemen
 	public List<FeedResult> read(String title) throws FeedException {
         String encodedTitle;
         try {
-            encodedTitle = URLEncoder.encode(title, ENCODING);
+            encodedTitle = URLEncoder.encode(title, getEncoding());
         } catch (UnsupportedEncodingException ex) {
-        	encodedTitle = title;
+        		throw new RuntimeException(ex);
         }
         try {
             return getTarget()

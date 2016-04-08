@@ -8,8 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 public abstract class AbstractJaxrsClientHelper {
 
-	protected static final String ENCODING = "UTF-8";
-
+  	private String encoding = "UTF-8";
 	private URI baseUri;
 	private MediaType mediaType;
 	private Client client;
@@ -69,4 +68,18 @@ public abstract class AbstractJaxrsClientHelper {
 		this.mediaType = mediaType;
 	}
 
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
+
+	/**
+	 * @param encoding
+	 *            the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
 }

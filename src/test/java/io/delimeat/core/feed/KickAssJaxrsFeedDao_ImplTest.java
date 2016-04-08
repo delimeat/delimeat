@@ -1,7 +1,6 @@
 package io.delimeat.core.feed;
 
 import io.delimeat.util.jaxrs.JaxbContextResolver;
-import io.delimeat.util.jaxrs.ReplaceContentTypeResponseFilter;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -140,7 +139,14 @@ public class KickAssJaxrsFeedDao_ImplTest {
 
 		return ClientBuilder.newClient(clientConfig);
 	}
-	
+
+	@Test
+	public void encodingTest() {
+		Assert.assertEquals("UTF-8",dao.getEncoding());
+		dao.setEncoding("ENCODING");
+		Assert.assertEquals("ENCODING", dao.getEncoding());
+	}
+  
 	@Test
 	public void mediaTypeTest() throws URISyntaxException {
 		Assert.assertNull(dao.getMediaType());
@@ -162,7 +168,7 @@ public class KickAssJaxrsFeedDao_ImplTest {
 	}
 
 	@Test
-	public void testRead() throws Exception {
+	public void readTest() throws Exception {
 		ResultJsonGenerator generator = new ResultJsonGenerator();
 		generator.addResult("title", 100, 50, 30, "http://test.com");
 		
@@ -179,36 +185,24 @@ public class KickAssJaxrsFeedDao_ImplTest {
 		Assert.assertEquals(30, results.get(0).getLeechers());
 		Assert.assertEquals("http://test.com", results.get(0).getTorrentURL());
 	}
-  
-	//@Test
-	public void test() throws Exception {
-		ClientConfig clientConfig = new ClientConfig();
 
-		// add logging of the client
-		Logger logger = Logger.getLogger(this.getClass().getName());
-		clientConfig.register(new LoggingFilter(logger, true));
-
-		// register the context provider to use mapping
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
-		JAXBContext jc = JAXBContext.newInstance(new Class[] { FeedResult.class, FeedSearch.class },
-				properties);
-
-		JaxbContextResolver resolver = new JaxbContextResolver();
-		resolver.setContext(jc);
-		resolver.getClasses().add(FeedResult.class);
-		resolver.getClasses().add(FeedSearch.class);
-		clientConfig.register(resolver);
+	@Test(expected=RuntimeException.class)
+	public void readUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
 		
-		clientConfig.register(ReplaceContentTypeResponseFilter.class);
-
-		dao.setClient(ClientBuilder.newClient(clientConfig));
-		dao.setBaseUri(new URI("https://kat.cr/json.php"));
+		dao.read("TITLE");
+	}
+  
+	@Test(expected=FeedException.class)
+	public void readWebApplicationExceptionTest() throws Exception {
+     	// cause an internal error in jersey because this wont do anything
+		InputStream input = Mockito.mock(InputStream.class);
+		
+		dao.setClient(prepareClient(new InputStream[] { input }, new Integer[] { 200 }));
+		dao.setBaseUri(new URI("http://test.com"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		
-		List<FeedResult> results = dao.read("adam ruins");
-		System.out.println(results);
-		System.out.println("size: "+ results.size());
+		dao.read("TITLE");
 	}
 
 }

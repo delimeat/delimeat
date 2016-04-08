@@ -62,7 +62,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
     public List<GuideSearchResult> search(String title) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
         String encodedTitle;
         try {
-            encodedTitle = URLEncoder.encode(title, ENCODING);
+            encodedTitle = URLEncoder.encode(title, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedTitle = title;
         }
@@ -91,7 +91,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
     public GuideInfo info(String guideId) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
         String encodedGuideId;
         try {
-            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+            encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedGuideId = guideId;
         }
@@ -130,7 +130,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
     public TvdbEpisodes episodes(String guideId, int page) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
         String encodedGuideId;
         try {
-            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+            encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedGuideId = guideId;
         }

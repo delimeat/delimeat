@@ -21,7 +21,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
 	public List<GuideSearchResult> search(String title) throws GuideException {
         String encodedTitle;
         try {
-            encodedTitle = URLEncoder.encode(title, ENCODING);
+            encodedTitle = URLEncoder.encode(title, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedTitle = title;
         }
@@ -42,7 +42,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
 	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideException {
         String encodedGuideId;
         try {
-            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+            encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedGuideId = guideId;
         }
@@ -65,7 +65,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
 	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideException {
         String encodedGuideId;
         try {
-            encodedGuideId = URLEncoder.encode(guideId, ENCODING);
+            encodedGuideId = URLEncoder.encode(guideId, getEncoding());
         } catch (UnsupportedEncodingException ex) {
             encodedGuideId = guideId;
         }
