@@ -188,7 +188,7 @@ public class JaxbConfigDao_ImplTest {
      	dao.read();
 	}
   
-	@Test(expected=RuntimeException.class)
+	@Test(expected=ConfigException.class)
 	public void readFinallyCloseTest() throws Exception {
      	InputStream inputStream = Mockito.mock(InputStream.class);
      	Mockito.doThrow(new IOException()).when(inputStream).close();
@@ -255,7 +255,7 @@ public class JaxbConfigDao_ImplTest {
      	dao.createOrUpdate(new Config());
 	}
 
-	@Test(expected=RuntimeException.class)
+	@Test(expected=ConfigException.class)
 	public void createOrUpdateFinallyCloseTest() throws Exception {
      	OutputStream outputStream = Mockito.mock(OutputStream.class);
      	Mockito.doThrow(new IOException()).when(outputStream).close();

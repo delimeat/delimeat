@@ -54,7 +54,7 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
                 try {
                     input.close();
                 } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                    throw new ConfigException(ex);
                 }
             }
         }
@@ -77,7 +77,7 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
                 try {
                     output.close();
                 } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                    throw new ConfigException(ex);
                 }
             }
         }
