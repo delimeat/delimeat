@@ -33,15 +33,15 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
   
 	@Override
 	public Config read() throws ConfigException {
-		InputStream input = null;
-		try {
-        	try{
-              input = getUrlHandler().openInput(getUrl());
-            }catch(FileNotFoundException ex){
-              Config config = new Config();
-              config.setOutputDirectory(defaultOutputDir);
-              createOrUpdate(config);
-              return config;
+        InputStream input = null;
+        try {
+            try {
+                input = getUrlHandler().openInput(getUrl());
+            } catch (FileNotFoundException ex) {
+                Config config = new Config();
+                config.setOutputDirectory(defaultOutputDir);
+                createOrUpdate(config);
+                return config;
             }
             return unmarshal(input, Config.class);
 
@@ -49,29 +49,38 @@ public class JaxbConfigDao_Impl extends AbstractJaxbHelper implements ConfigDao 
             throw new ConfigException(ex);
         } catch (JAXBException ex) {
             throw new ConfigException(ex);
-        } finally{
-        	if(input != null){
-        		try{
-        			input.close();
-        		}catch(IOException ex){
-        			throw new ConfigException(ex);
-        		}
-        	}
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
 	}
 
 	@Override
 	public void createOrUpdate(Config config) throws ConfigException {
+		OutputStream output = null;
         try {
-          
-            OutputStream output = getUrlHandler().openOutput(getUrl());
+
+            output = getUrlHandler().openOutput(getUrl());
             marshal(output, config);
-          
+
         } catch (IOException ex) {
             throw new ConfigException(ex);
         } catch (JAXBException ex) {
             throw new ConfigException(ex);
+        }finally{
+          	if(output != null){
+                try {
+                    output.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
-	}
+    }
 	
 }
