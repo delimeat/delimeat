@@ -12,7 +12,7 @@ public class GuideNotFoundException extends GuideException {
 		super(cause);
 	}
 
-	public GuideNotFoundException(GuideError error, Throwable cause) {
-		super(error.getMessage(), cause);
+	public GuideNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

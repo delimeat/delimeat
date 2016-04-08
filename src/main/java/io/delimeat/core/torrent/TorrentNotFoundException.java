@@ -2,7 +2,7 @@ package io.delimeat.core.torrent;
 
 public class TorrentNotFoundException extends TorrentException {
 
-	private static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
 
 	public TorrentNotFoundException(String message) {
 		super(message);

@@ -2,7 +2,7 @@ package io.delimeat.core.show;
 
 public class ShowNotFoundException extends ShowException {
 
-	private static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
 
 	public ShowNotFoundException(String message) {
 		super(message);

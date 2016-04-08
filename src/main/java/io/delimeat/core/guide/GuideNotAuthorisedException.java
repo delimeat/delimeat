@@ -12,7 +12,7 @@ public class GuideNotAuthorisedException extends GuideException {
 		super(cause);
 	}
 
-	public GuideNotAuthorisedException(GuideError error, Throwable cause) {
-		super(error.getMessage(), cause);
+	public GuideNotAuthorisedException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

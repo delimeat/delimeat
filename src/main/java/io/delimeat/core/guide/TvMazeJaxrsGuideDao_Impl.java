@@ -55,7 +55,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
           
         } catch (NotFoundException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error, ex);
+            throw new GuideNotFoundException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
@@ -80,7 +80,7 @@ public class TvMazeJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implemen
           
         } catch (NotFoundException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error, ex);
+            throw new GuideNotFoundException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }

@@ -16,9 +16,9 @@ import javax.xml.bind.JAXBException;
 
 public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideDao {
 
-    private String    apiKey;
+    private String apiKey;
     private TvdbToken token;
-    private int       validPeriodInMs = 0;
+    private int validPeriodInMs = 0;
 
     @Override
     public GuideSource getGuideSource() {
@@ -36,7 +36,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotAuthorisedException(error, ex);
+            throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
@@ -51,7 +51,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotAuthorisedException(error, ex);
+            throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
@@ -78,10 +78,10 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotAuthorisedException(error, ex);
+            throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (NotFoundException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error, ex);
+            throw new GuideNotFoundException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
@@ -105,10 +105,10 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotAuthorisedException(error, ex);
+            throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (NotFoundException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error, ex);
+            throw new GuideNotFoundException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
@@ -146,10 +146,10 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotAuthorisedException(error, ex);
+            throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (NotFoundException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error, ex);
+            throw new GuideNotFoundException(error.getMessage(), ex);
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }

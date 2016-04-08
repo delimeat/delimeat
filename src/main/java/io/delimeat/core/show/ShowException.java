@@ -2,7 +2,7 @@ package io.delimeat.core.show;
 
 public class ShowException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
 
 	public ShowException(String message) {
 		super(message);
