@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class EpisodeTest {
@@ -337,7 +336,6 @@ public class EpisodeTest {
      
    }
   
-  	@Ignore
     @Test
     public void toStringTest() throws ParseException{
      episode.setTitle("EP");
@@ -347,7 +345,7 @@ public class EpisodeTest {
      episode.setEpisodeId(Long.MIN_VALUE);
      episode.setVersion(Integer.MIN_VALUE);  
 		
-      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=1453939200000, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, version=-2147483648}", episode.toString());
+      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=Thu Jan 28 00:00:00 UTC 2016, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, version=-2147483648}", episode.toString());
     }
 
 }

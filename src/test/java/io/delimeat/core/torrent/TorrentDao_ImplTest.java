@@ -282,7 +282,6 @@ public class TorrentDao_ImplTest {
 		dao.read(new URI("udp://test.com"));
 	}
   
-	@SuppressWarnings("unchecked")
 	@Test(expected=TorrentException.class)
 	public void scrapeNotOKTest() throws Exception{
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);

@@ -6,7 +6,6 @@ import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ShowTest {
@@ -159,7 +158,6 @@ public class ShowTest {
 		Assert.assertEquals(961, show.hashCode());
    }
   
-  	@Ignore
   	@Test
   	public void toStringTest() throws ParseException{
 		show.setShowId(Long.MAX_VALUE);
@@ -180,6 +178,6 @@ public class ShowTest {
 		show.setMinSize(Integer.MAX_VALUE);
 		show.setMaxSize(Integer.MAX_VALUE);
      	System.out.println(show.toString());
-		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideId=GUIDEID, nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=1446768000000, lastFeedUpdate=1446768000000, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
+		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideId=GUIDEID, nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=Fri Nov 06 00:00:00 UTC 2015, lastFeedUpdate=Fri Nov 06 00:00:00 UTC 2015, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
    }
 }

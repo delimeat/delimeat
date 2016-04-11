@@ -61,7 +61,7 @@
 			</plugin>
 
         <!-- set timzeone to UTC to make testing dates easier -->
-        <!--
+        <!-- disabled because it causes problems with travis-ci
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>

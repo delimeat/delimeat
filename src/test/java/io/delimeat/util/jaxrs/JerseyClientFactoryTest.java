@@ -1,9 +1,11 @@
 package io.delimeat.util.jaxrs;
 
-import io.delimeat.util.jaxrs.JerseyClientFactory;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -13,13 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 public class JerseyClientFactoryTest {
 

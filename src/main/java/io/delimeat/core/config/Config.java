@@ -114,7 +114,7 @@ public class Config implements Comparable<Config>{
                  .compare(this.searchInterval, other.searchInterval, Ordering.natural().nullsFirst())
                  .compareFalseFirst(this.preferFiles, other.preferFiles)
                  .compareFalseFirst(this.ignoreFolders, other.ignoreFolders)
-                 .compare(this.ignoredFileTypes, other.ignoredFileTypes, Ordering.<String>natural().lexicographical())
+                 .compare(this.ignoredFileTypes, other.ignoredFileTypes, Ordering.<String>natural().lexicographical().nullsFirst())
                  .result();    
   }
 
