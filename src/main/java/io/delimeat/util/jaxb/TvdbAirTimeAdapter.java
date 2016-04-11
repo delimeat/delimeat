@@ -2,7 +2,6 @@ package io.delimeat.util.jaxb;
 
 import io.delimeat.util.DelimeatUtils;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -41,7 +40,6 @@ public class TvdbAirTimeAdapter extends XmlAdapter<String, Integer> {
      }
      if(!DelimeatUtils.isEmpty(format)) {
        final SimpleDateFormat sdf = new SimpleDateFormat(format);
-       try {
          // set the timezone to GMT not the default timezone so its
          // not offset.
          sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -49,10 +47,6 @@ public class TvdbAirTimeAdapter extends XmlAdapter<String, Integer> {
          if (airtimeMS < Integer.MAX_VALUE) {
            result = airtimeMS.intValue();
          }
-       } catch (ParseException e) {
-         log.error("encountered an error trying to parse airing time: " + value + " using: "
-                   + sdf.toPattern(), e);
-       }
      } else {
        log.error("unhandled time format for airtime: " + value);
      }

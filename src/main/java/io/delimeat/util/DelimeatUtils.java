@@ -11,6 +11,10 @@ import java.util.List;
 
 public class DelimeatUtils {
 
+  	private DelimeatUtils(){
+     	//do nothing
+   }
+  
     /**
      * Returns true if the string is null or empty.
      *

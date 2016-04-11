@@ -13,7 +13,9 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,18 +42,19 @@ public class TorrentDao_ImplTest {
 
 	@Test
 	public void ScaperTestTest() {
-		ScrapeRequestHandler mockedScraper1 = Mockito
-				.mock(ScrapeRequestHandler.class);
-		ScrapeRequestHandler mockedScraper2 = Mockito
-				.mock(ScrapeRequestHandler.class);
-		Assert.assertEquals(0, dao.getScrapeReqeustHandlers().size());
-		dao.getScrapeReqeustHandlers().put("HTTP", mockedScraper1);
-		dao.getScrapeReqeustHandlers().put("UDP", mockedScraper2);
-		Assert.assertEquals(2, dao.getScrapeReqeustHandlers().size());
-		Assert.assertEquals(mockedScraper1,
-				dao.getScrapeReqeustHandlers().get("HTTP"));
-		Assert.assertEquals(mockedScraper2,
-				dao.getScrapeReqeustHandlers().get("UDP"));
+    	Assert.assertEquals(0, dao.getScrapeReqeustHandlers().size());
+
+		ScrapeRequestHandler mockedScraper1 = Mockito.mock(ScrapeRequestHandler.class);
+		ScrapeRequestHandler mockedScraper2 = Mockito.mock(ScrapeRequestHandler.class);
+			
+     	Map<String,ScrapeRequestHandler> handlers = new HashMap<String,ScrapeRequestHandler>();
+     	handlers.put("HTTP", mockedScraper1);
+		handlers.put("UDP", mockedScraper2);
+     	dao.setScrapeRequestHandlers(handlers);
+		
+     	Assert.assertEquals(2, dao.getScrapeReqeustHandlers().size());
+		Assert.assertEquals(mockedScraper1,	dao.getScrapeReqeustHandlers().get("HTTP"));
+		Assert.assertEquals(mockedScraper2,dao.getScrapeReqeustHandlers().get("UDP"));
 	}
 
 	@Test
@@ -186,7 +189,6 @@ public class TorrentDao_ImplTest {
 		Assert.assertNull(torrent.getBytes());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void readTest() throws Exception {
 		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
@@ -194,7 +196,7 @@ public class TorrentDao_ImplTest {
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
 		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
 		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
 		dao.setUrlHandler(mockedUrlHandler);
 	
@@ -210,17 +212,59 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals(987654321L, torrent.getInfo().getLength());
 		Assert.assertEquals("NAME", torrent.getInfo().getName());
 		Assert.assertEquals(2, torrent.getInfo().getFiles().size());
-		Assert.assertEquals("1_part_1" + sep + "1_file_name", torrent.getInfo()
-				.getFiles().get(0).getName());
-		Assert.assertEquals(1234, torrent.getInfo().getFiles().get(0)
-				.getLength());
-		Assert.assertEquals("2_part_1" + sep + "2_file_name", torrent.getInfo()
-				.getFiles().get(1).getName());
-		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1)
-				.getLength());
+		Assert.assertEquals("1_part_1" + sep + "1_file_name", torrent.getInfo().getFiles().get(0).getName());
+		Assert.assertEquals(1234, torrent.getInfo().getFiles().get(0).getLength());
+		Assert.assertEquals("2_part_1" + sep + "2_file_name", torrent.getInfo().getFiles().get(1).getName());
+		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1).getLength());
 		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
 		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));
 	}
+  
+  	@Test(expected=TorrentException.class)
+  	public void readUnsupportedProtocalTest() throws Exception{
+   	dao.read(new URI("udp://read.com:8080"));  	
+   }
+  
+  	@Test(expected=TorrentNotFoundException.class)
+	public void readNotFoundTest() throws Exception {
+		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
+		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		dao.setUrlHandler(mockedUrlHandler);
+	
+		URI uri = new URI("http://test.com/");
+	
+		dao.read(uri);
+	}
+  
+  	@Test(expected=TorrentException.class)
+	public void readNotOkTest() throws Exception {
+		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
+		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		Mockito.when(mockedConnection.getResponseCode()).thenReturn(401);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		dao.setUrlHandler(mockedUrlHandler);
+	
+		URI uri = new URI("http://test.com/");
+	
+		dao.read(uri);
+	}
+  
+  	@Test(expected=TorrentException.class)
+  	public void readBencodeExceptionTest() throws Exception{
+		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
+		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream("X".getBytes()));
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream("X".getBytes()));
+		dao.setUrlHandler(mockedUrlHandler);
+	
+		URI uri = new URI("http://test.com/");
+	
+		dao.read(uri);
+   }
 
 	@Test(expected = UnhandledScrapeException.class)
 	public void scrapeUnhandledTest() throws Exception {
@@ -244,7 +288,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
       HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
       Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
 
 		dao.setUrlHandler(mockedUrlHandler);
 

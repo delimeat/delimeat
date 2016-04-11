@@ -3,11 +3,11 @@ package io.delimeat.core.guide;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GuideInfoTest {
@@ -172,7 +172,6 @@ public class GuideInfoTest {
      	Assert.assertEquals(-1974036005, info.hashCode());
    }
   
-	@Ignore
   	@Test
   	public void toStringTest() throws ParseException{
      	info.setTitle("TITLE");
@@ -186,6 +185,619 @@ public class GuideInfoTest {
 		info.setAirTime(10000);
 		info.setFirstAired(SDF.parse("2005-04-03"));
      	info.setLastUpdated(SDF.parse("2016-02-19"));
-     	Assert.assertEquals("GuideInfo{title=TITLE, guideId=GUIDEID, airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, lastUpdated=1455840000000}", info.toString());
+     	Assert.assertEquals("GuideInfo{title=TITLE, guideId=GUIDEID, airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, firstAired=Sun Apr 03 00:00:00 UTC 2005, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", info.toString());
+   }
+  
+  	@Test
+  	public void equalsNullTest(){
+   	Assert.assertFalse(info.equals(null));
+   }
+  
+  	@Test
+  	public void equalsSelfTest(){
+     	Assert.assertTrue(info.equals(info));
+   }
+  
+  	@Test
+  	public void equalsOtherObjectTest(){
+     	Assert.assertFalse(info.equals(new Object()));
+   }
+  	
+  	@Test
+  	public void equalsTest(){
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(new Date(0));
+     	info.setLastUpdated(new Date(0));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(new Date(0));
+     	other.setLastUpdated(new Date(0));
+     
+     	Assert.assertTrue(info.equals(other));     
+   }
+  
+  	@Test	
+  	public void equalsTitleTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("OTHER_TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsAirDaysTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY,AiringDay.MONDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsDescriptionTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("OTHER_DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsGuideIdTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("OTHER_GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsTimezoneTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("OTHER_TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsRunningTimeTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(61);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsGenresTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1","GENRE2"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsAiringTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(true);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsAirtimeTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(999);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsFirstAiredTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(new Date(0));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  	@Test	
+  	public void equalsLastUpdatedTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(new Date(0));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsTitleNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle(null);
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsAirDaysNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(null);
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  
+  	@Test	
+  	public void equalsDescriptionNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription(null);
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsGuideIdNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId(null);
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsTimezoneNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone(null);
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsGenresNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(null);
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+
+  	@Test	
+  	public void equalsFirstAiredNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(null);
+     	other.setLastUpdated(SDF.parse("2016-02-19"));
+     
+     	Assert.assertFalse(info.equals(other));
+   }
+  	@Test	
+  	public void equalsLastUpdatedNullTest() throws Exception{
+     	info.setTitle("TITLE");
+     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		info.setDescription("DESCRIPTION");
+		info.setGuideId("GUIDEID");
+		info.setTimezone("TIMEZONE");
+		info.setRunningTime(60);
+		info.setGenres(Arrays.asList("GENRE1"));
+		info.setAiring(false);
+		info.setAirTime(10000);
+		info.setFirstAired(SDF.parse("2005-04-03"));
+     	info.setLastUpdated(SDF.parse("2016-02-19"));
+     
+    	GuideInfo other = new GuideInfo();
+     	other.setTitle("TITLE");
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+		other.setDescription("DESCRIPTION");
+		other.setGuideId("GUIDEID");
+		other.setTimezone("TIMEZONE");
+		other.setRunningTime(60);
+		other.setGenres(Arrays.asList("GENRE1"));
+		other.setAiring(false);
+		other.setAirTime(10000);
+		other.setFirstAired(SDF.parse("2005-04-03"));
+     	other.setLastUpdated(null);
+     
+     	Assert.assertFalse(info.equals(other));
    }
 }

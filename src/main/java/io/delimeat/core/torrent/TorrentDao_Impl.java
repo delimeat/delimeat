@@ -56,31 +56,29 @@ public class TorrentDao_Impl implements TorrentDao {
 
      final String protocol = uri.getScheme();
      if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
-       throw new TorrentException("Unsupported protocol " + protocol + " expected one of HTTP or HTTPS");
+       throw new TorrentException(String.format("Unsupported protocol %s expected one of HTTP or HTTPS",protocol));
      }
 
      final Map<String,String> headers = new HashMap<String,String>();
      headers.put("referer", uri.toASCIIString());
      final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL(),headers);
+     
      final int responseCode = conn.getResponseCode();
      if(responseCode == 404){
-    	throw new TorrentNotFoundException("Unnable to retrieve torrent at url "+  uri.toURL());
-     }else if(conn.getResponseCode()!=200){
-       throw new TorrentException("Receieved response " + conn.getResponseCode() +" from " + uri.toURL());
+    	throw new TorrentNotFoundException(String.format("Unnable to retrieve torrent at url %s",uri.toURL()));
+     }else if(responseCode != 200){
+       throw new TorrentException(String.format("Receieved response %s  from %s",responseCode, uri.toURL()));
      }
-     final InputStream input = getUrlHandler().openInput(conn);
-
-     try{
+     
+     try(InputStream input = getUrlHandler().openInput(conn)){
        final byte[] bytes = ByteStreams.toByteArray(input);
        final BDictionary dictionary = BencodeUtils.decode(bytes);
        final Torrent torrent = parseRootDictionary(dictionary);
        torrent.setBytes(bytes);
-       return torrent;
+       return torrent;       
      }catch(BencodeException ex){
        throw new TorrentException("Encountered an error unmarshalling torrent",ex);
      }
-
-
 	}
 
 	@Override

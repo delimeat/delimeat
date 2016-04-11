@@ -5,18 +5,25 @@ import org.junit.Test;
 
 public class BStringTest {
 
-
 	@Test
 	public void stringConstructorTest() {
 		BString b_string = new BString("string_value");
 		Assert.assertEquals("string_value", b_string.toString());
 	}
+  
 
 	@Test
 	public void byteArrayConstructorTest() {
 		BString b_string = new BString("string_value".getBytes());
 		Assert.assertEquals("string_value", b_string.toString());
 	}	
+  
+  	@Test
+  	public void nullConstructorTest(){
+     	byte[] bytes = null;
+   	BString b_string = new BString(bytes);
+		Assert.assertEquals("",b_string.toString());
+   }
 
 	@Test
 	public void sameComparableTest() {
@@ -78,5 +85,11 @@ public class BStringTest {
 		BString b_string_one = new BString("match");
 		Assert.assertEquals(false, b_string_one.equals(string_one));
 	}
+  
+  	@Test
+  	public void equalsByteArrayTest(){
+     	BString b_string_one = new BString("match");
+		Assert.assertEquals(true, b_string_one.equals("match".getBytes()));
+   }
 
 }

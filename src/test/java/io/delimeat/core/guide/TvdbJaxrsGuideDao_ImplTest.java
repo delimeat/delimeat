@@ -272,6 +272,18 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		dao.setBaseUri(uri);
 		Assert.assertEquals(uri, dao.getBaseUri());
 	}
+  
+	@Test
+	public void encodingTest() {
+		Assert.assertEquals("UTF-8",dao.getEncoding());
+		dao.setEncoding("ENCODING");
+		Assert.assertEquals("ENCODING", dao.getEncoding());
+	}
+  
+  	@Test
+  	public void guideSourceTest(){
+     	Assert.assertEquals(GuideSource.TVDB, dao.getGuideSource());
+   }
 
 	@Test
 	public void apikeyTest() {
@@ -521,6 +533,13 @@ public class TvdbJaxrsGuideDao_ImplTest {
       }
 	}
   
+	@Test(expected=RuntimeException.class)
+	public void searchUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.search("TITLE");
+	}
+  
 	@Test
 	public void infoTest() throws Exception {
 		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "Ended", "CBS", "45",
@@ -616,6 +635,13 @@ public class TvdbJaxrsGuideDao_ImplTest {
          Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
          throw ex;
       }
+	}
+  
+	@Test(expected=RuntimeException.class)
+	public void infoUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.info("TITLE");
 	}
   
 	@Test
@@ -770,5 +796,12 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(Integer.MIN_VALUE, episodes.get(1).getSeasonNum().intValue());
 		Assert.assertEquals("TITLE_TWO", episodes.get(1).getTitle());
 		Assert.assertEquals("2005-09-29", SDF.format(episodes.get(1).getAirDate()));
+	}
+
+	@Test(expected=RuntimeException.class)
+	public void episodesUnsupportedEncodingTest() throws Exception {
+		dao.setEncoding("JIBBERISH");
+		
+		dao.episodes("TITLE");
 	}
 }

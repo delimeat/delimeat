@@ -7,7 +7,6 @@ import io.delimeat.core.guide.GuideSearchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class GuideService_ImplTest {
 		List<GuideSearchResult> results = new ArrayList<GuideSearchResult>();
 		GuideSearchResult mockedResult = Mockito.mock(GuideSearchResult.class);
 		results.add(mockedResult);
-		Mockito.when(mockedDao.search(Mockito.anyString())).thenReturn(results);
+		Mockito.when(mockedDao.search("ANYTHING")).thenReturn(results);
 
 		service.setGuideDao(mockedDao);
 
@@ -53,8 +52,7 @@ public class GuideService_ImplTest {
 	public void readTest() throws IOException, Exception {
 		GuideDao mockedDao = Mockito.mock(GuideDao.class);
 		GuideInfo mockedInfo = Mockito.mock(GuideInfo.class);
-		Mockito.when(mockedDao.info(Mockito.anyString()))
-				.thenReturn(mockedInfo);
+		Mockito.when(mockedDao.info("guideid")).thenReturn(mockedInfo);
 		service.setGuideDao(mockedDao);
 		
 		GuideInfo actualInfo = service.read("guideid");
@@ -65,19 +63,34 @@ public class GuideService_ImplTest {
 	@Test
 	public void readEpisodesTest() throws IOException, Exception {
 		GuideDao mockedDao = Mockito.mock(GuideDao.class);
-		GuideEpisode mockedEpisode = Mockito.mock(GuideEpisode.class);
-		Mockito.when(mockedEpisode.getSeasonNum()).thenReturn(1);
-		Mockito.when(mockedEpisode.getAirDate()).thenReturn(new Date());
-
-		List<GuideEpisode> expectedEpisodes = Arrays.asList(mockedEpisode);
-		Mockito.when(mockedDao.episodes(Mockito.anyString()))
-				.thenReturn(expectedEpisodes);
+		GuideEpisode guideEp1 = new GuideEpisode();
+     	guideEp1.setSeasonNum(1);
+     	guideEp1.setAirDate(new Date(0));
+     
+		GuideEpisode guideEp2 = new GuideEpisode();
+     	guideEp2.setSeasonNum(0);
+     	guideEp2.setAirDate(new Date(0));
+     
+		GuideEpisode guideEp3 = new GuideEpisode();
+     	guideEp3.setSeasonNum(1);
+     	guideEp3.setAirDate(null);
+     
+		GuideEpisode guideEp4 = new GuideEpisode();
+     	guideEp4.setSeasonNum(null);
+     	guideEp4.setAirDate(new Date(0));
+     
+     	List<GuideEpisode> expectedEpisodes = new ArrayList<GuideEpisode>();
+     	expectedEpisodes.add(guideEp1);
+     	expectedEpisodes.add(guideEp2);
+     	expectedEpisodes.add(guideEp3);
+     	expectedEpisodes.add(guideEp4);
+     	Mockito.when(mockedDao.episodes("guideId")).thenReturn(expectedEpisodes);
 		service.setGuideDao(mockedDao);	
 		
 		List<GuideEpisode> actualEpisodes = service.readEpisodes("guideId");
 		Assert.assertNotNull(actualEpisodes);
 		Assert.assertEquals(1, actualEpisodes.size());
-		Assert.assertEquals(mockedEpisode,actualEpisodes.get(0));
+		Assert.assertEquals(guideEp1,actualEpisodes.get(0));
 	}
 
 }
