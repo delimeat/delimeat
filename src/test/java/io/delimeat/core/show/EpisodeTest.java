@@ -108,7 +108,7 @@ public class EpisodeTest {
   
   	@Test
   	public void equalsSelfTest(){
-   	Assert.assertFalse(episode.equals(episode)); 
+   	Assert.assertTrue(episode.equals(episode)); 
   	}
   
   @Test
