@@ -48,8 +48,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 	public void createScrapeRequestTest() {
 		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
 		InfoHash infoHash = new InfoHash(sha1Bytes);
-		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,
-				Integer.MIN_VALUE, infoHash);
+		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,Integer.MIN_VALUE, infoHash);
 		Assert.assertEquals(36, req.length);
 		ByteBuffer buf = ByteBuffer.wrap(req);
 		Assert.assertEquals(Long.MAX_VALUE, buf.getLong());
@@ -57,9 +56,9 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Assert.assertEquals(Integer.MIN_VALUE, buf.getInt());
 		byte[] infoHashBytes = new byte[20];
 		buf.get(infoHashBytes);
-     	System.out.println(infoHashBytes.length);
-     	System.out.println(infoHash.getBytes().length);  
-		Assert.assertTrue(Arrays.equals(infoHash.getBytes(),infoHashBytes));
+		System.out.println(infoHashBytes.length);
+		System.out.println(infoHash.getBytes().length);
+		Assert.assertTrue(Arrays.equals(infoHash.getBytes(), infoHashBytes));
 	}
 
 	@Test(expected = TorrentException.class)
@@ -295,11 +294,17 @@ public class UDPScrapeRequestHandler_ImpTest {
 		}).when(mockedSocket).receive(Mockito.any(DatagramPacket.class));
 
 		scraper.setSocket(mockedSocket);
-      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 
 		ScrapeResult result = scraper.scrape(new URI("udp://test.com:8080"),infoHash);
 		Assert.assertEquals(200, result.getSeeders());
 		Assert.assertEquals(100, result.getLeechers());
+	}
+	
+	@Test(expected=UnhandledScrapeException.class)
+	public void test() throws Exception{
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		scraper.scrape(new URI("udp://test:8080"),infoHash);
 	}
 
 }
