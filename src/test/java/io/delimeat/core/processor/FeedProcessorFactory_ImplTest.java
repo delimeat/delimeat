@@ -72,7 +72,7 @@ public class FeedProcessorFactory_ImplTest {
 	}
 	
 	@Test
-	public void buildTest(){
+	public void buildPreferFilesTest(){
 		factory.getProcessorTypes().put(ShowType.SEASON, "STRING");
 		
 		BeanFactory beanFactory = Mockito.mock(BeanFactory.class);
@@ -97,20 +97,43 @@ public class FeedProcessorFactory_ImplTest {
 		Processor processor = factory.build(show, config);
 		Assert.assertTrue(processor instanceof FeedProcessor_Impl);
 		FeedProcessor_Impl castProcessor = (FeedProcessor_Impl)processor;
-		Assert.assertEquals(show, castProcessor.getShow());
+
+     	Assert.assertEquals(show, castProcessor.getShow());
 		Assert.assertEquals(config, castProcessor.getConfig());
-		/*
-		Assert.assertEquals(showDao, castProcessor.getShowDao());
-		Assert.assertEquals(1, castProcessor.getFeedDaos().size());
-		Assert.assertEquals(feedDao, castProcessor.getFeedDaos().get(0));
-		Assert.assertEquals(1, castProcessor.getFeedResultValidators().size());
-		Assert.assertEquals(resultValidator, castProcessor.getFeedResultValidators().get(0));
-		*/
 		Assert.assertEquals(1, castProcessor.getTorrentValidators().size());
 		Assert.assertEquals(folderTorrentValidator, castProcessor.getTorrentValidators().get(0));
 		Assert.assertEquals(comparator, castProcessor.getResultComparator());
-		/*
-		Assert.assertEquals(writer, castProcessor.getTorrentWriter());
-		*/
+
+	}
+  
+	@Test
+	public void buildMaxSeedersTest(){
+		factory.getProcessorTypes().put(ShowType.SEASON, "STRING");
+		
+		BeanFactory beanFactory = Mockito.mock(BeanFactory.class);
+		FeedProcessor_Impl actualprocessor = new FeedProcessor_Impl();
+		Mockito.when(beanFactory.getBean(Mockito.anyString())).thenReturn(actualprocessor);
+		factory.setBeanFactory(beanFactory);
+		
+		@SuppressWarnings("unchecked")
+		Comparator<FeedResult> comparator = Mockito.mock(Comparator.class);
+		factory.setMaxSeedersComparator(comparator);
+		
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		
+		Config config = new Config();
+		config.setIgnoreFolders(false);
+		config.setPreferFiles(false);
+		
+		Processor processor = factory.build(show, config);
+		Assert.assertTrue(processor instanceof FeedProcessor_Impl);
+		FeedProcessor_Impl castProcessor = (FeedProcessor_Impl)processor;
+		Assert.assertEquals(show, castProcessor.getShow());
+		Assert.assertEquals(config, castProcessor.getConfig());
+
+		Assert.assertEquals(0, castProcessor.getTorrentValidators().size());
+		Assert.assertEquals(comparator, castProcessor.getResultComparator());
+
 	}
 }

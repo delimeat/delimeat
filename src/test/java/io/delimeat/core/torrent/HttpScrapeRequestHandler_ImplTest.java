@@ -5,6 +5,7 @@ import io.delimeat.util.UrlHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,7 +22,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 	private HttpScrapeRequestHandler_Impl scraper;
 	
 	@Before
-	public void createScraper(){
+	public void setUp(){
 		scraper = new HttpScrapeRequestHandler_Impl();
 	}
 	
@@ -115,6 +116,18 @@ public class HttpScrapeRequestHandler_ImplTest {
       Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(scrapeResult));
 		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenReturn(mockedConnection);
      	Mockito.when(mockedHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(scrapeResult));	
+		scraper.setUrlHandler(mockedHandler);
+
+		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+	}
+  
+	@Test(expected=TorrentException.class)
+	public void scrapeIOExceptionTest() throws URISyntaxException, Exception{
+		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+     	UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
+		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenThrow(new IOException());
 		scraper.setUrlHandler(mockedHandler);
 
 		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);

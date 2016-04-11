@@ -4,12 +4,12 @@ import io.delimeat.util.UrlHandler_Impl;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -318,12 +318,9 @@ public class UrlHandler_ImplTest {
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
-  	@Ignore("seems to mess up maven")
-  	@Test
+  	@Test(expected=FileNotFoundException.class)
   	public void openOutputFileProtocolTest() throws IOException{
-     URL url = this.getClass().getResource(this.getClass().getSimpleName()+".class");
-    
-     OutputStream returnedOutput = handler.openOutput(url);
-     Assert.assertTrue(returnedOutput instanceof BufferedOutputStream); 
+     URL url = new URL("file:/tmp.JIBERISH");
+     handler.openOutput(url);
    }
 }

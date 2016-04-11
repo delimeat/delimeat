@@ -95,10 +95,20 @@ public class EpisodeTest {
 		episode.setShow(show);
 		Assert.assertEquals(show, episode.getShow());
 	}
+
+  	@Test
+  	public void equalsNullTest(){
+   	Assert.assertFalse(episode.equals(null)); 
+  	}
   
   	@Test
   	public void equalsObjectTest(){
    	Assert.assertFalse(episode.equals(new Object())); 
+  	}
+  
+  	@Test
+  	public void equalsSelfTest(){
+   	Assert.assertFalse(episode.equals(episode)); 
   	}
   
   @Test

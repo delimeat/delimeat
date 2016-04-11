@@ -28,6 +28,27 @@ public class FeedResultDailyValidator_ImplTest {
 		results = new ArrayList<FeedResult>();
 		show = new Show();
 	}
+  
+	@Test(expected=RuntimeException.class)
+	public void validateFormatParseExceptionTest() throws Exception{
+		Episode episode = new Episode();
+		episode.setAirDate(SDF.parse("2012-02-03"));
+		show.setNextEpisode(episode);
+		
+		FeedResult result = new FeedResult();
+		result.setTitle("testtext2013.02.03");
+		results.add(result);
+
+     	validator.setDateFormat("JIBERISH");
+		validator.validate(results, show);
+	}
+  
+  	@Test
+  	public void dateFormatTest(){
+     	Assert.assertEquals("yyyy-MM-dd",validator.getDateFormat());
+     	validator.setDateFormat("FORMAT");
+     	Assert.assertEquals("FORMAT",validator.getDateFormat());     	
+   }
 		
 	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
@@ -128,6 +149,7 @@ public class FeedResultDailyValidator_ImplTest {
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
+  
 	@Test
 	public void wrongYearRejectTest() throws Exception{
 		Episode episode = new Episode();
@@ -142,6 +164,7 @@ public class FeedResultDailyValidator_ImplTest {
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
+    
 	@Test
 	public void wrongdMonthRejectTest() throws Exception{
 		Episode episode = new Episode();

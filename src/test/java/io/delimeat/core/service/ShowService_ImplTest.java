@@ -37,6 +37,14 @@ public class ShowService_ImplTest {
 		service.setShowDao(mockedShowDao);
 		Assert.assertEquals(mockedShowDao, service.getShowDao());
 	}
+  
+	@Test
+	public void guideDaoTest() {
+		Assert.assertNull(service.getGuideDao());
+		GuideDao dao = Mockito.mock(GuideDao.class);
+		service.setGuideDao(dao);
+		Assert.assertEquals(dao, service.getGuideDao());
+	}
 
 	@Test
 	public void createNoGuideSourceTest() throws Exception {

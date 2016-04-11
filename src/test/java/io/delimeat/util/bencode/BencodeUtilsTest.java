@@ -1,5 +1,6 @@
 package io.delimeat.util.bencode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -40,13 +41,44 @@ public class BencodeUtilsTest {
 		// encode the values and verify they are correctly encoded
 		byte[] bytes =  BencodeUtils.encode( dict_1);
 		String encoded_string = new String(bytes);
-		Assert.assertEquals(
-				"d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe",
-				encoded_string);
-
+		Assert.assertEquals("d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe",encoded_string);
 	}
    
+	@Test
+	public void encodingOutputStreamTest() throws UnsupportedEncodingException,
+			IOException, BencodeException {
 
+		// create a root dictionary
+		BDictionary dict_1 = new BDictionary();
+
+		// create a list with a string and an integer and add it to the root
+		// dictionary
+		BList list_1 = new BList();
+		list_1.add("STRING_1_VAL");
+		list_1.add(2);
+		dict_1.put(new BString("LIST_1"), list_1);
+
+		// create a dictionary with a string and integer and add it to the root
+		// dictionary
+		BDictionary dict_2 = new BDictionary();
+		dict_2.put(new BString("STRING_2"), new BString("STRING_2_VAL"));
+		dict_2.put(new BString("INTEGER_2"), new BInteger(1));
+		dict_1.put(new BString("DICT_2"), dict_2);
+
+		// add a string to the root dictionary
+		dict_1.put(new BString("STRING_3"), new BString("STRING_3_VAL"));
+
+		// add an integer to the root dictionary
+		dict_1.put(new BString("INTEGER_3"), new BInteger(3));
+
+		// encode the values and verify they are correctly encoded
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BencodeUtils.encode(baos, dict_1);
+      byte[] bytes =  baos.toByteArray();
+		String encoded_string = new String(bytes);
+		Assert.assertEquals("d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe",encoded_string);
+	}
+  
 	@Test
 	/**
 	 * check the decoding is correct
@@ -54,7 +86,7 @@ public class BencodeUtilsTest {
 	public void decodingTest() throws Exception {
 
 		// create the bencoded value to be decoded and decode it
-		byte[] inputBytes = "d6:DICT_2d9:INTEGER_2i1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe"
+		byte[] inputBytes = "d6:DICT_2d9:INTEGER_2i-1e8:STRING_212:STRING_2_VALe9:INTEGER_3i3e6:LIST_1l12:STRING_1_VALi2ee8:STRING_312:STRING_3_VALe"
 				.getBytes(Charset.forName("ISO-8859-1"));
 		BDictionary dict_1 = BencodeUtils.decode(inputBytes);
 
@@ -87,7 +119,7 @@ public class BencodeUtilsTest {
 		Assert.assertEquals(true,
 				dict_2.get(new BString("INTEGER_2")) instanceof BInteger);
 		BInteger integer_2 = (BInteger) dict_2.get(new BString("INTEGER_2"));
-		Assert.assertEquals(1, integer_2.longValue());
+		Assert.assertEquals(-1, integer_2.longValue());
 
 		// check the root dictionary has a string value in it
 		Assert.assertEquals(true,

@@ -211,8 +211,18 @@ import org.junit.Test;
 
 
     @Test
+    public void equalsNullTest(){
+      Assert.assertFalse(ep.equals(null)); 
+    }
+    
+    @Test
     public void equalsObjectTest(){
       Assert.assertFalse(ep.equals(new Object())); 
+    }
+    
+    @Test
+    public void equalsSelfTest(){
+      Assert.assertTrue(ep.equals(ep)); 
     }
 
     @Test

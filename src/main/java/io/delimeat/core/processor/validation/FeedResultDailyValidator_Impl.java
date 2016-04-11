@@ -14,11 +14,20 @@ import java.util.regex.Pattern;
 
 public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String YEAR_REGEX = "\\d{4}(?=[\\s\\.]\\d{2}[\\s\\.]\\d{2})";
 	private static final String MONTH_REGEX = "(?<=\\d{4}[\\s\\.])\\d{2}(?=[\\s\\.]\\d{2})";
 	private static final String DAY_REGEX = "(?<=\\d{4}[\\s\\.]\\d{2}[\\s\\.])\\d{2}";
+  
+  	private String dateFormat = "yyyy-MM-dd";
 	
+  	public void setDateFormat(String dateFormat){
+     	this.dateFormat = dateFormat;
+   }
+  
+  	public String getDateFormat(){
+     	return dateFormat;
+   }
+  
 	@Override
 	public void validate(List<FeedResult> results, Show show) throws ValidationException {
 		final Date airDate;
@@ -30,6 +39,7 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 		final Pattern yearSelectPattern = Pattern.compile(YEAR_REGEX);
 		final Pattern monthSelectPattern = Pattern.compile(MONTH_REGEX);
 		final Pattern daySelectPattern = Pattern.compile(DAY_REGEX);
+     	final SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 		Matcher yearMatcher;
 		Matcher monthMatcher;
 		Matcher dayMatcher;
@@ -45,7 +55,7 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 					String month = monthMatcher.group();
 					String day = dayMatcher.group();
 					try{
-						Date resultAirDate = SDF.parse(year+"-"+month+"-"+day);
+						Date resultAirDate = sdf.parse(year+"-"+month+"-"+day);
 						if(airDate.getTime() == resultAirDate.getTime()){
 							continue;
 						}
