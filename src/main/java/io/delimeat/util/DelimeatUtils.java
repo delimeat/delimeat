@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DelimeatUtils {
 
-  	DelimeatUtils(){
+  	private DelimeatUtils(){
      	//do nothing
    }
   

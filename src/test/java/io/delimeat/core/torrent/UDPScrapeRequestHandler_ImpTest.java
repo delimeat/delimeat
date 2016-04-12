@@ -157,7 +157,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);
 		Mockito.doThrow(new SocketTimeoutException())
 				.doThrow(new SocketTimeoutException())
-				.doAnswer(new Answer() {
+				.doAnswer(new Answer<Object>() {
 					public Object answer(InvocationOnMock invocation) {
 						Object[] args = invocation.getArguments();
 						if (args[0] instanceof DatagramPacket) {
@@ -169,7 +169,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 				}).when(mockedSocket)
 				.receive(Mockito.any(DatagramPacket.class));
 
-		Answer sendAnswer = new Answer() {
+		Answer<Object> sendAnswer = new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -183,7 +183,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Mockito.doAnswer(sendAnswer).when(mockedSocket)
 				.send(Mockito.any(DatagramPacket.class));
 
-		Mockito.doAnswer(new Answer() {
+		Mockito.doAnswer(new Answer<Object>() {
 			int call = 1;
 
 			public Object answer(InvocationOnMock invocation) {
@@ -211,7 +211,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 				.doThrow(new SocketTimeoutException()).when(mockedSocket)
 				.receive(Mockito.any(DatagramPacket.class));
 
-		Mockito.doAnswer(new Answer() {
+		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -223,7 +223,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 			}
 		}).when(mockedSocket).send(Mockito.any(DatagramPacket.class));
 
-		Mockito.doAnswer(new Answer() {
+		Mockito.doAnswer(new Answer<Object>() {
 			int call = 1;
 
 			public Object answer(InvocationOnMock invocation) {
@@ -247,7 +247,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 
 		final ByteBuffer connSendBuf = ByteBuffer.allocate(16);
 		final ByteBuffer scapeSendBuf = ByteBuffer.allocate(36);
-		Mockito.doAnswer(new Answer() {
+		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -256,7 +256,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 				}
 				return null;
 			}
-		}).doAnswer(new Answer() {
+		}).doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -267,7 +267,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 			}
 		}).when(mockedSocket).send(Mockito.any(DatagramPacket.class));
 
-		Mockito.doAnswer(new Answer() {
+		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -279,7 +279,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 				}
 				return null;
 			}
-		}).doAnswer(new Answer() {
+		}).doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				if (args[0] instanceof DatagramPacket) {
@@ -299,12 +299,6 @@ public class UDPScrapeRequestHandler_ImpTest {
 		ScrapeResult result = scraper.scrape(new URI("udp://test.com:8080"),infoHash);
 		Assert.assertEquals(200, result.getSeeders());
 		Assert.assertEquals(100, result.getLeechers());
-	}
-	
-	@Test(expected=UnhandledScrapeException.class)
-	public void test() throws Exception{
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.scrape(new URI("udp://test:8080"),infoHash);
 	}
 
 }

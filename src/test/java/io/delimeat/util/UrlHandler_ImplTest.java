@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -318,9 +317,11 @@ public class UrlHandler_ImplTest {
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
-  	@Test(expected=FileNotFoundException.class)
+  	@Test
   	public void openOutputFileProtocolTest() throws IOException{
-     URL url = new URL("file:/tmp.JIBERISH");
-     handler.openOutput(url);
+     	URL url = ClassLoader.getSystemClassLoader().getResource("log4j2.xml");
+     	OutputStream returnedOutput = handler.openOutput(url);
+		Assert.assertTrue(returnedOutput instanceof BufferedOutputStream);
+     	returnedOutput.close();
    }
 }

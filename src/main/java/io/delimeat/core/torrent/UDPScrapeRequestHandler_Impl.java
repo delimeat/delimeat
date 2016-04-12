@@ -34,9 +34,6 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);
-		if(address.isUnresolved()){
-			throw new UnhandledScrapeException(String.format("Cannot Resolve Address: %s", address));
-		}
 		int connTransId = RANDOM_GEN.nextInt();
 		byte[] connRequest = createConnectRequest(connTransId);
 		byte[] connResponse = sendRequest(connRequest,address);

@@ -17,7 +17,7 @@ public final class BencodeUtils {
 	private static final char NEGATIVE = '-';
 	private static final char COLON = ':';
   
-  	BencodeUtils(){
+  	private BencodeUtils(){
      //do nothing
    }
 

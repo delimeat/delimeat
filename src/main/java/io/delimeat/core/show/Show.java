@@ -2,6 +2,7 @@ package io.delimeat.core.show;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import io.delimeat.util.jaxb.AirTimeAdapter;
 
 import java.util.Date;
@@ -280,13 +281,23 @@ public class Show implements Comparable<Show> {
 	@Override
 	public int compareTo(Show other) {
      return ComparisonChain.start()
-       			.compare(this.title, other.title)
+       			.compare(this.title, other.title, Ordering.natural().nullsFirst())
        			.result();
 	}
 
 	@Override
 	public boolean equals(Object other) {
-     return (other instanceof Show && showId == ((Show) other).showId);
+     if(other == null)
+       	return false;
+     
+     if(this == other)
+       	return true;
+     
+     if(other instanceof Show){
+       	return showId == ((Show) other).showId;
+     }
+     
+     return false;
 	}
 
 	/*

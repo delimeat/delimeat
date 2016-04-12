@@ -160,24 +160,58 @@ public class ShowTest {
   
   	@Test
   	public void toStringTest() throws ParseException{
-		show.setShowId(Long.MAX_VALUE);
-		show.setAirTime(Integer.MIN_VALUE);
-		show.setTimezone("TIMEZONE");
-		show.setGuideId("GUIDEID");
-		show.setTitle("TITLE");
-		show.setAiring(true);
-		show.setShowType(ShowType.ANIMATED);
-		show.setLastGuideUpdate(SDF.parse("2015-11-06"));
-		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
-		show.setEnabled(true);
-		Episode episode = new Episode();
-		show.setNextEpisode(episode);
-     	show.setPreviousEpisode(null);
-		show.setIncludeSpecials(true);
-		show.setVersion(Integer.MAX_VALUE);
-		show.setMinSize(Integer.MAX_VALUE);
-		show.setMaxSize(Integer.MAX_VALUE);
-     	System.out.println(show.toString());
-		Assert.assertEquals("Show{showId=9223372036854775807, title=TITLE, showType=ANIMATED, enabled=true, airing=true, airTime=-2147483648, timezone=TIMEZONE, guideId=GUIDEID, nextEpisode=Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}, previousEpisode=null, includeSpecials=true, lastGuideUpdate=Fri Nov 06 00:00:00 UTC 2015, lastFeedUpdate=Fri Nov 06 00:00:00 UTC 2015, minSize=2147483647, maxSize=2147483647, version=2147483647}",show.toString());
+		Assert.assertEquals("Show{showId=0, title=null, showType=null, enabled=false, airing=false, airTime=0, timezone=null, guideId=null, nextEpisode=null, previousEpisode=null, includeSpecials=false, lastGuideUpdate=null, lastFeedUpdate=null, minSize=0, maxSize=0, version=0}",show.toString());
+   }
+  
+  	@Test
+  	public void equalsNullTest(){
+     	Assert.assertFalse(show.equals(null));     	
+   }
+  
+  	@Test
+  	public void equalsSelfTest(){
+     	Assert.assertTrue(show.equals(show));
+   }
+  
+  	@Test
+  	public void equalsOtherObjectTest(){
+     	Assert.assertFalse(show.equals(new Object()));
+   }
+  
+  	@Test
+  	public void equalsTest(){
+     	show.setShowId(1);
+     	Show other = new Show();
+     	other.setShowId(1);
+     	Assert.assertTrue(show.equals(other));
+   }
+  
+  	@Test
+  	public void equalsNotEqualTest(){
+     	show.setShowId(1);
+     	Show other = new Show();
+     	other.setShowId(2);
+     	Assert.assertFalse(show.equals(other));
+   }
+  
+  	@Test
+  	public void compareToEqualTest(){
+   	Assert.assertEquals(0, show.compareTo(show));
+   }
+  
+  	@Test
+  	public void compareToNullTest(){
+     	show.setTitle("TITLE");
+     	Show other = new Show();
+     	other.setTitle(null);
+   	Assert.assertEquals(1, show.compareTo(other));
+   }
+  
+  	@Test
+  	public void compareToOtherNullTest(){
+     	show.setTitle("TITLE");
+     	Show other = new Show();
+     	other.setTitle(null);
+   	Assert.assertEquals(-1, other.compareTo(show));
    }
 }

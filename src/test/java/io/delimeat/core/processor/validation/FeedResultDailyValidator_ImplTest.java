@@ -49,6 +49,13 @@ public class FeedResultDailyValidator_ImplTest {
      	validator.setDateFormat("FORMAT");
      	Assert.assertEquals("FORMAT",validator.getDateFormat());     	
    }
+  
+  	@Test
+  	public void separatorTest(){
+     	Assert.assertEquals("-",validator.getSeparator());
+     	validator.setSeparator("FORMAT");
+     	Assert.assertEquals("FORMAT",validator.getSeparator());      	
+   }
 		
 	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
@@ -193,6 +200,7 @@ public class FeedResultDailyValidator_ImplTest {
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
+  
 	@Test
 	public void validFeedResultTest() throws Exception{
 		Episode episode = new Episode();
@@ -205,6 +213,20 @@ public class FeedResultDailyValidator_ImplTest {
 
 		validator.validate(results, show);
 		Assert.assertEquals(0, result.getFeedResultRejections().size());	
+	}
+  
+	@Test(expected=RuntimeException.class)
+	public void validFeedResultParseExceptionTest() throws Exception{
+		Episode episode = new Episode();
+		episode.setAirDate(SDF.parse("2012-02-03"));
+		show.setNextEpisode(episode);
+		
+		FeedResult result = new FeedResult();
+		result.setTitle("testtext2012.02.03");
+		results.add(result);
+
+     	validator.setSeparator("XX");
+		validator.validate(results, show);	
 	}
 	
 	@Test

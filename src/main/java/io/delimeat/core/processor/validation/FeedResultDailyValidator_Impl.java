@@ -19,6 +19,7 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 	private static final String DAY_REGEX = "(?<=\\d{4}[\\s\\.]\\d{2}[\\s\\.])\\d{2}";
   
   	private String dateFormat = "yyyy-MM-dd";
+  	private String separator = "-";
 	
   	public void setDateFormat(String dateFormat){
      	this.dateFormat = dateFormat;
@@ -26,6 +27,14 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
   
   	public String getDateFormat(){
      	return dateFormat;
+   }
+  
+  	public void setSeparator(String separator){
+     	this.separator = separator;
+   }
+  	
+  	public String getSeparator(){
+     	return separator;
    }
   
 	@Override
@@ -55,12 +64,12 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 					String month = monthMatcher.group();
 					String day = dayMatcher.group();
 					try{
-						Date resultAirDate = sdf.parse(year+"-"+month+"-"+day);
+						Date resultAirDate = sdf.parse(year+separator+month+separator+day);
 						if(airDate.getTime() == resultAirDate.getTime()){
 							continue;
 						}
 					}catch(ParseException ex){
-						//do nothing
+						throw new RuntimeException(ex);
 					}
 				}
 			}
