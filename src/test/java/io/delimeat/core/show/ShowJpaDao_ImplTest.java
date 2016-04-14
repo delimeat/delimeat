@@ -262,9 +262,12 @@ public class ShowJpaDao_ImplTest {
    }
   
   	@Test(expected=ShowException.class)
-  	public void readAndLockExceptionTest() throws Exception{   
+  	public void readAndLockExceptionTest() throws Exception{ 
+     	Show show = new Show();
+
      	EntityManager entityManager = Mockito.mock(EntityManager.class);
-     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenThrow(PersistenceException.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show); 
+     	Mockito.doThrow(PersistenceException.class).when(entityManager).lock(show, LockModeType.PESSIMISTIC_WRITE);
      	dao.setEm(entityManager);
      
      	dao.readAndLock(1L);
