@@ -24,6 +24,10 @@
   	<named-query name="Show.getNextEpisode">
 		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show AND e.seasonNum >= :seasonNum AND e.episodeNum > :episodeNum ORDER BY e.seasonNum ASC, e.episodeNum ASC]]></query>
 	</named-query>
+
+  	<named-query name="Show.deleteEpisodes">
+		<query><![CDATA[DELETE e FROM Episode e WHERE e.show = :show]]></query>
+	</named-query> 	
   
 	<entity class="Episode" name="Episode">
 		<table name="EPISODE" >

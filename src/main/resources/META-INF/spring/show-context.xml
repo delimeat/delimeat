@@ -16,29 +16,28 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
  	
 	<jee:jndi-lookup id="showDataSourceId" jndi-name="jdbc/delimeatDB" expected-type="javax.sql.DataSource" />
  	!-->
- 	
-	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-      <property name="persistenceUnitName" value="delimeatPU"/>
 
-   </bean>
     
-    <!--  
+  	<!--
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
       <property name="mappingResources" value="META-INF/orm.xml"></property>
-      <property name="dataSource" ref="showDataSourceId"/>
-      <property name="jpaVendorAdapter" ref="showJpaAdaptorId"/>
+      <property name="dataSource">
+			<jee:jndi-lookup  jndi-name="jdbc/delimeatDB" expected-type="javax.sql.DataSource" />
+     	</property>
+      <property name="jpaVendorAdapter">
+        <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"/>
+     </property>
       <property name="jpaProperties">
-         <props>
-         		
+         <props>	
            <prop key="eclipselink.weaving">false</prop>
-
+  
            <prop key="eclipselink.ddl-generation">drop-and-create-tables</prop>
- 
+
            <prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
            <prop key="eclipselink.ddl-generation.output-mode">database</prop>
 
            <prop key="eclipselink.logging.level">OFF</prop>
- 
+
 				<prop key="eclipselink.logging.level">ALL</prop>
 				<prop key="eclipselink.logging.thread">true</prop>
 				<prop key="eclipselink.logging.session">true</prop>
@@ -49,7 +48,12 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
       </property>
    </bean>
  	!-->
+ 
  	
+	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+      <property name="persistenceUnitName" value="delimeatPU"/>
+   </bean>
+  	
    <bean id="showTransactionManagerId" class="org.springframework.orm.jpa.JpaTransactionManager">
       <property name="entityManagerFactory" ref="showEntityManagerFactoryId" />
    </bean>

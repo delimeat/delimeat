@@ -62,13 +62,12 @@ public class ShowJpaDao_Impl implements ShowDao {
 			final Show show = read(showId);
 			show.setNextEpisode(null);
 			show.setPreviousEpisode(null);
+			//em.createNamedQuery("Show.deleteEpisodes").setParameter("show", show).executeUpdate();
 			for(Episode ep: readAllEpisodes(showId)){
 				deleteEpisode(ep.getEpisodeId());
 			}
 			em.remove(show);
 			
-		} catch (EntityNotFoundException ex){
-			throw new ShowNotFoundException(ex);
 		} catch (PersistenceException ex){
 			throw new ShowException(ex);
 		}
@@ -88,12 +87,11 @@ public class ShowJpaDao_Impl implements ShowDao {
 	@Override
 	public Show readAndLock(long showId) throws ShowNotFoundException, ShowException {
 		try{
-         Show show = em.getReference(Show.class, showId);
+        
+         Show show = read(showId);
          em.lock(show, LockModeType.PESSIMISTIC_WRITE);
 			return show;
 		
-		} catch (EntityNotFoundException ex){
-			throw new ShowNotFoundException(ex);
 		} catch (PersistenceException ex){
 			throw new ShowException(ex);
 		}
@@ -106,9 +104,7 @@ public class ShowJpaDao_Impl implements ShowDao {
         		Show show = read(showId);
 	         return em.createNamedQuery("Show.getAllEpisodes",Episode.class).setParameter("show", show).getResultList();
 			
-			} catch (EntityNotFoundException ex){
-				throw new ShowNotFoundException(ex);
-			}  catch (PersistenceException ex){
+			} catch (PersistenceException ex){
 				throw new ShowException(ex);
 			}
 	}
@@ -146,8 +142,6 @@ public class ShowJpaDao_Impl implements ShowDao {
 			
 			em.remove(readEpisode(episodeId));
 			
-		} catch (EntityNotFoundException ex){
-			throw new ShowNotFoundException(ex);
 		} catch (PersistenceException ex){
 			throw new ShowException(ex);
 		}
@@ -174,7 +168,7 @@ public class ShowJpaDao_Impl implements ShowDao {
           			.getSingleResult();
 			
 			} catch(NoResultException ex){  
-				throw new ShowNotFoundException(ex);
+				return null;
     		} catch (PersistenceException ex){
 				throw new ShowException(ex);
 			}

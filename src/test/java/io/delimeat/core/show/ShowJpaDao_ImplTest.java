@@ -1,200 +1,535 @@
 package io.delimeat.core.show;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
-import org.apache.derby.tools.ij;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class ShowJpaDao_ImplTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-	private static final String SQL_FILE = "/io/delimeat/core/show/derby_show_test.sql";
-	private static final String CLEANUP_FILE = "/io/delimeat/core/show/derby_show_cleanup.sql";
-	
-	private static EntityManagerFactory factory;
-	private static EntityManager entityManager;
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		Properties properties = new Properties();
-		PersistenceProvider provider = new PersistenceProvider();
-		factory = provider.createEntityManagerFactory("testPU", properties);
-		entityManager = factory.createEntityManager();
-	}
-
-	@AfterClass
-	public static void afterClass() throws Exception {
-		entityManager.close();
-		factory.close();
-	}
-
+ 	
 	private ShowJpaDao_Impl dao;
 
 	@Before
-	public void before() {
-		dao = new ShowJpaDao_Impl();
-		dao.setEm(entityManager);
-	}
-
-	@Before
-	public void openTransaction() {
-		entityManager.getTransaction().begin();
-	}
-	
-	@After
-	public void cleanup() throws UnsupportedEncodingException{
-		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
-				.getConnection();
-
-		InputStream is = System.class.getResourceAsStream(CLEANUP_FILE);
-		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
-	}
-
-	@After
-	public void closeTransaction() {
-		if (entityManager.getTransaction().isActive()) {
-			entityManager.getTransaction().rollback();
-		}
-	}
+   public void before() throws Exception {	
+     dao = new ShowJpaDao_Impl();
+    }
+     
+  
+  	public Show buildShow(int airTime, String timezone, String guideId, String title, boolean airing, ShowType showType, Date lastGuideUpdate, Date lastFeedUpdate, boolean enabled, int minSize, int maxSize){
+     	Show show = new Show();
+     	show.setAirTime(airTime);
+     	show.setTimezone(timezone);
+     	show.setGuideId(guideId);
+     	show.setTitle(title);
+     	show.setAiring(airing);
+     	show.setShowType(showType);
+     	show.setLastGuideUpdate(lastGuideUpdate);
+     	show.setLastFeedUpdate(lastFeedUpdate);
+     	show.setEnabled(enabled);
+     	show.setMinSize(minSize);
+     	show.setMaxSize(maxSize);
+     	return show;
+   }
+  
+  	public Episode buildEpisode(Date airDate, boolean doubleEp, int seasonNum, int episodeNum, String title, Show show){
+     	Episode ep = new Episode();
+     	ep.setAirDate(airDate);
+     	ep.setDoubleEp(doubleEp);
+     	ep.setSeasonNum(seasonNum);
+     	ep.setEpisodeNum(episodeNum);
+     	ep.setTitle(title);
+     	ep.setShow(show);
+     	return ep;
+   }
+  
+  	@Test
+  	public void entityManagerTest(){
+     	Assert.assertNull(dao.getEm());
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	dao.setEm(entityManager);
+     	Assert.assertEquals(entityManager,dao.getEm());
+   }
 
 	@Test
-	public void createShowTest() throws Exception {
+	public void createShowTest() throws Exception {  	
 		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(1);
 
-		show.setGuideId("ID1");
-
-		show.setLastFeedUpdate(SDF.parse("2015-10-17"));
-		show.setLastGuideUpdate(SDF.parse("2015-10-16"));
-		show.setShowType(ShowType.ANIMATED);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-      show.setMinSize(Integer.MIN_VALUE);
-      show.setMaxSize(Integer.MAX_VALUE);
-
-		Episode prevEpisode = new Episode();
-		prevEpisode.setAirDate(SDF.parse("2015-10-15"));
-		prevEpisode.setDoubleEp(true);
-		prevEpisode.setEpisodeNum(1);
-		prevEpisode.setSeasonNum(2);
-		prevEpisode.setShow(show);
-		prevEpisode.setTitle("TITLE");
-		show.setPreviousEpisode(prevEpisode);
-
-		Episode nextEpisode = new Episode();
-		nextEpisode.setAirDate(SDF.parse("2000-01-01"));
-		nextEpisode.setDoubleEp(false);
-		nextEpisode.setEpisodeNum(2);
-		nextEpisode.setSeasonNum(1);
-		nextEpisode.setShow(show);
-		nextEpisode.setTitle("TITLE_TWO");
-		show.setNextEpisode(nextEpisode);
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(show)).thenReturn(show);
+     	dao.setEm(entityManager);
 
 		Show newShow = dao.createOrUpdate(show);
 
-		Assert.assertNotEquals(0, newShow.getShowId());
-		Assert.assertTrue(newShow.isAiring());
-		Assert.assertEquals(1, show.getAirTime());
-      Assert.assertEquals(Integer.MIN_VALUE, show.getMinSize());
-      Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
+     	Assert.assertEquals(show, newShow);
+     
+     	Mockito.verify(entityManager).merge(show);
+     	Mockito.verifyNoMoreInteractions(entityManager);
 
-		Assert.assertEquals("ID1", newShow.getGuideId());
+	}
+  
+	@Test(expected=ShowConcurrencyException.class)
+	public void createShowOptimisticLockExceptionTest() throws Exception {  	
+		Show show = new Show();
 
-		Assert.assertEquals("2015-10-17", SDF.format(newShow.getLastFeedUpdate()));
-		Assert.assertEquals("2015-10-16", SDF.format(newShow.getLastGuideUpdate()));
-		Assert.assertEquals(ShowType.ANIMATED, newShow.getShowType());
-		Assert.assertEquals("TIMEZONE", newShow.getTimezone());
-		Assert.assertEquals("TITLE", newShow.getTitle());
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(show)).thenThrow(OptimisticLockException.class);
+     	dao.setEm(entityManager);
 
-		Assert.assertNotNull(newShow.getPreviousEpisode());
-		Assert.assertNotEquals(0, newShow.getPreviousEpisode().getEpisodeId());
-		Assert.assertEquals("2015-10-15", SDF.format(newShow.getPreviousEpisode().getAirDate()));
-		Assert.assertTrue(newShow.getPreviousEpisode().isDoubleEp());
-		Assert.assertEquals(1, newShow.getPreviousEpisode().getEpisodeNum());
-		Assert.assertEquals(2, newShow.getPreviousEpisode().getSeasonNum());
-		Assert.assertEquals("TITLE", newShow.getPreviousEpisode().getTitle());
+		dao.createOrUpdate(show);
+	}
+  
+	@Test(expected=ShowException.class)
+	public void createShowExceptionTest() throws Exception {  	
+		Show show = new Show();
 
-		Assert.assertNotNull(newShow.getNextEpisode());
-		Assert.assertNotEquals(0, newShow.getNextEpisode().getEpisodeId());
-		Assert.assertEquals("2000-01-01", SDF.format(newShow.getNextEpisode().getAirDate()));
-		Assert.assertFalse(newShow.getNextEpisode().isDoubleEp());
-		Assert.assertEquals(2, newShow.getNextEpisode().getEpisodeNum());
-		Assert.assertEquals(1, newShow.getNextEpisode().getSeasonNum());
-		Assert.assertEquals("TITLE_TWO", newShow.getNextEpisode().getTitle());
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(show)).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
 
+		dao.createOrUpdate(show);
 	}
 
 	@Test
 	public void readShowTest() throws Exception {
-
-		Connection connection = ((EntityManagerImpl) (entityManager.getDelegate())).getServerSession().getAccessor()
-				.getConnection();
-
-		InputStream is = System.class.getResourceAsStream(SQL_FILE);
-		ij.runScript(connection, is, "UTF-8", System.out, "UTF-8");
-
-		Show show = dao.read(1);
-		Assert.assertEquals(1, show.getShowId());
-		Assert.assertEquals(1200, show.getAirTime());
-		Assert.assertTrue(show.isAiring());
-		Assert.assertFalse(show.isEnabled());
-		Assert.assertTrue(show.isIncludeSpecials());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getLastFeedUpdate()));
-		Assert.assertNull(show.getLastGuideUpdate());
-		Assert.assertEquals(ShowType.ANIMATED, show.getShowType());
-		Assert.assertEquals("TIMEZONE", show.getTimezone());
-		Assert.assertEquals("TITLE", show.getTitle());
-		Assert.assertEquals(99, show.getVersion());
-		Assert.assertEquals(100, show.getMinSize());
-     	Assert.assertEquals(101, show.getMaxSize());
+		Show show = new Show();
      
-		Assert.assertNotNull(show.getNextEpisode());
-		Assert.assertEquals(2, show.getNextEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getNextEpisode().getAirDate()));
-		Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
-		Assert.assertEquals(2, show.getNextEpisode().getEpisodeNum());
-		Assert.assertEquals("NEXT EPISODE", show.getNextEpisode().getTitle());
-		Assert.assertFalse(show.getNextEpisode().isDoubleEp());
-		Assert.assertEquals(3, show.getNextEpisode().getVersion());
-		Assert.assertNotNull(show.getNextEpisode().getShow());
-		Assert.assertEquals(1, show.getNextEpisode().getShow().getShowId());
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+     	dao.setEm(entityManager);
+     
+		Show newShow = dao.read(1);
+		Assert.assertEquals(show, newShow);		
+     	
+     	Mockito.verify(entityManager).getReference(Show.class,1L);
+     	Mockito.verifyNoMoreInteractions(entityManager);
 
-		Assert.assertNotNull(show.getPreviousEpisode());
-		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeId());
-		Assert.assertEquals("1988-12-25", SDF.format(show.getPreviousEpisode().getAirDate()));
-		Assert.assertEquals(2, show.getPreviousEpisode().getSeasonNum());
-		Assert.assertEquals(3, show.getPreviousEpisode().getEpisodeNum());
-		Assert.assertEquals("PREVIOUS EPISODE", show.getPreviousEpisode().getTitle());
-		Assert.assertTrue(show.getPreviousEpisode().isDoubleEp());
-		Assert.assertEquals(4, show.getPreviousEpisode().getVersion());
-		Assert.assertNotNull(show.getPreviousEpisode().getShow());
-		Assert.assertEquals(1, show.getPreviousEpisode().getShow().getShowId());
+	}
+  
+	@Test(expected=ShowNotFoundException.class)
+	public void readShowNotFoundExceptionTest() throws Exception {    
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenThrow(EntityNotFoundException.class);
+     	dao.setEm(entityManager);
+     
+		dao.read(1);
+	}
+  
+	@Test(expected=ShowException.class)
+	public void readShowExceptionTest() throws Exception {    
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
+     
+		dao.read(1);
+	}
+  
+  	@Test
+  	public void deleteTest() throws Exception{
+		Show show = new Show();
+     	Episode ep = new Episode();
+     	ep.setEpisodeId(2);
+     	show.setNextEpisode(ep);
+     	show.setPreviousEpisode(ep);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
+     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+     	Mockito.when(entityManager.getReference(Episode.class, 2L)).thenReturn(ep);
 
-		Assert.assertEquals("GUIDEID", show.getGuideId());		
+     	dao.setEm(entityManager);
+     
+		dao.delete(1);
+     	
+     	Assert.assertNull(show.getNextEpisode());
+     	Assert.assertNull(show.getPreviousEpisode());
+     
+     	Mockito.verify(entityManager, Mockito.times(2)).getReference(Show.class,1L);
+     	Mockito.verify(entityManager).createNamedQuery("Show.getAllEpisodes",Episode.class);
+     	Mockito.verify(entityManager).remove(show);
+     	Mockito.verify(entityManager).getReference(Episode.class,2L);
+     	Mockito.verify(entityManager).remove(ep);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+     	Mockito.verify(episodesQuery).setParameter("show", show);
+     	Mockito.verify(episodesQuery).getResultList();
+     	Mockito.verifyNoMoreInteractions(episodesQuery);
+   }
+
+  	@Test(expected=ShowNotFoundException.class)
+  	public void deleteNotFoundTest() throws Exception{
+		Show show = new Show();
+     	Episode ep = new Episode();
+     	show.setNextEpisode(ep);
+     	show.setPreviousEpisode(ep);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenThrow(EntityNotFoundException.class);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
+     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+
+     	dao.setEm(entityManager);
+     
+		dao.delete(1);
+
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void deleteExceptionTest() throws Exception{
+		Show show = new Show();
+     	Episode ep = new Episode();
+     	show.setNextEpisode(ep);
+     	show.setPreviousEpisode(ep);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
+     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+     	Mockito.doThrow(PersistenceException.class).when(entityManager).remove(show);
+      dao.setEm(entityManager);
+     
+		dao.delete(1);
+   }
+  
+  	@Test
+  	public void readAllTest() throws Exception{
+     	Show show = new Show();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Show> query = Mockito.mock(TypedQuery.class);
+     	Mockito.when(query.getResultList()).thenReturn(Arrays.asList(show));
+     	Mockito.when(entityManager.createNamedQuery("Show.getAll",Show.class)).thenReturn(query); 
+     	
+     	dao.setEm(entityManager);
+     
+     	List<Show> shows = dao.readAll();
+     	Assert.assertNotNull(shows);
+     	Assert.assertEquals(1, shows.size());
+     	Assert.assertEquals(show, shows.get(0));
+     
+     	Mockito.verify(entityManager).createNamedQuery("Show.getAll",Show.class);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+     	Mockito.verify(query).getResultList();
+     	Mockito.verifyNoMoreInteractions(query);
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void readAllExceptionTest() throws Exception{    
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Show> query = Mockito.mock(TypedQuery.class);
+     	Mockito.when(query.getResultList()).thenThrow(PersistenceException.class);
+     	Mockito.when(entityManager.createNamedQuery("Show.getAll",Show.class)).thenReturn(query); 
+     	
+     	dao.setEm(entityManager);
+     
+     	dao.readAll();
+   }
+  
+  	@Test
+  	public void readAndLockTest() throws Exception{
+     	Show show = new Show();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show); 
+     	dao.setEm(entityManager);
+     
+     	Show newShow = dao.readAndLock(1L);
+     	Assert.assertEquals(show, newShow);
+     
+     	Mockito.verify(entityManager).getReference(Show.class, 1L);
+     	Mockito.verify(entityManager).lock(show, LockModeType.PESSIMISTIC_WRITE);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void readAndLockExceptionTest() throws Exception{   
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
+     
+     	dao.readAndLock(1L);
+   }
+  
+  	@Test
+  	public void readAllEpisodesTest() throws Exception{
+		Show show = new Show();
+     	Episode ep = new Episode();
+     	show.setNextEpisode(ep);
+     	show.setPreviousEpisode(ep);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
+     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+      dao.setEm(entityManager);
+     	
+     	List<Episode> eps = dao.readAllEpisodes(1L);
+     	Assert.assertNotNull(eps);
+     	Assert.assertEquals(1, eps.size());
+     	Assert.assertEquals(ep, eps.get(0));
+     
+     	Mockito.verify(entityManager, Mockito.times(1)).getReference(Show.class,1L);
+     	Mockito.verify(entityManager).createNamedQuery("Show.getAllEpisodes",Episode.class);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+     	Mockito.verify(episodesQuery).setParameter("show", show);
+     	Mockito.verify(episodesQuery).getResultList();
+     	Mockito.verifyNoMoreInteractions(episodesQuery);
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void readAllEpisodesExceptionTest() throws Exception{
+		Show show = new Show();
+     	Episode ep = new Episode();
+     	show.setNextEpisode(ep);
+     	show.setPreviousEpisode(ep);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.getResultList()).thenThrow(PersistenceException.class);
+     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+      dao.setEm(entityManager);
+     	
+     	dao.readAllEpisodes(1L);
+   }
+
+	@Test
+	public void readEpisodeTest() throws Exception {
+		Episode ep = new Episode();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Episode.class, 1L)).thenReturn(ep);
+     	dao.setEm(entityManager);
+     
+		Episode newEp = dao.readEpisode(1);
+		Assert.assertEquals(ep, newEp);		
+     	
+     	Mockito.verify(entityManager).getReference(Episode.class,1L);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+
 	}
 
-	@Test(expected = ShowNotFoundException.class)
-	public void notFoundReadShowTest() throws Exception {
-		dao.read(3);
+	@Test(expected=ShowNotFoundException.class)
+	public void readEpisodeNotFoundExceptionTest() throws Exception {    
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Episode.class, 1L)).thenThrow(EntityNotFoundException.class);
+     	dao.setEm(entityManager);
+     
+		dao.readEpisode(1);
+
 	}
+  
+	@Test(expected=ShowException.class)
+	public void readEpisodeExceptionTest() throws Exception {    
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Episode.class, 1L)).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
+     
+		dao.readEpisode(1);
+	}
+  
+	@Test
+	public void createOrUpdateEpisodeTest() throws Exception {  	
+		Episode ep = new Episode();
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(ep)).thenReturn(ep);
+     	dao.setEm(entityManager);
+
+		Episode newEp = dao.createOrUpdateEpisode(ep);
+
+     	Assert.assertEquals(ep, newEp);
+     
+     	Mockito.verify(entityManager).merge(ep);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+	}
+  
+  	@Test(expected=ShowConcurrencyException.class)
+  	public void createOrUpdateEpisodeOptimisticLockExceptionTest() throws Exception{
+		Episode ep = new Episode();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(ep)).thenThrow(OptimisticLockException.class);
+     	dao.setEm(entityManager);
+
+		dao.createOrUpdateEpisode(ep);     
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void createOrUpdateEpisodeExceptionTest() throws Exception{
+		Episode ep = new Episode();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(ep)).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
+
+		dao.createOrUpdateEpisode(ep);     
+   }
+  
+	@Test
+	public void deleteEpisodeTest() throws Exception {  	
+		Episode ep = new Episode();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Episode.class, 1L)).thenReturn(ep);
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisode(1);
+     	
+     	Mockito.verify(entityManager).getReference(Episode.class,1L);
+     	Mockito.verify(entityManager).remove(ep);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+	}
+
+	@Test(expected=ShowException.class)
+	public void deleteEpisodeExceptionTest() throws Exception {  	
+		Episode ep = new Episode();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Episode.class, 1L)).thenReturn(ep);
+     	Mockito.doThrow(PersistenceException.class).when(entityManager).remove(ep);
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisode(1);
+	}
+  
+	@Test
+	public void createOrUpdateEpisodesTest() throws Exception {  	
+		Episode ep = new Episode();
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(ep)).thenReturn(ep);
+     	dao.setEm(entityManager);
+
+		List<Episode> newEps = dao.createOrUpdateEpisodes(Arrays.asList(ep,ep));
+
+     	Assert.assertNotNull(newEps);
+     	Assert.assertEquals(2, newEps.size());
+     	Assert.assertEquals(ep, newEps.get(0));
+     	Assert.assertEquals(ep, newEps.get(1));
+     
+     	Mockito.verify(entityManager, Mockito.times(2)).merge(ep);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+	}
+  
+	@Test(expected=ShowException.class)
+	public void createOrUpdateEpisodesExceptionTest() throws Exception {  	
+		Episode ep = new Episode();
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.merge(ep)).thenReturn(ep).thenThrow(PersistenceException.class);
+     	dao.setEm(entityManager);
+
+		dao.createOrUpdateEpisodes(Arrays.asList(ep,ep));
+	}
+  
+  	@Test
+  	public void readNextEpisodeTest() throws Exception{
+		Episode ep = new Episode();
+     	ep.setSeasonNum(1);
+      ep.setEpisodeNum(2);
+     	Show show = new Show();
+     	ep.setShow(show);
+     	Episode ep2 = new Episode();
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Episode> query = Mockito.mock(TypedQuery.class);
+     	Mockito.when(query.setParameter("show", show)).thenReturn(query);
+     	Mockito.when(query.setParameter("seasonNum", 1)).thenReturn(query);
+     	Mockito.when(query.setParameter("episodeNum", 2)).thenReturn(query);
+     	Mockito.when(query.setMaxResults(1)).thenReturn(query);
+     	Mockito.when(query.getSingleResult()).thenReturn(ep2);
+     	Mockito.when(entityManager.createNamedQuery("Show.getNextEpisode",Episode.class)).thenReturn(query);
+     	dao.setEm(entityManager);
+     
+     	Episode newEp = dao.readNextEpisode(ep);
+     	Assert.assertEquals(ep2, newEp);
+     
+     	Mockito.verify(entityManager).createNamedQuery("Show.getNextEpisode",Episode.class);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+     	Mockito.verify(query).setParameter("show", show);
+     	Mockito.verify(query).setParameter("seasonNum", 1);
+     	Mockito.verify(query).setParameter("episodeNum", 2);
+     	Mockito.verify(query).setMaxResults(1);
+     	Mockito.verify(query).getSingleResult();
+     	Mockito.verifyNoMoreInteractions(query);
+   }
+
+  	@Test
+  	public void readNextEpisodeNoResultTest() throws Exception{
+		Episode ep = new Episode();
+     	ep.setSeasonNum(1);
+      ep.setEpisodeNum(2);
+     	Show show = new Show();
+     	ep.setShow(show);
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Episode> query = Mockito.mock(TypedQuery.class);
+     	Mockito.when(query.setParameter("show", show)).thenReturn(query);
+     	Mockito.when(query.setParameter("seasonNum", 1)).thenReturn(query);
+     	Mockito.when(query.setParameter("episodeNum", 2)).thenReturn(query);
+     	Mockito.when(query.setMaxResults(1)).thenReturn(query);
+     	Mockito.when(query.getSingleResult()).thenThrow(NoResultException.class);
+     	Mockito.when(entityManager.createNamedQuery("Show.getNextEpisode",Episode.class)).thenReturn(query);
+     	dao.setEm(entityManager);
+     
+     	Assert.assertNull(dao.readNextEpisode(ep));
+     
+     	Mockito.verify(entityManager).createNamedQuery("Show.getNextEpisode",Episode.class);
+     	Mockito.verifyNoMoreInteractions(entityManager);
+     	Mockito.verify(query).setParameter("show", show);
+     	Mockito.verify(query).setParameter("seasonNum", 1);
+     	Mockito.verify(query).setParameter("episodeNum", 2);
+     	Mockito.verify(query).setMaxResults(1);
+     	Mockito.verify(query).getSingleResult();
+     	Mockito.verifyNoMoreInteractions(query);
+   }
+  
+  	@Test(expected=ShowException.class)
+  	public void readNextEpisodeExceptionTest() throws Exception{
+		Episode ep = new Episode();
+     	ep.setSeasonNum(1);
+      ep.setEpisodeNum(2);
+     	Show show = new Show();
+     	ep.setShow(show);
+
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Episode> query = Mockito.mock(TypedQuery.class);
+     	Mockito.when(query.setParameter("show", show)).thenReturn(query);
+     	Mockito.when(query.setParameter("seasonNum", 1)).thenReturn(query);
+     	Mockito.when(query.setParameter("episodeNum", 2)).thenReturn(query);
+     	Mockito.when(query.setMaxResults(1)).thenReturn(query);
+     	Mockito.when(query.getSingleResult()).thenThrow(PersistenceException.class);
+     	Mockito.when(entityManager.createNamedQuery("Show.getNextEpisode",Episode.class)).thenReturn(query);
+     	dao.setEm(entityManager);
+     
+     	dao.readNextEpisode(ep);
+   }
+	/*
+
 
 	@Test(expected = ShowNotFoundException.class)
 	public void notFoundDeleteTest() throws Exception {
@@ -537,5 +872,5 @@ public class ShowJpaDao_ImplTest {
 		Assert.assertNotNull(ep.getShow());
 		Assert.assertEquals(1, ep.getShow().getShowId());
    }
-	
+	*/
 }
