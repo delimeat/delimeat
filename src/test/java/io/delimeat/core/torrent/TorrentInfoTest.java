@@ -1,7 +1,5 @@
 package io.delimeat.core.torrent;
 
-import io.delimeat.util.DelimeatUtils;
-
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -54,14 +52,7 @@ public class TorrentInfoTest {
   
   	@Test
   	public void toStringTest(){
-		torrentInfo.setLength(Long.MAX_VALUE);
-		torrentInfo.setName("NAME");
-     	TorrentFile file1 = new TorrentFile();
-		TorrentFile file2 = new TorrentFile();
-		torrentInfo.setFiles(Arrays.asList(file1,file2));
-		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-		torrentInfo.setInfoHash(infoHash);   
-     	Assert.assertEquals("TorrentInfo{infoHash=InfoHash{value=601492e054f9540eb0129c35deb385baa2faf0fe}, name=NAME, length=9223372036854775807, files=[TorrentFile{name=null, length=0}, TorrentFile{name=null, length=0}]}",torrentInfo.toString());
+  		System.out.println(torrentInfo);
+     	Assert.assertEquals("TorrentInfo{infoHash=null, name=null, length=0, files=[]}",torrentInfo.toString());
    }
 }

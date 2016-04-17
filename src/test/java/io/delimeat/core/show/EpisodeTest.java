@@ -338,14 +338,7 @@ public class EpisodeTest {
   
     @Test
     public void toStringTest() throws ParseException{
-     episode.setTitle("EP");
-     episode.setAirDate(SDF.parse("2016-01-28"));
-     episode.setSeasonNum(1);
-     episode.setEpisodeNum(2);
-     episode.setEpisodeId(Long.MIN_VALUE);
-     episode.setVersion(Integer.MIN_VALUE);  
-		
-      Assert.assertEquals("Episode{episodeId=-9223372036854775808, title=EP, airDate=Thu Jan 28 00:00:00 UTC 2016, seasonNum=1, episodeNum=2, doubleEp=false, showId=null, version=-2147483648}", episode.toString());
+    	Assert.assertEquals("Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}", episode.toString());
     }
 
 }

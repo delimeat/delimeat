@@ -151,7 +151,6 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Assert.assertEquals(200, result.getLeechers());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void sendRequestValidTest() throws Exception {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);
@@ -201,7 +200,6 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Assert.assertEquals("RECIVEDPACKET", new String(result));
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test(expected = SocketTimeoutException.class)
 	public void sendRequestTimeoutTest() throws Exception {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);
@@ -240,7 +238,6 @@ public class UDPScrapeRequestHandler_ImpTest {
 				"localhost", 8080));
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void scrapeTest() throws Exception {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);

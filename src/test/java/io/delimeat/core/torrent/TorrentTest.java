@@ -52,12 +52,6 @@ public class TorrentTest {
   
   	@Test
   	public void toStringTest(){
-		torrent.setTracker("TRACKER");
-		torrent.setTrackers(Arrays.asList("TRACKER_1","TRACKER_2"));
-		TorrentInfo info = new TorrentInfo();
-		torrent.setInfo(info);
-		torrent.setBytes("BYTES".getBytes());
-     	System.out.println(torrent);
-     	Assert.assertEquals("Torrent{tracker=TRACKER, trackers=[TRACKER_1, TRACKER_2], info=TorrentInfo{infoHash=null, name=null, length=0, files=[]}}", torrent.toString());
+     	Assert.assertEquals("Torrent{tracker=null, trackers=[], info=null}", torrent.toString());
    }
 }

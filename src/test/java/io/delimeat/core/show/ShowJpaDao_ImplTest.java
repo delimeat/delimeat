@@ -1,6 +1,5 @@
 package io.delimeat.core.show;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.mockito.Mockito;
 
 public class ShowJpaDao_ImplTest {
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+	//private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
  	
 	private ShowJpaDao_Impl dao;
 
@@ -137,7 +136,7 @@ public class ShowJpaDao_ImplTest {
      
 		dao.read(1);
 	}
-  
+ 	@SuppressWarnings("unchecked")
   	@Test
   	public void deleteTest() throws Exception{
 		Show show = new Show();
@@ -148,7 +147,7 @@ public class ShowJpaDao_ImplTest {
      
      	EntityManager entityManager = Mockito.mock(EntityManager.class);
      	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
-     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+		TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
      	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
      	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
      	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
@@ -171,7 +170,7 @@ public class ShowJpaDao_ImplTest {
      	Mockito.verify(episodesQuery).getResultList();
      	Mockito.verifyNoMoreInteractions(episodesQuery);
    }
-
+ 	@SuppressWarnings("unchecked")
   	@Test(expected=ShowNotFoundException.class)
   	public void deleteNotFoundTest() throws Exception{
 		Show show = new Show();
@@ -191,7 +190,7 @@ public class ShowJpaDao_ImplTest {
 		dao.delete(1);
 
    }
-  
+ 	@SuppressWarnings("unchecked")  
   	@Test(expected=ShowException.class)
   	public void deleteExceptionTest() throws Exception{
 		Show show = new Show();
@@ -211,7 +210,8 @@ public class ShowJpaDao_ImplTest {
 		dao.delete(1);
    }
   
-  	@Test
+ 	@SuppressWarnings("unchecked")
+ 	@Test
   	public void readAllTest() throws Exception{
      	Show show = new Show();
      
@@ -233,6 +233,7 @@ public class ShowJpaDao_ImplTest {
      	Mockito.verifyNoMoreInteractions(query);
    }
   
+ 	@SuppressWarnings("unchecked")
   	@Test(expected=ShowException.class)
   	public void readAllExceptionTest() throws Exception{    
      	EntityManager entityManager = Mockito.mock(EntityManager.class);
@@ -273,6 +274,7 @@ public class ShowJpaDao_ImplTest {
      	dao.readAndLock(1L);
    }
   
+ 	@SuppressWarnings("unchecked")
   	@Test
   	public void readAllEpisodesTest() throws Exception{
 		Show show = new Show();
@@ -301,6 +303,7 @@ public class ShowJpaDao_ImplTest {
      	Mockito.verifyNoMoreInteractions(episodesQuery);
    }
   
+ 	@SuppressWarnings("unchecked")
   	@Test(expected=ShowException.class)
   	public void readAllEpisodesExceptionTest() throws Exception{
 		Show show = new Show();
@@ -449,7 +452,8 @@ public class ShowJpaDao_ImplTest {
 		dao.createOrUpdateEpisodes(Arrays.asList(ep,ep));
 	}
   
-  	@Test
+ 	@SuppressWarnings("unchecked")
+	@Test
   	public void readNextEpisodeTest() throws Exception{
 		Episode ep = new Episode();
      	ep.setSeasonNum(1);
@@ -481,7 +485,8 @@ public class ShowJpaDao_ImplTest {
      	Mockito.verifyNoMoreInteractions(query);
    }
 
-  	@Test
+ 	@SuppressWarnings("unchecked")  	
+ 	@Test
   	public void readNextEpisodeNoResultTest() throws Exception{
 		Episode ep = new Episode();
      	ep.setSeasonNum(1);
@@ -511,7 +516,8 @@ public class ShowJpaDao_ImplTest {
      	Mockito.verifyNoMoreInteractions(query);
    }
   
-  	@Test(expected=ShowException.class)
+ 	@SuppressWarnings("unchecked")
+ 	@Test(expected=ShowException.class)
   	public void readNextEpisodeExceptionTest() throws Exception{
 		Episode ep = new Episode();
      	ep.setSeasonNum(1);

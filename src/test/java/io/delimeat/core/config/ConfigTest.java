@@ -68,13 +68,8 @@ public class ConfigTest {
   
   	@Test
   	public void toStringTest(){
-     	config.setSearchInterval(100);
-		config.setPreferFiles(false);
-		config.setIgnoreFolders(true);
-		config.getIgnoredFileTypes().add("MKV");
-		config.setOutputDirectory("OUTPUTDIR");
-     	Assert.assertEquals("Config{outputDirectory=OUTPUTDIR, searchInterval=100, preferFiles=true, ignoreFolders=true, ignoredFileTypes=[MKV]}",config.toString());
-   }
+  		Assert.assertEquals("Config{outputDirectory=null, searchInterval=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[]}",config.toString());
+  	}
   
   	@Test
   	public void equalsNullTest(){

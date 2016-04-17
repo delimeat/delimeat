@@ -174,19 +174,8 @@ public class GuideInfoTest {
   
   	@Test
   	public void toStringTest() throws ParseException{
-     	info.setTitle("TITLE");
-     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
-		info.setDescription("DESCRIPTION");
-		info.setGuideId("GUIDEID");
-		info.setTimezone("TIMEZONE");
-		info.setRunningTime(60);
-		info.setGenres(Arrays.asList("GENRE1"));
-		info.setAiring(false);
-		info.setAirTime(10000);
-		info.setFirstAired(SDF.parse("2005-04-03"));
-     	info.setLastUpdated(SDF.parse("2016-02-19"));
-     	Assert.assertEquals("GuideInfo{title=TITLE, guideId=GUIDEID, airing=false, airDays=[FRIDAY], airTime=10000, genres=[GENRE1], runningTime=60, timezone=TIMEZONE, description=DESCRIPTION, firstAired=Sun Apr 03 00:00:00 UTC 2005, lastUpdated=Fri Feb 19 00:00:00 UTC 2016}", info.toString());
-   }
+  		Assert.assertEquals("GuideInfo{title=null, guideId=null, airing=true, airDays=[], airTime=0, genres=[], runningTime=0, timezone=null, description=null, firstAired=null, lastUpdated=null}",info.toString());
+  	}
   
   	@Test
   	public void equalsNullTest(){

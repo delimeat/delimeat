@@ -85,12 +85,6 @@ public class FeedResultTest {
   
   	@Test
   	public void toStringTest(){
-		result.setTorrentURL("TORRENT_LOCATION");
-		result.setTitle("FILE_NAME");
-		result.setContentLength(Long.MAX_VALUE);
-		result.setSeeders(Long.MIN_VALUE);
-		result.setLeechers(Long.MAX_VALUE);
-		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-     	Assert.assertEquals("FeedResult{title=FILE_NAME, torrentURL=TORRENT_LOCATION, contentLength=9223372036854775807, seeders=-9223372036854775808, leechers=9223372036854775807, torrent=null, feedResultRejections=[CONTAINS_COMPRESSED]}",result.toString());
+     	Assert.assertEquals("FeedResult{title=null, torrentURL=null, contentLength=0, seeders=0, leechers=0, torrent=null, feedResultRejections=[]}",result.toString());
    }
 }

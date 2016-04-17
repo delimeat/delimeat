@@ -337,11 +337,6 @@ public class GuideEpisodeTest {
 
 	@Test
 	public void toStringTest() throws ParseException {
-		ep.setTitle("EP");
-		ep.setAirDate(SDF.parse("2000-01-28"));
-		ep.setSeasonNum(1);
-		ep.setEpisodeNum(2);
-
-		Assert.assertEquals("GuideEpisode{title=EP, airDate=Fri Jan 28 00:00:00 UTC 2000, seasonNum=1, episodeNum=2}",ep.toString());
+		Assert.assertEquals("GuideEpisode{title=null, airDate=null, seasonNum=0, episodeNum=0}", ep.toString());
 	}
 }

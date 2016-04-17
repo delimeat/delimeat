@@ -66,12 +66,7 @@ public class TvdbEpisodesTest {
   
   	@Test	
   	public void toStringTest(){
-		episodes.setFirst(Integer.MAX_VALUE);
-		episodes.setLast(Integer.MAX_VALUE);
-		episodes.setNext(Integer.MAX_VALUE);
-		episodes.setPrevious(Integer.MAX_VALUE);
-		GuideEpisode episode = new GuideEpisode();
-		episodes.setEpisodes(Arrays.asList(episode)); 
-     	Assert.assertEquals("TvdbEpisodes{first=2147483647, last=2147483647, next=2147483647, previous=2147483647, episodes=[GuideEpisode{title=null, airDate=null, seasonNum=0, episodeNum=0}]}",episodes.toString());
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode())); 
+     	Assert.assertEquals("TvdbEpisodes{first=0, last=0, next=0, previous=0, episodes=[GuideEpisode{title=null, airDate=null, seasonNum=0, episodeNum=0}]}",episodes.toString());
    }
 }
