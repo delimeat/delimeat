@@ -1,15 +1,15 @@
 package io.delimeat.core.processor;
 
-import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 public class ProcessorThreadTest {
   	
 	@Test
 	public void successfulTest() throws Exception {
 		Processor processor = Mockito.mock(Processor.class);
-		Log log = Mockito.mock(Log.class);
+		Logger log = Mockito.mock(Logger.class);
      
      	ProcessorThread thread = new ProcessorThread(processor,log);
      	thread.run();
@@ -22,7 +22,7 @@ public class ProcessorThreadTest {
 	public void exceptionTest() throws Exception {
 		Processor processor = Mockito.mock(Processor.class);
      	Mockito.doThrow(Exception.class).when(processor).process();
-     	Log log = Mockito.mock(Log.class);
+     	Logger log = Mockito.mock(Logger.class);
      
      	ProcessorThread thread = new ProcessorThread(processor,log);
      	thread.run();

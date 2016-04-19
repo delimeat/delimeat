@@ -7,12 +7,12 @@ import java.util.TimeZone;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TvdbAirTimeAdapter extends XmlAdapter<String, Integer> {
 
-	private static Log log = LogFactory.getLog(TvdbAirTimeAdapter.class);
+	private static Logger log = LoggerFactory.getLogger(TvdbAirTimeAdapter.class);
 
 	@Override
 	public String marshal(Integer value) throws Exception {

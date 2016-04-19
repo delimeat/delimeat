@@ -17,7 +17,8 @@ import java.net.URI;
 import java.util.Iterator;
 
 public class TorrentSeederValidator_Impl implements TorrentValidator {
-  	 private final Logger logger = LoggerFactory.getLogger(this.getClass());
+  	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TorrentSeederValidator_Impl.class);
     private static final long MINSEEDERS = 20;
 
     private TorrentDao torrentDao;
@@ -51,9 +52,9 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
         try {
             return getTorrentDao().scrape(new URI(tracker), infohash);
         } catch (SocketTimeoutException e) {
-            logger.info("Timed out scraping tracker " + tracker, e);
+        	LOGGER.info("Timed out scraping tracker " + tracker, e);
         } catch (Exception e) {
-            logger.info("Unnable to scrape tracker " + tracker, e);
+        	LOGGER.info("Unnable to scrape tracker " + tracker, e);
         }
         return null;
     }

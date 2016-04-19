@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigDao;
 import io.delimeat.core.config.ConfigException;
+import io.delimeat.core.processor.FeedProcessor_Impl;
 import io.delimeat.core.processor.Processor;
 import io.delimeat.core.processor.ProcessorFactory;
 import io.delimeat.core.processor.ProcessorListener;
@@ -25,7 +26,7 @@ import io.delimeat.util.DelimeatUtils;
 public class ProcessorService_Impl implements ProcessorService,
 		ProcessorListener {
 
-	private static final Log LOG = LogFactory.getLog(ProcessorService_Impl.class);
+  	private static final Logger LOGGER = LoggerFactory.getLogger(FeedProcessor_Impl.class);
 	
 	private ProcessorFactory guideProcessorFactory;
 	private ProcessorFactory feedProcessorFactory;
@@ -104,7 +105,7 @@ public class ProcessorService_Impl implements ProcessorService,
 					Processor processor = feedProcessorFactory.build(show,config);
 					processor.addListener(this);
 					processors.add(processor);
-					executor.execute(new ProcessorThread(processor,LOG));
+					executor.execute(new ProcessorThread(processor,LOGGER));
 				}
 			}
 		}
@@ -124,7 +125,7 @@ public class ProcessorService_Impl implements ProcessorService,
 				Processor processor = guideProcessorFactory.build(show,config);
 				processor.addListener(this);
 				processors.add(processor);
-           	executor.execute(new ProcessorThread(processor,LOG));
+           	executor.execute(new ProcessorThread(processor,LOGGER));
          }
 		}
 
