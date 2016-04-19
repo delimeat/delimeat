@@ -1,7 +1,7 @@
 package io.delimeat.core.processor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -39,7 +39,7 @@ import io.delimeat.util.DelimeatUtils;
 
 public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
-    private static final Log LOG = LogFactory.getLog(FeedProcessor_Impl.class);
+  	private static final Logger LOGGER = LoggerFactory.getLogger(FeedProcessor_Impl.class);
 
     private ShowDao showDao;
     private List<FeedDao> feedDaos;
@@ -114,20 +114,28 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
                 final Show lockedShow = showDao.readAndLock(show.getShowId());
                 // read feed results
                 final List<FeedResult> readResults = fetchResults(lockedShow);
+              	 LOGGER.debug("read results: " + readResults.size());
+              	 LOGGER.debug(readResults.toString());
                 // validate the read results
                 final List<FeedResult> foundResults = validateFeedResults(readResults, lockedShow);
+              	 LOGGER.debug("found results: " + foundResults.size());
+              	 LOGGER.debug(foundResults.toString());
                 // select all the valid results based on the torrent files
                 final List<FeedResult> validResults = validateResultTorrents(foundResults, lockedShow, config);
-
+              	 LOGGER.debug("validated results: " + validResults.size());
+              	 LOGGER.debug(validResults.toString());
                 if (active == true && validResults.isEmpty() == false) {
                     // select the best result
                     final FeedResult selectedResult = selectResult(validResults, config);
+                    LOGGER.debug("selected result: " + selectedResult);
+
 
                     // if something has been found and its valid output it
                     if (selectedResult != null && selectedResult.getTorrent() != null && selectedResult.getTorrent().getInfo() != null
                         && DelimeatUtils.isNotEmpty(selectedResult.getTorrent().getInfo().getName())) {
-
+                    		
                         final Torrent torrent = selectedResult.getTorrent();
+                      	LOGGER.debug("writing torrent: " + torrent);
                         final String fileName = torrent.getInfo().getName() + ".torrent";
                         final byte[] bytes = torrent.getBytes();
                         torrentWriter.write(fileName, bytes, config);
@@ -173,6 +181,8 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         for (FeedResult result : results) {
             if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
                 foundResults.add(result);
+            }else{
+              LOGGER.debug("rejected result validation: " + result);
             }
         }
 
@@ -215,11 +225,11 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
             try {
                 torrent = fetchTorrent(result);
             } catch (MalformedURLException ex) {
-                LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
+                LOGGER.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
                 result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
                 continue;
             } catch (URISyntaxException ex) {
-                LOG.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
+                LOGGER.error("encountered an error fetching torrent " + result.getTorrentURL(), ex);
                 result.getFeedResultRejections().add(FeedResultRejection.UNNABLE_TO_GET_TORRENT);
                 continue;
             } catch (IOException ex) {
@@ -240,6 +250,9 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
             // if it aint rejected yet its valid!
             if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
                 outResults.add(result);
+            }
+          	else{
+            	LOGGER.debug("rejected result torrent: " + result);
             }
         }
         return outResults;
