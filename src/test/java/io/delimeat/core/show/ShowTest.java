@@ -154,7 +154,7 @@ public class ShowTest {
 		show.setVersion(Integer.MIN_VALUE);
 		show.setMinSize(Integer.MAX_VALUE);
 		show.setMaxSize(Integer.MAX_VALUE);
-		Assert.assertEquals(-2016605973, show.hashCode());
+		Assert.assertEquals(-430010601, show.hashCode());
    }
   
   	@Test

@@ -339,7 +339,7 @@ public class Show implements Comparable<Show> {
     public int hashCode() {
       return Objects.hash(showId,airing,airTime,enabled,guideId,includeSpecials,
                           lastFeedUpdate,lastGuideUpdate,maxSize,minSize,nextEpisode,
-                          previousEpisode,showType,timezone,title,version);
+                          previousEpisode,(showType!=null?showType.getValue():null),timezone,title,version);
     }
   
 	@Override
