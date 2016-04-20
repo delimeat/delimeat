@@ -278,28 +278,6 @@ public class Show implements Comparable<Show> {
 		this.maxSize = maxSize;
 	}
 
-	@Override
-	public int compareTo(Show other) {
-     return ComparisonChain.start()
-       			.compare(this.title, other.title, Ordering.natural().nullsFirst())
-       			.result();
-	}
-
-	@Override
-	public boolean equals(Object other) {
-     if(other == null)
-       	return false;
-     
-     if(this == other)
-       	return true;
-     
-     if(other instanceof Show){
-       	return showId == ((Show) other).showId;
-     }
-     
-     return false;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -326,10 +304,48 @@ public class Show implements Comparable<Show> {
               .add("version", version)
               .toString();
 	}
-  
-  @Override 
-  public int hashCode() {
-    return Objects.hash(showId, version);
-  }
 
+	@Override
+	public boolean equals(Object obj) {
+     if(obj == null)
+       	return false;
+     
+     if(this == obj)
+       	return true;
+     
+     if(obj instanceof Show){
+       	final Show other = (Show)obj;
+       	return Objects.equals(this.showId, other.showId) &&
+           		 Objects.equals(this.airing, other.airing) &&
+           		 Objects.equals(this.airTime, other.airTime) &&	
+           		 Objects.equals(this.enabled, other.enabled) &&	
+           		 Objects.equals(this.guideId, other.guideId) &&	
+           		 Objects.equals(this.includeSpecials, other.includeSpecials) &&	
+           		 Objects.equals(this.lastFeedUpdate, other.lastFeedUpdate) &&	
+           		 Objects.equals(this.lastGuideUpdate, other.lastGuideUpdate) &&	
+           		 Objects.equals(this.maxSize, other.maxSize) &&	
+           		 Objects.equals(this.minSize, other.minSize) &&
+           		 Objects.equals(this.nextEpisode, other.nextEpisode) &&	
+           		 Objects.equals(this.previousEpisode, other.previousEpisode) &&	
+           		 Objects.equals(this.showType, other.showType) &&	
+           		 Objects.equals(this.timezone, other.timezone) &&	
+           		 Objects.equals(this.title, other.title) &&	
+           		 Objects.equals(this.version, other.version);	
+     }
+     return false;
+	}
+  
+    @Override 
+    public int hashCode() {
+      return Objects.hash(showId,airing,airTime,enabled,guideId,includeSpecials,
+                          lastFeedUpdate,lastGuideUpdate,maxSize,minSize,nextEpisode,
+                          previousEpisode,showType,timezone,title,version);
+    }
+  
+	@Override
+	public int compareTo(Show other) {
+     return ComparisonChain.start()
+       			.compare(this.title, other.title, Ordering.natural().nullsFirst())
+       			.result();
+	}
 }

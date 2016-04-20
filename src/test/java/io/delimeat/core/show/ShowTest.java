@@ -139,23 +139,22 @@ public class ShowTest {
   	@Test
   	public void hashCodeTest() throws ParseException{
 		show.setShowId(Long.MAX_VALUE);
+		show.setAiring(true);
 		show.setAirTime(Integer.MIN_VALUE);
 		show.setTimezone("TIMEZONE");
 		show.setGuideId("GUIDEID");
 		show.setTitle("TITLE");
-		show.setAiring(true);
 		show.setShowType(ShowType.ANIMATED);
 		show.setLastGuideUpdate(SDF.parse("2015-11-06"));
 		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
 		show.setEnabled(true);
-		Episode episode = new Episode();
-		show.setNextEpisode(episode);
-     	show.setPreviousEpisode(null);
+		show.setNextEpisode( new Episode());
+     	show.setPreviousEpisode( new Episode());
 		show.setIncludeSpecials(true);
 		show.setVersion(Integer.MIN_VALUE);
 		show.setMinSize(Integer.MAX_VALUE);
 		show.setMaxSize(Integer.MAX_VALUE);
-		Assert.assertEquals(961, show.hashCode());
+		Assert.assertEquals(-2016605973, show.hashCode());
    }
   
   	@Test

@@ -331,8 +331,9 @@ public class EpisodeTest {
      episode.setEpisodeNum(2);
      episode.setEpisodeId(Long.MIN_VALUE);
      episode.setVersion(Integer.MIN_VALUE);
+     episode.setShow(new Show());
      
-     Assert.assertEquals(961,episode.hashCode());
+     Assert.assertEquals(1106530222,episode.hashCode());
      
    }
   

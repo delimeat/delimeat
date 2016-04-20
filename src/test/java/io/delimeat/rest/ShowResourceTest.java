@@ -68,7 +68,7 @@ public class ShowResourceTest extends JerseyTest{
 		nextEp.setEpisodeId(Long.MAX_VALUE);
 		nextEp.setEpisodeNum(101);
 		nextEp.setSeasonNum(2);
-		nextEp.setShow(show);
+		//nextEp.setShow(show);
 		nextEp.setTitle("NEXT_EP_TITLE");
 		nextEp.setVersion(3);
 		show.setNextEpisode(nextEp);
@@ -79,7 +79,7 @@ public class ShowResourceTest extends JerseyTest{
 		prevEp.setEpisodeId(Long.MIN_VALUE);
 		prevEp.setEpisodeNum(102);
 		prevEp.setSeasonNum(3);
-		prevEp.setShow(show);
+		//prevEp.setShow(show);
 		prevEp.setTitle("PREV_EP_TITLE");
 		prevEp.setVersion(4);
 		show.setPreviousEpisode(prevEp);		
@@ -301,7 +301,7 @@ public class ShowResourceTest extends JerseyTest{
 			
 		Response response = target("shows")
         								.request()
-        								.post(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
+        								.post(Entity.entity(show, MediaType.APPLICATION_JSON_TYPE));
      
 		Assert.assertEquals(Status.OK, response.getStatusInfo());
      	Assert.assertTrue(response.hasEntity());

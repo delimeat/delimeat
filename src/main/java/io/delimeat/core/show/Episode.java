@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Episode {
+public class Episode implements Comparable<Episode>{
 
 	private long episodeId;
 	private String title;
@@ -192,22 +192,19 @@ public class Episode {
       
       if (object instanceof Episode)
       {
-        Episode otherEp = (Episode)object;
-        return ComparisonChain.start()
-                 .compare(this.episodeId, otherEp.getEpisodeId())
-                 .compare(this.seasonNum, otherEp.getSeasonNum())
-                 .compare(this.seasonNum, otherEp.getSeasonNum())
-                 .compare(this.title, otherEp.getTitle(),Ordering.natural().nullsFirst())
-                 .compare(this.airDate, otherEp.getAirDate(), Ordering.natural().nullsFirst())
-                 .compareFalseFirst(this.doubleEp, otherEp.isDoubleEp())
-                 .compare(show, show, Ordering.natural().nullsFirst())
-                 .result() == 0 ? true : false;
+        final Episode other = (Episode)object;
+        return Objects.equals(this.episodeId, other.episodeId) &&
+          		Objects.equals(this.seasonNum, other.seasonNum) &&
+          		Objects.equals(this.episodeNum, other.episodeNum) &&
+          		Objects.equals(this.title, other.title) &&
+          		Objects.equals(this.airDate, other.airDate) &&
+          		Objects.equals(this.doubleEp, other.doubleEp) &&
+          		Objects.equals(this.show!=null ? this.show.getShowId(): null, other.show!=null ? other.show.getShowId(): null) &&
+          		Objects.equals(this.version, other.version);
       }else if (object instanceof GuideEpisode){
-        GuideEpisode otherEp = (GuideEpisode)object;
-        return ComparisonChain.start()
-                 .compare(new Integer(this.seasonNum), otherEp.getSeasonNum())
-                 .compare(new Integer(this.episodeNum), otherEp.getEpisodeNum())
-                 .result() == 0 ? true : false;
+        final GuideEpisode other = (GuideEpisode)object;
+        return Objects.equals(this.seasonNum, other.getSeasonNum()) &&
+          		Objects.equals(this.episodeNum, other.getEpisodeNum());
       }
       return false;
   }
@@ -215,7 +212,17 @@ public class Episode {
 
   @Override 
   public int hashCode() {
-    return Objects.hash(episodeId, version);
+    return Objects.hash(episodeId,seasonNum,episodeNum,title,airDate,doubleEp,(show!=null ? show.getShowId(): null),version);
+  }
+
+  @Override
+  public int compareTo(Episode other) {
+      return ComparisonChain.start()
+                .compare(this.show, other.show, Ordering.natural().nullsFirst())
+                .compare(this.seasonNum, other.seasonNum)
+                .compare(this.episodeNum, other.episodeNum)
+                .compare(this.airDate, other.airDate, Ordering.natural().nullsFirst())
+                .result();
   }
 
 }

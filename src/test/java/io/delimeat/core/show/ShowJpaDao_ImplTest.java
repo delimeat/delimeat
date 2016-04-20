@@ -18,9 +18,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class ShowJpaDao_ImplTest {
-
-	//private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
- 	
+	
 	private ShowJpaDao_Impl dao;
 
 	@Before
