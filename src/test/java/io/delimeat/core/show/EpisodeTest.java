@@ -103,6 +103,46 @@ public class EpisodeTest {
         episode.setVersion(Integer.MAX_VALUE);
         Assert.assertEquals(Integer.MAX_VALUE, episode.getVersion());
     }
+    
+  @Test
+  public void equalsEpisodeTest() throws ParseException{
+    Episode otherEp = new Episode();
+    otherEp.setTitle("EP");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(2);
+    otherEp.setEpisodeId(Long.MAX_VALUE);
+    otherEp.setVersion(Integer.MIN_VALUE);
+    
+    episode.setTitle("EP");
+    episode.setAirDate(SDF.parse("2016-01-28"));
+    episode.setSeasonNum(1);
+    episode.setEpisodeNum(2);
+    episode.setEpisodeId(Long.MAX_VALUE);
+    episode.setVersion(Integer.MIN_VALUE);
+    
+    Assert.assertTrue(episode.equals(otherEp));
+  }
+  
+  @Test
+  public void equalsEpisodeEpisodeIdTest() throws ParseException{
+    Episode otherEp = new Episode();
+    otherEp.setTitle("EP");
+    otherEp.setAirDate(SDF.parse("2016-01-28"));
+    otherEp.setSeasonNum(1);
+    otherEp.setEpisodeNum(2);
+    otherEp.setEpisodeId(Long.MAX_VALUE);
+    otherEp.setVersion(Integer.MIN_VALUE);
+    
+    episode.setTitle("EP");
+    episode.setAirDate(SDF.parse("2016-01-28"));
+    episode.setSeasonNum(1);
+    episode.setEpisodeNum(2);
+    episode.setEpisodeId(Long.MIN_VALUE);
+    episode.setVersion(Integer.MIN_VALUE);
+    
+    Assert.assertFalse(episode.equals(otherEp));
+  }
 
     @Test
     public void showTest() {
@@ -160,22 +200,6 @@ public class EpisodeTest {
         otherEp.setEpisodeNum(1);
 
         episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, Integer.MAX_VALUE, null);
-        Assert.assertFalse(episode.equals(otherEp));
-    }
-
-    @Test
-    public void equalsEpisodeTest() throws ParseException {
-        Episode otherEp = new Episode(1, null, null, 1, 1, false, Integer.MAX_VALUE, null);
-
-        episode = new Episode(1, null, null, 1, 1, false, Integer.MAX_VALUE, null);
-        Assert.assertTrue(episode.equals(otherEp));
-    }
-  
-    @Test
-    public void equalsEpisodeEpisodeIdTest() throws ParseException {
-        Episode otherEp = new Episode(2, null, null, 1, 1, false, Integer.MAX_VALUE, null);
-
-        episode = new Episode(1, null, null, 1, 1, false, Integer.MAX_VALUE, null);
         Assert.assertFalse(episode.equals(otherEp));
     }
 
