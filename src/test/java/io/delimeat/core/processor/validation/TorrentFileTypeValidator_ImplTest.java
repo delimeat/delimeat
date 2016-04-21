@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+
 public class TorrentFileTypeValidator_ImplTest {
 	
 	private TorrentFileTypeValidator_Impl validator;
@@ -30,6 +32,18 @@ public class TorrentFileTypeValidator_ImplTest {
    @Test
    public void rejectionTest(){
      Assert.assertEquals(FeedResultRejection.CONTAINS_EXCLUDED_FILE_TYPES, validator.getRejection());
+   }
+  
+  	@Test
+  	public void nullFileTypesTest() throws Exception{
+     	config.setIgnoredFileTypes(null);
+     	Assert.assertTrue(validator.validate(torrent, show, config));			
+   }
+  
+  	@Test
+  	public void emptyFileTypesTest() throws Exception{
+     	config.setIgnoredFileTypes(Collections.<String>emptyList());
+     	Assert.assertTrue(validator.validate(torrent, show, config));			
    }
   
 	@Test
