@@ -17,4 +17,5 @@ public enum ShowType {
     public int getValue() {
       return value;
     }
+
 }

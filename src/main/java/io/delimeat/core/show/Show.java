@@ -1,8 +1,6 @@
 package io.delimeat.core.show;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 import io.delimeat.util.jaxb.AirTimeAdapter;
 
 import java.util.Date;
@@ -18,7 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "showId", "title", "showType", "enabled", "airing", "airTime", "timezone", "guideId",
 		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate", "lastFeedUpdate", "minSize", "maxSize", "version" })
-public class Show implements Comparable<Show> {
+public class Show {
 
 	private long showId;
 	@XmlJavaTypeAdapter(value=AirTimeAdapter.class)
@@ -38,6 +36,29 @@ public class Show implements Comparable<Show> {
 	private int maxSize;
 	private int version;
 	
+  	public Show(){
+     	//do nothing
+   }
+  
+  	public Show(long showId, int airTime, String timezone, String guideId, String title, boolean airing, ShowType showType, Date lastFeedUpdate, Date lastGuideUpdate, boolean enabled,Episode nextEpisode, Episode previousEpisode, boolean includeSpecials, int minSize, int maxSize, int version){
+     	this.showId = showId;
+     	this.airTime = airTime;
+     	this.timezone = timezone;	
+     	this.guideId = guideId;
+     	this.title = title;
+     	this.airing = airing;
+     	this.showType = showType;
+     	this.lastGuideUpdate = lastGuideUpdate;
+     	this.lastFeedUpdate = lastFeedUpdate;
+     	this.enabled = enabled;
+     	this.nextEpisode = nextEpisode;
+     	this.previousEpisode = previousEpisode;
+     	this.includeSpecials = includeSpecials;
+     	this.minSize = minSize;
+     	this.maxSize = maxSize;
+     	this.version = version;
+   }
+  
 	/**
 	 * @return the showId
 	 */
@@ -316,20 +337,6 @@ public class Show implements Comparable<Show> {
      if(obj instanceof Show){
        	final Show other = (Show)obj;
        	return Objects.equals(this.showId, other.showId) &&
-           		 Objects.equals(this.airing, other.airing) &&
-           		 Objects.equals(this.airTime, other.airTime) &&	
-           		 Objects.equals(this.enabled, other.enabled) &&	
-           		 Objects.equals(this.guideId, other.guideId) &&	
-           		 Objects.equals(this.includeSpecials, other.includeSpecials) &&	
-           		 Objects.equals(this.lastFeedUpdate, other.lastFeedUpdate) &&	
-           		 Objects.equals(this.lastGuideUpdate, other.lastGuideUpdate) &&	
-           		 Objects.equals(this.maxSize, other.maxSize) &&	
-           		 Objects.equals(this.minSize, other.minSize) &&
-           		 Objects.equals(this.nextEpisode, other.nextEpisode) &&	
-           		 Objects.equals(this.previousEpisode, other.previousEpisode) &&	
-           		 Objects.equals(this.showType, other.showType) &&	
-           		 Objects.equals(this.timezone, other.timezone) &&	
-           		 Objects.equals(this.title, other.title) &&	
            		 Objects.equals(this.version, other.version);	
      }
      return false;
@@ -337,15 +344,7 @@ public class Show implements Comparable<Show> {
   
     @Override 
     public int hashCode() {
-      return Objects.hash(showId,airing,airTime,enabled,guideId,includeSpecials,
-                          lastFeedUpdate,lastGuideUpdate,maxSize,minSize,nextEpisode,
-                          previousEpisode,(showType!=null?showType.getValue():null),timezone,title,version);
+      return Objects.hash(showId,version);
     }
-  
-	@Override
-	public int compareTo(Show other) {
-     return ComparisonChain.start()
-       			.compare(this.title, other.title, Ordering.natural().nullsFirst())
-       			.result();
-	}
+
 }

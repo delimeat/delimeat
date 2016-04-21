@@ -1,8 +1,6 @@
 package io.delimeat.core.show;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
@@ -15,7 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Episode implements Comparable<Episode>{
+public class Episode{
 
 	private long episodeId;
 	private String title;
@@ -31,6 +29,17 @@ public class Episode implements Comparable<Episode>{
   
    public Episode(){
      //do nothing;
+   }
+  
+  	public Episode(long episodeId, String title, Date airDate, int seasonNum, int episodeNum, boolean doubleEp, int version, Show show){
+     this.episodeId = episodeId;
+     this.title = title;
+     this.airDate = airDate;
+     this.seasonNum = seasonNum;
+     this.episodeNum = episodeNum;
+     this.doubleEp = doubleEp;
+     this.version = version;
+     this.show = show;
    }
   
    public Episode(GuideEpisode guideEp){
@@ -194,12 +203,6 @@ public class Episode implements Comparable<Episode>{
       {
         final Episode other = (Episode)object;
         return Objects.equals(this.episodeId, other.episodeId) &&
-          		Objects.equals(this.seasonNum, other.seasonNum) &&
-          		Objects.equals(this.episodeNum, other.episodeNum) &&
-          		Objects.equals(this.title, other.title) &&
-          		Objects.equals(this.airDate, other.airDate) &&
-          		Objects.equals(this.doubleEp, other.doubleEp) &&
-          		Objects.equals(this.show!=null ? this.show.getShowId(): null, other.show!=null ? other.show.getShowId(): null) &&
           		Objects.equals(this.version, other.version);
       }else if (object instanceof GuideEpisode){
         final GuideEpisode other = (GuideEpisode)object;
@@ -212,17 +215,7 @@ public class Episode implements Comparable<Episode>{
 
   @Override 
   public int hashCode() {
-    return Objects.hash(episodeId,seasonNum,episodeNum,title,airDate,doubleEp,(show!=null ? show.getShowId(): null),version);
-  }
-
-  @Override
-  public int compareTo(Episode other) {
-      return ComparisonChain.start()
-                .compare(this.show, other.show, Ordering.natural().nullsFirst())
-                .compare(this.seasonNum, other.seasonNum)
-                .compare(this.episodeNum, other.episodeNum)
-                .compare(this.airDate, other.airDate, Ordering.natural().nullsFirst())
-                .result();
+    return Objects.hash(episodeId,version);
   }
 
 }

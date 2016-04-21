@@ -2,6 +2,7 @@ package io.delimeat.core.show;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Assert;
@@ -22,6 +23,29 @@ public class ShowTest {
 		show = new Show();
 	}
 
+  	@Test
+  	public void constructorTest(){
+     	Episode nextEp = new Episode();
+     	Episode prevEp = new Episode();
+     	show = new Show(Long.MAX_VALUE,Integer.MAX_VALUE, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, new Date(0), new Date(1), false, nextEp, prevEp,true, 100, 101, Integer.MIN_VALUE);
+		Assert.assertEquals(Long.MAX_VALUE, show.getShowId());
+  		Assert.assertEquals(Integer.MAX_VALUE, show.getAirTime());
+     	Assert.assertEquals("TIMEZONE", show.getTimezone());
+     	Assert.assertEquals("GUIDEID", show.getGuideId());
+     	Assert.assertEquals("TITLE", show.getTitle());
+		Assert.assertTrue(show.isAiring());
+     	Assert.assertEquals(ShowType.ANIMATED, show.getShowType());
+     	Assert.assertEquals(new Date(0), show.getLastFeedUpdate());
+     	Assert.assertEquals(new Date(1), show.getLastGuideUpdate());
+     	Assert.assertFalse(show.isEnabled());
+     	Assert.assertEquals(nextEp, show.getNextEpisode());
+     	Assert.assertEquals(prevEp, show.getPreviousEpisode());
+     	Assert.assertTrue(show.isIncludeSpecials());
+     	Assert.assertEquals(100, show.getMinSize());
+     	Assert.assertEquals(101, show.getMaxSize());
+     	Assert.assertEquals(Integer.MIN_VALUE, show.getVersion());
+   }
+  
 	@Test
 	public void showIdTest() {
 		Assert.assertEquals(0, show.getShowId());
@@ -139,22 +163,8 @@ public class ShowTest {
   	@Test
   	public void hashCodeTest() throws ParseException{
 		show.setShowId(Long.MAX_VALUE);
-		show.setAiring(true);
-		show.setAirTime(Integer.MIN_VALUE);
-		show.setTimezone("TIMEZONE");
-		show.setGuideId("GUIDEID");
-		show.setTitle("TITLE");
-		show.setShowType(ShowType.ANIMATED);
-		show.setLastGuideUpdate(SDF.parse("2015-11-06"));
-		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
-		show.setEnabled(true);
-		show.setNextEpisode( new Episode());
-     	show.setPreviousEpisode( new Episode());
-		show.setIncludeSpecials(true);
 		show.setVersion(Integer.MIN_VALUE);
-		show.setMinSize(Integer.MAX_VALUE);
-		show.setMaxSize(Integer.MAX_VALUE);
-		Assert.assertEquals(-430010601, show.hashCode());
+		Assert.assertEquals(961, show.hashCode());
    }
   
   	@Test
@@ -180,37 +190,30 @@ public class ShowTest {
   	@Test
   	public void equalsTest(){
      	show.setShowId(1);
+     	show.setVersion(99);
      	Show other = new Show();
      	other.setShowId(1);
+     	other.setVersion(99);
      	Assert.assertTrue(show.equals(other));
    }
   
   	@Test
-  	public void equalsNotEqualTest(){
+  	public void equalsShowIdTest(){
      	show.setShowId(1);
+     	show.setVersion(99);
      	Show other = new Show();
      	other.setShowId(2);
+     	other.setVersion(99);
      	Assert.assertFalse(show.equals(other));
    }
-  
   	@Test
-  	public void compareToEqualTest(){
-   	Assert.assertEquals(0, show.compareTo(show));
-   }
-  
-  	@Test
-  	public void compareToNullTest(){
-     	show.setTitle("TITLE");
+  	public void equalsVersionTest(){
+     	show.setShowId(1);
+      show.setVersion(99);
      	Show other = new Show();
-     	other.setTitle(null);
-   	Assert.assertEquals(1, show.compareTo(other));
+     	other.setShowId(1);
+      other.setVersion(98);
+     	Assert.assertFalse(show.equals(other));
    }
-  
-  	@Test
-  	public void compareToOtherNullTest(){
-     	show.setTitle("TITLE");
-     	Show other = new Show();
-     	other.setTitle(null);
-   	Assert.assertEquals(-1, other.compareTo(show));
-   }
+
 }
