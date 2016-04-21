@@ -1,5 +1,6 @@
 package io.delimeat.core.processor.validation;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.FeedResultSeasonValidator_Impl;
@@ -18,12 +19,14 @@ public class FeedResultSeasonValidator_ImplTest {
 	private FeedResultSeasonValidator_Impl validator;
 	private List<FeedResult> results;
 	private Show show;
+  	private Config config;
 	
 	@Before
 	public void setUp(){
 		validator = new FeedResultSeasonValidator_Impl();
 		results = new ArrayList<FeedResult>();
 		show = new Show();
+     	config = new Config();
 	}
 	
 	@Test
@@ -37,7 +40,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle(null);
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -53,7 +56,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -64,7 +67,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -80,7 +83,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("TITLE");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -96,7 +99,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("TITLE");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -112,7 +115,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("texttextS01E19TEXTTEXT");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result.getFeedResultRejections().size());	
 	}
 	
@@ -127,7 +130,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("texttext2012.01.05_03of99TEXTTEXT");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));
 	}
@@ -143,7 +146,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("texttextS02E19TEXTTEXT");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));
 	}
@@ -159,7 +162,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result.setTitle("texttextS01E18TEXTTEXT");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, result.getFeedResultRejections().get(0));
 	}
@@ -190,7 +193,7 @@ public class FeedResultSeasonValidator_ImplTest {
 		result6.setTitle("");
 		results.add(result6);
 		
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result1.getFeedResultRejections().size());
 		
 		Assert.assertEquals(1, result2.getFeedResultRejections().size());	

@@ -54,5 +54,11 @@ public class FeedResultRejectionTest {
 	public void unableToGetTorrentTest() {
 		Assert.assertEquals(9, FeedResultRejection.UNNABLE_TO_GET_TORRENT.getValue());
 	}
+  
+
+	@Test
+	public void excludedKeywordTest() {
+		Assert.assertEquals(10, FeedResultRejection.EXCLUDED_KEYWORD.getValue());
+	}
 
 }

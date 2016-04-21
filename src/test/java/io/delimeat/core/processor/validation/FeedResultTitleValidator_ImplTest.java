@@ -1,5 +1,6 @@
 package io.delimeat.core.processor.validation;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.FeedResultTitleValidator_Impl;
@@ -18,12 +19,14 @@ public class FeedResultTitleValidator_ImplTest {
 	private FeedResultTitleValidator_Impl validator;
 	private List<FeedResult> results;
 	private Show show;
+  	private Config config;
 	
 	@Before
 	public void setUp(){
 		validator = new FeedResultTitleValidator_Impl();
 		results = new ArrayList<FeedResult>();
 		show = new Show();
+     	config = new Config();
 	}
 		
 	@Test
@@ -35,7 +38,7 @@ public class FeedResultTitleValidator_ImplTest {
 		result.setTitle(null);
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, result.getFeedResultRejections().get(0));
 	}
@@ -49,7 +52,7 @@ public class FeedResultTitleValidator_ImplTest {
 		result.setTitle("");
 		results.add(result);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, result.getFeedResultRejections().get(0));
 
@@ -63,7 +66,7 @@ public class FeedResultTitleValidator_ImplTest {
 		result.setTitle("other_text_DIFFERENT_TITLE_other_text");
 		results.add(result);		
 
-		validator.validate(results, show);		
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, result.getFeedResultRejections().get(0));
 	}
@@ -76,7 +79,7 @@ public class FeedResultTitleValidator_ImplTest {
 		result.setTitle("other_text_SHOW_TITLE_other_text");
 		results.add(result);		
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result.getFeedResultRejections().size());
 	}
 	@Test
@@ -96,7 +99,7 @@ public class FeedResultTitleValidator_ImplTest {
 		result4.setTitle("");
 		results.add(result4);	
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result1.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, result1.getFeedResultRejections().get(0));
 		

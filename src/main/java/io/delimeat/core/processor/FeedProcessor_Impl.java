@@ -117,7 +117,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
               	 LOGGER.debug("read results: " + readResults.size());
               	 LOGGER.debug(readResults.toString());
                 // validate the read results
-                final List<FeedResult> foundResults = validateFeedResults(readResults, lockedShow);
+                final List<FeedResult> foundResults = validateFeedResults(readResults, lockedShow, config);
               	 LOGGER.debug("found results: " + foundResults.size());
               	 LOGGER.debug(foundResults.toString());
                 // select all the valid results based on the torrent files
@@ -167,13 +167,13 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         return readResults;
     }
 
-    public List<FeedResult> validateFeedResults(List<FeedResult> results, Show show) throws ValidationException {
+    public List<FeedResult> validateFeedResults(List<FeedResult> results, Show show, Config config) throws ValidationException {
         final Iterator<FeedResultValidator> resultValidatorItr = feedResultValidators.iterator();
 
         while (active == true && resultValidatorItr.hasNext()) {
 
             FeedResultValidator validator = resultValidatorItr.next();
-            validator.validate(results, show);
+            validator.validate(results, show, config);
         }
 
         // keep the valid results, ignore the rest

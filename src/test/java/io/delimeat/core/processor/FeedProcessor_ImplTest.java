@@ -229,7 +229,7 @@ public class FeedProcessor_ImplTest {
 
 		Show show = new Show();
 
-		processor.validateFeedResults(new ArrayList<FeedResult>(), show);
+		processor.validateFeedResults(new ArrayList<FeedResult>(), show, new Config());
 
 		Mockito.verifyZeroInteractions(validator);
 	}
@@ -246,7 +246,7 @@ public class FeedProcessor_ImplTest {
 		FeedResult result2 = new FeedResult();
 
      	processor.setActive(true);
-		List<FeedResult> outResults = processor.validateFeedResults(Arrays.asList(result1, result2), show);
+		List<FeedResult> outResults = processor.validateFeedResults(Arrays.asList(result1, result2), show, new Config());
 		Assert.assertEquals(1, outResults.size());
 		Assert.assertEquals(result2, outResults.get(0));
 	}
@@ -557,7 +557,7 @@ public class FeedProcessor_ImplTest {
      
      	Mockito.verify(showDao).readAndLock(1L);
      	Mockito.verify(feedDao).read("TITLE");
-     	Mockito.verify(feedResultValidator).validate(Mockito.anyListOf(FeedResult.class), Mockito.any(Show.class));
+     	Mockito.verify(feedResultValidator).validate(Mockito.anyListOf(FeedResult.class), Mockito.any(Show.class), Mockito.any(Config.class));
      	Mockito.verify(torrentDao).read(Mockito.any(URI.class));
     	Mockito.verify(torrentValidator).validate(torrent, show, config);
      	Mockito.verify(comparator, Mockito.times(0)).compare(feedResult, null);

@@ -40,6 +40,15 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	  
 	<bean id="feedResultTitleValidatorId" class="io.delimeat.core.processor.validation.FeedResultTitleValidator_Impl"/>
 
+	<bean id="feedResultExcludedKeywordValidatorId" class="io.delimeat.core.processor.validation.FeedResultExcludedKeywordValidator_Impl">
+  		<property name="excludedKeywords">
+     		<list>
+           	<value>265</value>
+        	</list>
+     	</property>
+  	</bean>
+
+
 	<!-- Torrent Validators -->
 	<bean id="torrentCompressedValidatorId" class="io.delimeat.core.processor.validation.TorrentCompressedValidator_Impl"/>
 
@@ -88,6 +97,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	    <list>
 				<ref bean="feedResultTitleValidatorId"/>
 				<ref bean="feedResultSeasonValidatorId"/>
+            <ref bean="feedResultExcludedKeywordValidatorId"/>
             </list>
         </property>
     </bean>
@@ -97,6 +107,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	    <list>
 				<ref bean="feedResultTitleValidatorId"/>
 				<ref bean="feedResultDailyValidatorId"/>
+            <ref bean="feedResultExcludedKeywordValidatorId"/>
             </list>
         </property>
     </bean>

@@ -1,5 +1,6 @@
 package io.delimeat.core.processor.validation;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.FeedResultDailyValidator_Impl;
@@ -21,12 +22,14 @@ public class FeedResultDailyValidator_ImplTest {
 	private FeedResultDailyValidator_Impl validator;
 	private List<FeedResult> results;
 	private Show show;
+  	private Config config;
 	
 	@Before
 	public void setUp(){
 		validator = new FeedResultDailyValidator_Impl();
 		results = new ArrayList<FeedResult>();
 		show = new Show();
+     	config = new Config();
 	}
   
 	@Test(expected=RuntimeException.class)
@@ -40,7 +43,7 @@ public class FeedResultDailyValidator_ImplTest {
 		results.add(result);
 
      	validator.setDateFormat("JIBERISH");
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 	}
   
   	@Test
@@ -67,7 +70,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle(null);
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -82,7 +85,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("");
 		results.add(result);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -93,7 +96,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -108,7 +111,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -123,7 +126,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -138,7 +141,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2012.JAN.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -152,7 +155,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2012.02.TUES");
 		results.add(result);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -167,7 +170,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2013.02.03");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -182,7 +185,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2012.13.03");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -196,7 +199,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2012.02.14");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -211,7 +214,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result.setTitle("testtext2012.02.03");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result.getFeedResultRejections().size());	
 	}
   
@@ -226,7 +229,7 @@ public class FeedResultDailyValidator_ImplTest {
 		results.add(result);
 
      	validator.setSeparator("XX");
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 	}
 	
 	@Test
@@ -263,7 +266,7 @@ public class FeedResultDailyValidator_ImplTest {
 		result9.setTitle("");
 		results.add(result9);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result1.getFeedResultRejections().size());	
 		
 		Assert.assertEquals(1, result2.getFeedResultRejections().size());	

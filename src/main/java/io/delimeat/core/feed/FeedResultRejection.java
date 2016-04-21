@@ -11,7 +11,8 @@ public enum FeedResultRejection {
 	CONTAINS_EXCLUDED_FILE_TYPES(6),
 	FILE_SIZE_INCORRECT(7),
 	INSUFFICENT_SEEDERS(8),
-	UNNABLE_TO_GET_TORRENT(9);
+	UNNABLE_TO_GET_TORRENT(9),
+  	EXCLUDED_KEYWORD(10);
   
   	private final int value;
   

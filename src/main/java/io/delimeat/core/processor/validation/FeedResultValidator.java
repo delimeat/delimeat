@@ -1,5 +1,6 @@
 package io.delimeat.core.processor.validation;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.show.Show;
 
@@ -7,6 +8,6 @@ import java.util.List;
 
 public interface FeedResultValidator {
 
-	public void validate(List<FeedResult> results, Show show)
+	public void validate(List<FeedResult> results, Show show, Config config)
 			throws ValidationException;
 }

@@ -1,5 +1,6 @@
 package io.delimeat.core.processor.validation;
 
+import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.FeedResultMiniSeriesValidator_Impl;
@@ -18,12 +19,14 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	private FeedResultMiniSeriesValidator_Impl validator;
 	private List<FeedResult> results;
 	private Show show;
+  	private Config config;
 
 	@Before
 	public void setUp(){
 		validator = new FeedResultMiniSeriesValidator_Impl();
 		results = new ArrayList<FeedResult>();
 		show = new Show();
+     	config = new Config();
 	}
 
 	@Test
@@ -36,7 +39,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle(null);
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -51,7 +54,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("");
 		results.add(result);
 
-		validator.validate(results, show);	
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -62,7 +65,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -77,7 +80,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("testtext12.02");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());	
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));	
 	}
@@ -92,7 +95,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));
 	}
@@ -106,7 +109,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_03Of99");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, result.getFeedResultRejections().get(0));
 	}
@@ -120,7 +123,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");
 		results.add(result);
 
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result.getFeedResultRejections().size());
 	}
 	
@@ -146,7 +149,7 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 		result5.setTitle("");
 		results.add(result5);
 		
-		validator.validate(results, show);
+		validator.validate(results, show, config);
 		Assert.assertEquals(0, result1.getFeedResultRejections().size());
 		
 		Assert.assertEquals(1, result2.getFeedResultRejections().size());
