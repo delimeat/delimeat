@@ -30,7 +30,6 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.core.show.ShowNotFoundException;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
@@ -129,26 +128,33 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
                     final FeedResult selectedResult = selectResult(validResults, config);
                     LOGGER.debug("selected result: " + selectedResult);
 
+					// if something has been found and its valid output it
+					if (selectedResult != null
+							&& selectedResult.getTorrent() != null
+							&& selectedResult.getTorrent().getInfo() != null
+							&& DelimeatUtils.isNotEmpty(selectedResult
+									.getTorrent().getInfo().getName())) {
 
-                    // if something has been found and its valid output it
-                    if (selectedResult != null && selectedResult.getTorrent() != null && selectedResult.getTorrent().getInfo() != null
-                        && DelimeatUtils.isNotEmpty(selectedResult.getTorrent().getInfo().getName())) {
-                    		
-                        final Torrent torrent = selectedResult.getTorrent();
-                      	LOGGER.debug("writing torrent: " + torrent);
-                        final String fileName = torrent.getInfo().getName() + ".torrent";
-                        final byte[] bytes = torrent.getBytes();
-                        torrentWriter.write(fileName, bytes, config);
+						final Torrent torrent = selectedResult.getTorrent();
+						LOGGER.debug("writing torrent: " + torrent);
+						final String fileName = torrent.getInfo().getName()+ ".torrent";
+						final byte[] bytes = torrent.getBytes();
+						torrentWriter.write(fileName, bytes, config);
 
-                        updateShow(lockedShow);
-                    }
-                }
-            } finally {
-					alertListenersComplete();
-            }
-        }
+						updateShow(lockedShow);
+					}
+				}
+				if(active == true){
+					Date now = new Date();
+					lockedShow.setLastFeedCheck(now);
+					showDao.createOrUpdate(lockedShow);
+				}
+			} finally {
+				alertListenersComplete();
+			}
+		}
 
-    }
+	}
 
     public List<FeedResult> fetchResults(Show show) {
         // read feed results
@@ -270,16 +276,10 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
     public void updateShow(Show show) throws ShowException {
         // set the next episode
         final Episode previousEp = show.getNextEpisode();
-        Episode nextEp = null;
-        try{ 
-        	nextEp = showDao.readNextEpisode(previousEp);
-        }catch(ShowNotFoundException e){
-        	// do nothing 
-        }
+        Episode nextEp = showDao.readNextEpisode(previousEp);
         show.setPreviousEpisode(previousEp);
         show.setNextEpisode(nextEp);
         show.setLastFeedUpdate(new Date());
-        showDao.createOrUpdate(show);
     }
 
 	@Override

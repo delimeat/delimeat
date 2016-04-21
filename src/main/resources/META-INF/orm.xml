@@ -115,12 +115,22 @@
 				<column name="LAST_GUIDE_UPDATE" />
 				<temporal>DATE</temporal>
 			</basic>
+			
+			<basic name="lastGuideCheck" optional="true">
+				<column name="LAST_GUIDE_CHECK" />
+				<temporal>DATE</temporal>
+			</basic>
 
 			<basic name="lastFeedUpdate" optional="false">
 				<column name="LAST_FEED_UPDATE" />
 				<temporal>DATE</temporal>
 			</basic>
 
+			<basic name="lastFeedCheck" optional="false">
+				<column name="LAST_FEED_CHECK" />
+				<temporal>DATE</temporal>
+			</basic>
+			
 			<basic name="enabled" optional="false">
 				<column name="ENABLED" nullable="false" />
 			</basic>

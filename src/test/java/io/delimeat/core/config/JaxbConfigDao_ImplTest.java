@@ -34,24 +34,25 @@ public class JaxbConfigDao_ImplTest {
 
 		private StringBuffer xml;
 
-		public XMLGenerator(int checkInterval, boolean preferFiles, boolean ignoreFolders,
-				List<String> ignoredFileTypes, String outputDir) {
+		public XMLGenerator(int searchInterval, boolean preferFiles, boolean ignoreFolders,
+				List<String> ignoredFileTypes, String outputDir, int searchDelay) {
 			xml = new StringBuffer();
 			xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			xml.append("<config>");
 			xml.append("<outputDirectory>" + outputDir + "</outputDirectory>");
 			xml.append("<preferFiles>" + preferFiles + "</preferFiles>");
 			xml.append("<ignoreFolders>" + ignoreFolders + "</ignoreFolders>");
-        	if(ignoredFileTypes!=null && ignoredFileTypes.size() > 0){
-           xml.append("<ignoredFileTypes>");
-           for (String fileType : ignoredFileTypes) {
-              xml.append("<fileType>" + fileType + "</fileType>");
-           }
-           xml.append("</ignoredFileTypes>");
-         }else{
-           xml.append("<ignoredFileTypes/>");           
-         }
-			xml.append("<searchInterval>" + checkInterval + "</searchInterval>");
+			if (ignoredFileTypes != null && ignoredFileTypes.size() > 0) {
+				xml.append("<ignoredFileTypes>");
+				for (String fileType : ignoredFileTypes) {
+					xml.append("<fileType>" + fileType + "</fileType>");
+				}
+				xml.append("</ignoredFileTypes>");
+			} else {
+				xml.append("<ignoredFileTypes/>");
+			}
+			xml.append("<searchInterval>" + searchInterval + "</searchInterval>");
+			xml.append("<searchDelay>" + searchDelay + "</searchDelay>");
 
 		}
 
@@ -112,7 +113,7 @@ public class JaxbConfigDao_ImplTest {
 
 	@Test
 	public void readTest() throws Exception {
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir");
+		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200);
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenReturn(generator.generate());
 		dao.setUrlHandler(mockedHandler);
@@ -125,6 +126,7 @@ public class JaxbConfigDao_ImplTest {
 
 		Assert.assertEquals("outputDir", config.getOutputDirectory());
 		Assert.assertEquals(100, config.getSearchInterval());
+		Assert.assertEquals(200, config.getSearchDelay());
 		Assert.assertEquals(true, config.isPreferFiles());
 		Assert.assertEquals(false, config.isIgnoreFolders());
 		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
@@ -152,12 +154,13 @@ public class JaxbConfigDao_ImplTest {
      
 		Assert.assertNotNull(config);
 		Assert.assertEquals("defaultOutputDir", config.getOutputDirectory());
-		Assert.assertEquals(3600000, config.getSearchInterval());
+		Assert.assertEquals(14400000, config.getSearchInterval());
+		Assert.assertEquals(3600000, config.getSearchDelay());
 		Assert.assertEquals(true, config.isPreferFiles());
 		Assert.assertEquals(false, config.isIgnoreFolders());
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
      
-		XMLGenerator generator = new XMLGenerator(3600000, true, false, Collections.<String>emptyList(), "defaultOutputDir");
+		XMLGenerator generator = new XMLGenerator(14400000, true, false, Collections.<String>emptyList(), "defaultOutputDir",3600000);
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openInput(Mockito.any(URL.class));
@@ -219,6 +222,7 @@ public class JaxbConfigDao_ImplTest {
 		Config config = new Config();
 		config.setOutputDirectory("outputDir");
 		config.setSearchInterval(100);
+		config.setSearchDelay(200);
 		config.setPreferFiles(true);
 		config.setIgnoreFolders(false);
 		config.getIgnoredFileTypes().add("AVI");
@@ -226,7 +230,7 @@ public class JaxbConfigDao_ImplTest {
 
 		dao.createOrUpdate(config);
 
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir");
+		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200);
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openOutput(Mockito.any(URL.class));

@@ -90,23 +90,40 @@ public class ProcessorService_Impl implements ProcessorService,
 		
 		final Config config = configDao.read();		
 		final long searchInterval = config.getSearchInterval();
+		final long searchDelay = config.getSearchDelay();
+		final Date searchWindow = new Date(now.getTime() - searchInterval);
 		for (Show show : shows) {
+			if(show.isEnabled() == false){
+				continue;
+			}
 			
-			if (show.isEnabled() == true && show.getNextEpisode() != null) {
-				
-				Episode nextEp = show.getNextEpisode();
+			if(show.getNextEpisode() == null){
+				continue;
+			}
+			
+			final Date lastFeedCheck;
+			if(show.getLastFeedCheck() != null){
+				lastFeedCheck = show.getLastFeedCheck();
+			}else{
+				lastFeedCheck = new Date(0);
+			}	
+			
+			if(lastFeedCheck.after(searchWindow) == true){
+				continue;
+			}
+			
+			Episode nextEp = show.getNextEpisode();
             // horrible timezone hack
             String timezone = show.getTimezone();
             TimeZone tz = TimeZone.getTimeZone(timezone);
            	int tzOffset = tz.getRawOffset();
-           	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - tzOffset + searchInterval);
+           	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - tzOffset + searchDelay);
            
-				if (nextEpAirDateTime.before(now) == true) {
-					Processor processor = feedProcessorFactory.build(show,config);
-					processor.addListener(this);
-					processors.add(processor);
-					executor.execute(new ProcessorThread(processor,LOGGER));
-				}
+			if (nextEpAirDateTime.before(now) == true) {
+				Processor processor = feedProcessorFactory.build(show,config);
+				processor.addListener(this);
+				processors.add(processor);
+				executor.execute(new ProcessorThread(processor,LOGGER));
 			}
 		}
 	}
@@ -120,13 +137,16 @@ public class ProcessorService_Impl implements ProcessorService,
 		}
 		
 		final Config config = configDao.read();
-		for (Show show : shows) {
-			if(show.isEnabled() == true){
-				Processor processor = guideProcessorFactory.build(show,config);
-				processor.addListener(this);
-				processors.add(processor);
+		for (Show show : shows) {	
+		
+			if(show.isEnabled() == false){
+				continue;
+			}
+			
+			Processor processor = guideProcessorFactory.build(show,config);
+			processor.addListener(this);
+			processors.add(processor);
            	executor.execute(new ProcessorThread(processor,LOGGER));
-         }
 		}
 
 	}

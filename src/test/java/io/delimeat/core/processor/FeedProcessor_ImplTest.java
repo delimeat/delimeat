@@ -22,7 +22,7 @@ import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
-import io.delimeat.core.show.ShowNotFoundException;
+import io.delimeat.core.show.ShowException;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
@@ -485,7 +485,7 @@ public class FeedProcessor_ImplTest {
      	Episode nextEp = new Episode();
      	show.setNextEpisode(nextEp);
      	ShowDao dao = Mockito.mock(ShowDao.class);
-     	Mockito.when(dao.readNextEpisode(nextEp)).thenThrow(ShowNotFoundException.class);
+     	Mockito.when(dao.readNextEpisode(nextEp)).thenReturn(null);
      	processor.setShowDao(dao);
      
      	processor.updateShow(show);
@@ -495,7 +495,19 @@ public class FeedProcessor_ImplTest {
      	Assert.assertNotNull(show.getLastFeedUpdate());
      
      	Mockito.verify(dao).readNextEpisode(nextEp);
-     	Mockito.verify(dao).createOrUpdate(show); 
+     	Mockito.verifyNoMoreInteractions(dao); 
+  	}
+  	
+  	@Test(expected=ShowException.class)
+  	public void updateShowShowExceptionTest() throws Exception{
+     	Show show = new Show();
+     	Episode nextEp = new Episode();
+     	show.setNextEpisode(nextEp);
+     	ShowDao dao = Mockito.mock(ShowDao.class);
+     	Mockito.when(dao.readNextEpisode(nextEp)).thenThrow(ShowException.class);
+     	processor.setShowDao(dao);
+     
+     	processor.updateShow(show);
    }
   
   	@Test
@@ -556,15 +568,31 @@ public class FeedProcessor_ImplTest {
      	Assert.assertEquals(newNextEpisode, show.getNextEpisode());
      
      	Mockito.verify(showDao).readAndLock(1L);
-     	Mockito.verify(feedDao).read("TITLE");
-     	Mockito.verify(feedResultValidator).validate(Mockito.anyListOf(FeedResult.class), Mockito.any(Show.class), Mockito.any(Config.class));
-     	Mockito.verify(torrentDao).read(Mockito.any(URI.class));
-    	Mockito.verify(torrentValidator).validate(torrent, show, config);
-     	Mockito.verify(comparator, Mockito.times(0)).compare(feedResult, null);
-     	Mockito.verify(torrentWriter).write("TORRENT.torrent","BYTES".getBytes(), config);
+
      	Mockito.verify(showDao).readNextEpisode(nextEpisode);
-     	Mockito.verify(processorListener).alertComplete(processor);      	
+     	Mockito.verify(showDao).createOrUpdate(show);
+     	Mockito.verifyNoMoreInteractions(showDao);
      	
+     	Mockito.verify(feedDao).read("TITLE");
+     	Mockito.verifyNoMoreInteractions(feedDao);
+
+     	Mockito.verify(feedResultValidator).validate(Arrays.asList(feedResult), show,config);
+     	Mockito.verifyNoMoreInteractions(feedResultValidator);
+
+     	Mockito.verify(torrentDao).read(Mockito.any(URI.class));
+     	Mockito.verifyNoMoreInteractions(torrentDao);
+
+    	Mockito.verify(torrentValidator).validate(torrent, show, config);
+     	Mockito.verifyNoMoreInteractions(torrentValidator);
+
+     	Mockito.verifyZeroInteractions(comparator);
+
+     	Mockito.verify(torrentWriter).write("TORRENT.torrent","BYTES".getBytes(), config);
+     	Mockito.verifyNoMoreInteractions(torrentWriter);
+
+     	Mockito.verify(processorListener).alertComplete(processor); 
+     	Mockito.verifyNoMoreInteractions(processorListener);
+
    }
 
 }

@@ -113,15 +113,11 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertTrue(processor.isActive());
      
-     Mockito.verify(listener, Mockito.times(0)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verifyZeroInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(0)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verifyZeroInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
+     Mockito.verifyZeroInteractions(guideDao);    
    }
 
   	@Test
@@ -130,7 +126,7 @@ public class GuideProcessor_ImplTest {
      processor.addListener(listener);
 
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenThrow(ShowException.class);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenThrow(ShowException.class);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
@@ -148,15 +144,14 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
+
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
-     
-     Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
+
+     Mockito.verifyZeroInteractions(guideDao);     
    }
   
   	@Test
@@ -169,7 +164,7 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
@@ -180,15 +175,14 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
-    
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(guideDao);     
+
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(0)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
+     Mockito.verifyZeroInteractions(guideDao);     
    }
   
 	@Test
@@ -202,7 +196,7 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
@@ -218,15 +212,15 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);     
+
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
+
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
-     
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
    }
   
 	@Test
@@ -238,32 +232,36 @@ public class GuideProcessor_ImplTest {
      show.setShowId(Long.MAX_VALUE);
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2016-01-29"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2000-01-01"));
+ 	 info.setLastUpdated(SDF.parse("2000-01-01"));
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      processor.setGuideDao(guideDao);
      
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);     
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(0)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
+    
    }
 
 	@Test
@@ -275,17 +273,18 @@ public class GuideProcessor_ImplTest {
      show.setShowId(Long.MAX_VALUE);
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(false);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      processor.setGuideDao(guideDao);
@@ -295,15 +294,16 @@ public class GuideProcessor_ImplTest {
      Assert.assertFalse(processor.isActive());
      Assert.assertFalse(show.isAiring());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
-    
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
-     
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);     
+
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verifyNoMoreInteractions(showDao);     
+
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID"); 
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -315,17 +315,18 @@ public class GuideProcessor_ImplTest {
      show.setShowId(Long.MAX_VALUE);
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      processor.setGuideDao(guideDao);
@@ -334,18 +335,19 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      Assert.assertTrue(show.isAiring());
-     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
-
-     
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
+    
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID"); 
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -358,19 +360,20 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode nextEp = new Episode();
      show.setNextEpisode(nextEp);
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -385,17 +388,20 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
-
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID"); 
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -408,6 +414,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode nextEp = new Episode();
      nextEp.setSeasonNum(1);
@@ -418,14 +425,14 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -440,16 +447,20 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");  
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
 
 	@Test
@@ -462,6 +473,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode nextEp = new Episode();
      nextEp.setSeasonNum(1);
@@ -472,16 +484,17 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
+     
      GuideEpisode guideEp1 = new GuideEpisode();
      guideEp1.setSeasonNum(1);
      guideEp1.setEpisodeNum(1);
@@ -494,16 +507,20 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertFalse(processor.isActive());
      Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -516,6 +533,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode nextEp = new Episode();
      nextEp.setSeasonNum(1);
@@ -526,8 +544,8 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(nextEp));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(nextEp));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
@@ -547,18 +565,20 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
-     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
 
-     
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -571,6 +591,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode ep1 = new Episode();
      ep1.setSeasonNum(1);
@@ -587,14 +608,14 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(ep1, ep2));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -607,23 +628,26 @@ public class GuideProcessor_ImplTest {
      guideEp2.setEpisodeNum(2);
      guideEp2.setTitle("EP2");
      guideEp2.setAirDate(SDF.parse("2016-01-29"));
-     Mockito.when(guideDao.episodes("GUIDEID")).thenReturn(Arrays.asList(guideEp2,guideEp1));
+     Mockito.when(guideDao.episodes("GUIDEID")).thenReturn(Arrays.asList(guideEp1,guideEp2));
      processor.setGuideDao(guideDao);
      
      processor.process();
      
      Assert.assertFalse(processor.isActive());
-     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
 
 	@Test
@@ -636,6 +660,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode ep1 = new Episode();
      ep1.setSeasonNum(2);
@@ -652,8 +677,8 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(ep1, ep2));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
@@ -678,17 +703,20 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
-     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
 	
 	@Test
@@ -701,6 +729,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode ep1 = new Episode();
      ep1.setSeasonNum(1);
@@ -717,14 +746,14 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep1, ep2));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(ep1, ep2));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -743,19 +772,23 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
      
      Assert.assertNotNull(show.getNextEpisode());
      Assert.assertEquals(ep1, show.getNextEpisode());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID"); 
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -768,6 +801,7 @@ public class GuideProcessor_ImplTest {
      show.setTimezone("ETC");
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      Episode ep1 = new Episode();
      ep1.setSeasonNum(1);
@@ -784,14 +818,14 @@ public class GuideProcessor_ImplTest {
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenReturn(Arrays.asList(ep2));
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(ep2));
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -810,6 +844,9 @@ public class GuideProcessor_ImplTest {
      processor.process();
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().after(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().after(SDF.parse("2000-01-01")));
+     
      Assert.assertNotNull(show.getNextEpisode());
      Assert.assertEquals(1, show.getNextEpisode().getSeasonNum());
      Assert.assertEquals(1, show.getNextEpisode().getEpisodeNum());
@@ -818,15 +855,18 @@ public class GuideProcessor_ImplTest {
      
      Assert.assertNull(show.getPreviousEpisode());
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(1)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdate(show);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");  
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -838,17 +878,18 @@ public class GuideProcessor_ImplTest {
      show.setShowId(Long.MAX_VALUE);
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      Mockito.when(guideDao.episodes("GUIDEID")).thenThrow(GuideException.class);
@@ -861,16 +902,18 @@ public class GuideProcessor_ImplTest {
      }
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().equals(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(0)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID");
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
   
 	@Test
@@ -882,18 +925,19 @@ public class GuideProcessor_ImplTest {
      show.setShowId(Long.MAX_VALUE);
      show.setGuideId("GUIDEID");
      show.setLastGuideUpdate(SDF.parse("2000-01-01"));
+     show.setLastGuideCheck(SDF.parse("2000-01-01"));
      show.setAiring(true);
      processor.setShow(show);
      
      ShowDao showDao = Mockito.mock(ShowDao.class);
-     Mockito.when(showDao.readAndLock(Mockito.anyLong())).thenReturn(show);
-     Mockito.when(showDao.readAllEpisodes(Mockito.anyLong())).thenThrow(ShowException.class);
+     Mockito.when(showDao.readAndLock(Long.MAX_VALUE)).thenReturn(show);
+     Mockito.when(showDao.readAllEpisodes(Long.MAX_VALUE)).thenThrow(ShowException.class);
      processor.setShowDao(showDao);
 
      GuideDao guideDao = Mockito.mock(GuideDao.class);
      Mockito.when(guideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
      GuideInfo info = new GuideInfo();
- 	  info.setLastUpdated(SDF.parse("2016-01-29"));
+ 	 info.setLastUpdated(SDF.parse("2016-01-29"));
      info.setAiring(true);
      Mockito.when(guideDao.info("GUIDEID")).thenReturn(info);
      GuideEpisode guideEp1 = new GuideEpisode();
@@ -907,16 +951,19 @@ public class GuideProcessor_ImplTest {
      }
      
      Assert.assertFalse(processor.isActive());
+     Assert.assertTrue(show.getLastGuideUpdate().equals(SDF.parse("2000-01-01")));
+     Assert.assertTrue(show.getLastGuideCheck().equals(SDF.parse("2000-01-01")));
      
-     Mockito.verify(listener, Mockito.times(1)).alertComplete(Mockito.any(Processor.class));
+     Mockito.verify(listener).alertComplete(processor);
+     Mockito.verifyNoMoreInteractions(listener);
     
-     Mockito.verify(showDao, Mockito.times(1)).readAndLock(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdate(Mockito.any(Show.class));
-     Mockito.verify(showDao, Mockito.times(1)).readAllEpisodes(Mockito.anyLong());
-     Mockito.verify(showDao, Mockito.times(0)).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
+     Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
+     Mockito.verifyNoMoreInteractions(showDao);
      
-     Mockito.verify(guideDao, Mockito.times(1)).info(Mockito.anyString());
-     Mockito.verify(guideDao, Mockito.times(1)).episodes(Mockito.anyString());     
+     Mockito.verify(guideDao).info("GUIDEID");
+     Mockito.verify(guideDao).episodes("GUIDEID"); 
+     Mockito.verifyNoMoreInteractions(guideDao);
    }
    
   	@Test

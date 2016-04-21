@@ -16,21 +16,28 @@ public class ConfigTest {
 	}
 
 	@Test
-	public void setSearchInterval() {
-		Assert.assertEquals(60 * 60 * 1000, config.getSearchInterval());
+	public void searchIntervalTest() {
+		Assert.assertEquals(4* 60 * 60 * 1000, config.getSearchInterval());
 		config.setSearchInterval(100);
 		Assert.assertEquals(100, config.getSearchInterval());
 	}
+	
+	@Test
+	public void searchDelayTest() {
+		Assert.assertEquals(60 * 60 * 1000, config.getSearchDelay());
+		config.setSearchDelay(100);
+		Assert.assertEquals(100, config.getSearchDelay());
+	}
 
 	@Test
-	public void setPreferFiles() {
+	public void preferFilesTest() {
 		Assert.assertTrue(config.isPreferFiles());
 		config.setPreferFiles(false);
 		Assert.assertFalse(config.isPreferFiles());
 	}
 
 	@Test
-	public void setIgnoreFolders() {
+	public void ignoreFoldersTest() {
 		Assert.assertFalse(config.isIgnoreFolders());
 		Assert.assertTrue(config.isPreferFiles());
 		config.setPreferFiles(false);
@@ -41,7 +48,7 @@ public class ConfigTest {
 	}
 
 	@Test
-	public void setIgnoredFileTypes() {
+	public void ignoredFileTypesTest() {
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
      	config.setIgnoredFileTypes(Arrays.asList("AVI","MKV"));
 		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
@@ -50,7 +57,7 @@ public class ConfigTest {
 	}
 
 	@Test
-	public void setOutputDirectory() {
+	public void outputDirectoryTest() {
 		Assert.assertNull(config.getOutputDirectory());
 		config.setOutputDirectory("OUTPUTDIR");
 		Assert.assertEquals("OUTPUTDIR", config.getOutputDirectory());
@@ -59,16 +66,17 @@ public class ConfigTest {
   	@Test
   	public void hashCodeTest(){
      	config.setSearchInterval(100);
+     	config.setSearchDelay(101);
 		config.setPreferFiles(false);
 		config.setIgnoreFolders(true);
 		config.getIgnoredFileTypes().add("MKV");
 		config.setOutputDirectory("OUTPUTDIR");
-		Assert.assertEquals(993502270, config.hashCode());
+		Assert.assertEquals(697880459, config.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
-  		Assert.assertEquals("Config{outputDirectory=null, searchInterval=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[]}",config.toString());
+  		Assert.assertEquals("Config{outputDirectory=null, searchInterval=14400000, searchDelay=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[]}",config.toString());
   	}
   
   	@Test

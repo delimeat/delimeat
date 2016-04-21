@@ -103,12 +103,26 @@ public class ShowTest {
 	}
 
 	@Test
+	public void lastGuideCheckTest() throws ParseException {
+		Assert.assertNull(show.getLastGuideCheck());
+		show.setLastGuideCheck(SDF.parse("2015-11-06"));
+		Assert.assertEquals("2015-11-06", SDF.format(show.getLastGuideCheck()));
+	}
+	
+	@Test
 	public void lastFeedUpdateTest() throws ParseException {
 		Assert.assertNull(show.getLastFeedUpdate());
 		show.setLastFeedUpdate(SDF.parse("2015-11-06"));
 		Assert.assertEquals("2015-11-06", SDF.format(show.getLastFeedUpdate()));
 	}
-
+	
+	@Test
+	public void lastFeedCheckTest() throws ParseException {
+		Assert.assertNull(show.getLastFeedCheck());
+		show.setLastFeedCheck(SDF.parse("2015-11-06"));
+		Assert.assertEquals("2015-11-06", SDF.format(show.getLastFeedCheck()));
+	}
+	
 	@Test
 	public void enabledTest() {
 		Assert.assertFalse(show.isEnabled());
@@ -169,7 +183,7 @@ public class ShowTest {
   
   	@Test
   	public void toStringTest() throws ParseException{
-		Assert.assertEquals("Show{showId=0, title=null, showType=null, enabled=false, airing=false, airTime=0, timezone=null, guideId=null, nextEpisode=null, previousEpisode=null, includeSpecials=false, lastGuideUpdate=null, lastFeedUpdate=null, minSize=0, maxSize=0, version=0}",show.toString());
+		Assert.assertEquals("Show{showId=0, title=null, showType=null, enabled=false, airing=false, airTime=0, timezone=null, guideId=null, nextEpisode=null, previousEpisode=null, includeSpecials=false, lastGuideUpdate=null, lastGuideCheck=null, lastFeedUpdate=null, lastGuideCheck=null, minSize=0, maxSize=0, version=0}",show.toString());
    }
   
   	@Test

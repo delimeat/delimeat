@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "showId", "title", "showType", "enabled", "airing", "airTime", "timezone", "guideId",
-		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate", "lastFeedUpdate", "minSize", "maxSize", "version" })
+		"nextEpisode", "previousEpisode", "includeSpecials", "lastGuideUpdate","lastGuideCheck", "lastFeedUpdate","lastFeedCheck", "minSize", "maxSize", "version" })
 public class Show {
 
 	private long showId;
@@ -27,7 +27,9 @@ public class Show {
 	private boolean airing;
 	private ShowType showType;
 	private Date lastGuideUpdate;
+	private Date lastGuideCheck;
 	private Date lastFeedUpdate;
+	private Date lastFeedCheck;
 	private boolean enabled;
 	private Episode nextEpisode;
 	private Episode previousEpisode;
@@ -180,6 +182,21 @@ public class Show {
 	}
 
 	/**
+	 * @return the lastGuideCheck
+	 */
+	public Date getLastGuideCheck() {
+		return lastGuideCheck;
+	}
+
+	/**
+	 * @param lastGuideCheck
+	 *            the lastGuideCheck to set
+	 */
+	public void setLastGuideCheck(Date lastGuideCheck) {
+		this.lastGuideCheck = lastGuideCheck;
+	}
+	
+	/**
 	 * @return the lastFeedUpdate
 	 */
 	public Date getLastFeedUpdate() {
@@ -194,6 +211,21 @@ public class Show {
 		this.lastFeedUpdate = lastFeedUpdate;
 	}
 
+	/**
+	 * @return the lastFeedCheck
+	 */
+	public Date getLastFeedCheck() {
+		return lastFeedCheck;
+	}
+
+	/**
+	 * @param lastFeedCheck
+	 *            the lastFeedCheck to set
+	 */
+	public void setLastFeedCheck(Date lastFeedCheck) {
+		this.lastFeedCheck = lastFeedCheck;
+	}
+	
 	/**
 	 * @return the airing
 	 */
@@ -319,7 +351,9 @@ public class Show {
               .add("previousEpisode", previousEpisode)
               .add("includeSpecials", includeSpecials)
               .add("lastGuideUpdate", (lastGuideUpdate != null ? lastGuideUpdate : null))
+              .add("lastGuideCheck", (lastGuideCheck != null ? lastGuideCheck : null))              
               .add("lastFeedUpdate", (lastFeedUpdate != null ? lastFeedUpdate : null))
+              .add("lastGuideCheck", (lastGuideCheck != null ? lastGuideCheck : null))
               .add("minSize", minSize)
               .add("maxSize", maxSize)
               .add("version", version)
