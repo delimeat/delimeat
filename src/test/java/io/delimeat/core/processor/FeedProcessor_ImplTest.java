@@ -576,7 +576,7 @@ public class FeedProcessor_ImplTest {
      	Mockito.verify(feedDao).read("TITLE");
      	Mockito.verifyNoMoreInteractions(feedDao);
 
-     	Mockito.verify(feedResultValidator).validate(Arrays.asList(feedResult), show,config);
+     	Mockito.verify(feedResultValidator).validate(Arrays.asList(feedResult), show, config);
      	Mockito.verifyNoMoreInteractions(feedResultValidator);
 
      	Mockito.verify(torrentDao).read(Mockito.any(URI.class));
