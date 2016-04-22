@@ -14,23 +14,16 @@ import java.util.regex.Pattern;
 
 public class FeedResultExcludedKeywordValidator_Impl implements FeedResultValidator {
 
-  	private List<String> excludedKeywords;
-  	
-  	public void setExcludedKeywords(List<String> excludedKeywords){
-     	this.excludedKeywords = excludedKeywords;
-   }
-  	public List<String> getExcludedKeywords(){
-     	return excludedKeywords;
-   }
+
     @Override
     public void validate(List<FeedResult> results, Show show, Config config)
             throws ValidationException {
-      if(DelimeatUtils.isEmpty(getExcludedKeywords()) == true){
+      if(DelimeatUtils.isEmpty(config.getExcludedKeywords()) == true){
         return;
       }
       
 		String regex = "(";
-      Iterator<String> it = getExcludedKeywords().iterator();
+      Iterator<String> it = config.getExcludedKeywords().iterator();
 		while(it.hasNext()){
         regex += it.next();
         if(it.hasNext()){

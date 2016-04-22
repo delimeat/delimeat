@@ -30,14 +30,6 @@ public class FeedResultExcludedKeywordValidator_ImplTest {
 	}
   
   	@Test
-  	public void excludedKeywordsTest(){
-     	List<String> keywords = Arrays.asList("FIND_ME","TEXT2");
-		Assert.assertNull(validator.getExcludedKeywords());
-   	validator.setExcludedKeywords(keywords);
-     	Assert.assertEquals(keywords, validator.getExcludedKeywords());
-   }
-  
-  	@Test
   	public void nullExcludedKeywordsTest() throws Exception{
 		FeedResult result = new FeedResult();
 		results.add(result);
@@ -48,7 +40,7 @@ public class FeedResultExcludedKeywordValidator_ImplTest {
    
   	@Test
   	public void emptyExcludedKeywordsTest() throws Exception{
-     	validator.setExcludedKeywords(Collections.<String>emptyList());
+     	config.setExcludedKeywords(Collections.<String>emptyList());
      
 		FeedResult result = new FeedResult();
 		results.add(result);
@@ -59,7 +51,7 @@ public class FeedResultExcludedKeywordValidator_ImplTest {
   
   	@Test
   	public void foundTest() throws Exception{
-     	validator.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
+     	config.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
      
 		FeedResult result = new FeedResult();
      	result.setTitle("BLAH_BLAHFIND_ME_BLAH");
@@ -72,7 +64,7 @@ public class FeedResultExcludedKeywordValidator_ImplTest {
   
   	@Test
   	public void notFoundTest() throws Exception{
-     	validator.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
+     	config.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
      
 		FeedResult result = new FeedResult();
      	result.setTitle("BLAH_BLAH_BLAH");

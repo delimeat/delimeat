@@ -55,6 +55,17 @@ public class ConfigTest {
 		Assert.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
 		Assert.assertEquals("MKV", config.getIgnoredFileTypes().get(1));
 	}
+  
+  	@Test
+  	public void excludedKeywordsTest(){
+     	Assert.assertNotNull(config.getExcludedKeywords());
+     	Assert.assertEquals(0, config.getExcludedKeywords().size());
+     	config.setExcludedKeywords(Arrays.asList("265","XVR"));
+     	Assert.assertEquals(2, config.getExcludedKeywords().size());
+     	Assert.assertEquals("265", config.getExcludedKeywords().get(0));
+     	Assert.assertEquals("XVR", config.getExcludedKeywords().get(1));
+     
+   }
 
 	@Test
 	public void outputDirectoryTest() {
@@ -71,12 +82,13 @@ public class ConfigTest {
 		config.setIgnoreFolders(true);
 		config.getIgnoredFileTypes().add("MKV");
 		config.setOutputDirectory("OUTPUTDIR");
-		Assert.assertEquals(697880459, config.hashCode());
+		Assert.assertEquals(159457750, config.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
-  		Assert.assertEquals("Config{outputDirectory=null, searchInterval=14400000, searchDelay=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[]}",config.toString());
+     	System.out.println(config);
+  		Assert.assertEquals("Config{outputDirectory=null, searchInterval=14400000, searchDelay=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[]}",config.toString());
   	}
   
   	@Test

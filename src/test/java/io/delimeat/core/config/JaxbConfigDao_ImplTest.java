@@ -35,12 +35,13 @@ public class JaxbConfigDao_ImplTest {
 		private StringBuffer xml;
 
 		public XMLGenerator(int searchInterval, boolean preferFiles, boolean ignoreFolders,
-				List<String> ignoredFileTypes, String outputDir, int searchDelay) {
+				List<String> ignoredFileTypes, String outputDir, int searchDelay, List<String> excludedKeywords) {
 			xml = new StringBuffer();
 			xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			xml.append("<config>");
 			xml.append("<outputDirectory>" + outputDir + "</outputDirectory>");
 			xml.append("<preferFiles>" + preferFiles + "</preferFiles>");
+        	// ignored folders stuff
 			xml.append("<ignoreFolders>" + ignoreFolders + "</ignoreFolders>");
 			if (ignoredFileTypes != null && ignoredFileTypes.size() > 0) {
 				xml.append("<ignoredFileTypes>");
@@ -50,6 +51,16 @@ public class JaxbConfigDao_ImplTest {
 				xml.append("</ignoredFileTypes>");
 			} else {
 				xml.append("<ignoredFileTypes/>");
+			}
+        	// excluded keywords stuff
+			if (excludedKeywords != null && excludedKeywords.size() > 0) {
+				xml.append("<excludedKeywords>");
+				for (String keyword : excludedKeywords) {
+					xml.append("<keyword>" + keyword + "</keyword>");
+				}
+				xml.append("</excludedKeywords>");
+			} else {
+				xml.append("<excludedKeywords/>");
 			}
 			xml.append("<searchInterval>" + searchInterval + "</searchInterval>");
 			xml.append("<searchDelay>" + searchDelay + "</searchDelay>");
@@ -113,7 +124,7 @@ public class JaxbConfigDao_ImplTest {
 
 	@Test
 	public void readTest() throws Exception {
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200);
+		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200,Arrays.asList("256","XRV"));
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenReturn(generator.generate());
 		dao.setUrlHandler(mockedHandler);
@@ -132,6 +143,9 @@ public class JaxbConfigDao_ImplTest {
 		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
 		Assert.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
 		Assert.assertEquals("MOV", config.getIgnoredFileTypes().get(1));
+     	Assert.assertEquals(2, config.getExcludedKeywords().size());
+     	Assert.assertEquals("256", config.getExcludedKeywords().get(0));
+     	Assert.assertEquals("XRV", config.getExcludedKeywords().get(1));
      
      	Mockito.verify(mockedHandler).openInput(Mockito.any(URL.class));
 	}
@@ -159,8 +173,9 @@ public class JaxbConfigDao_ImplTest {
 		Assert.assertEquals(true, config.isPreferFiles());
 		Assert.assertEquals(false, config.isIgnoreFolders());
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
+     	Assert.assertEquals(0, config.getExcludedKeywords().size());
      
-		XMLGenerator generator = new XMLGenerator(14400000, true, false, Collections.<String>emptyList(), "defaultOutputDir",3600000);
+		XMLGenerator generator = new XMLGenerator(14400000, true, false, Collections.<String>emptyList(), "defaultOutputDir",3600000,Collections.<String>emptyList());
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openInput(Mockito.any(URL.class));
@@ -227,10 +242,12 @@ public class JaxbConfigDao_ImplTest {
 		config.setIgnoreFolders(false);
 		config.getIgnoredFileTypes().add("AVI");
 		config.getIgnoredFileTypes().add("MOV");
+     	config.getExcludedKeywords().add("256");
+     	config.getExcludedKeywords().add("XRV");
 
 		dao.createOrUpdate(config);
 
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200);
+		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200, Arrays.asList("256","XRV"));
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openOutput(Mockito.any(URL.class));

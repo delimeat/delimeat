@@ -369,9 +369,43 @@ public class ProcessorService_ImplTest {
 	}
 
 	@Test
+	public void processAllFeedUpdatesNotEnabledTest() throws Exception {
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		Show show = new Show();
+     	show.setEnabled(false);
+		Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
+		service.setShowDao(showDao);
+
+		ConfigDao configDao = Mockito.mock(ConfigDao.class);
+		Config config = new Config();
+		Mockito.when(configDao.read()).thenReturn(config);
+		service.setConfigDao(configDao);
+
+		ProcessorFactory factory = Mockito.mock(ProcessorFactory.class);
+		Processor processor = Mockito.mock(Processor.class);
+		Mockito.when(factory.build(show,config)).thenReturn(processor);
+		service.setFeedProcessorFactory(factory);
+
+		Executor executor = Mockito.mock(Executor.class);
+		service.setExecutor(executor);
+
+		service.processAllFeedUpdates();
+
+		Assert.assertEquals(0, service.getProcessors().size());
+
+		Mockito.verify(showDao).readAll();
+		Mockito.verifyNoMoreInteractions(showDao);
+		Mockito.verify(configDao).read();
+		Mockito.verifyNoMoreInteractions(configDao);
+		Mockito.verifyZeroInteractions(factory);
+		Mockito.verifyZeroInteractions(executor);
+	}
+  
+	@Test
 	public void processAllFeedUpdatesNoNextEpTest() throws Exception {
 		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
+     	show.setEnabled(true);
 		show.setNextEpisode(null);
 		Mockito.when(showDao.readAll()).thenReturn(Arrays.asList(show));
 		service.setShowDao(showDao);
