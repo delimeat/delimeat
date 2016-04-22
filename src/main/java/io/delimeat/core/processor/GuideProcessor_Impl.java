@@ -43,7 +43,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 		this.guideDao = guideDao;
 	}
 
-    @Transactional
+   @Transactional
 	@Override
 	public void process() throws ShowException, GuideException {
 		if (active == false) {
@@ -99,17 +99,15 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 								GuideEpisode guideEp = guideEpIt.next();
 
 								// stop when we reach the previous episode
-								if (lockedShow.getPreviousEpisode() != null) {
+								final Episode showPrevEp = lockedShow.getPreviousEpisode();
+								if (showPrevEp != null) {
 
-									int guideSeasonNum = guideEp.getSeasonNum();
-									int guideEpisodeNum = guideEp.getEpisodeNum();
-									int prevSeasonNum = lockedShow.getPreviousEpisode().getSeasonNum();
-									int prevEpisodeNum = lockedShow.getPreviousEpisode().getEpisodeNum();
 									int compare = ComparisonChain.start()
-													.compare(guideSeasonNum,prevSeasonNum)
-													.compare(guideEpisodeNum,prevEpisodeNum).result();
+															.compare(guideEp.getSeasonNum(), (Integer)showPrevEp.getSeasonNum())
+															.compare(guideEp.getEpisodeNum(),(Integer)showPrevEp.getEpisodeNum())
+                                             .result();
 									if (compare <= 0) {
-										// reachedPrevEp = true;
+                             	//reached the previous episode (or further) time to stop
 										continue;
 									}
 								}
@@ -202,5 +200,6 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 				+ ", active=" + active + ", listeners=" + listeners
 				+ ", showDao=" + showDao + ", guideDao=" + guideDao + "]";
 	}
+
 
 }

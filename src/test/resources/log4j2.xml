@@ -12,7 +12,7 @@
     <logger name="org.glassfish.jersey" level="ALL" additivity="false">
       <AppenderRef ref="Console" />
     </logger>
-    <Root level="ERROR" additivity="false">
+    <Root level="ALL" additivity="false">
       <AppenderRef ref="Console" />
     </Root>
   </Loggers>

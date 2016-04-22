@@ -21,6 +21,7 @@ import io.delimeat.core.show.Show;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,10 +34,13 @@ public class ShowJpaDao_ImplIT {
 
   @Autowired
   ShowJpaDao_Impl dao;
+  @Autowired
+  DataSource dataSource;
   
-  private static EmbeddedDatabase dataSource;
-  private static SimpleNamingContextBuilder context;
+  //private static EmbeddedDatabase dataSource;
+  //private static SimpleNamingContextBuilder context;
   
+  /*
   @BeforeClass
   public static void beforeClass() throws Exception{
     	dataSource = new EmbeddedDatabaseBuilder()
@@ -48,12 +52,15 @@ public class ShowJpaDao_ImplIT {
     	context = SimpleNamingContextBuilder.emptyActivatedContextBuilder();
     	context.bind("jdbc/delimeatDB", dataSource);
   }
+	*/
   
+  /*
   @AfterClass
   public static void afterClass(){
     	dataSource.shutdown();
     	context.deactivate();
   }
+  */
   
   	@Before
   	public void setUp() throws Exception {
