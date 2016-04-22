@@ -1,80 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jee="http://www.springframework.org/schema/jee"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
-  
-  	<!--  
-	<bean id="showJpaAdaptorId" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-   		<property name="showSql" value="true" />
+
+	<!-- 
+	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase"> 
+		<property name="dataSource" ref="showDataSourceId" /> 
+		<property name="changeLog" value="classpath:db-changelog.xml" /> 
+	</bean> 
+	-->
+
+	<bean id="showDataSourceId" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="jdbcUrl" value="${io.delimeat.core.show.jdbcUrl}" />
+		<property name="driverClassName" value="${io.delimeat.core.show.driverClassName}" />
 	</bean>
 
-  
-	<jee:jndi-lookup id="showDataSourceId" jndi-name="jdbc/delimeatDB" expected-type="javax.sql.DataSource" />
-  	-->
-  
-  	<!--
- 	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase">
-      <property name="dataSource" ref="showDataSourceId" />
-      <property name="changeLog" value="classpath:db-changelog.xml" />
- 	</bean>
-	!-->
-  
-    <bean id="showDataSourceId" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-      <property name="jdbcUrl" value="${io.delimeat.core.show.jdbcUrl}"/>
-    </bean>
-    
 
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-      <property name="mappingResources" value="META-INF/orm.xml"></property>
-      <property name="dataSource" ref="showDataSourceId"/>
-      <property name="jpaVendorAdapter">
-        <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"/>
-     </property>
-      <property name="jpaProperties">
-         <props>	
-           <prop key="eclipselink.weaving">false</prop>
-				<!--  
-           <prop key="eclipselink.ddl-generation">drop-and-create-tables</prop>
-				!-->
-           	<!--
-           <prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
-           <prop key="eclipselink.ddl-generation.output-mode">database</prop>
-				!-->
-           <prop key="eclipselink.ddl-generation">none</prop>
+		<property name="mappingResources" value="META-INF/orm.xml" />
+		<property name="dataSource" ref="showDataSourceId" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="eclipselink.weaving">false</prop>
+				<!-- 
+				<prop key="eclipselink.ddl-generation">drop-and-create-tables</prop> 
+				-->
 
-           <prop key="eclipselink.logging.level">OFF</prop>
-				<!--
-				<prop key="eclipselink.logging.level">ALL</prop>
-				<prop key="eclipselink.logging.thread">true</prop>
-				<prop key="eclipselink.logging.session">true</prop>
-				<prop key="eclipselink.logging.timestamp">true</prop>
+				<prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
+				<prop key="eclipselink.ddl-generation.output-mode">database</prop>
+				<!-- 
+				<prop key="eclipselink.ddl-generation">none</prop> 
+				-->
+				<prop key="eclipselink.logging.level">OFF</prop>
+				<!-- 
+				<prop key="eclipselink.logging.level">ALL</prop> 
+				<prop key="eclipselink.logging.thread">true</prop> 
+				<prop key="eclipselink.logging.session">true</prop> 
+				<prop key="eclipselink.logging.timestamp">true</prop> 
 				<prop key="eclipselink.logging.exceptions">true"</prop>
-				!-->
-         </props>
-      </property>
-   </bean>
+				-->
+			</props>
+		</property>
+	</bean>
 
- 
-	<!-- 	
-	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-      <property name="persistenceUnitName" value="delimeatPU"/>
-   </bean>
-	!-->
-  	
-   <bean id="showTransactionManagerId" class="org.springframework.orm.jpa.JpaTransactionManager">
-      <property name="entityManagerFactory" ref="showEntityManagerFactoryId" />
-   </bean>
-   
-   <tx:annotation-driven transaction-manager="showTransactionManagerId"/>
- 
-   <bean id="persistenceExceptionTranslationPostProcessor"
-      class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<bean id="showTransactionManagerId" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="showEntityManagerFactoryId" />
+	</bean>
 
-	<bean id="showDaoId" class="io.delimeat.core.show.ShowJpaDao_Impl"/>
+	<tx:annotation-driven transaction-manager="showTransactionManagerId" />
+
+	<bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="showDaoId" class="io.delimeat.core.show.ShowJpaDao_Impl" />
 </beans>

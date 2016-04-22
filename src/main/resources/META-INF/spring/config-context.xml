@@ -39,11 +39,13 @@ xmlns:context="http://www.springframework.org/schema/context"
 		<property name="marshaller" ref="configMarshallerId" />
       	<property name="defaultOutputDir" value="${user.home}"/>	
 		<property name="urlHandler" ref="urlHandlerId" />
-		<property name="url">
+		<property name="url" value="${io.delimeat.core.config.url}"/>
+		<!--
 			<bean id="configUrl" class="org.springframework.jndi.JndiObjectFactoryBean">
 			    <property name="jndiName" value="java:comp/env/delimeatConfigUrl"/>
 			</bean>
 		</property>
+		!-->
 	</bean>
 
 </beans>
