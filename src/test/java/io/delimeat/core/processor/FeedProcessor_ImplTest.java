@@ -6,7 +6,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import io.delimeat.core.config.Config;
@@ -163,11 +165,12 @@ public class FeedProcessor_ImplTest {
       processor.alertListenersComplete();
 
       Mockito.verify(listener).alertComplete(processor);
+      Mockito.verifyNoMoreInteractions(listener);
     }
   
 
 	@Test
-	public void fetchResultsNotStartedTest() throws FeedException {
+	public void fetchResultsNotStartedTest() throws Exception {
 		FeedDao dao = Mockito.mock(FeedDao.class);
 		processor.setFeedDaos(Arrays.asList(dao));
 		processor.abort();
@@ -176,18 +179,17 @@ public class FeedProcessor_ImplTest {
 		show.setTitle("TITLE");
 
 		List<FeedResult> results = processor.fetchResults(show);
-
-		Mockito.verifyZeroInteractions(dao);
 		Assert.assertTrue(results.isEmpty());
+		
+		Mockito.verifyZeroInteractions(dao);
 	}
 
 	@Test
-	public void fetchResultsSuccessTest() throws FeedException {
+	public void fetchResultsSuccessTest() throws Exception {
 		FeedDao dao = Mockito.mock(FeedDao.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
-		Mockito.when(dao.read(Mockito.anyString())).thenReturn(
-				Arrays.asList(feedResult));
+		Mockito.when(dao.read("TITLE")).thenReturn(Arrays.asList(feedResult));
 
 		processor.setFeedDaos(Arrays.asList(dao));
 		processor.setActive(true);
@@ -198,14 +200,17 @@ public class FeedProcessor_ImplTest {
 		List<FeedResult> results = processor.fetchResults(show);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(feedResult, results.get(0));
+		
+		Mockito.verify(dao).read("TITLE");
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test
-	public void fetchResultsOneErrorTest() throws FeedException {
+	public void fetchResultsOneErrorTest() throws Exception {
 		FeedDao dao = Mockito.mock(FeedDao.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
-		Mockito.when(dao.read(Mockito.anyString()))
+		Mockito.when(dao.read("TITLE"))
 				.thenThrow(FeedException.class)
 				.thenReturn(Arrays.asList(feedResult));
 
@@ -218,11 +223,13 @@ public class FeedProcessor_ImplTest {
 		List<FeedResult> results = processor.fetchResults(show);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(feedResult, results.get(0));
+		
+		Mockito.verify(dao, Mockito.times(2)).read("TITLE");
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test
-	public void validateFeedResultsNotStartedTest()
-			throws ValidationException {
+	public void validateFeedResultsNotStartedTest() throws Exception {
 		FeedResultValidator validator = Mockito.mock(FeedResultValidator.class);
 		processor.setFeedResultValidators(Arrays.asList(validator));
 		processor.abort();
@@ -235,7 +242,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void validateFeedResultsTest() throws ValidationException {
+	public void validateFeedResultsTest() throws Exception {
 		FeedResultValidator validator = Mockito.mock(FeedResultValidator.class);
 		processor.setFeedResultValidators(Arrays.asList(validator));
      
@@ -249,11 +256,12 @@ public class FeedProcessor_ImplTest {
 		List<FeedResult> outResults = processor.validateFeedResults(Arrays.asList(result1, result2), show, new Config());
 		Assert.assertEquals(1, outResults.size());
 		Assert.assertEquals(result2, outResults.get(0));
+		
+		Mockito.verify(validator).validate(Arrays.asList(result1, result2), show, new Config());
 	}
 
 	@Test(expected = MalformedURLException.class)
-	public void fetchTorrentMalformedURLTest() throws IOException,
-			TorrentException, URISyntaxException {
+	public void fetchTorrentMalformedURLTest() throws Exception {
 		FeedResult result = new FeedResult();
 		result.setTorrentURL("MALFORMEDURL");
 
@@ -261,8 +269,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test(expected = URISyntaxException.class)
-	public void fetchTorrentURISyntaxTest() throws IOException,
-			TorrentException, URISyntaxException {
+	public void fetchTorrentURISyntaxTest() throws Exception {
 		FeedResult result = new FeedResult();
 		result.setTorrentURL("http:URISYNTAXEXCEPTION");
 
@@ -270,8 +277,7 @@ public class FeedProcessor_ImplTest {
 	}
 
 	@Test
-	public void fetchTorrentTest() throws IOException, TorrentException,
-			URISyntaxException {
+	public void fetchTorrentTest() throws Exception {
 		FeedResult result = new FeedResult();
 		result.setTorrentURL("http://test.com?removed=true");
 
@@ -282,24 +288,28 @@ public class FeedProcessor_ImplTest {
 
 		Torrent outTorrent = processor.fetchTorrent(result);
 		Assert.assertEquals(torrent, outTorrent);
+		
+		Mockito.verify(dao).read(new URI("http://test.com"));
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test(expected = TorrentException.class)
-	public void fetchTorrentDaoExceptionTest() throws IOException,
-			TorrentException, URISyntaxException {
+	public void fetchTorrentDaoExceptionTest() throws Exception {
 		FeedResult result = new FeedResult();
 		result.setTorrentURL("http://test.com?removed=true");
 
 		TorrentDao dao = Mockito.mock(TorrentDao.class);
-		Mockito.when(dao.read(new URI("http://test.com"))).thenThrow(
-				TorrentException.class);
+		Mockito.when(dao.read(new URI("http://test.com"))).thenThrow(TorrentException.class);
 		processor.setTorrentDao(dao);
 
 		processor.fetchTorrent(result);
+		
+		Mockito.verify(dao).read(new URI("http://test.com"));
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test
-	public void validateTorrentNotStartedTest() throws ValidationException {
+	public void validateTorrentNotStartedTest() throws Exception {
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
 		processor.setTorrentValidators(Arrays.asList(validator));
 		processor.abort();
@@ -309,48 +319,58 @@ public class FeedProcessor_ImplTest {
 		Config config = new Config();
 
 		processor.validateTorrent(result, null, config, null);
+		
 		Mockito.verifyZeroInteractions(validator);
 	}
 
 	@Test
-	public void validateTorrentTest() throws ValidationException {
+	public void validateTorrentTest() throws Exception {
+		Config config = new Config();
+		config.setIgnoreFolders(false);
+		
+		Show show = new Show();
+		
+		Torrent torrent = new Torrent();
+		
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
-		Mockito.when(
-				validator.validate(Mockito.any(Torrent.class),
-						Mockito.any(Show.class), Mockito.any(Config.class)))
-				.thenReturn(true).thenReturn(false);
-		Mockito.when(validator.getRejection()).thenReturn(
-				FeedResultRejection.CONTAINS_COMPRESSED);
+		Mockito.when(validator.validate(torrent,show, config))
+				.thenReturn(true)
+				.thenReturn(false);
+		Mockito.when(validator.getRejection()).thenReturn(FeedResultRejection.CONTAINS_COMPRESSED);
 
 		processor.setTorrentValidators(Arrays.asList(validator, validator));
 		processor.setActive(true);
 
 		FeedResult result = new FeedResult();
+		result.setTorrent(torrent);
 
-		Config config = new Config();
-		config.setIgnoreFolders(false);
-
-		processor.validateTorrent(result, null, config, null);
-		Mockito.verify(validator, Mockito.times(2)).validate(Mockito.any(Torrent.class), Mockito.any(Show.class),Mockito.any(Config.class));
+		processor.validateTorrent(result, torrent, config, show);
 		
      	Assert.assertEquals(1, result.getFeedResultRejections().size());
 		Assert.assertEquals(FeedResultRejection.CONTAINS_COMPRESSED, result.getFeedResultRejections().get(0));
+		
+		Mockito.verify(validator, Mockito.times(2)).validate(torrent, show, config);
+		//TODO wtf???
+		//Mockito.verifyNoMoreInteractions(validator);
 	}
 
 	@Test(expected = ValidationException.class)
-	public void validateTorrentExceptionTest() throws ValidationException {
+	public void validateTorrentExceptionTest() throws Exception {
+		Config config = new Config();
+		
+		Show show = new Show();
+		
+		Torrent torrent = new Torrent();
+		
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
-		Mockito.when(validator.validate(Mockito.any(Torrent.class),Mockito.any(Show.class), Mockito.any(Config.class)))
-						.thenThrow(ValidationException.class);
+		Mockito.when(validator.validate(torrent,show, config)).thenThrow(ValidationException.class);
 
 		processor.setTorrentValidators(Arrays.asList(validator, validator));
 		processor.setActive(true);
 
 		FeedResult result = new FeedResult();
 
-		Config config = new Config();
-
-		processor.validateTorrent(result, null, config, null);
+		processor.validateTorrent(result, torrent, config, show);
 	}
 
 	@Test
@@ -361,9 +381,7 @@ public class FeedProcessor_ImplTest {
 
 	@Test
 	public void selectResultEmptyResultsTest() {
-		List<FeedResult> results = new ArrayList<FeedResult>();
-		Config config = new Config();
-		Assert.assertNull(processor.selectResult(results, config));
+		Assert.assertNull(processor.selectResult(Collections.<FeedResult>emptyList(), new Config()));
 	}
 
 	@Test
@@ -382,6 +400,8 @@ public class FeedProcessor_ImplTest {
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(result1, result);
+		
+		Mockito.verify(comparator).compare(Mockito.any(FeedResult.class), Mockito.any(FeedResult.class));
 	}
 
 	@Test
@@ -434,8 +454,10 @@ public class FeedProcessor_ImplTest {
 		Config config = new Config();
 
 		List<FeedResult> results = processor.validateResultTorrents(Arrays.asList(result1, result2, result3, result4, result5, result6, result7),null, config);
+		
 		Mockito.verify(dao, Mockito.times(5)).read(Mockito.any(URI.class));
 		Mockito.verify(validator, Mockito.times(2)).validate(Mockito.any(Torrent.class), Mockito.any(Show.class), Mockito.any(Config.class));
+		
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result1, results.get(0));
 		Assert.assertTrue(result1.getFeedResultRejections().isEmpty());
@@ -475,7 +497,7 @@ public class FeedProcessor_ImplTest {
      
      	Assert.assertEquals(torrent, result.getTorrent());
      
-     	Mockito.verify(dao,Mockito.times(1)).read(Mockito.any(URI.class));
+     	Mockito.verify(dao).read(Mockito.any(URI.class));
 		Mockito.verify(validator).validate(Mockito.any(Torrent.class),Mockito.any(Show.class), Mockito.any(Config.class));
 	}
 
@@ -518,6 +540,8 @@ public class FeedProcessor_ImplTest {
      	Show show = new Show();
      	show.setShowId(1);
      	show.setTitle("TITLE");
+     	show.setLastFeedCheck(new Date(0));
+     	show.setLastFeedUpdate(new Date(0));
      	Episode nextEpisode = new Episode();
      	show.setNextEpisode(nextEpisode);
      	processor.setShow(show);
@@ -561,11 +585,13 @@ public class FeedProcessor_ImplTest {
 		processor.addListener(processorListener);
 
      	processor.process();
-  
+     	
      	Assert.assertEquals(torrent, feedResult.getTorrent());
      	Assert.assertEquals(0,feedResult.getFeedResultRejections().size());
      	Assert.assertEquals(nextEpisode, show.getPreviousEpisode());
      	Assert.assertEquals(newNextEpisode, show.getNextEpisode());
+     	Assert.assertTrue(show.getLastFeedCheck().after(new Date(0)));
+     	Assert.assertTrue(show.getLastFeedUpdate().after(new Date(0)));
      
      	Mockito.verify(showDao).readAndLock(1L);
 
