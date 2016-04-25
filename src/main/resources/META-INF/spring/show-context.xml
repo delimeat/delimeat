@@ -7,18 +7,18 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-	<!-- 
-	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase"> 
-		<property name="dataSource" ref="showDataSourceId" /> 
-		<property name="changeLog" value="classpath:db-changelog.xml" /> 
-	</bean> 
-	-->
 
 	<bean id="showDataSourceId" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="jdbcUrl" value="${io.delimeat.core.show.jdbcUrl}" />
 		<property name="driverClassName" value="${io.delimeat.core.show.driverClassName}" />
 	</bean>
-
+	
+	<!-- 
+	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase"> 
+		<property name="dataSource" ref="showDataSourceId" /> 
+		<property name="changeLog" value="classpath:db-changelog.xml" /> 
+	</bean> 
+	!-->
 
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="mappingResources" value="META-INF/orm.xml" />
@@ -29,16 +29,16 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
 		<property name="jpaProperties">
 			<props>
 				<prop key="eclipselink.weaving">false</prop>
-				<!-- 
-				<prop key="eclipselink.ddl-generation">drop-and-create-tables</prop> 
-				-->
-
+				<prop key="eclipselink.logging.level">OFF</prop>
+				
+				
 				<prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
 				<prop key="eclipselink.ddl-generation.output-mode">database</prop>
+				
 				<!-- 
 				<prop key="eclipselink.ddl-generation">none</prop> 
-				-->
-				<prop key="eclipselink.logging.level">OFF</prop>
+				!-->
+				
 				<!-- 
 				<prop key="eclipselink.logging.level">ALL</prop> 
 				<prop key="eclipselink.logging.thread">true</prop> 

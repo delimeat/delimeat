@@ -10,6 +10,7 @@ import org.apache.derby.tools.ij;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,12 @@ public class ShowJpaDao_ImplIT {
   //private static EmbeddedDatabase dataSource;
   //private static SimpleNamingContextBuilder context;
   
-  /*
+  
   @BeforeClass
   public static void beforeClass() throws Exception{
+	  System.setProperty("io.delimeat.core.show.driverClassName", "org.apache.derby.jdbc.EmbeddedDriver");
+	  System.setProperty("io.delimeat.core.show.jdbcUrl", "jdbc:derby:memory:delimeat;create=true;");
+	  /*
     	dataSource = new EmbeddedDatabaseBuilder()
         						.setType(EmbeddedDatabaseType.DERBY)
         						//.setName("delimeat")
@@ -43,8 +47,9 @@ public class ShowJpaDao_ImplIT {
     
     	context = SimpleNamingContextBuilder.emptyActivatedContextBuilder();
     	context.bind("jdbc/delimeatDB", dataSource);
+    	*/
   }
-	*/
+
   
   /*
   @AfterClass

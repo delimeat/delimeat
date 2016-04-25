@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.delimeat</groupId>
 	<artifactId>delimeat</artifactId>
@@ -8,19 +9,19 @@
 	<packaging>war</packaging>
 
 	<licenses>
-     <license>
-       <name>The MIT License (MIT)</name>
-       <url>http://opensource.org/licenses/MIT</url>
-       <distribution>repo</distribution>
-     </license>
-  </licenses>
-  
-  <scm>
-    <connection>scm:git:git://github.com/delimeat/delimeat.git</connection>
-    <developerConnection>scm:git:git://github.com/delimeat/delimeat.git</developerConnection>
-    <url>https://github.com/delimeat/delimeat</url>
-  </scm>
-  
+		<license>
+			<name>The MIT License (MIT)</name>
+			<url>http://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git://github.com/delimeat/delimeat.git</connection>
+		<developerConnection>scm:git:git://github.com/delimeat/delimeat.git</developerConnection>
+		<url>https://github.com/delimeat/delimeat</url>
+	</scm>
+
 	<build>
 		<plugins>
 
@@ -60,21 +61,18 @@
 				</configuration>
 			</plugin>
 
-        <!-- set timzeone to UTC to make testing dates easier -->
-        <!-- disabled because it causes problems with travis-ci
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
-          <configuration>
-            <argLine>-Duser.timezone=UTC</argLine>
-          </configuration>
-        </plugin>
-		  !-->
+
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>${org.liquibase.version}</version>
+				<configuration>
+					<propertyFile>src/main/resources/liquibase.properties</propertyFile>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
-  
-
 
 	<properties>
 		<!-- Project specific stuff ! -->
@@ -102,8 +100,8 @@
 		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
 
 		<org.eclipse.persistence.version>2.6.2</org.eclipse.persistence.version>
-     	<com.zaxxer.hikaricp.version>2.4.5</com.zaxxer.hikaricp.version>
-     	<org.liquibase.version>3.4.2</org.liquibase.version>
+		<com.zaxxer.hikaricp.version>2.4.5</com.zaxxer.hikaricp.version>
+		<org.liquibase.version>3.5.0</org.liquibase.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 
 		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
@@ -114,6 +112,14 @@
 	</properties>
 
 	<dependencies>
+
+		<!-- 
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-maven-plugin</artifactId>
+			<version>${org.liquibase.version}</version>
+		</dependency>
+		!-->
 
 		<!-- TEST ! -->
 		<dependency>
@@ -152,7 +158,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-     
+
 		<!-- SERVLET ! -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -176,17 +182,16 @@
 			<artifactId>org.eclipse.persistence.moxy</artifactId>
 			<version>${org.eclipse.persistence.version}</version>
 		</dependency>
-      <dependency>
-         <groupId>com.zaxxer</groupId>
-         <artifactId>HikariCP</artifactId>
-         <version>${com.zaxxer.hikaricp.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.liquibase</groupId>
-         <artifactId>liquibase-core</artifactId>
-         <version>${org.liquibase.version}</version>
-      </dependency>
-
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>${com.zaxxer.hikaricp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>${org.liquibase.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
@@ -390,39 +395,39 @@
 		</dependency>
 
 	</dependencies>
-  
-  <profiles>
-    <profile>
-      <id>travis</id>
-      <activation>
-        <property>
-          <name>env.TRAVIS</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-				<plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>3.1.0</version>
-            </plugin>
-            <plugin>
-              <groupId>org.jacoco</groupId>
-              <artifactId>jacoco-maven-plugin</artifactId>
-              <version>0.7.5.201505241946</version>
-              <executions>
-                  <execution>
-                      <id>prepare-agent</id>
-                      <goals>
-                          <goal>prepare-agent</goal>
-                      </goals>
-                  </execution>
-              </executions>
-            </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+
+	<profiles>
+		<profile>
+			<id>travis</id>
+			<activation>
+				<property>
+					<name>env.TRAVIS</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eluder.coveralls</groupId>
+						<artifactId>coveralls-maven-plugin</artifactId>
+						<version>3.1.0</version>
+					</plugin>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.7.5.201505241946</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
