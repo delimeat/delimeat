@@ -118,10 +118,14 @@ public class ProcessorService_Impl implements ProcessorService,
             TimeZone tz = TimeZone.getTimeZone(timezone);
            	int tzOffset = tz.getRawOffset();
            	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - tzOffset + searchDelay);
-           	LOGGER.debug("show: "+ show);
-           	LOGGER.debug("airDate: " + nextEpAirDateTime);
-           	LOGGER.debug("now: " + now);
+
 			if (nextEpAirDateTime.before(now) == true) {
+	           	LOGGER.debug("show: "+ show.getTitle());
+	           	LOGGER.debug("now: " + now);
+	           	LOGGER.debug("airDate: " + nextEpAirDateTime);
+	           	LOGGER.debug("tz: " + tz);
+	           	LOGGER.debug("searchDelay: " + searchDelay/1000/60/60);
+	           	LOGGER.debug("date: "+ new Date(nextEp.getAirDate().getTime() + show.getAirTime()));
 				Processor processor = feedProcessorFactory.build(show,config);
 				processor.addListener(this);
 				processors.add(processor);
