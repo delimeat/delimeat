@@ -353,7 +353,7 @@ public class Show {
               .add("lastGuideUpdate", (lastGuideUpdate != null ? lastGuideUpdate : null))
               .add("lastGuideCheck", (lastGuideCheck != null ? lastGuideCheck : null))              
               .add("lastFeedUpdate", (lastFeedUpdate != null ? lastFeedUpdate : null))
-              .add("lastGuideCheck", (lastGuideCheck != null ? lastGuideCheck : null))
+              .add("lastFeedCheck", (lastFeedCheck != null ? lastFeedCheck : null))
               .add("minSize", minSize)
               .add("maxSize", maxSize)
               .add("version", version)
