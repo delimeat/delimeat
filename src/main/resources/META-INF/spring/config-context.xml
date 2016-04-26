@@ -37,7 +37,7 @@ xmlns:context="http://www.springframework.org/schema/context"
 	<bean id="configDaoId" class="io.delimeat.core.config.JaxbConfigDao_Impl">
 		<property name="unmarshaller" ref="configUnmarshallerId" />
 		<property name="marshaller" ref="configMarshallerId" />
-      	<property name="defaultOutputDir" value="${user.home}"/>	
+      <property name="defaultOutputDir" value="${io.delimeat.core.config.defaultOutputDir}"/>	
 		<property name="urlHandler" ref="urlHandlerId" />
 		<property name="url" value="${io.delimeat.core.config.url}"/>
 		<!--
