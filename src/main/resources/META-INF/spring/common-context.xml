@@ -14,7 +14,10 @@
 		</property>
 		<property name="location">
 			<value>classpath://META-INF/delimeat.properties</value>
+        	<value>file:${user.home}/delimeat/delimeat.properties</value>
 		</property>
+     	<property name="ignoreUnresolvablePlaceholders" value="true" />
+    	<property name="ignoreResourceNotFound" value="true" />
 	</bean>
 
 	<bean id="urlHandlerId"	class="io.delimeat.util.UrlHandler_Impl">
