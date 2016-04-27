@@ -1,6 +1,7 @@
 package io.delimeat.util;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,14 @@ public class UrlHandler_Impl implements UrlHandler {
 	public OutputStream openOutput(URL url) throws IOException {
 		OutputStream os;
 		if ("file".equalsIgnoreCase(url.getProtocol())) {
-			os = new FileOutputStream(url.getFile());
+        	File file = new File(url.getFile());
+        	if(file.exists() == false){
+           if(file.getParent() != null){
+           	file.getParentFile().mkdirs();
+           }
+           file.createNewFile();
+         }
+			os = new FileOutputStream(file);
 
 		} else {
 			URLConnection conn = openUrlConnection(url);

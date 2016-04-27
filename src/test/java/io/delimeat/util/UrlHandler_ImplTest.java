@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -323,5 +324,26 @@ public class UrlHandler_ImplTest {
      	OutputStream returnedOutput = handler.openOutput(url);
 		Assert.assertTrue(returnedOutput instanceof BufferedOutputStream);
      	returnedOutput.close();
+   }
+  
+  	@Test
+  	public void openOutputFileNotExistsNoFolderTest()throws Exception{
+     URL url = new URL("file:tmp.out");
+     OutputStream returnedOutput = handler.openOutput(url);
+     Assert.assertTrue(returnedOutput instanceof BufferedOutputStream);
+     returnedOutput.close();
+     File file = new File(url.getFile());
+     file.delete();
+   }
+  
+  	@Test
+  	public void openOutputFileNotExistsWithFolderTest()throws Exception{
+     URL url = new URL("file:folder/tmp.out");
+     OutputStream returnedOutput = handler.openOutput(url);
+     Assert.assertTrue(returnedOutput instanceof BufferedOutputStream);
+     returnedOutput.close();
+     File file = new File(url.getFile());
+     file.delete();
+     file.getParentFile().delete();
    }
 }

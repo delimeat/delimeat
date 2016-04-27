@@ -12,10 +12,13 @@
 		<property name="systemPropertiesModeName">
 			<value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value>
 		</property>
-		<property name="location">
-			<value>classpath://META-INF/delimeat.properties</value>
+		<property name="locations">
+        	<list>
+				<value>classpath://META-INF/delimeat.properties</value>
+        		<value>file:${user.home}/delimeat/delimeat.properties</value>
+        	</list>
 		</property>
-
+    	<property name="ignoreResourceNotFound" value="true" />
 	</bean>
 
 	<bean id="urlHandlerId"	class="io.delimeat.util.UrlHandler_Impl">
