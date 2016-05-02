@@ -25,9 +25,8 @@ public class ShowTest {
 
   	@Test
   	public void constructorTest(){
-     	Episode nextEp = new Episode();
-     	Episode prevEp = new Episode();
-     	show = new Show(Long.MAX_VALUE,Integer.MAX_VALUE, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, new Date(0), new Date(1), false, nextEp, prevEp,true, 100, 101, Integer.MIN_VALUE);
+
+     	show = new Show(Long.MAX_VALUE,Integer.MAX_VALUE, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, new Date(0), new Date(1), new Date(2), new Date(3), false, true, 100, 101, Integer.MIN_VALUE);
 		Assert.assertEquals(Long.MAX_VALUE, show.getShowId());
   		Assert.assertEquals(Integer.MAX_VALUE, show.getAirTime());
      	Assert.assertEquals("TIMEZONE", show.getTimezone());
@@ -36,10 +35,12 @@ public class ShowTest {
 		Assert.assertTrue(show.isAiring());
      	Assert.assertEquals(ShowType.ANIMATED, show.getShowType());
      	Assert.assertEquals(new Date(0), show.getLastFeedUpdate());
-     	Assert.assertEquals(new Date(1), show.getLastGuideUpdate());
+     	Assert.assertEquals(new Date(1), show.getLastFeedCheck());
+     	Assert.assertEquals(new Date(2), show.getLastGuideUpdate());
+     	Assert.assertEquals(new Date(3), show.getLastGuideCheck());
      	Assert.assertFalse(show.isEnabled());
-     	Assert.assertEquals(nextEp, show.getNextEpisode());
-     	Assert.assertEquals(prevEp, show.getPreviousEpisode());
+     	Assert.assertNull(show.getNextEpisode());
+     	Assert.assertNull(show.getPreviousEpisode());
      	Assert.assertTrue(show.isIncludeSpecials());
      	Assert.assertEquals(100, show.getMinSize());
      	Assert.assertEquals(101, show.getMaxSize());

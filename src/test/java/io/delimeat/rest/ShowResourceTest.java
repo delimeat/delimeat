@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -48,48 +47,23 @@ public class ShowResourceTest extends JerseyTest{
 		return config;
 	}
   
-  	private Show createShow() {
-		Show show = new Show();
-		show.setAiring(true);
-		show.setAirTime(9900000);
-		show.setEnabled(false);
-		show.setIncludeSpecials(true);
-		show.setLastFeedUpdate(new Date(0));
-		show.setLastGuideUpdate(new Date(0));
-		show.setShowId(Long.MIN_VALUE);
-		show.setShowType(ShowType.MINI_SERIES);
-		show.setTimezone("TIMEZONE");
-		show.setTitle("TITLE");
-		show.setVersion(97);
-		
-		Episode nextEp = new Episode();
-		nextEp.setAirDate(new Date(0));
-		nextEp.setDoubleEp(true);
-		nextEp.setEpisodeId(Long.MAX_VALUE);
-		nextEp.setEpisodeNum(101);
-		nextEp.setSeasonNum(2);
-		//nextEp.setShow(show);
-		nextEp.setTitle("NEXT_EP_TITLE");
-		nextEp.setVersion(3);
+  	private Show createShow() {    
+     	Show show = new Show(1L, 9900000, "TIMEZONE", "GUIDE_ID", 
+                           "TITLE", true, ShowType.MINI_SERIES, 
+                           new Date(0), new Date(1), new Date(2), new Date(3), true, true, Integer.MIN_VALUE, 
+                           Integer.MAX_VALUE, 99);
+     
+     	Episode nextEp = new Episode(Long.MIN_VALUE, "NEXT_EP_TITLE", new Date(0), 2, 101, false, 99, null);
 		show.setNextEpisode(nextEp);
-		
-		Episode prevEp = new Episode();
-		prevEp.setAirDate(new Date(0));
-		prevEp.setDoubleEp(true);
-		prevEp.setEpisodeId(Long.MIN_VALUE);
-		prevEp.setEpisodeNum(102);
-		prevEp.setSeasonNum(3);
-		//prevEp.setShow(show);
-		prevEp.setTitle("PREV_EP_TITLE");
-		prevEp.setVersion(4);
-		show.setPreviousEpisode(prevEp);		
-
-		show.setGuideId("GUIDE_ID");
+     
+     	Episode prevEp = new Episode(Long.MIN_VALUE, "PREV_EP_TITLE", new Date(0), 3, 102, true, 99, null);
+		show.setPreviousEpisode(prevEp);	
+     
      	return show;
    }
 	
 	@Test
-	public void readAllNoEtagTest() throws Exception{
+	public void readAllTest() throws Exception{
 		Show show = createShow();
 		List<Show> shows = Arrays.asList(show);
 		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
@@ -105,58 +79,15 @@ public class ShowResourceTest extends JerseyTest{
 		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
 		Assert.assertNotNull(actualShows);
 		Assert.assertEquals(1, actualShows.size());
-		Assert.assertEquals(show, actualShows.get(0));
+		Assert.assertEquals(show.toString(), actualShows.get(0).toString());
      
      	Mockito.verify(mockedShowService).readAll();
-	}
-  
-	@Test
-	public void readAllMatchingEtagTest() throws Exception{
-		Show show = createShow();		
-		List<Show> shows = Arrays.asList(show);
-		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
-		
-     	EntityTag etag = new EntityTag(Integer.toString(shows.hashCode()));
-     
-		Response response = target("shows")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH, etag)
-        								.get();
-     
-		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());
-     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG)); 
-     
-     	Mockito.verify(mockedShowService).readAll();
-	}
-  
-	@Test
-	public void readAllNotMatchingEtagTest() throws Exception{
-		Show show = createShow();
-		List<Show> shows = Arrays.asList(show);
-		Mockito.when(mockedShowService.readAll()).thenReturn(shows);
-     
-     	EntityTag etag = new EntityTag("INVALID_ETAG");
+      Mockito.verifyNoMoreInteractions(mockedShowService);
 
-		Response response = target("shows")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH, etag)
-        								.get();
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-		
-		List<Show> actualShows = response.readEntity(new GenericType<List<Show>>() {});
-		Assert.assertNotNull(actualShows);
-		Assert.assertEquals(1, actualShows.size());
-		Assert.assertEquals(show, actualShows.get(0));
-     
-     	Mockito.verify(mockedShowService).readAll();
 	}
-  
+
 	@Test
-	public void readNoEtagTest() throws Exception{
+	public void readTest() throws Exception{
 		Show show = createShow();
 		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
 		
@@ -170,56 +101,14 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
 		
 		Show actualShow = response.readEntity(Show.class);
-		Assert.assertEquals(show, actualShow);
+		Assert.assertEquals(show.toString(), actualShow.toString());
      
      	Mockito.verify(mockedShowService).read(1l);
-	}
-    
-	@Test
-	public void readNoMatchingEtagTest() throws Exception{
-		Show show = createShow();
-		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
-		  
-     	EntityTag etag = new EntityTag("INVALID_ETAG");
-
-		Response response = target("shows")
-        								.path("1")	
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH, etag)
-        								.get();
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-		
-		Show actualShow = response.readEntity(Show.class);
-		Assert.assertEquals(show, actualShow);	
-
-     Mockito.verify(mockedShowService).read(1l);
+      Mockito.verifyNoMoreInteractions(mockedShowService);
 	}
 
 	@Test
-	public void readMatchingEtagTest() throws Exception{
-		Show show = createShow();
-		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
-		  
-     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
-     
-		Response response = target("shows")
-        								.path("1")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH, etag)
-        								.get();
-     
-		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());
-     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));  
-     
-     	Mockito.verify(mockedShowService).read(1l);
-	}
-  
-	@Test
-	public void updateNoEtagTest() throws Exception{
+	public void updateTest() throws Exception{
 		Show show = createShow();
 		Mockito.when(mockedShowService.update(Mockito.any(Show.class))).thenReturn(show);
      	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
@@ -234,64 +123,20 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Show actualShow = response.readEntity(Show.class);
-     	Assert.assertEquals(show, actualShow);
+     	Assert.assertEquals(show.toString(), actualShow.toString());
      
-     	Mockito.verify(mockedShowService).read(1l);
      	Mockito.verify(mockedShowService).update(Mockito.any(Show.class));
+      Mockito.verifyNoMoreInteractions(mockedShowService);
 	}
-	  
-  	@Test
-  	public void updateNoMatchingEtagTest() throws Exception{
-		Show show = createShow();
-     	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
-			
-		EntityTag etag = new EntityTag("INVALID_ETAG");
-     
-		Response response = target("shows")
-        								.path("1")
-        								.request()
-        								.header(HttpHeaders.IF_MATCH, etag)
-        								.put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
-     
-		Assert.assertEquals(Status.PRECONDITION_FAILED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());
-     
-     	Mockito.verify(mockedShowService).read(1l);
-     	Mockito.verify(mockedShowService, Mockito.times(0)).update(Mockito.any(Show.class));
-   }
-  
-  	@Test
-  	public void updateMatchingEtagTest() throws Exception{
-		Show show = createShow();
-		Mockito.when(mockedShowService.update(Mockito.any(Show.class))).thenReturn(show);
-     	Mockito.when(mockedShowService.read(1L)).thenReturn(show);
-			
-     	EntityTag etag = new EntityTag(Integer.toString(show.hashCode()));
-     
-		Response response = target("shows")
-        								.path("1")
-        								.request()
-        								.header(HttpHeaders.IF_MATCH, etag)
-        								.put(Entity.entity(new Show(), MediaType.APPLICATION_JSON_TYPE));
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-     
-		Show actualShow = response.readEntity(Show.class);
-     	Assert.assertEquals(show, actualShow);
-     
-     	Mockito.verify(mockedShowService).read(1l);
-     	Mockito.verify(mockedShowService).update(Mockito.any(Show.class));
 
-   }
-  
 	@Test
 	public void deleteTest() throws Exception{
 		Response response = target("shows").path("1").request().delete();
 		Assert.assertEquals(204, response.getStatus());
+     	Assert.assertFalse(response.hasEntity());
 		
 		Mockito.verify(mockedShowService).delete(1l);
+      Mockito.verifyNoMoreInteractions(mockedShowService);
 	}
 
 	@Test
@@ -308,13 +153,15 @@ public class ShowResourceTest extends JerseyTest{
 		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
      
 		Show actualShow = response.readEntity(Show.class);
-     	Assert.assertEquals(show, actualShow);
+     	Assert.assertEquals(show.toString(), actualShow.toString());
      
-     	Mockito.verify(mockedShowService).create(Mockito.any(Show.class));	
+     	Mockito.verify(mockedShowService).create(show);
+      Mockito.verifyNoMoreInteractions(mockedShowService);
+
 	}
   
   	@Test
-  	public void readAllEpisodesNoEtagTest() throws Exception{
+  	public void readAllEpisodesTest() throws Exception{
      Episode ep = new Episode();
      List<Episode> episodes = Arrays.asList(ep);
      Mockito.when(mockedShowService.readAllEpisodes(1L)).thenReturn(episodes);
@@ -332,57 +179,10 @@ public class ShowResourceTest extends JerseyTest{
      List<Episode> actualEpisodes = response.readEntity(new GenericType<List<Episode>>() {});
      Assert.assertNotNull(actualEpisodes);
      Assert.assertEquals(1, actualEpisodes.size());
-     Assert.assertEquals(ep, actualEpisodes.get(0));
+     Assert.assertEquals(ep.toString(), actualEpisodes.get(0).toString());
      
-     Mockito.verify(mockedShowService).readAllEpisodes(1L);	
-   }
-  
-  	@Test
-  	public void readAllEpisodesNotMatchingEtagTest() throws Exception{
-     Episode ep = new Episode();
-     List<Episode> episodes = Arrays.asList(ep);
-     Mockito.when(mockedShowService.readAllEpisodes(Mockito.any(Long.class))).thenReturn(episodes);
-
-     EntityTag etag = new EntityTag("INVALID_ETAG");
-
-     Response response = target("shows")
-                             .path("1")
-                             .path("episodes")
-                             .request()
-                             .header(HttpHeaders.IF_NONE_MATCH, etag)
-                             .get();
-
-     Assert.assertEquals(Status.OK, response.getStatusInfo());
-     Assert.assertTrue(response.hasEntity());
-     Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-
-     List<Episode> actualEpisodes = response.readEntity(new GenericType<List<Episode>>() {});
-     Assert.assertNotNull(actualEpisodes);
-     Assert.assertEquals(1, actualEpisodes.size());
-     Assert.assertEquals(ep, actualEpisodes.get(0));
-
      Mockito.verify(mockedShowService).readAllEpisodes(1L);
+     Mockito.verifyNoMoreInteractions(mockedShowService);
    }
-  
-    @Test
-    public void readAllEpisodesMatchingEtagTest() throws Exception{
-      Episode ep = new Episode();
-      List<Episode> episodes = Arrays.asList(ep);
-      Mockito.when(mockedShowService.readAllEpisodes(Mockito.any(Long.class))).thenReturn(episodes);
 
-     	EntityTag etag = new EntityTag(Integer.toString(episodes.hashCode()));
-
-      Response response = target("shows")
-                            .path("1")
-                            .path("episodes")
-                            .request()
-                            .header(HttpHeaders.IF_NONE_MATCH, etag)
-                            .get();
-
-      Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-      Assert.assertFalse(response.hasEntity());
-     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG)); 
-
-      Mockito.verify(mockedShowService).readAllEpisodes(1L);
-    }
 }

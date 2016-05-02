@@ -42,7 +42,7 @@ public class Show {
      	//do nothing
    }
   
-  	public Show(long showId, int airTime, String timezone, String guideId, String title, boolean airing, ShowType showType, Date lastFeedUpdate, Date lastGuideUpdate, boolean enabled,Episode nextEpisode, Episode previousEpisode, boolean includeSpecials, int minSize, int maxSize, int version){
+  	public Show(long showId, int airTime, String timezone, String guideId, String title, boolean airing, ShowType showType, Date lastFeedUpdate, Date lastFeedCheck, Date lastGuideUpdate, Date lastGuideCheck, boolean enabled, boolean includeSpecials, int minSize, int maxSize, int version){
      	this.showId = showId;
      	this.airTime = airTime;
      	this.timezone = timezone;	
@@ -51,10 +51,10 @@ public class Show {
      	this.airing = airing;
      	this.showType = showType;
      	this.lastGuideUpdate = lastGuideUpdate;
+     	this.lastGuideCheck = lastGuideCheck;
      	this.lastFeedUpdate = lastFeedUpdate;
+     	this.lastFeedCheck = lastFeedCheck;
      	this.enabled = enabled;
-     	this.nextEpisode = nextEpisode;
-     	this.previousEpisode = previousEpisode;
      	this.includeSpecials = includeSpecials;
      	this.minSize = minSize;
      	this.maxSize = maxSize;

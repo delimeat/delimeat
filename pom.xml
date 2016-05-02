@@ -28,7 +28,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -49,14 +49,6 @@
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
 					</archive>
-
-					<!-- Copy Source files into war! -->
-					<webResources>
-						<resource>
-							<directory>${project.build.sourceDirectory}</directory>
-							<targetPath>WEB-INF/classes</targetPath>
-						</resource>
-					</webResources>
 
 				</configuration>
 			</plugin>
@@ -92,9 +84,8 @@
 		<javax.transaction.version>1.2</javax.transaction.version>
 
 		<!-- Logging versions ! -->
-		<org.slf4j.version>1.7.18</org.slf4j.version>
+		<org.slf4j.version>1.7.21</org.slf4j.version>
 		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
-		<org.apache.commons.logging.version>1.2</org.apache.commons.logging.version>
 
 		<!-- Runtime versions ! -->
 		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
@@ -106,20 +97,12 @@
 
 		<org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
 
-		<org.jsoup.version>1.8.3</org.jsoup.version>
+		<org.jsoup.version>1.9.1</org.jsoup.version>
 		<com.google.guava.version>19.0</com.google.guava.version>
 		<commons-codec.version>1.10</commons-codec.version>
 	</properties>
 
 	<dependencies>
-
-		<!-- 
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-maven-plugin</artifactId>
-			<version>${org.liquibase.version}</version>
-		</dependency>
-		!-->
 
 		<!-- TEST ! -->
 		<dependency>
@@ -164,6 +147,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax.servlet.version}</version>
+        	<scope>provided</scope>
 		</dependency>
 
 		<!-- ORM ! -->

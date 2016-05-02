@@ -35,7 +35,7 @@ xmlns:context="http://www.springframework.org/schema/context"
 	</bean>
 	
 	<aop:config>
-	    <aop:advisor advice-ref="customizableTraceInterceptor" pointcut="within(io.delimeat.core..*)" />
+	    <aop:advisor advice-ref="customizableTraceInterceptor" pointcut="within(io.delimeat..*)" />
 	</aop:config>	
 
 	

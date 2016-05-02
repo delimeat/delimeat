@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -86,7 +85,7 @@ public class GuideResourceTest extends JerseyTest {
    }
   
 	@Test
-	public void searchNoETagTest() throws IOException, Exception {
+	public void searchTest() throws IOException, Exception {
 		GuideSearchResult result = createSearchResult();
 		List<GuideSearchResult> expectedResults = Arrays.asList(result);
 		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
@@ -106,59 +105,11 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(result, actualResults.get(0));
      
      	Mockito.verify(mockedGuideService).readLike("title");
+     	Mockito.verifyNoMoreInteractions(mockedGuideService);
 	}
 
 	@Test
-	public void searchNoMatchingETagTest() throws IOException, Exception {
-		GuideSearchResult result = createSearchResult();
-		List<GuideSearchResult> expectedResults = Arrays.asList(result);
-		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
-
-     	EntityTag etag = new EntityTag("INVALID_ETAG");
-     
-		Response response = target("guide")
-        								.path("search")
-        								.path("title")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH,etag)
-        								.get();
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-     	
-		List<GuideSearchResult> actualResults = response.readEntity(new GenericType<List<GuideSearchResult>>() {});
-		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals(result, actualResults.get(0));
-     
-     	Mockito.verify(mockedGuideService).readLike("title");
-	}
-	
-
-	@Test
-	public void searchMatchingETagTest() throws IOException, Exception {
-		GuideSearchResult result = createSearchResult();
-		List<GuideSearchResult> expectedResults = Arrays.asList(result);
-		Mockito.when(mockedGuideService.readLike("title")).thenReturn(expectedResults);
-
-     	EntityTag etag = new EntityTag(Integer.toString(expectedResults.hashCode()));
-
-		Response response = target("guide")
-        								.path("search")
-        								.path("title")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH, etag)
-        								.get();
-     
-		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());    
-     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
-     
-     	Mockito.verify(mockedGuideService).readLike("title");
-	}
-	
-	@Test
-	public void infoNoETagTest()  throws IOException, Exception {
+	public void infoTest()  throws IOException, Exception {
 		GuideInfo expectedInfo = createInfo();
 		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
 
@@ -176,55 +127,12 @@ public class GuideResourceTest extends JerseyTest {
      	Assert.assertEquals(expectedInfo, actualInfo);
      
      	Mockito.verify(mockedGuideService).read("ID");
-	}
-	
-	@Test
-	public void infoNoMatchingETagTest()  throws IOException, Exception {
-		GuideInfo expectedInfo = createInfo();
-		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
+     	Mockito.verifyNoMoreInteractions(mockedGuideService);
 
-     	EntityTag etag = new EntityTag("INVALID_ETAG");
-
-		Response response = target("guide")
-        								.path("info")
-        								.path("ID")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH,etag)
-        								.get();
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-		
-		GuideInfo actualInfo = response.readEntity(GuideInfo.class);
-     	Assert.assertEquals(expectedInfo, actualInfo);
-     
-     	Mockito.verify(mockedGuideService).read("ID");	
-	}
-	
-	@Test
-	public void infoMatchingETagTest()  throws IOException, Exception {
-		GuideInfo expectedInfo = createInfo();
-		Mockito.when(mockedGuideService.read("ID")).thenReturn(expectedInfo);
-
-     	EntityTag etag = new EntityTag(Integer.toString(expectedInfo.hashCode()));
-
-		Response response = target("guide")
-        								.path("info")
-        								.path("ID")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH,etag)
-        								.get();
-     
-		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-     	Assert.assertFalse(response.hasEntity());   
-     	Assert.assertEquals(etag.toString(), response.getHeaderString(HttpHeaders.ETAG));
-		    
-     	Mockito.verify(mockedGuideService).read("ID");
 	}
 		
 	@Test
-	public void episodesNoETagTest() throws IOException, Exception{
+	public void episodesTest() throws IOException, Exception{
 		GuideEpisode expectedEp = createEpisode();
 		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
 		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(expectedEps);
@@ -246,57 +154,7 @@ public class GuideResourceTest extends JerseyTest {
 		Assert.assertEquals(expectedEp, actualResults.get(0));
      
 		Mockito.verify(mockedGuideService).readEpisodes("ID");
-	}
-	
-	@Test
-	public void episodesNoMatchingETagTest() throws IOException, Exception{
-		GuideEpisode expectedEp = createEpisode();
-		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
-		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(expectedEps);
-		
-     	EntityTag etag = new EntityTag("INVALID_ETAG");
-     
-		Response response = target("guide")
-        								.path("info")
-        								.path("ID")
-        								.path("episodes")
-        								.request()
-        								.header(HttpHeaders.IF_NONE_MATCH,etag)
-        								.get();
-     
-		Assert.assertEquals(Status.OK, response.getStatusInfo());
-     	Assert.assertTrue(response.hasEntity());
-		Assert.assertEquals(MediaType.APPLICATION_JSON, response.getHeaderString(HttpHeaders.CONTENT_TYPE));
-		
-		List<GuideEpisode> actualResults = response.readEntity(new GenericType<List<GuideEpisode>>() {});
-		Assert.assertNotNull(actualResults);
-		Assert.assertEquals(1, actualResults.size());
-		Assert.assertEquals(expectedEp, actualResults.get(0));
-     
-		Mockito.verify(mockedGuideService).readEpisodes("ID");
-	}
-	
-	@Test
-	public void episodesMatchingETagTest() throws IOException, Exception{
-		GuideEpisode expectedEp = createEpisode();
-		List<GuideEpisode> expectedEps = Arrays.asList(expectedEp);
-		Mockito.when(mockedGuideService.readEpisodes("ID")).thenReturn(
-				expectedEps);
+     	Mockito.verifyNoMoreInteractions(mockedGuideService);
 
-		EntityTag etag = new EntityTag(Integer.toString(expectedEps.hashCode()));
-
-		Response response = target("guide")
-								.path("info")
-								.path("ID")
-								.path("episodes")
-								.request()
-								.header(HttpHeaders.IF_NONE_MATCH, etag)
-								.get();
-
-		Assert.assertEquals(Status.NOT_MODIFIED, response.getStatusInfo());
-		Assert.assertFalse(response.hasEntity());
-		Assert.assertEquals(etag.toString(),response.getHeaderString(HttpHeaders.ETAG));
-
-		Mockito.verify(mockedGuideService).readEpisodes("ID");
 	}
 }

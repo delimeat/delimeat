@@ -18,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/META-INF/spring/show-context.xml"})
+@ContextConfiguration(locations = { "/META-INF/spring/show-context-test.xml"})
 public class ShowJpaDao_ImplIT {
 	
  	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
@@ -36,7 +36,7 @@ public class ShowJpaDao_ImplIT {
   
   @BeforeClass
   public static void beforeClass() throws Exception{
-	  System.setProperty("io.delimeat.core.show.driverClassName", "org.apache.derby.jdbc.EmbeddedDriver");
+	  //System.setProperty("io.delimeat.core.show.driverClassName", "org.apache.derby.jdbc.EmbeddedDriver");
 	  System.setProperty("io.delimeat.core.show.jdbcUrl", "jdbc:derby:memory:delimeat;create=true;");
 	  /*
     	dataSource = new EmbeddedDatabaseBuilder()
@@ -76,11 +76,11 @@ public class ShowJpaDao_ImplIT {
   	@Transactional
 	@Test
 	public void createOrUpdateShowTest() throws Exception {     	
-		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,null);
-		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,null);
-     	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"), SDF.parse("2015-10-16"), false, nextEpisode, prevEpisode,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
-     	prevEpisode.setShow(show);
-     	nextEpisode.setShow(show);
+     	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"),SDF.parse("2015-10-15"), SDF.parse("2015-10-16"),SDF.parse("2015-10-14"), false,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,show);
+     	show.setPreviousEpisode(prevEpisode);
+		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,show);
+     	show.setNextEpisode(nextEpisode);
 
 		Show newShow = dao.createOrUpdate(show);
 
@@ -97,11 +97,11 @@ public class ShowJpaDao_ImplIT {
   	@Transactional
 	@Test(expected=ShowConcurrencyException.class)
 	public void createOrUpdateShowOptimisticLockTest() throws Exception {     	
-		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,null);
-		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,null);
-     	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"), SDF.parse("2015-10-16"), false, nextEpisode, prevEpisode,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 99);
-     	prevEpisode.setShow(show);
-     	nextEpisode.setShow(show);
+     	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"),SDF.parse("2015-10-15"), SDF.parse("2015-10-16"),SDF.parse("2015-10-14"), false,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 99);
+		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,show);
+     	show.setPreviousEpisode(prevEpisode);
+		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,show);
+     	show.setNextEpisode(nextEpisode);
 		
 		dao.createOrUpdate(show);
 	}
@@ -115,11 +115,12 @@ public class ShowJpaDao_ImplIT {
   	@Transactional
   	@Test
   	public void readShowTest() throws Exception { 
-		Episode prevEpisode = new Episode(2,"PREVIOUS EPISODE",SDF.parse("2016-01-01"),1,3,true,4,null);
-		Episode nextEpisode = new Episode(3,"NEXT EPISODE",SDF.parse("2016-02-01"),2,1,false,3,null);
-     	Show expectedShow = new Show(1,1200, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, SDF.parse("1988-12-25"), null, false, nextEpisode, prevEpisode,true, 100, 101, 99);
-     	prevEpisode.setShow(expectedShow);
-     	nextEpisode.setShow(expectedShow);
+
+     	Show expectedShow = new Show(1,1200, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, SDF.parse("1988-12-25"),SDF.parse("1988-12-24") , null, null, false,true, 100, 101, 99);
+		Episode prevEpisode = new Episode(2,"PREVIOUS EPISODE",SDF.parse("2016-01-01"),1,3,true,4,expectedShow);
+     	expectedShow.setPreviousEpisode(prevEpisode);
+		Episode nextEpisode = new Episode(3,"NEXT EPISODE",SDF.parse("2016-02-01"),2,1,false,3,expectedShow);
+     	expectedShow.setNextEpisode(nextEpisode);
      
      	Show show = dao.read(1);
      

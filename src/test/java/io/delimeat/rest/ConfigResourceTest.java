@@ -3,6 +3,8 @@ package io.delimeat.rest;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.service.ConfigService;
+import io.delimeat.util.jaxrs.ETagRequestFilter;
+import io.delimeat.util.jaxrs.ETagResponseFilter;
 
 import java.io.IOException;
 
@@ -31,6 +33,8 @@ public class ConfigResourceTest extends JerseyTest {
 
 		ResourceConfig config = new ResourceConfig();
 		config.register(ConfigResource.class);
+     	config.register(ETagResponseFilter.class);
+     	config.register(ETagRequestFilter.class);
 		config.register(new AbstractBinder() {
 
 			@Override
