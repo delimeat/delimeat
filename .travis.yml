@@ -1,4 +1,6 @@
 language: java
+jdk:
+  - openjdk7
 sudo: false
 script: mvn clean verify
 
