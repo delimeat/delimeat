@@ -100,7 +100,7 @@ public class ETagRequestFilter implements ContainerRequestFilter {
                                         MultivaluedMap<String, String> queryParameters) {
         List<Object> values = new ArrayList<Object>();
       	
-      	int paramsCnt = method.getParameterCount();
+      	int paramsCnt = method.getParameterTypes().length;
       	for(int idx = 0; idx < paramsCnt; idx++){
          	final Class< ? > parameterType = method.getParameterTypes()[idx];
            	for(Annotation annotation: method.getParameterAnnotations()[idx]){
