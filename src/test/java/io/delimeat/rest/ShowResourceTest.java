@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -183,6 +184,29 @@ public class ShowResourceTest extends JerseyTest{
      
      Mockito.verify(mockedShowService).readAllEpisodes(1L);
      Mockito.verifyNoMoreInteractions(mockedShowService);
+   }
+  
+  	@Test
+  	public void showServiceTest(){
+     	ShowResource resource = new ShowResource();
+
+     	Assert.assertNull(resource.getShowService());
+     	resource.setShowService(mockedShowService);
+     	Assert.assertEquals(mockedShowService, resource.getShowService());
+   }
+  	@Test
+  	public void generateEtagShowTest() throws Exception{
+		Show show = createShow();
+		Mockito.when(mockedShowService.read(1L)).thenReturn(show);
+     	
+     	ShowResource resource = new ShowResource();
+     	resource.setShowService(mockedShowService);
+     
+     	EntityTag etag = resource.generateEtagShow(1L);
+     	Assert.assertEquals(new EntityTag("1091"), etag);
+     	
+     	Mockito.verify(mockedShowService).read(1l);
+      Mockito.verifyNoMoreInteractions(mockedShowService);
    }
 
 }

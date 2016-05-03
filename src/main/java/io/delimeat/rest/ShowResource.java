@@ -27,6 +27,14 @@ public class ShowResource {
 
 	@Inject
 	private ShowService showService;
+  
+  	public void setShowService(ShowService showService){
+   	this.showService = showService;
+   }
+  	
+  	public ShowService getShowService(){
+     	return showService;
+   }
 
 	@GET
   	@ETag
