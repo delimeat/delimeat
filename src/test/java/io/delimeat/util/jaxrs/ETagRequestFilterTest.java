@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -418,4 +419,21 @@ public class ETagRequestFilterTest {
      	Mockito.verify(resourceInfo, Mockito.times(2)).getResourceClass();
      	Mockito.verifyNoMoreInteractions(resourceInfo);
    }
+  
+  	@Test
+  	public void test() throws Exception{
+     	Object obj = new Object(){
+        	
+        	@ETagGenerator({"other","method"})
+      	public EntityTag generate(@QueryParam("id") String parameter){return new EntityTag("value");};
+       	public void method(@QueryParam("id") String method){};
+     	};
+     	Method resourceMethod = obj.getClass().getMethod("method", String.class);
+     	for(Annotation annotation: resourceMethod.getParameterAnnotations()[0]){
+        System.out.println(QueryParam.class.cast(annotation).value());
+        System.out.println(annotation);
+        System.out.println(annotation.annotationType());
+      }
+   }
+  	
 }

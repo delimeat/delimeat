@@ -3,6 +3,7 @@ package io.delimeat.util.jaxrs;
 import com.google.common.collect.Iterables;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ import javax.ws.rs.core.UriInfo;
 public class ETagRequestFilter implements ContainerRequestFilter {
 
     private static final String UNEXPECTED_RETURN_TYPE = "Expected return type of %s on method %s but found %s ";
-    private static final String EXPECTED_PARAM_MISSING  = "Expected %s with value %s for parameter %s on method %s for class %s";
-    private static final String UNEXPECTED_GENERATOR_PARAM = "Expected QueryParam/PathParam annotation for parameter %s on method %s for class %s";
+    private static final String EXPECTED_PARAM_MISSING  = "Expected %s with value %s for parameter # %s on method %s for class %s";
+    private static final String UNEXPECTED_GENERATOR_PARAM = "Expected QueryParam/PathParam annotation for parameter # %s on method %s for class %s";
     
   	 @Context
     private ResourceInfo resourceInfo;
@@ -99,6 +100,43 @@ public class ETagRequestFilter implements ContainerRequestFilter {
                                         MultivaluedMap<String, String> pathParameters,
                                         MultivaluedMap<String, String> queryParameters) {
         List<Object> values = new ArrayList<Object>();
+      	
+      	int paramsCnt = method.getParameterCount();
+      	for(int idx = 0; idx < paramsCnt; idx++){
+         	final Class< ? > parameterType = method.getParameterTypes()[idx];
+           	for(Annotation annotation: method.getParameterAnnotations()[idx]){
+            	
+              	if(annotation.annotationType().equals(PathParam.class)){
+               	final PathParam pathParam = PathParam.class.cast(annotation);
+						final String paramId = pathParam.value();
+                  if (pathParameters.containsKey(paramId)) {
+                      String paramValue = pathParameters.getFirst(paramId);
+                      values.add(getPrimativeTypeValue(parameterType, paramValue));
+                      break;
+                  } else {
+                  	throw new RuntimeException(String.format(EXPECTED_PARAM_MISSING, PathParam.class.getName(), paramId, idx, method,
+                                                               method.getDeclaringClass()));
+                  }  
+
+               }else if(annotation.annotationType().equals(QueryParam.class)){
+               	final QueryParam queryParam = QueryParam.class.cast(annotation);
+						final String paramId = queryParam.value();
+                  if (queryParameters.containsKey(paramId)) {
+                      String paramValue = queryParameters.getFirst(paramId);
+                      values.add(getPrimativeTypeValue(parameterType, paramValue));
+                      break;
+                  } else {
+                  	throw new RuntimeException(String.format(EXPECTED_PARAM_MISSING, PathParam.class.getName(), paramId, idx, method,
+                                                               method.getDeclaringClass()));
+                  }                  
+               }                          
+            }
+           	if(values.size() < idx + 1){
+            	//If it gets this far then there is no path/query param for the parameter so abort
+            	throw new RuntimeException(String.format(UNEXPECTED_GENERATOR_PARAM, idx, method, method.getDeclaringClass())); 
+            } 
+         }
+         /*
         for (Parameter parameter : method.getParameters()) {
             final Class< ? > parameterType = parameter.getType();
             final PathParam pathParam = parameter.getAnnotation(PathParam.class);
@@ -130,7 +168,7 @@ public class ETagRequestFilter implements ContainerRequestFilter {
             //If it gets this far then there is no path/query param for the parameter so abort
             throw new RuntimeException(String.format(UNEXPECTED_GENERATOR_PARAM, parameter, method, method.getDeclaringClass()));
         }
-
+			*/
         return Iterables.toArray(values, Object.class);
     }
 
