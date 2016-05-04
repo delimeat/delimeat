@@ -2,13 +2,12 @@
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xml-accessor-type="NONE" package-name="io.delimeat.core.config"
-	xml-mapping-metadata-complete="true">
+	xml-mapping-metadata-complete="true" xml-accessor-order="ALPHABETICAL">
 
 	<java-types>
 
 		<java-type name="Config">
 			<xml-root-element/>
-        	<xml-type prop-order="outputDirectory preferFiles ignoreFolders ignoredFileTypes excludedKeywords searchInterval searchDelay"/> 
 			<java-attributes>
 				<xml-element java-attribute="outputDirectory" />
 				<xml-element java-attribute="preferFiles"/>
