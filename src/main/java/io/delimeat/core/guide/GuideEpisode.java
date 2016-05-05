@@ -3,17 +3,13 @@ package io.delimeat.core.guide;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import io.delimeat.core.show.Episode;
-import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 public class GuideEpisode implements Comparable<GuideEpisode> {
 
-    @XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
     private Date airDate = null;
     private Integer seasonNum = 0;
     private Integer episodeNum = 0;

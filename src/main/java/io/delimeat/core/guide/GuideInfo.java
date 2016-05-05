@@ -5,28 +5,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import io.delimeat.util.jaxb.AirTimeAdapter;
-import io.delimeat.util.jaxb.TvdbDateAdapter;
 
-@XmlRootElement
 public class GuideInfo implements Comparable<GuideInfo> {
 
     private String description;
     private int runningTime;
     private String timezone;
-    @XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
     private Date firstAired;
     private List<String> genres = new ArrayList<String>();
     private List<AiringDay> airDays = new ArrayList<AiringDay>();
     private boolean airing = true;
     private String title;
-    @XmlJavaTypeAdapter(value=AirTimeAdapter.class)
     private int airTime;
     private String guideId;
     private Date lastUpdated;

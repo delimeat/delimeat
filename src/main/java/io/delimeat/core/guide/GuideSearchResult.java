@@ -3,17 +3,13 @@ package io.delimeat.core.guide;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 public class GuideSearchResult implements Comparable<GuideSearchResult> {
 
     private String description;
-    @XmlJavaTypeAdapter(value=TvdbDateAdapter.class)
     private Date firstAired;
     private String guideId;
     private String title;

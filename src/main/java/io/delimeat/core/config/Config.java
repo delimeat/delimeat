@@ -6,16 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-@XmlRootElement(name = "config")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"outputDirectory", "preferFiles", "ignoreFolders", "ignoredFileTypes","excludedKeywords", "searchInterval", "searchDelay"})
 public class Config {
 
     private String outputDirectory;
@@ -23,11 +13,7 @@ public class Config {
     private int searchDelay = 60 * 60 * 1000; // default to 1 hour
     private boolean preferFiles = true;
     private boolean ignoreFolders = false;
-    @XmlElement(name = "fileType")
-    @XmlElementWrapper(name = "ignoredFileTypes")
     private List<String> ignoredFileTypes = new ArrayList<String>();
-    @XmlElement(name = "keyword")
-    @XmlElementWrapper(name = "excludedKeywords")
   	 private List<String> excludedKeywords = new ArrayList<String>();
 
     public int getSearchInterval() {

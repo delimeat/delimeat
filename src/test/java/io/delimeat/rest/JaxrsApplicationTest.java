@@ -36,6 +36,6 @@ public class JaxrsApplicationTest {
 	
 	@Test
 	public void singletonsTest(){
-		Assert.assertEquals(1, application.getSingletons().size());
+		Assert.assertEquals(2, application.getSingletons().size());
 	}
 }
