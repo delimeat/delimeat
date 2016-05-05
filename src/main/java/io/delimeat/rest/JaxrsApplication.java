@@ -63,7 +63,7 @@ public class JaxrsApplication extends ResourceConfig {
       } catch(JAXBException ex){
         	throw new RuntimeException(ex);
       }
-     	
+     	resolver.setClasses(Arrays.asList(Config.class, Show.class, Episode.class, GuideEpisode.class, GuideSearchResult.class, GuideInfo.class));
      	return resolver;
    }
 }
