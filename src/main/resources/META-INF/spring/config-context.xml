@@ -48,6 +48,12 @@ xmlns:context="http://www.springframework.org/schema/context"
               <entry key="eclipselink.json.wrapper-as-array-name">
                 	<value type="java.lang.Boolean">true</value>
              </entry>
+              <entry key="eclipselink.json.marshal-empty-collections">
+                	<value type="java.lang.Boolean">false</value>
+             </entry>
+				<entry key="jaxb.formatted.output">
+                	<value type="java.lang.Boolean">true</value>
+             </entry>
            </map>
         </constructor-arg>
     </bean>

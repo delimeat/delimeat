@@ -12,7 +12,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -23,6 +25,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,54 +34,64 @@ import org.mockito.Mockito;
 
 public class JaxbConfigDao_ImplTest {
 
-	private class XMLGenerator {
+	private class EntityGenerator {
 
-		private StringBuffer xml;
+		private StringBuffer entity;
 
-		public XMLGenerator(int searchInterval, boolean preferFiles, boolean ignoreFolders,
+		public EntityGenerator(int searchInterval, boolean preferFiles, boolean ignoreFolders,
 				List<String> ignoredFileTypes, String outputDir, int searchDelay, List<String> excludedKeywords) {
-			xml = new StringBuffer();
-			xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			xml.append("<config>");
-			xml.append("<outputDirectory>" + outputDir + "</outputDirectory>");
-			xml.append("<preferFiles>" + preferFiles + "</preferFiles>");
+			entity = new StringBuffer();
+			entity.append("{");
+			entity.append("\"excludedKeywords\":[");
+			boolean firstKeyword = true;
+			for (String keyword : excludedKeywords) {
+				if (!firstKeyword) {
+					entity.append(",");
+				}
+				entity.append("\"" + keyword + "\"");
+				firstKeyword = false;
+			}
+			entity.append("],");
         	// ignored folders stuff
-			xml.append("<ignoreFolders>" + ignoreFolders + "</ignoreFolders>");
-			if (ignoredFileTypes != null && ignoredFileTypes.size() > 0) {
-				xml.append("<ignoredFileTypes>");
-				for (String fileType : ignoredFileTypes) {
-					xml.append("<fileType>" + fileType + "</fileType>");
+			entity.append("\"ignoreFolders\":" + ignoreFolders + ",");
+			entity.append("\"ignoredFileTypes\":[");
+			boolean firstIgnored = true;
+			for (String fileType : ignoredFileTypes) {
+				if (!firstIgnored) {
+					entity.append(",");
 				}
-				xml.append("</ignoredFileTypes>");
-			} else {
-				xml.append("<ignoredFileTypes/>");
+				entity.append("\"" + fileType + "\"");
+				firstIgnored = false;
 			}
-        	// excluded keywords stuff
-			if (excludedKeywords != null && excludedKeywords.size() > 0) {
-				xml.append("<excludedKeywords>");
-				for (String keyword : excludedKeywords) {
-					xml.append("<keyword>" + keyword + "</keyword>");
-				}
-				xml.append("</excludedKeywords>");
-			} else {
-				xml.append("<excludedKeywords/>");
-			}
-			xml.append("<searchInterval>" + searchInterval + "</searchInterval>");
-			xml.append("<searchDelay>" + searchDelay + "</searchDelay>");
-
+			entity.append("],");
+			entity.append("\"outputDirectory\":\"" + outputDir + "\",");
+			entity.append("\"preferFiles\":" + preferFiles + ",");
+        	entity.append("\"searchDelay\":" + searchDelay + ",");
+			entity.append("\"searchInterval\":" + searchInterval + "");
 		}
 
 		public String toString() {
-			return xml.toString() + "</config>";
+        return entity.toString() + "}";
 		}
 
 		public InputStream generate() throws Exception {
 			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
 		}
 	}
-	
+  
+	private static final String METADATA = "META-INF/oxm/config-oxm.xml";
+
 	private JaxbConfigDao_Impl dao;
 
+  	public JAXBContext getJAXBContext() throws Exception{
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
+     	properties.put(JAXBContextProperties.MEDIA_TYPE,"application/json");
+     	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
+     	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+     	return JAXBContext.newInstance(new Class[] { Config.class}, properties);
+   }
+  
 	@Before
 	public void setUp() {
 		dao = new JaxbConfigDao_Impl();
@@ -124,12 +138,12 @@ public class JaxbConfigDao_ImplTest {
 
 	@Test
 	public void readTest() throws Exception {
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200,Arrays.asList("256","XRV"));
+		EntityGenerator generator = new EntityGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200,Arrays.asList("256","XRV"));
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenReturn(generator.generate());
 		dao.setUrlHandler(mockedHandler);
 
-		JAXBContext jc = JAXBContext.newInstance(Config.class);
+     	JAXBContext jc = getJAXBContext();
 		dao.setUnmarshaller(jc.createUnmarshaller());
 
 		Config config = dao.read();
@@ -148,6 +162,7 @@ public class JaxbConfigDao_ImplTest {
      	Assert.assertEquals("XRV", config.getExcludedKeywords().get(1));
      
      	Mockito.verify(mockedHandler).openInput(Mockito.any(URL.class));
+     	Mockito.verifyNoMoreInteractions(mockedHandler);
 	}
 
 	@Test
@@ -155,12 +170,12 @@ public class JaxbConfigDao_ImplTest {
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
-		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenThrow(new FileNotFoundException());
+		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenThrow(FileNotFoundException.class);
 		dao.setUrlHandler(mockedHandler);
 
      	dao.setDefaultOutputDir("defaultOutputDir");
      
-		JAXBContext jc = JAXBContext.newInstance(Config.class);
+		JAXBContext jc = getJAXBContext();
 		dao.setUnmarshaller(jc.createUnmarshaller());
 		dao.setMarshaller(jc.createMarshaller());
      
@@ -175,17 +190,18 @@ public class JaxbConfigDao_ImplTest {
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
      	Assert.assertEquals(0, config.getExcludedKeywords().size());
      
-		XMLGenerator generator = new XMLGenerator(14400000, true, false, Collections.<String>emptyList(), "defaultOutputDir",3600000,Collections.<String>emptyList());
+		EntityGenerator generator = new EntityGenerator(14400000, true, false, Collections.<String>emptyList(), "defaultOutputDir",3600000,Collections.<String>emptyList());
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openInput(Mockito.any(URL.class));
      	Mockito.verify(mockedHandler).openOutput(Mockito.any(URL.class));
+     	Mockito.verifyNoMoreInteractions(mockedHandler);
 	}
   
 	@Test(expected=ConfigException.class)
 	public void readIOExceptionTest() throws Exception {
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
-		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenThrow(new IOException());
+		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenThrow(IOException.class);
 		dao.setUrlHandler(mockedHandler);
 
      	dao.read();
@@ -200,7 +216,7 @@ public class JaxbConfigDao_ImplTest {
      	dao.setUrlHandler(mockedHandler);
 
      	Unmarshaller unmarshaller = Mockito.mock(Unmarshaller.class);
-     	Mockito.when(unmarshaller.unmarshal(Mockito.any(StreamSource.class),Mockito.eq(Config.class))).thenThrow(new JAXBException(""));
+     	Mockito.when(unmarshaller.unmarshal(Mockito.any(StreamSource.class),Mockito.eq(Config.class))).thenThrow(JAXBException.class);
      	dao.setUnmarshaller(unmarshaller);
      
      	dao.read();
@@ -209,7 +225,7 @@ public class JaxbConfigDao_ImplTest {
 	@Test(expected=ConfigException.class)
 	public void readFinallyCloseTest() throws Exception {
      	InputStream inputStream = Mockito.mock(InputStream.class);
-     	Mockito.doThrow(new IOException()).when(inputStream).close();
+     	Mockito.doThrow(IOException.class).when(inputStream).close();
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenReturn(inputStream);	
      	dao.setUrlHandler(mockedHandler);
@@ -220,8 +236,6 @@ public class JaxbConfigDao_ImplTest {
      	dao.setUnmarshaller(unmarshaller);
      
      	dao.read();
-     
-     	Mockito.verify(inputStream).close();
 	}
   
 	@Test
@@ -231,7 +245,7 @@ public class JaxbConfigDao_ImplTest {
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(bos);
 		dao.setUrlHandler(mockedHandler);
 
-		JAXBContext jc = JAXBContext.newInstance(Config.class);
+		JAXBContext jc = getJAXBContext();
 		dao.setMarshaller(jc.createMarshaller());
 
 		Config config = new Config();
@@ -247,10 +261,11 @@ public class JaxbConfigDao_ImplTest {
 
 		dao.createOrUpdate(config);
 
-		XMLGenerator generator = new XMLGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200, Arrays.asList("256","XRV"));
+		EntityGenerator generator = new EntityGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200, Arrays.asList("256","XRV"));
 		Assert.assertEquals(generator.toString(), bos.toString());
      
      	Mockito.verify(mockedHandler).openOutput(Mockito.any(URL.class));
+     	Mockito.verifyNoMoreInteractions(mockedHandler);
 
 	}
   
@@ -272,7 +287,7 @@ public class JaxbConfigDao_ImplTest {
      	dao.setUrlHandler(mockedHandler);
 
      	Marshaller marshaller = Mockito.mock(Marshaller.class);
-     	Mockito.doThrow(new JAXBException("")).when(marshaller).marshal(Mockito.anyObject(),Mockito.any(StreamResult.class));
+     	Mockito.doThrow(JAXBException.class).when(marshaller).marshal(Mockito.anyObject(),Mockito.any(StreamResult.class));
      	dao.setMarshaller(marshaller);
      
      	dao.createOrUpdate(new Config());
@@ -281,7 +296,7 @@ public class JaxbConfigDao_ImplTest {
 	@Test(expected=ConfigException.class)
 	public void createOrUpdateFinallyCloseTest() throws Exception {
      	OutputStream outputStream = Mockito.mock(OutputStream.class);
-     	Mockito.doThrow(new IOException()).when(outputStream).close();
+     	Mockito.doThrow(IOException.class).when(outputStream).close();
 
 		UrlHandler mockedHandler = Mockito.mock(UrlHandler.class);
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenReturn(outputStream);
@@ -292,4 +307,13 @@ public class JaxbConfigDao_ImplTest {
      
      	dao.createOrUpdate(new Config());
 	}
+  
+  	@Test
+  	public void test(){
+		System.out.println(JAXBContextProperties.OXM_METADATA_SOURCE);
+     	System.out.println(JAXBContextProperties.MEDIA_TYPE);
+     	System.out.println(MarshallerProperties.JSON_INCLUDE_ROOT);
+     	System.out.println(Marshaller.JAXB_FORMATTED_OUTPUT);  
+     	System.out.println(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS);
+   }
 }
