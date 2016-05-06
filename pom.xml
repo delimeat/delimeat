@@ -76,6 +76,7 @@
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.0.36-beta</org.mockito.version>
+     	<com.github.tomakehurst.wiremock.version>1.58</com.github.tomakehurst.wiremock.version>
 
 		<!-- Servelet versions ! -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
@@ -141,7 +142,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+      <dependency>
+         <groupId>com.github.tomakehurst</groupId>
+         <artifactId>wiremock</artifactId>
+         <version>${com.github.tomakehurst.wiremock.version}</version>
+			<scope>test</scope>
+      </dependency>
+     
 		<!-- SERVLET ! -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

@@ -1,17 +1,14 @@
 package io.delimeat.core.guide;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
 import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,33 +16,31 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider.ConnectionFactory;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
+import org.junit.Rule;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 public class TvMazeJaxrsGuideDao_ImplTest {
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
-  	private class ErrorJsonGenerator {
+  	private class ErrorEntityGenerator {
 
 		private StringBuffer xml;
 
-		public ErrorJsonGenerator(String message) {
+		public ErrorEntityGenerator(String message) {
 			xml = new StringBuffer();
 			xml.append("{");
 			xml.append("\"name\":\"" + message + "\"");
@@ -55,16 +50,13 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			return xml.toString() + "}";
 		}
 
-		public InputStream generate() throws Exception {
-			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
-		}
 	}
   
-	private class EpisodesJsonGenerator {
+	private class EpisodesEntityGenerator {
 		private StringBuffer xml;
 		private boolean first = true;
 
-		public EpisodesJsonGenerator() {
+		public EpisodesEntityGenerator() {
 			xml = new StringBuffer();
 			xml.append("[");
 
@@ -89,15 +81,12 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			return xml.toString() + "]";
 		}
 
-		public InputStream generate() throws Exception {
-			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
-		}
 	}
 
-	private class InfoJsonGenerator {
+	private class InfoEntityGenerator {
 		private StringBuffer xml;
 
-		public InfoJsonGenerator(String description, String guideid, String title, String runtime, String tvdbId,
+		public InfoEntityGenerator(String description, String guideid, String title, String runtime, String tvdbId,
 				String tvrageId, List<String> genres, String status, String timezone, String time, List<String> days) {
 			xml = new StringBuffer();
 			xml.append("{");
@@ -139,15 +128,12 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			return xml.toString() + "}";
 		}
 
-		public InputStream generate() throws Exception {
-			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
-		}
 	}
 
-	private class SearchJsonGenerator {
+	private class SearchEntityGenerator {
 		private StringBuffer xml;
 
-		public SearchJsonGenerator() {
+		public SearchEntityGenerator() {
 			xml = new StringBuffer();
 			xml.append("[");
 		}
@@ -170,86 +156,43 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 			return xml.toString() + "]";
 		}
 
-		public InputStream generate() throws Exception {
-			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
-		}
 	}
 
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String METADATA = "META-INF/oxm/guide-tvmaze-oxm.xml";
+  
+  	private static Client client;
+  
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(8089);
 	
 	private TvMazeJaxrsGuideDao_Impl dao;
 
+  	@BeforeClass 
+  	public static void setUpClass() throws Exception{
+     	JaxbContextResolver resolver = new JaxbContextResolver();
+     	resolver.getClasses().add(GuideSearchResult.class);
+     	resolver.getClasses().add(GuideEpisode.class);
+     	resolver.getClasses().add(GuideInfo.class);
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
+     	properties.put(JAXBContextProperties.MEDIA_TYPE,"application/json");
+     	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
+     	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+     	JAXBContext context = JAXBContext.newInstance(new Class[]{GuideSearchResult.class, GuideEpisode.class,GuideInfo.class}, properties);
+     	resolver.setContext(context);
+     	ClientConfig configuration = new ClientConfig();
+     	configuration.register(resolver);
+     	configuration.register(CustomMOXyJsonProvider.class);
+     	Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+     	configuration.register(new LoggingFilter(LOGGER, true));
+     	configuration.property("jersey.config.disableMoxyJson", "true");
+     	client  = JerseyClientBuilder.createClient(configuration);   
+   }
+  
 	@Before
 	public void setUp() throws Exception {
 		dao = new TvMazeJaxrsGuideDao_Impl();
-	}
-
-	private Client prepareClient(InputStream[] inputs, Integer[] responseCodes) throws IOException, JAXBException {
-
-		ClientConfig clientConfig = new ClientConfig();
-
-		HttpURLConnection mockedUrlConnection = Mockito.mock(HttpURLConnection.class);
-		// register each input stream to return
-		OngoingStubbing<InputStream> inputStub = null;
-		for (InputStream input : inputs) {
-			if (inputStub == null) {
-				inputStub = Mockito.when(mockedUrlConnection.getInputStream());
-			}
-			inputStub = inputStub.thenReturn(input);
-		}
-     
-		OngoingStubbing<InputStream> errorStub = null;
-		for (InputStream input : inputs) {
-			if (errorStub == null) {
-				errorStub = Mockito.when(mockedUrlConnection.getErrorStream());
-			}
-			errorStub = errorStub.thenReturn(input);
-		}   
-     
-		Mockito.when(mockedUrlConnection.getURL()).thenReturn(new URL("http://test.com"));
-
-		// register each response code to return
-		OngoingStubbing<Integer> responseCodeStub = null;
-		for (Integer responseCode : responseCodes) {
-			if (responseCodeStub == null) {
-				responseCodeStub = Mockito.when(mockedUrlConnection.getResponseCode());
-			}
-			responseCodeStub = responseCodeStub.thenReturn(responseCode);
-		}
-
-		// register the header values to return
-		HashMap<String, List<String>> headers = new HashMap<String, List<String>>();
-		headers.put("Content-Type", Arrays.asList(new String[] { "application/json" }));
-		Mockito.when(mockedUrlConnection.getHeaderFields()).thenReturn(headers);
-		ConnectionFactory mockedConnectionFactory = Mockito.mock(ConnectionFactory.class);
-		Mockito.when(mockedConnectionFactory.getConnection(Mockito.any(URL.class))).thenReturn(mockedUrlConnection);
-
-		HttpUrlConnectorProvider connectorProvider = new HttpUrlConnectorProvider();
-		connectorProvider.connectionFactory(mockedConnectionFactory);
-		clientConfig.connectorProvider(connectorProvider);
-
-		// add logging of the client
-		Logger logger = Logger.getLogger(this.getClass().getName());
-		clientConfig.register(new LoggingFilter(logger, true));
-
-		// register the context provider to use mapping
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
-		JAXBContext jc = JAXBContext.newInstance(
-				new Class[] { GuideError.class, GuideEpisode.class, GuideInfo.class, GuideSearchResult.class }, properties);
-		
-      JaxbContextResolver resolver = new JaxbContextResolver();
-		resolver.setContext(jc);
-		resolver.getClasses().add(GuideEpisode.class);
-		resolver.getClasses().add(GuideInfo.class);
-		resolver.getClasses().add(GuideSearchResult.class);
-      resolver.getClasses().add(GuideError.class);
-		
-      clientConfig.register(resolver);
-		clientConfig.register(CustomMOXyJsonProvider.class);
-		clientConfig.property("jersey.config.disableMoxyJson", "true");
-
-		return ClientBuilder.newClient(clientConfig);
 	}
 
 	@Test
@@ -281,20 +224,21 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 
 	@Test
 	public void infoTest() throws IOException, Exception {
-		List<String> genres = new ArrayList<String>();
-		genres.add("GENRE1");
-		genres.add("GENRE2");
-		List<String> days = new ArrayList<String>();
-		days.add("Monday");
-		days.add("Friday");
-		InfoJsonGenerator generator = new InfoJsonGenerator("DESCRIPTION", "GUIDEID", "TITLE", "60", "123", "432",
-				genres, "Ended", "CBS", "20:00", days);
+		InfoEntityGenerator generator = new InfoEntityGenerator("DESCRIPTION", "GUIDEID", "TITLE", "60", "123", "432",
+				Arrays.asList("GENRE1","GENRE2"), "Ended", "CBS", "20:00", Arrays.asList("Monday","Friday"));
 
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		dao.setBaseUri(new URI("http://test.com"));
+		stubFor(get(urlEqualTo("/shows/GUIDEID"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(generator.toString())));
+     
+     	dao.setClient(client);
 
-		GuideInfo info = dao.info("ID");
+		dao.setBaseUri(new URI("http://localhost:8089"));		
+      dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		GuideInfo info = dao.info("GUIDEID");
 		Assert.assertEquals("DESCRIPTION", info.getDescription());
 		Assert.assertEquals("TITLE", info.getTitle());
 		Assert.assertEquals(60, info.getRunningTime());
@@ -314,15 +258,21 @@ public class TvMazeJaxrsGuideDao_ImplTest {
   
   @Test(expected=GuideNotFoundException.class)
 	public void infoNotFoundTest() throws Exception {
-		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+		ErrorEntityGenerator generator = new ErrorEntityGenerator("THIS IS AN ERROR");
 
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+		stubFor(get(urlEqualTo("/shows/GUIDEID"))
+            .willReturn(aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(generator.toString())));
+     
+     	dao.setClient(client);
 
-		dao.setBaseUri(new URI("http://test.com"));
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 
       try{
-        dao.info("TITLE");
+        dao.info("GUIDEID");
       }catch(GuideNotFoundException ex){
       	Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
          Assert.assertEquals(NotFoundException.class,ex.getCause().getClass());
@@ -332,38 +282,44 @@ public class TvMazeJaxrsGuideDao_ImplTest {
   
 	@Test(expected=GuideException.class)
 	public void infoExceptionTest() throws Exception {
+		stubFor(get(urlEqualTo("/shows/GUIDEID"))
+            .willReturn(aResponse()
+                .withStatus(500)
+                .withHeader("Content-Type", "application/json")));
+     
+     	dao.setClient(client);
 
-      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
-
-		dao.setBaseUri(new URI("http://test.com"));
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
      
-      try{
-        dao.info("TITLE");
-      }catch(GuideException ex){
-         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
-         throw ex;
-      }
+      dao.info("GUIDEID");
 	}
   
 	@Test(expected=RuntimeException.class)
 	public void infoUnsupportedEncodingTest() throws Exception {
 		dao.setEncoding("JIBBERISH");
 		
-		dao.info("TITLE");
+		dao.info("GUIDEID");
 	}
 
 	@Test
 	public void episodesTest() throws Exception {
-		EpisodesJsonGenerator generator = new EpisodesJsonGenerator();
+		EpisodesEntityGenerator generator = new EpisodesEntityGenerator();
 		generator.addEpisode(0, Integer.MIN_VALUE, Integer.MAX_VALUE, "TITLE", "2015-09-29");
 		generator.addEpisode(1, Integer.MIN_VALUE, Integer.MAX_VALUE, "TITLE", "2015-09-30");
 
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		dao.setBaseUri(new URI("http://test.com"));
+		stubFor(get(urlEqualTo("/shows/GUIDEID/episodes"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(generator.toString())));
+     
+     	dao.setClient(client);
 
-		List<GuideEpisode> result = dao.episodes("ID");
+		dao.setBaseUri(new URI("http://localhost:8089"));
+		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+
+		List<GuideEpisode> result = dao.episodes("GUIDEID");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(2, result.size());
 		Assert.assertEquals(0, result.get(0).getProductionNum().intValue());
@@ -375,11 +331,17 @@ public class TvMazeJaxrsGuideDao_ImplTest {
   
 	@Test(expected=GuideNotFoundException.class)
 	public void episodesNotFoundTest() throws Exception {
-		ErrorJsonGenerator generator = new ErrorJsonGenerator("THIS IS AN ERROR");
+		ErrorEntityGenerator generator = new ErrorEntityGenerator("THIS IS AN ERROR");
 
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 404 }));
+		stubFor(get(urlEqualTo("/shows/GUIDEID/episodes"))
+            .willReturn(aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(generator.toString())));
+     
+     	dao.setClient(client);
 
-		dao.setBaseUri(new URI("http://test.com"));
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 
       try{
@@ -394,16 +356,17 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 	@Test(expected=GuideException.class)
 	public void episodesExceptionTest() throws Exception {
 
-      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
+		stubFor(get(urlEqualTo("/shows/GUIDEID/episodes"))
+            .willReturn(aResponse()
+                .withStatus(500)
+                .withHeader("Content-Type", "application/json")));
+     
+     	dao.setClient(client);
 
-		dao.setBaseUri(new URI("http://test.com"));
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-      try{
-         dao.episodes("GUIDEID");
-      }catch(GuideException ex){
-         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
-         throw ex;
-      }
+      
+     	dao.episodes("GUIDEID");
 	}
 
 	@Test(expected=RuntimeException.class)
@@ -414,39 +377,43 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 	}
   
 	@Test
-	public void searchTest() throws IOException, Exception {
-		SearchJsonGenerator generator = new SearchJsonGenerator();
+	public void searchTestWireMock() throws IOException, Exception {
+		SearchEntityGenerator generator = new SearchEntityGenerator();
 		generator.addSeries("DESCRIPTION", "GUIDEID", "TITLE", "2015-09-29", "123", "432");
+     
+		stubFor(get(urlEqualTo("/search/shows?q=title"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(generator.toString())));
+     
+     	dao.setClient(client);
+     	dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		dao.setBaseUri(new URI("http://localhost:8089"));
 
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		dao.setBaseUri(new URI("http://test.com"));
-
-		List<GuideSearchResult> results = dao.search("TITLE");
+		List<GuideSearchResult> results = dao.search("title");
+     	System.out.println(results);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals("GUIDEID", results.get(0).getGuideId());
 		Assert.assertEquals("DESCRIPTION", results.get(0).getDescription());
 		Assert.assertEquals("TITLE", results.get(0).getTitle());
 		Assert.assertEquals("2015-09-29", SDF.format(results.get(0).getFirstAired()));
+     
 	}
   
 	@Test(expected=GuideException.class)
-	public void searchExceptionTest() throws Exception {
-
-      dao.setClient(prepareClient(new InputStream[] { null }, new Integer[] { 500 }));
-
-		dao.setBaseUri(new URI("http://test.com"));
+  	public void searchExceptionTest() throws Exception{
+		stubFor(get(urlEqualTo("/search/shows?q=title"))
+            .willReturn(aResponse()
+                .withStatus(500)));
+     
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
      
-      try{
-        dao.search("TITLE");
-      }catch(GuideException ex){
-         Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
-         throw ex;
-      }
-	}
-  
+     	dao.setClient(client);
+     	dao.search("title");
+   }
   
 	@Test(expected=RuntimeException.class)
 	public void searchUnsupportedEncodingTest() throws Exception {
