@@ -11,11 +11,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/META-INF/spring/show-context-test.xml"})
@@ -73,6 +75,7 @@ public class ShowJpaDao_ImplIT {
       }
    }
 
+  	@Ignore
   	@Transactional
 	@Test
 	public void createOrUpdateShowTest() throws Exception {     	
@@ -94,6 +97,7 @@ public class ShowJpaDao_ImplIT {
      	Assert.assertEquals(show.toString(), newShow.toString());
 	}
   
+  	@Ignore
   	@Transactional
 	@Test(expected=ShowConcurrencyException.class)
 	public void createOrUpdateShowOptimisticLockTest() throws Exception {     	
@@ -106,12 +110,14 @@ public class ShowJpaDao_ImplIT {
 		dao.createOrUpdate(show);
 	}
   
+  	@Ignore
   	@Transactional
 	@Test(expected=ShowNotFoundException.class)
 	public void readNotFoundShowTest() throws Exception {
 		dao.read(Long.MAX_VALUE);
 	}
   
+  	@Ignore
   	@Transactional
   	@Test
   	public void readShowTest() throws Exception { 
@@ -127,12 +133,14 @@ public class ShowJpaDao_ImplIT {
      	Assert.assertEquals(expectedShow.toString(), show.toString());
    }
 
+  	@Ignore
   	@Transactional
 	@Test(expected=ShowNotFoundException.class)
 	public void deleteNotFoundShowTest() throws Exception {
 		dao.delete(Long.MAX_VALUE);
 	}
   
+  	@Ignore
   	@Transactional
 	@Test
 	public void deleteShowTest() throws Exception {
