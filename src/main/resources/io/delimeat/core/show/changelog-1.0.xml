@@ -4,9 +4,144 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-  
-  <changeSet author="delimeat" id="changelog-1.0-1">
 
-  </changeSet>
-  
+    <changeSet author="delimeat" id="changelog-1.0-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="EPISODE">
+            <column name="EPISODE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AIR_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="DOUBLE_EP" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EPISODE_NUM" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEASON_NUM" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" type="VARCHAR(255)"/>
+            <column name="VERSION" type="INTEGER"/>
+            <column name="SHOW_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-2" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="SEQUENCE">
+            <column name="SEQ_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEQ_COUNT" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-3" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="SHOW">
+            <column name="SHOW_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AIR_TIME" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="AIRING" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="ENABLED" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GUIDE_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="INCLUDESPECIALS" type="SMALLINT"/>
+            <column name="LAST_FEED_UPDATE" type="date"/>
+            <column name="LAST_GUIDE_UPDATE" type="date"/>
+            <column name="MAX_SIZE" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIN_SIZE" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHOW_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMEZONE" type="VARCHAR(64)"/>
+            <column name="TITLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INTEGER"/>
+            <column name="NEXT_EPISODE_ID" type="BIGINT"/>
+            <column name="PREV_EPISODE_ID" type="BIGINT"/>
+            <column name="LAST_FEED_CHECK" type="date"/>
+            <column name="LAST_GUIDE_CHECK" type="date"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-4" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="SHOW_ID" constraintName="PK_SHOW_SHOW_ID" tableName="SHOW"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-5" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="EPISODE_ID" constraintName="PK_EPISODE_EPISODE_ID" tableName="EPISODE"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-6" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="SEQ_NAME" constraintName="PK_SEQUENCE_SEQ_NAME" tableName="SEQUENCE"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-7" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addUniqueConstraint columnNames="GUIDE_ID" constraintName="UNQ_SHOW_GUIDE_ID" tableName="SHOW"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-8" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addUniqueConstraint columnNames="SEASON_NUM, EPISODE_NUM, SHOW_ID" constraintName="UNQ_EPISODE_SEAS_EP_SHOW" tableName="EPISODE"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-9" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="IDX_SHOW_GUIDE_ID" tableName="SHOW" unique="true">
+            <column name="GUIDE_ID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-10" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="IDX_EPISODE_SEAS_EP_SHOW" tableName="EPISODE" unique="true">
+            <column name="SEASON_NUM"/>
+            <column name="EPISODE_NUM"/>
+            <column name="SHOW_ID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-11" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="IDX_SHOW_NEXT_EP" tableName="SHOW">
+            <column name="NEXT_EPISODE_ID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-12" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="IDX_SHOW_PREV_EP" tableName="SHOW">
+            <column name="PREV_EPISODE_ID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-13" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="IDX_EPISODE_SHOW_ID" tableName="EPISODE">
+            <column name="SHOW_ID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-14" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="SHOW_ID" baseTableName="EPISODE" constraintName="FK_EPISODE_SHOW_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="SHOW_ID" referencedTableName="SHOW"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-15" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="NEXT_EPISODE_ID" baseTableName="SHOW" constraintName="FK_SHOW_NEXT_EP_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="EPISODE_ID" referencedTableName="EPISODE"/>
+    </changeSet>
+    
+    <changeSet author="delimeat" id="changelog-1.0-16" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="PREV_EPISODE_ID" baseTableName="SHOW" constraintName="FK_SHOW_PREV_EP_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="EPISODE_ID" referencedTableName="EPISODE"/>
+    </changeSet>
+    
 </databaseChangeLog> 

@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
 

@@ -307,13 +307,4 @@ public class JaxbConfigDao_ImplTest {
      
      	dao.createOrUpdate(new Config());
 	}
-  
-  	@Test
-  	public void test(){
-		System.out.println(JAXBContextProperties.OXM_METADATA_SOURCE);
-     	System.out.println(JAXBContextProperties.MEDIA_TYPE);
-     	System.out.println(MarshallerProperties.JSON_INCLUDE_ROOT);
-     	System.out.println(Marshaller.JAXB_FORMATTED_OUTPUT);  
-     	System.out.println(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS);
-   }
 }

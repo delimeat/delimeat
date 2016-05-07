@@ -12,13 +12,11 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
 		<property name="jdbcUrl" value="${io.delimeat.core.show.jdbcUrl}" />
 		<property name="driverClassName" value="${io.delimeat.core.show.driverClassName}" />
 	</bean>
-	
-	<!-- 
+	 
 	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase"> 
 		<property name="dataSource" ref="showDataSourceId" /> 
-		<property name="changeLog" value="classpath:db-changelog.xml" /> 
+		<property name="changeLog" value="classpath:io/delimeat/core/show/changelog-master.xml" /> 
 	</bean> 
-	!-->
 
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="mappingResources" value="META-INF/orm.xml" />

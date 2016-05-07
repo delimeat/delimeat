@@ -41,7 +41,9 @@
 
 			<id name="episodeId">
 				<column name="EPISODE_ID" />
-				<generated-value />
+				<generated-value strategy="TABLE" generator="EP_SEQ"/>
+            	<table-generator name="EP_SEQ" table="SEQUENCE" pk-column-name="SEQ_NAME"
+                	value-column-name="SEQ_COUNT" pk-column-value="EP_SEQ"/>
 			</id>
 
 			<basic name="airDate" optional="false">
@@ -87,7 +89,9 @@
 
 			<id name="showId">
 				<column name="SHOW_ID" />
-				<generated-value />
+				<generated-value strategy="TABLE" generator="SHOW_SEQ"/>
+            	<table-generator name="SHOW_SEQ" table="SEQUENCE" pk-column-name="SEQ_NAME"
+                	value-column-name="SEQ_COUNT" pk-column-value="SHOW_SEQ"/>
 			</id>
 
 			<basic name="airTime" optional="false">
