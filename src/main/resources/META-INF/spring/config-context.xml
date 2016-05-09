@@ -12,7 +12,7 @@ xmlns:context="http://www.springframework.org/schema/context"
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
 	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd">
 	 
-  	<!--
+  	
 	<bean id="configJaxb2marshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="lazyInit" value="true"/>
 		<property name="classesToBeBound">
@@ -22,26 +22,12 @@ xmlns:context="http://www.springframework.org/schema/context"
         </property>       
         <property name="jaxbContextProperties">
         	<map>
-        		<entry key="eclipselink-oxm-xml">
-        			<value type="java.io.InputStream">classpath://META-INF/oxm/config-oxm.xml</value>
-        		</entry>
-           	<entry key="eclipselink-media-type" value="application/json"/>
-        	</map>
-        </property>
-    </bean>
-	!-->
-	<bean id="configJaxb2marshallerId" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
-		<constructor-arg>
-            <list>
-                <value>io.delimeat.core.config.Config</value>               
-            </list>
-        </constructor-arg>       
-        <constructor-arg>
-           <map>
               <entry key="eclipselink.oxm.metadata-source">
                  <value>META-INF/oxm/config-oxm.xml</value>
               </entry>
-              <entry key="eclipselink.media-type" value="application/json"/>
+              <entry key="eclipselink.media-type">
+                 <value>application/json</value>
+              </entry>
               <entry key="eclipselink.json.include-root">
                 	<value type="java.lang.Boolean">false</value>
              </entry>
@@ -51,16 +37,21 @@ xmlns:context="http://www.springframework.org/schema/context"
               <entry key="eclipselink.json.marshal-empty-collections">
                 	<value type="java.lang.Boolean">false</value>
              </entry>
+
+        	</map>
+        </property>
+       <property name="marshallerProperties">
+         <map>
 				<entry key="jaxb.formatted.output">
                 	<value type="java.lang.Boolean">true</value>
              </entry>
-           </map>
-        </constructor-arg>
+         </map>
+       </property>
     </bean>
-  	
+
     
     <bean id="configUnmarshallerId" class="javax.xml.bind.Unmarshaller" factory-bean="configJaxb2marshallerId" factory-method="createUnmarshaller" />
-    <bean id="configMarshallerId" class="javax.xml.bind.Marshaller" factory-bean="configJaxb2marshallerId" factory-method="createMarshaller" />
+    <bean id="configMarshallerId" class="javax.xml.bind.Marshaller" factory-bean="configJaxb2marshallerId" factory-method="createMarshaller"/>
 
 
 	<bean id="configDaoId" class="io.delimeat.core.config.JaxbConfigDao_Impl">
