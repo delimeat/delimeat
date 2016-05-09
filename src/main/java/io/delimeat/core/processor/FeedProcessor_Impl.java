@@ -111,6 +111,8 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
             try {
                 active = true;
                 final Show lockedShow = showDao.readAndLock(show.getShowId());
+                Date now = new Date();
+				lockedShow.setLastFeedCheck(now);
                 // read feed results
                 final List<FeedResult> readResults = fetchResults(lockedShow);
               	 LOGGER.debug("read results: " + readResults.size());
@@ -145,8 +147,6 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 					}
 				}
 				if(active == true){
-					Date now = new Date();
-					lockedShow.setLastFeedCheck(now);
 					showDao.createOrUpdate(lockedShow);
 				}
 			} finally {
