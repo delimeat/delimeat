@@ -280,6 +280,8 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         show.setPreviousEpisode(previousEp);
         show.setNextEpisode(nextEp);
         show.setLastFeedUpdate(new Date());
+        show.setLastFeedCheck(null);
+      
     }
 
 	@Override

@@ -515,6 +515,7 @@ public class FeedProcessor_ImplTest {
      	Assert.assertEquals(nextEp, show.getPreviousEpisode());
      	Assert.assertNull(show.getNextEpisode());
      	Assert.assertNotNull(show.getLastFeedUpdate());
+     	Assert.assertNull(show.getLastFeedCheck());
      
      	Mockito.verify(dao).readNextEpisode(nextEp);
      	Mockito.verifyNoMoreInteractions(dao); 
@@ -590,7 +591,7 @@ public class FeedProcessor_ImplTest {
      	Assert.assertEquals(0,feedResult.getFeedResultRejections().size());
      	Assert.assertEquals(nextEpisode, show.getPreviousEpisode());
      	Assert.assertEquals(newNextEpisode, show.getNextEpisode());
-     	Assert.assertTrue(show.getLastFeedCheck().after(new Date(0)));
+     	Assert.assertNull(show.getLastFeedCheck());
      	Assert.assertTrue(show.getLastFeedUpdate().after(new Date(0)));
      
      	Mockito.verify(showDao).readAndLock(1L);
