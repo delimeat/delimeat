@@ -87,7 +87,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		private StringBuffer xml;
 
 		public InfoEntityGenerator(String description, String guideid, String title, String runtime, String tvdbId,
-				String tvrageId, List<String> genres, String status, String timezone, String time, List<String> days) {
+				String tvrageId, List<String> genres, String status, String timezone, String time, List<String> days, Long lastUpdated) {
 			xml = new StringBuffer();
 			xml.append("{");
 			xml.append("\"summary\":\"" + description + "\",");
@@ -121,7 +121,8 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 				firstDay = false;
 			}
 			xml.append("]");
-			xml.append("}");
+			xml.append("},");
+			xml.append("\"updated\":" + lastUpdated + "");
 		}
 
 		public String toString() {
@@ -225,7 +226,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 	@Test
 	public void infoTest() throws IOException, Exception {
 		InfoEntityGenerator generator = new InfoEntityGenerator("DESCRIPTION", "GUIDEID", "TITLE", "60", "123", "432",
-				Arrays.asList("GENRE1","GENRE2"), "Ended", "CBS", "20:00", Arrays.asList("Monday","Friday"));
+				Arrays.asList("GENRE1","GENRE2"), "Ended", "CBS", "20:00", Arrays.asList("Monday","Friday"), 1454486401L);
 
 		stubFor(get(urlEqualTo("/shows/GUIDEID"))
             .willReturn(aResponse()
@@ -253,6 +254,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(2, info.getAirDays().size());
 		Assert.assertEquals(AiringDay.MONDAY, info.getAirDays().get(0));
 		Assert.assertEquals(AiringDay.FRIDAY, info.getAirDays().get(1));
+  		Assert.assertEquals("2016-02-03", SDF.format(info.getLastUpdated()));
 
 	}
   

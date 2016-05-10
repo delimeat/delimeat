@@ -48,8 +48,10 @@
 				<xml-element java-attribute="airTime" xml-path="schedule/time/text()">
 					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbAirTimeAdapter" />
 				</xml-element>
-				<xml-element java-attribute="genres" name="genres"
-					xml-list="true" />
+				<xml-element java-attribute="genres" name="genres" xml-list="true" />
+				<xml-element java-attribute="lastUpdated" name="updated" >	
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TvdbLastUpdatedAdapter" />		
+				</xml-element>
 			</java-attributes>
 		</java-type>
 
