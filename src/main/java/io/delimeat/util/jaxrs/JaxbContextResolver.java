@@ -3,6 +3,7 @@ package io.delimeat.util.jaxrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -11,6 +12,7 @@ import javax.xml.bind.JAXBContext;
 
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 
 	private JAXBContext context;
@@ -18,6 +20,7 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 
 	@Override
 	public JAXBContext getContext(Class<?> type) {
+		System.out.println("JaxbContextResolver " + type);
 		return context;
 		/*
 		 * if(classes.contains(type)){ return context; } return null;

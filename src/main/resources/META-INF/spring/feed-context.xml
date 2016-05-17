@@ -9,6 +9,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<import resource="feed-kat-context.xml" />
+	<import resource="feed-torrentproject-context.xml" />
 
 
 </beans>
