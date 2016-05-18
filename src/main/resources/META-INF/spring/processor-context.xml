@@ -72,7 +72,8 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	<property name="feedDaos">
     		 <list>
     		 	<ref bean="katGuideDaoId"/>
-            </list>
+            <ref bean="torrentProjectGuideDaoId"/>
+          </list>
        </property>
        
 		<property name="torrentValidators">

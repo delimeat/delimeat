@@ -3,7 +3,7 @@ package io.delimeat.core.feed;
 public enum FeedSource {
 
     KAT(0),
-    STRIKE(1);
+    TORRENTPROJECT(1);
 
     private final int value;
 

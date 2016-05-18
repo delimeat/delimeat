@@ -11,7 +11,7 @@ public class FeedSourceTest {
    }
   
   	@Test
-  	public void strikeTest(){
-     	Assert.assertEquals(1, FeedSource.STRIKE.getValue());
+  	public void torrentProjectTest(){
+     	Assert.assertEquals(1, FeedSource.TORRENTPROJECT.getValue());
    }  
 }

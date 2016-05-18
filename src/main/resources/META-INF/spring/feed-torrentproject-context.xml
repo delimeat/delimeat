@@ -9,13 +9,31 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
 	
+  <bean id="torrentProjectMoxyXmlFeatureId" class="org.glassfish.jersey.moxy.xml.MoxyXmlFeature">
+    <constructor-arg type="java.util.Map">
+      <map>
+        <entry key="eclipselink.oxm.metadata-source">
+          <value type="java.io.InputStream">classpath://META-INF/oxm/feed-torrentproject-oxm.xml</value>
+        </entry>
+      </map>
+    </constructor-arg>
+    <constructor-arg type="java.lang.ClassLoader" >
+      <bean class="java.lang.ClassLoader" factory-method="getSystemClassLoader"/>
+    </constructor-arg>
+    <constructor-arg type="boolean" value="true"/>
+    <constructor-arg index="3">
+      <list>
+        <value>io.delimeat.core.feed.FeedResult</value>
+        <value>io.delimeat.core.feed.FeedSearch</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
 	<bean id="torrentProjectJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
 		<property name="providers">
 			<list>
-				<!--  
-				<ref bean="katJaxbContextResolverId"/>
-				!-->
+				<ref bean="torrentProjectMoxyXmlFeatureId"/>
 			</list>
 		</property>
 		<property name="providerClasses">
@@ -28,9 +46,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	<bean id="torrentProjectJaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
 
 	<bean id="torrentProjectGuideDaoId" class="io.delimeat.core.feed.TorrentProjectJaxrsFeedDao_Impl">
-		<!-- 
 		<property name="client" ref="torrentProjectJaxrsClientId" />
-		!-->
 		<property name="mediaType" value="APPLICATION_XML_TYPE" />
 		<property name="baseUri" value="${io.delimeat.core.feed.torrentproject.baseUri}"/>
 	</bean>    
