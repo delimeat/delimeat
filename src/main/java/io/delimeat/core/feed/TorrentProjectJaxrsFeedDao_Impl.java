@@ -26,10 +26,10 @@ public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper i
       
         try {
             return getTarget().queryParam("s", encodedTitle)
-              						.queryParam("out", "rss")
-              						.request(getMediaType())
-              						.get(FeedSearch.class)
-                              .getResults();
+            					.queryParam("out", "rss")
+              					.request(getMediaType())
+              					.get(FeedSearch.class)
+              					.getResults();
 
         } catch (WebApplicationException ex) {
             throw new FeedException(ex);

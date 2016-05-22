@@ -161,10 +161,13 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         final String title = show.getTitle();
         final List<FeedResult> readResults = new ArrayList<FeedResult>();
         final Iterator<FeedDao> feedDaoIterator = feedDaos.iterator();
+        LOGGER.debug("Feed Daos: " + feedDaos);
         while (active == true && feedDaoIterator.hasNext()) {
             FeedDao feedDao = feedDaoIterator.next();
+            LOGGER.debug("Reading from: "+ feedDao);
             try {
                 List<FeedResult> results = feedDao.read(title);
+                LOGGER.debug("found results: " + results);
                 readResults.addAll(results);
             } catch (FeedException ex) {
                 continue;

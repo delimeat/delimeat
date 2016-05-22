@@ -39,7 +39,7 @@
   
     <cache:advice id="feedCacheAdvice" cache-manager="cacheManagerId">
       <cache:caching cache="feed">
-        <cache:cacheable method="read" key="#title"/>
+        <cache:cacheable method="read" key="{#root.targetClass, #title}"/>
       </cache:caching>
     </cache:advice>
 
