@@ -207,7 +207,7 @@ public class UrlHandler_ImplTest {
   	public void openUrlConnectionHttp301Test() throws IOException{
      final HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
      Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_PERM);
-     Mockito.when(connection.getHeaderField("Location")).thenReturn("http://redirect");
+     Mockito.when(connection.getHeaderField("Location")).thenReturn("ftp://redirect");
      URLStreamHandler stubUrlHandler = new URLStreamHandler() {
        @Override
        protected URLConnection openConnection(URL u) throws IOException {
@@ -218,7 +218,7 @@ public class UrlHandler_ImplTest {
 
      URLConnection returnedConnection = handler.openUrlConnection(url,null);
      
-     Assert.assertEquals("http://redirect", returnedConnection.getURL().toExternalForm());
+     Assert.assertEquals("ftp://redirect", returnedConnection.getURL().toExternalForm());
      Mockito.verify(connection).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection).setInstanceFollowRedirects(false);
      Mockito.verify(connection).getResponseCode();
@@ -231,7 +231,7 @@ public class UrlHandler_ImplTest {
   	public void openUrlConnectionHttp302Test() throws IOException{
      final HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
      Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP);
-     Mockito.when(connection.getHeaderField("Location")).thenReturn("http://redirect");
+     Mockito.when(connection.getHeaderField("Location")).thenReturn("ftp://redirect");
      URLStreamHandler stubUrlHandler = new URLStreamHandler() {
        @Override
        protected URLConnection openConnection(URL u) throws IOException {
@@ -242,7 +242,7 @@ public class UrlHandler_ImplTest {
 
      URLConnection returnedConnection = handler.openUrlConnection(url,null);
      
-     Assert.assertEquals("http://redirect", returnedConnection.getURL().toExternalForm());
+     Assert.assertEquals("ftp://redirect", returnedConnection.getURL().toExternalForm());
      Mockito.verify(connection).setConnectTimeout(Mockito.anyInt());
      Mockito.verify(connection).setInstanceFollowRedirects(false);
      Mockito.verify(connection).getResponseCode();
