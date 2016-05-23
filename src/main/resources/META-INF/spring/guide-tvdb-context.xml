@@ -57,7 +57,9 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	</bean>
 	
 	<bean id="tvdbJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+     	<!--
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
+		!-->
 		<property name="providers">
 			<list>
 				<ref bean="tvdbJaxbContextResolverId"/>

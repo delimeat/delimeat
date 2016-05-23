@@ -54,8 +54,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
    <bean id="tvmazeJsonProviderId" class="io.delimeat.util.jaxrs.CustomMOXyJsonProvider"/>
   
 	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+     	<!--
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
-		<property name="providers">
+		!-->
+     <property name="providers">
 			<list>
 				<ref bean="tvmazeJaxbContextResolverId"/>
 			</list>

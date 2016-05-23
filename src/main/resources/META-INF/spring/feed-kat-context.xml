@@ -45,8 +45,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	</bean>
 	
 	<bean id="katJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+     	<!--
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
-		<property name="providers">
+		!-->
+     <property name="providers">
 			<list>
 				<ref bean="katJaxbContextResolverId"/>
 			</list>
