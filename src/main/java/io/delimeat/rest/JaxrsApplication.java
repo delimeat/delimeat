@@ -11,6 +11,7 @@ import io.delimeat.util.jaxrs.ETagResponseFilter;
 import io.delimeat.util.jaxrs.GenericExceptionMapper;
 import io.delimeat.util.jaxrs.GuideExceptionMapper;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
+import io.delimeat.util.jaxrs.JaxrsError;
 import io.delimeat.util.jaxrs.ShowExceptionMapper;
 import io.delimeat.util.jaxrs.WebApplicationExceptionMapper;
 
@@ -58,12 +59,12 @@ public class JaxrsApplication extends ResourceConfig {
      	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
      	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
      	try{
-        JAXBContext jc = JAXBContext.newInstance(new Class[] { Config.class, Show.class, Episode.class, GuideEpisode.class, GuideSearchResult.class, GuideInfo.class}, properties);
+        JAXBContext jc = JAXBContext.newInstance(new Class[] {JaxrsError.class,  Config.class, Show.class, Episode.class, GuideEpisode.class, GuideSearchResult.class, GuideInfo.class}, properties);
         resolver.setContext(jc);
       } catch(JAXBException ex){
         	throw new RuntimeException(ex);
       }
-     	resolver.setClasses(Arrays.asList(Config.class, Show.class, Episode.class, GuideEpisode.class, GuideSearchResult.class, GuideInfo.class));
+     	resolver.setClasses(Arrays.asList(JaxrsError.class, Config.class, Show.class, Episode.class, GuideEpisode.class, GuideSearchResult.class, GuideInfo.class));
      	return resolver;
    }
 }
