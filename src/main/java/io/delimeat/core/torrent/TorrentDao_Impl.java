@@ -64,9 +64,9 @@ public class TorrentDao_Impl implements TorrentDao {
      final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL(),headers);
      
      final int responseCode = conn.getResponseCode();
-     if(responseCode == 404){
+     if(responseCode == HttpURLConnection.HTTP_NOT_FOUND){
     	throw new TorrentNotFoundException(String.format("Unnable to retrieve torrent at url %s",uri.toURL()));
-     }else if(responseCode != 200){
+     }else if(responseCode != HttpURLConnection.HTTP_OK){
        throw new TorrentException(String.format("Receieved response %s  from %s",responseCode, uri.toURL()));
      }
      

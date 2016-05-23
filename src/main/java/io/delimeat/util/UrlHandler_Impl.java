@@ -6,8 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -68,15 +70,37 @@ public class UrlHandler_Impl implements UrlHandler {
 	public URLConnection openUrlConnection(URL url, Map<String, String> headerProps) throws IOException {
 		URLConnection conn = url.openConnection();
 		conn.setConnectTimeout(getTimeout());
-		if (headerProps != null) {
-			for (String key : headerProps.keySet()) {
-				String value = headerProps.get(key);
-				conn.setRequestProperty(key, value);
-			}
-		}
-		if (headerProps == null || !headerProps.containsKey("user-agent")) {
+     
+     	// create header props if not provided
+     	if (headerProps == null) {
+     		headerProps = new HashMap<String,String>();
+     	}
+     
+     	// add user-agent header if not provided
+		if (headerProps.containsKey("user-agent") == false) {
 			conn.setRequestProperty("user-agent", DEFAULT_USER_AGENT);
 		}
+     
+     	// add header props to connection
+     	for (String key : headerProps.keySet()) {
+         String value = headerProps.get(key);
+         conn.setRequestProperty(key, value);
+      }
+     
+     	// if http follow redirects
+     	if(HttpURLConnection.class.isAssignableFrom(conn.getClass()) == true){
+      	HttpURLConnection httpConn = (HttpURLConnection)conn;
+        	//set follow redirects false because using own implementation
+        	httpConn.setInstanceFollowRedirects(false);        
+			switch (httpConn.getResponseCode())
+         {
+            case HttpURLConnection.HTTP_MOVED_PERM:
+            case HttpURLConnection.HTTP_MOVED_TEMP:
+               String location = conn.getHeaderField("Location");
+               URL redirectUrl = new URL(url,location);
+           		conn = openUrlConnection(redirectUrl,headerProps);
+         }
+      }
 		return conn;
 	}
 

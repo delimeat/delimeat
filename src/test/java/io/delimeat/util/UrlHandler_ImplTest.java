@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -178,6 +179,76 @@ public class UrlHandler_ImplTest {
      
      Assert.assertEquals(connection, returnedConnection);
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+   }
+  
+	@Test  
+  	public void openUrlConnectionHttp200Test() throws IOException{
+     final HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
+     Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+
+     URLConnection returnedConnection = handler.openUrlConnection(url,null);
+     
+     Assert.assertEquals(connection, returnedConnection);
+     Mockito.verify(connection).setConnectTimeout(Mockito.anyInt());
+     Mockito.verify(connection).setInstanceFollowRedirects(false);
+     Mockito.verify(connection).getResponseCode();
+     Mockito.verify(connection).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+     Mockito.verifyNoMoreInteractions(connection);
+   }
+  
+	@Test  
+  	public void openUrlConnectionHttp301Test() throws IOException{
+     final HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
+     Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_PERM);
+     Mockito.when(connection.getHeaderField("Location")).thenReturn("http://redirect");
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+
+     URLConnection returnedConnection = handler.openUrlConnection(url,null);
+     
+     Assert.assertEquals("http://redirect", returnedConnection.getURL().toExternalForm());
+     Mockito.verify(connection).setConnectTimeout(Mockito.anyInt());
+     Mockito.verify(connection).setInstanceFollowRedirects(false);
+     Mockito.verify(connection).getResponseCode();
+     Mockito.verify(connection).getHeaderField("Location");
+     Mockito.verify(connection).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+     Mockito.verifyNoMoreInteractions(connection);
+   }
+  
+	@Test  
+  	public void openUrlConnectionHttp302Test() throws IOException{
+     final HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
+     Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP);
+     Mockito.when(connection.getHeaderField("Location")).thenReturn("http://redirect");
+     URLStreamHandler stubUrlHandler = new URLStreamHandler() {
+       @Override
+       protected URLConnection openConnection(URL u) throws IOException {
+         return connection;
+       }            
+     };
+     URL url = new URL("foo", "bar", 99, "/foobar", stubUrlHandler);
+
+     URLConnection returnedConnection = handler.openUrlConnection(url,null);
+     
+     Assert.assertEquals("http://redirect", returnedConnection.getURL().toExternalForm());
+     Mockito.verify(connection).setConnectTimeout(Mockito.anyInt());
+     Mockito.verify(connection).setInstanceFollowRedirects(false);
+     Mockito.verify(connection).getResponseCode();
+     Mockito.verify(connection).getHeaderField("Location");
+     Mockito.verify(connection).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
+     Mockito.verifyNoMoreInteractions(connection);
    }
   
 	@Test
