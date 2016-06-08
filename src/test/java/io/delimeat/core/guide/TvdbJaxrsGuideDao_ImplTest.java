@@ -549,14 +549,9 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		token.setValue("TOKEN");
 		dao.setToken(token);
 
-		try {
-			dao.search("TITLE");
-		} catch (GuideNotFoundException ex) {
-			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
-			Assert.assertEquals(NotFoundException.class, ex.getCause().getClass());
-			return;
-		}
-		Assert.fail();
+		List<GuideSearchResult> results = dao.search("TITLE");
+     	Assert.assertNotNull(results);
+     	Assert.assertEquals(0, results.size());
 	}
 
 	@Test

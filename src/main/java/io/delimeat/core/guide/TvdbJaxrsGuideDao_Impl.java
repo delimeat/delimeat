@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.NotAuthorizedException;
@@ -80,8 +81,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
             GuideError error = ex.getResponse().readEntity(GuideError.class);
             throw new GuideNotAuthorisedException(error.getMessage(), ex);
         } catch (NotFoundException ex) {
-            GuideError error = ex.getResponse().readEntity(GuideError.class);
-            throw new GuideNotFoundException(error.getMessage(), ex);
+            return Collections.emptyList();
         } catch (WebApplicationException ex) {
             throw new GuideException(ex);
         }
