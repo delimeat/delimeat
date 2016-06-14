@@ -1,14 +1,11 @@
 package io.delimeat.core.feed;
 
-import io.delimeat.util.jaxrs.JaxbContextResolver;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,21 +13,18 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider.ConnectionFactory;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
 
 public class KickAssJaxrsFeedDao_ImplTest {
 
@@ -62,21 +56,38 @@ public class KickAssJaxrsFeedDao_ImplTest {
 		public String toString() {
 			return xml.toString() + "]}";
 		}
-
-		public InputStream generate() throws Exception {
-			return new ByteArrayInputStream(this.toString().getBytes("UTF-8"));
-		}
 	}
 	
 	private static final String METADATA = "META-INF/oxm/feed-kat-oxm.xml";
-	
+
+  	private static Client client;
+
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(8089);
+  
 	private KickAssJaxrsFeedDao_Impl dao;
 	
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,Arrays.asList(METADATA));
+      MoxyXmlFeature feature = new MoxyXmlFeature(properties, classLoader, true, FeedResult.class, FeedSearch.class);
+		Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+
+		ClientConfig configuration = new ClientConfig()
+										.register(feature)
+										.register(new LoggingFilter(LOGGER, true));
+				
+		client = JerseyClientBuilder.createClient(configuration);
+	}
+  
 	@Before
 	public void setUp() throws Exception {
 		dao = new KickAssJaxrsFeedDao_Impl();
 	}
 	
+  	/*
 	private Client prepareClient(InputStream[] inputs, Integer[] responseCodes) throws IOException, JAXBException {
 
 		ClientConfig clientConfig = new ClientConfig();
@@ -139,6 +150,7 @@ public class KickAssJaxrsFeedDao_ImplTest {
 
 		return ClientBuilder.newClient(clientConfig);
 	}
+   */
 
 	@Test
 	public void encodingTest() {
@@ -169,21 +181,29 @@ public class KickAssJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void readTest() throws Exception {
-		ResultJsonGenerator generator = new ResultJsonGenerator();
-		generator.addResult("title", 100, 50, 30, "http://test.com");
+		ResultJsonGenerator response = new ResultJsonGenerator();
+		response.addResult("title", 100, 50, 30, "http://test.com");
+     
+		stubFor(get(urlEqualTo("/?q=title+category%3Atv"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(response.toString())));
+
 		
-		dao.setClient(prepareClient(new InputStream[] { generator.generate() }, new Integer[] { 200 }));
-		dao.setBaseUri(new URI("http://test.com"));
+		dao.setClient(client);
 		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		dao.setBaseUri(new URI("http://localhost:8089"));
 		
-		List<FeedResult> results = dao.read("TITLE");
-		Assert.assertNotNull(results);
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals("title", results.get(0).getTitle());
-		Assert.assertEquals(100, results.get(0).getContentLength());
-		Assert.assertEquals(50, results.get(0).getSeeders());
-		Assert.assertEquals(30, results.get(0).getLeechers());
-		Assert.assertEquals("http://test.com", results.get(0).getTorrentURL());
+		List<FeedResult> results = dao.read("title");
+     	Assert.assertNotNull(results);
+     	Assert.assertEquals(1, results.size());
+     	Assert.assertEquals("title",results.get(0).getTitle());
+     	Assert.assertEquals("http://test.com",results.get(0).getTorrentURL());
+     	Assert.assertEquals(100,results.get(0).getContentLength());
+     	Assert.assertEquals(50,results.get(0).getSeeders());
+     	Assert.assertEquals(30,results.get(0).getLeechers());
+
 	}
 
 	@Test(expected=RuntimeException.class)
@@ -194,15 +214,19 @@ public class KickAssJaxrsFeedDao_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readWebApplicationExceptionTest() throws Exception {
-     	// cause an internal error in jersey because this wont do anything
-		InputStream input = Mockito.mock(InputStream.class);
-		
-		dao.setClient(prepareClient(new InputStream[] { input }, new Integer[] { 200 }));
-		dao.setBaseUri(new URI("http://test.com"));
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		
-		dao.read("TITLE");
+	public void readExceptionTest() throws Exception {
+
+		stubFor(get(urlEqualTo("/?q=title+category%3Atv"))
+				.willReturn(aResponse()
+							.withStatus(500)
+							.withHeader("Content-Type","application/json")));
+
+		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
+		dao.setBaseUri(new URI("http://localhost:8089"));
+		dao.setClient(client);
+
+		dao.read("title");
+		Assert.fail();
 	}
 
 }
