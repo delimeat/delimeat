@@ -3,8 +3,8 @@ package io.delimeat.rest;
 import io.delimeat.core.service.ShowService;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.jaxrs.ETag;
-import io.delimeat.util.jaxrs.ETagGenerator;
+import io.delimeat.rest.util.jaxrs.ETag;
+import io.delimeat.rest.util.jaxrs.ETagGenerator;
 
 import java.util.List;
 

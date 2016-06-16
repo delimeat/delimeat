@@ -1,11 +1,15 @@
 package io.delimeat.util.jaxrs;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -17,6 +21,16 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class JerseyClientFactoryTest {
+  
+  	//Dummy class for testing
+  	private class TestFilter implements ContainerResponseFilter{
+
+        @Override
+        public void filter(ContainerRequestContext arg0,
+                ContainerResponseContext arg1) throws IOException {
+        }
+     
+   }
 
 	private JerseyClientFactory factory;
 
@@ -82,7 +96,7 @@ public class JerseyClientFactoryTest {
 		ContextResolver<?> mockedProvider = Mockito.mock(ContextResolver.class);
 		factory.getProviders().add(mockedProvider);
 
-     	factory.getProviderClasses().add(AddETagResponseFilter.class);
+     	factory.getProviderClasses().add(TestFilter.class);
      
      	factory.getProperties().put("TEST", "VALUE");
      
@@ -94,7 +108,7 @@ public class JerseyClientFactoryTest {
 		Assert.assertEquals(mockedConnectorProvider, jc.getConfiguration().getConnectorProvider());
 		Assert.assertEquals(ClientConfig.class, client.getConfiguration().getClass());
 		Assert.assertTrue(jc.getConfiguration().isRegistered(mockedProvider));
-     	Assert.assertTrue(jc.getConfiguration().isRegistered(AddETagResponseFilter.class));
+     	Assert.assertTrue(jc.getConfiguration().isRegistered(TestFilter.class));
      	Assert.assertEquals("VALUE", jc.getConfiguration().getProperty("TEST"));
 	}
 

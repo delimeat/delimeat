@@ -1,11 +1,11 @@
 package io.delimeat.rest;
 
-import io.delimeat.util.jaxrs.ETagRequestFilter;
-import io.delimeat.util.jaxrs.ETagResponseFilter;
-import io.delimeat.util.jaxrs.GenericExceptionMapper;
-import io.delimeat.util.jaxrs.GuideExceptionMapper;
-import io.delimeat.util.jaxrs.ShowExceptionMapper;
-import io.delimeat.util.jaxrs.WebApplicationExceptionMapper;
+import io.delimeat.rest.util.jaxrs.ETagRequestFilter;
+import io.delimeat.rest.util.jaxrs.ETagResponseFilter;
+import io.delimeat.rest.util.jaxrs.GenericExceptionMapper;
+import io.delimeat.rest.util.jaxrs.GuideExceptionMapper;
+import io.delimeat.rest.util.jaxrs.ShowExceptionMapper;
+import io.delimeat.rest.util.jaxrs.WebApplicationExceptionMapper;
 
 import org.junit.Assert;
 import org.junit.Before;

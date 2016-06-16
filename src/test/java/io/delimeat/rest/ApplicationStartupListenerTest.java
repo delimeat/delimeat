@@ -1,4 +1,4 @@
-package io.delimeat.core;
+package io.delimeat.rest;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

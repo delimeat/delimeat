@@ -3,8 +3,8 @@ package io.delimeat.rest;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.service.ConfigService;
-import io.delimeat.util.jaxrs.ETag;
-import io.delimeat.util.jaxrs.ETagGenerator;
+import io.delimeat.rest.util.jaxrs.ETag;
+import io.delimeat.rest.util.jaxrs.ETagGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

@@ -3,8 +3,8 @@ package io.delimeat.rest;
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigException;
 import io.delimeat.core.service.ConfigService;
-import io.delimeat.util.jaxrs.ETagRequestFilter;
-import io.delimeat.util.jaxrs.ETagResponseFilter;
+import io.delimeat.rest.util.jaxrs.ETagRequestFilter;
+import io.delimeat.rest.util.jaxrs.ETagResponseFilter;
 
 import java.io.IOException;
 

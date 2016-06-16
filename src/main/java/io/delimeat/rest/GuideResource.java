@@ -7,7 +7,7 @@ import io.delimeat.core.guide.GuideNotAuthorisedException;
 import io.delimeat.core.guide.GuideNotFoundException;
 import io.delimeat.core.guide.GuideSearchResult;
 import io.delimeat.core.service.GuideService;
-import io.delimeat.util.jaxrs.ETag;
+import io.delimeat.rest.util.jaxrs.ETag;
 
 import java.util.List;
 
