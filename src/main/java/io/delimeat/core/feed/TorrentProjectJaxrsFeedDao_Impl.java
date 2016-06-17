@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 
-import io.delimeat.util.jaxrs.AbstractJaxrsClientHelper;
+import io.delimeat.common.util.jaxrs.client.AbstractJaxrsClientHelper;
 
 public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper implements FeedDao {
 

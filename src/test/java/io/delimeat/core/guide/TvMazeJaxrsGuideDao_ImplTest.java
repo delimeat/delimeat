@@ -2,8 +2,8 @@ package io.delimeat.core.guide;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
-import io.delimeat.util.jaxrs.JaxbContextResolver;
+import io.delimeat.common.util.jaxrs.CustomMOXyJsonProvider;
+import io.delimeat.common.util.jaxrs.JaxbContextResolver;
 
 import java.io.IOException;
 import java.net.URI;

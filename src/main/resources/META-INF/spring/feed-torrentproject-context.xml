@@ -19,9 +19,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     </constructor-arg>
     <constructor-arg type="java.lang.ClassLoader" >
     	<null />
-    	<!-- 
-      <bean class="java.lang.ClassLoader" factory-method="getSystemClassLoader"/>
-      !-->
     </constructor-arg>
     <constructor-arg type="boolean" value="true"/>
     <constructor-arg index="3">
@@ -32,7 +29,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     </constructor-arg>
   </bean>
 
-	<bean id="torrentProjectJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+	<bean id="torrentProjectJerseyClientFactoryId" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
      	<!--
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
 		!-->
@@ -43,15 +40,15 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 		<property name="providerClasses">
 			<list>
-				<value>io.delimeat.util.jaxrs.ReplaceContentTypeResponseFilter</value>
+				<value>io.delimeat.common.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="torrentProjectJaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
 
 	<bean id="torrentProjectGuideDaoId" class="io.delimeat.core.feed.TorrentProjectJaxrsFeedDao_Impl">
-		<property name="client" ref="torrentProjectJaxrsClientId" />
+		<property name="client">
+			<bean class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
+     	</property>
 		<property name="mediaType" value="APPLICATION_XML_TYPE" />
 		<property name="baseUri" value="${io.delimeat.core.feed.torrentproject.baseUri}"/>
 	</bean>    

@@ -36,11 +36,11 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 			</map>
 		</property>
 	</bean>
-    
-	<bean id="tvmazeJaxbContextId" class="javax.xml.bind.JAXBContext" factory-bean="tvmazeGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
-	
-	<bean id="tvmazeJaxbContextResolverId" class="io.delimeat.util.jaxrs.JaxbContextResolver">
-		<property name="context" ref="tvmazeJaxbContextId"/>
+    	
+	<bean id="tvmazeJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
+		<property name="context">
+			<bean  class="javax.xml.bind.JAXBContext" factory-bean="tvmazeGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
+     	</property>
 		<property name="classes">
 			<list>
 				<value>io.delimeat.core.guide.GuideSearchResult</value>
@@ -50,10 +50,8 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 			</list>		
 		</property>
 	</bean>
-	
-   <bean id="tvmazeJsonProviderId" class="io.delimeat.util.jaxrs.CustomMOXyJsonProvider"/>
-  
-	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.util.jaxrs.JerseyClientFactory">
+	  
+	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
      	<!--
 		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
 		!-->
@@ -64,7 +62,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 		<property name="providerClasses">
 			<list>
-				<value>io.delimeat.util.jaxrs.CustomMOXyJsonProvider</value>
+				<value>io.delimeat.common.util.jaxrs.CustomMOXyJsonProvider</value>
 			</list>
 		</property>
 		<property name="properties">
@@ -76,10 +74,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 	
-	<bean id="tvmazeJaxrsClientId" class="javax.ws.rs.client.Client" factory-bean="tvmazeJerseyClientFactoryId" factory-method="newClient"/>
-
 	<bean id="tvmazeGuideDaoId" class="io.delimeat.core.guide.TvMazeJaxrsGuideDao_Impl">
-		<property name="client" ref="tvmazeJaxrsClientId" />
+		<property name="client">
+     		<bean class="javax.ws.rs.client.Client" factory-bean="tvmazeJerseyClientFactoryId" factory-method="newClient"/>
+     	</property>
 		<property name="mediaType" value="APPLICATION_JSON_TYPE" />
 		<property name="baseUri" value="${io.delimeat.core.guide.tvmaze.baseUri}"/>
 	</bean>

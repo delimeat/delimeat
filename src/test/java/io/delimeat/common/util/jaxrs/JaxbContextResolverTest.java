@@ -1,4 +1,4 @@
-package io.delimeat.util.jaxrs;
+package io.delimeat.common.util.jaxrs;
 
 import static org.mockito.Mockito.mock;
 
