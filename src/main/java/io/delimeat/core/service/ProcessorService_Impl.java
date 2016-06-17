@@ -12,7 +12,7 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.util.ArrayList;
 import java.util.Date;

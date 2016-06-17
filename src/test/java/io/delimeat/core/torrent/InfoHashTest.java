@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 public class InfoHashTest {
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.delimeat.core.guide.AiringDay;
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

@@ -1,6 +1,6 @@
 package io.delimeat.core.torrent;
 
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 import java.io.ByteArrayInputStream;

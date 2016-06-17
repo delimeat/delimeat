@@ -1,4 +1,4 @@
-package io.delimeat.util;
+package io.delimeat.common.util;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package io.delimeat.rest.util.jaxrs;
 
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.io.IOException;
 

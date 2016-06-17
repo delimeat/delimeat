@@ -5,7 +5,7 @@ import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.ValidationException;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.util.Iterator;
 import java.util.List;

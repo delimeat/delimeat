@@ -1,6 +1,6 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.util.Arrays;
 import java.util.List;

@@ -10,7 +10,7 @@ import io.delimeat.core.torrent.InfoHash;
 import io.delimeat.core.torrent.ScrapeResult;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package io.delimeat.util;
+package io.delimeat.common.util;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

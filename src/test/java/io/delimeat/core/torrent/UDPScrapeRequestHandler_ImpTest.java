@@ -1,6 +1,6 @@
 package io.delimeat.core.torrent;
 
-import io.delimeat.util.DelimeatUtils;
+import io.delimeat.common.util.DelimeatUtils;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
