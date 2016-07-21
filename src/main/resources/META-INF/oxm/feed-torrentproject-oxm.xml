@@ -9,7 +9,9 @@
 		<java-type name="FeedResult">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="torrentURL" xml-path="enclosure/@url/text()" />
+				<xml-element java-attribute="torrentURL" xml-path="enclosure/@url/text()" >
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.TorrentProjectTorrentUrlAdapter" />
+				</xml-element>
 				<xml-element java-attribute="title" name="title"/>
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>
 			</java-attributes>
