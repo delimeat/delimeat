@@ -1,7 +1,6 @@
 package io.delimeat.core.guide;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
 import io.delimeat.common.util.jaxrs.CustomMOXyJsonProvider;
 import io.delimeat.common.util.jaxrs.JaxbContextResolver;
 
@@ -25,7 +24,7 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -185,8 +184,8 @@ public class TvMazeJaxrsGuideDao_ImplTest {
      	ClientConfig configuration = new ClientConfig();
      	configuration.register(resolver);
      	configuration.register(CustomMOXyJsonProvider.class);
-     	Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
-     	configuration.register(new LoggingFilter(LOGGER, true));
+     	Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
+     	configuration.register(new LoggingFeature(LOGGER));
      	configuration.property("jersey.config.disableMoxyJson", "true");
      	client  = JerseyClientBuilder.createClient(configuration);   
    }

@@ -6,10 +6,10 @@ xmlns:aop="http://www.springframework.org/schema/aop"
 xmlns:tx="http://www.springframework.org/schema/tx"
 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context.xsd">
-		
-	<bean id="torrentProjectGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="extraTorrentGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
 		<property name="lazyInit" value="true" />
 		<property name="classesToBeBound">
 			<list>
@@ -20,7 +20,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		<property name="jaxbContextProperties">
 			<map>
 				<entry key="eclipselink.oxm.metadata-source">
-					<value type="java.io.InputStream">classpath://META-INF/oxm/feed-torrentproject-oxm.xml</value>
+					<value type="java.io.InputStream">classpath://META-INF/oxm/feed-extratorrent-oxm.xml</value>
 				</entry>
 				<entry key="eclipselink.media-type">
 					<value>application/xml</value>
@@ -29,9 +29,9 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
     
-	<bean id="torrentProjectJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
+	<bean id="extraTorrentJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
 		<property name="context">
-     		<bean class="javax.xml.bind.JAXBContext" factory-bean="torrentProjectGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
+     		<bean class="javax.xml.bind.JAXBContext" factory-bean="extraTorrentGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
      	</property>
 		<property name="classes">
 			<list>
@@ -41,13 +41,11 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 
-	<bean id="torrentProjectJerseyClientFactoryId" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
-     	<!--
-		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
-		!-->
-     <property name="providers">
+	<bean id="extraTorrentJerseyClientFactoryId"
+		class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
+		<property name="providers">
 			<list>
-				<ref bean="torrentProjectJaxbContextResolverId"/>
+				<ref bean="extraTorrentJaxbContextResolverId" />
 			</list>
 		</property>
 		<property name="providerClasses">
@@ -57,12 +55,12 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 
-	<bean id="torrentProjectGuideDaoId" class="io.delimeat.core.feed.TorrentProjectJaxrsFeedDao_Impl">
+	<bean id="extraTorrentGuideDaoId" class="io.delimeat.core.feed.ExtraTorrentJaxrsFeedDao_Impl">
 		<property name="client">
-			<bean class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
-     	</property>
+			<bean class="javax.ws.rs.client.Client" factory-bean="extraTorrentJerseyClientFactoryId" factory-method="newClient" />
+		</property>
 		<property name="mediaType" value="APPLICATION_XML_TYPE" />
-		<property name="baseUri" value="${io.delimeat.core.feed.torrentproject.baseUri}"/>
+		<property name="baseUri" value="${io.delimeat.core.feed.extratorrent.baseUri}" />
 	</bean>    
     
 </beans>

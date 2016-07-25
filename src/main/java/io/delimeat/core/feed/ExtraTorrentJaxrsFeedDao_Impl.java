@@ -9,15 +9,16 @@ import javax.ws.rs.WebApplicationException;
 
 import io.delimeat.common.util.jaxrs.client.AbstractJaxrsClientHelper;
 
-public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper implements FeedDao {
+public class ExtraTorrentJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper
+		implements FeedDao {
 
-    @Override
-    public FeedSource getFeedSource() {
-        return FeedSource.TORRENTPROJECT;
-    }
+	@Override
+	public FeedSource getFeedSource() {
+		return FeedSource.EXTRATORRENT;
+	}
 
-    @Override
-    public List<FeedResult> read(String title) throws FeedException {
+	@Override
+	public List<FeedResult> read(String title) throws FeedException {
         final String encodedTitle;
         try {
             encodedTitle = URLEncoder.encode(title, getEncoding());
@@ -26,8 +27,8 @@ public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper i
         }
       
         try {
-            return getTarget().queryParam("s", encodedTitle)
-            					.queryParam("out", "rss")
+            return getTarget().queryParam("type", "search")
+            					.queryParam("search", encodedTitle)
               					.request(getMediaType())
               					.get(FeedSearch.class)
               					.getResults();
@@ -37,7 +38,6 @@ public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper i
         } catch (ProcessingException ex) {
             throw new FeedException(ex);        	
         }
-    }
-
+	}
 
 }

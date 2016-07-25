@@ -14,4 +14,14 @@ public class FeedSourceTest {
   	public void torrentProjectTest(){
      	Assert.assertEquals(1, FeedSource.TORRENTPROJECT.getValue());
    }  
+    
+  	@Test
+  	public void limeTorrentsTest(){
+     	Assert.assertEquals(2, FeedSource.LIMETORRENTS.getValue());
+   } 
+    
+  	@Test
+  	public void extraTorrentTest(){
+     	Assert.assertEquals(3, FeedSource.EXTRATORRENT.getValue());
+   } 
 }

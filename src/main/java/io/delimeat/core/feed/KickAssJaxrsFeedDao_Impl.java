@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 
 public class KickAssJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper implements FeedDao {
@@ -32,6 +33,8 @@ public class KickAssJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper implemen
           
         } catch (WebApplicationException ex) {
             throw new FeedException(ex);
+        } catch (ProcessingException ex) {
+            throw new FeedException(ex);        	
         }
 	}
 }

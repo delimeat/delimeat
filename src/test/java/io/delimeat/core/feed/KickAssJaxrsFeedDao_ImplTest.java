@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,11 +73,11 @@ public class KickAssJaxrsFeedDao_ImplTest {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,Arrays.asList(METADATA));
       MoxyXmlFeature feature = new MoxyXmlFeature(properties, classLoader, true, FeedResult.class, FeedSearch.class);
-		Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+		Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
 
 		ClientConfig configuration = new ClientConfig()
 										.register(feature)
-										.register(new LoggingFilter(LOGGER, true));
+										.register(new LoggingFeature(LOGGER));
 				
 		client = JerseyClientBuilder.createClient(configuration);
 	}

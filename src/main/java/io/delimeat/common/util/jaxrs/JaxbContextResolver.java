@@ -20,11 +20,7 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 
 	@Override
 	public JAXBContext getContext(Class<?> type) {
-		System.out.println("JaxbContextResolver " + type);
 		return context;
-		/*
-		 * if(classes.contains(type)){ return context; } return null;
-		 */
 	}
 
 	/**

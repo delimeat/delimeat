@@ -1,8 +1,9 @@
 package io.delimeat.core.feed;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -26,8 +27,10 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class TorrentProjectJaxrsFeedDao_ImplTest {
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+public class ExtraTorrentJaxrsFeedDao_ImplTest {
+	
 	private class ItemEntityGenerator {
 
 		private StringBuffer xml;
@@ -37,10 +40,12 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
         	xml.append("<?xml version='1.0' encoding='UTF-8'?>");
 			xml.append("<rss><channel>");
 		}
-     	public void addItem(String title, String torrentUrl, long length){
+     	public void addItem(String title, String torrentUrl, long length,long seeders, long leechers){
 			xml.append("<item>");
         	xml.append("<title><![CDATA["+title+"]]></title>");
 			xml.append("<enclosure url='"+torrentUrl+"' length='"+length+"' type='application/x-bittorrent' />");
+        	xml.append("<seeders>"+ seeders + "</seeders>");
+        	xml.append("<leechers>" + leechers + "</leechers>");			
 			xml.append("</item>");        
 
       }
@@ -51,22 +56,22 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
 
 	}
   
-	private static final String METADATA = "META-INF/oxm/feed-torrentproject-oxm.xml";
+	private static final String METADATA = "META-INF/oxm/feed-extratorrent-oxm.xml";
 	
   	private static Client client;
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private TorrentProjectJaxrsFeedDao_Impl dao;
+	private ExtraTorrentJaxrsFeedDao_Impl dao;
 	
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,Arrays.asList(METADATA));
-      MoxyXmlFeature feature = new MoxyXmlFeature(properties, classLoader, true, FeedResult.class, FeedSearch.class);
+		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
+		MoxyXmlFeature feature = new MoxyXmlFeature(properties, classLoader, true, FeedResult.class, FeedSearch.class);
 		Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
 
 		ClientConfig configuration = new ClientConfig()
@@ -78,9 +83,8 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
   
 	@Before
 	public void setUp() {
-		dao = new TorrentProjectJaxrsFeedDao_Impl();
+		dao = new ExtraTorrentJaxrsFeedDao_Impl();
 	}
-	
 
 	@Test
 	public void encodingTest() {
@@ -106,15 +110,15 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.TORRENTPROJECT, dao.getFeedSource());
+		Assert.assertEquals(FeedSource.EXTRATORRENT, dao.getFeedSource());
 	}
   
 	@Test
 	public void readTest() throws Exception{
 		ItemEntityGenerator response = new ItemEntityGenerator();
-     	response.addItem("title", "torrentUrl", Long.MAX_VALUE);
+     	response.addItem("title", "torrentUrl", Long.MAX_VALUE, 1, 1000);
      
-		stubFor(get(urlEqualTo("/?s=title&out=rss"))
+		stubFor(get(urlEqualTo("/?type=search&search=title"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type", "application/xml")
@@ -131,6 +135,8 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals(1, results.get(0).getSeeders());
+     	Assert.assertEquals(1000, results.get(0).getLeechers());
 
 	}
 
@@ -144,7 +150,7 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
 	@Test
 	public void readExceptionTest() throws Exception {
 
-		stubFor(get(urlEqualTo("/?s=title&out=rss"))
+		stubFor(get(urlEqualTo("/?type=search&search=title"))
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/xml")));
@@ -161,5 +167,4 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
 		}
 		Assert.fail();
 	}
-
 }

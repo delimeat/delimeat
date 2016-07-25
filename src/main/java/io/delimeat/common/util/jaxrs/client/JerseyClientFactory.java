@@ -11,11 +11,11 @@ import javax.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 
 public class JerseyClientFactory {
 
-	private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
 
 	private ConnectorProvider connectorProvider;
 	private List<Object> providers = new ArrayList<Object>();
@@ -97,8 +97,7 @@ public class JerseyClientFactory {
 			configuration.property(key, properties.get(key));
 		}
 
-		LoggingFilter loggingFilter = new LoggingFilter(LOGGER, true);
-		configuration.register(loggingFilter);
+		configuration.register(new LoggingFeature(LOGGER));
 
 		if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);

@@ -27,13 +27,13 @@ import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 @ApplicationPath("api")
 public class JaxrsApplication extends ResourceConfig {
 
-	private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
 
 	public JaxrsApplication(){
 		register(ShowResource.class);
@@ -46,7 +46,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(WebApplicationExceptionMapper.class);
 		register(GenericExceptionMapper.class);
      
-		register(new LoggingFilter(LOGGER, true));
+		register(new LoggingFeature(LOGGER));
 
      	register(getJaxbContextResolver());
 	}
