@@ -74,6 +74,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     		    <ref bean="extraTorrentGuideDaoId"/>
             	<ref bean="torrentProjectGuideDaoId"/>
             	<ref bean="limeTorrentsGuideDaoId"/>
+            	<ref bean="bitSnoopGuideDaoId"/>
             	<!--
     		 	<ref bean="katGuideDaoId"/>
     		 	!-->

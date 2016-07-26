@@ -14,5 +14,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	<import resource="feed-torrentproject-context.xml" />
 	<import resource="feed-extratorrent-context.xml" />
 	<import resource="feed-limetorrents-context.xml" />
+	<import resource="feed-bitsnoop-context.xml" />
 
 </beans>
