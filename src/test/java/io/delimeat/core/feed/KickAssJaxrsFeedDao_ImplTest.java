@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
@@ -77,7 +78,9 @@ public class KickAssJaxrsFeedDao_ImplTest {
 
 		ClientConfig configuration = new ClientConfig()
 										.register(feature)
-										.register(new LoggingFeature(LOGGER));
+										.register(new LoggingFeature(LOGGER))
+        								.property(ClientProperties.CONNECT_TIMEOUT, 1000)
+    									.property(ClientProperties.READ_TIMEOUT,    1000);
 				
 		client = JerseyClientBuilder.createClient(configuration);
 	}
@@ -87,71 +90,6 @@ public class KickAssJaxrsFeedDao_ImplTest {
 		dao = new KickAssJaxrsFeedDao_Impl();
 	}
 	
-  	/*
-	private Client prepareClient(InputStream[] inputs, Integer[] responseCodes) throws IOException, JAXBException {
-
-		ClientConfig clientConfig = new ClientConfig();
-
-		HttpURLConnection mockedUrlConnection = Mockito.mock(HttpURLConnection.class);
-		// register each input stream to return
-		OngoingStubbing<InputStream> inputStub = null;
-		for (InputStream input : inputs) {
-			if (inputStub == null) {
-				inputStub = Mockito.when(mockedUrlConnection.getInputStream());
-			}
-			inputStub = inputStub.thenReturn(input);
-		}
-     
-		OngoingStubbing<InputStream> errorStub = null;
-		for (InputStream input : inputs) {
-			if (errorStub == null) {
-				errorStub = Mockito.when(mockedUrlConnection.getErrorStream());
-			}
-			errorStub = errorStub.thenReturn(input);
-		}   
-     
-		Mockito.when(mockedUrlConnection.getURL()).thenReturn(new URL("http://test.com"));
-
-		// register each response code to return
-		OngoingStubbing<Integer> responseCodeStub = null;
-		for (Integer responseCode : responseCodes) {
-			if (responseCodeStub == null) {
-				responseCodeStub = Mockito.when(mockedUrlConnection.getResponseCode());
-			}
-			responseCodeStub = responseCodeStub.thenReturn(responseCode);
-		}
-
-		// register the header values to return
-		HashMap<String, List<String>> headers = new HashMap<String, List<String>>();
-		headers.put("Content-Type", Arrays.asList(new String[] { "application/json" }));
-		Mockito.when(mockedUrlConnection.getHeaderFields()).thenReturn(headers);
-		ConnectionFactory mockedConnectionFactory = Mockito.mock(ConnectionFactory.class);
-		Mockito.when(mockedConnectionFactory.getConnection(Mockito.any(URL.class))).thenReturn(mockedUrlConnection);
-
-		HttpUrlConnectorProvider connectorProvider = new HttpUrlConnectorProvider();
-		connectorProvider.connectionFactory(mockedConnectionFactory);
-		clientConfig.connectorProvider(connectorProvider);
-
-		// add logging of the client
-		Logger logger = Logger.getLogger(this.getClass().getName());
-		clientConfig.register(new LoggingFilter(logger, true));
-
-		// register the context provider to use mapping
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, METADATA);
-		JAXBContext jc = JAXBContext.newInstance(new Class[] { FeedResult.class, FeedSearch.class },
-				properties);
-
-		JaxbContextResolver resolver = new JaxbContextResolver();
-		resolver.setContext(jc);
-		resolver.getClasses().add(FeedResult.class);
-		resolver.getClasses().add(FeedSearch.class);
-		clientConfig.register(resolver);
-
-		return ClientBuilder.newClient(clientConfig);
-	}
-   */
-
 	@Test
 	public void encodingTest() {
 		Assert.assertEquals("UTF-8",dao.getEncoding());
@@ -214,12 +152,29 @@ public class KickAssJaxrsFeedDao_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readExceptionTest() throws Exception {
+	public void readWebAppExceptionTest() throws Exception {
 
 		stubFor(get(urlEqualTo("/?q=title+category%3Atv"))
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
+
+		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
+		dao.setBaseUri(new URI("http://localhost:8089"));
+		dao.setClient(client);
+
+		dao.read("title");
+		Assert.fail();
+	}
+  
+	@Test(expected=FeedException.class)
+	public void readProcessingExceptionTest() throws Exception {
+
+		stubFor(get(urlEqualTo("/?q=title+category%3Atv"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type","application/json")
+                     .withFixedDelay(2000)));
 
 		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));

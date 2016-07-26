@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
@@ -75,7 +75,9 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 
 		ClientConfig configuration = new ClientConfig()
 										.register(feature)
-										.register(new LoggingFeature(LOGGER));
+										.register(new LoggingFeature(LOGGER))
+        								.property(ClientProperties.CONNECT_TIMEOUT, 1000)
+    									.property(ClientProperties.READ_TIMEOUT,    1000);
 				
 		client = JerseyClientBuilder.createClient(configuration);
 	}
@@ -148,8 +150,8 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 		dao.read("TITLE");
 	}
   
-	@Test
-	public void readExceptionTest() throws Exception {
+	@Test(expected=FeedException.class)
+	public void readWebAppExceptionTest() throws Exception {
 
 		stubFor(get(urlEqualTo("/title/"))
 				.willReturn(aResponse()
@@ -160,12 +162,24 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 		dao.setBaseUri(new URI("http://localhost:8089"));
 		dao.setClient(client);
 
-		try {
-			dao.read("title");
-		} catch (FeedException ex) {
-			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
-			return;
-		}
+		dao.read("title");
+		Assert.fail();
+	}
+  
+	@Test(expected=FeedException.class)
+	public void readProcessingExceptionTest() throws Exception {
+
+		stubFor(get(urlEqualTo("/title/"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type","application/xml")
+                     .withFixedDelay(2000)));
+
+		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
+		dao.setBaseUri(new URI("http://localhost:8089"));
+		dao.setClient(client);
+
+		dao.read("title");
 		Assert.fail();
 	}
 
