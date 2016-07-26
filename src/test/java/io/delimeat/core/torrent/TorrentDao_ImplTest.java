@@ -284,6 +284,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
+     	Mockito.when(mockedConnection.getContentType()).thenReturn("application/x-bittorrent");
 		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream("X".getBytes()));
 		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
 		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream("X".getBytes()));
