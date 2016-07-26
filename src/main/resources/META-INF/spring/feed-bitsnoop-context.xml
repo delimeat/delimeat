@@ -60,7 +60,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<bean class="javax.ws.rs.client.Client" factory-bean="bitSnoopJerseyClientFactoryId" factory-method="newClient" />
 		</property>
 		<property name="mediaType" value="APPLICATION_XML_TYPE" />
-		<property name="baseUri" value="${io.delimeat.core.feed.extratorrent.baseUri}" />
+		<property name="baseUri" value="${io.delimeat.core.feed.bitsnoop.baseUri}" />
 	</bean>    
     
 </beans>
