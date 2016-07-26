@@ -69,6 +69,10 @@ public class TorrentDao_Impl implements TorrentDao {
      }else if(responseCode != HttpURLConnection.HTTP_OK){
        throw new TorrentException(String.format("Receieved response %s  from %s",responseCode, uri.toURL()));
      }
+     final String contentType = conn.getContentType();
+     if("application/x-bittorrent".equalsIgnoreCase(contentType) == false){
+       throw new TorrentException(String.format("Receieved content type \"%s\"  from %s, expected \"application/x-bittorrent\"",contentType, uri.toURL()));       
+     }
      
      try(InputStream input = getUrlHandler().openInput(conn)){
        final byte[] bytes = ByteStreams.toByteArray(input);
