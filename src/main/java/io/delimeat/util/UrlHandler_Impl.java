@@ -1,5 +1,8 @@
 package io.delimeat.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,9 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 public class UrlHandler_Impl implements UrlHandler {
 
+  	private static final Logger LOGGER = LoggerFactory.getLogger(UrlHandler_Impl.class);
 	public static final String DEFAULT_USER_AGENT = "delimeat.io " + System.getProperty("os.name");
 	private int timeout;
 
@@ -112,15 +117,17 @@ public class UrlHandler_Impl implements UrlHandler {
 	@Override  
   	public InputStream openInput(URLConnection connection) throws IOException{
      final String encoding = connection.getContentEncoding();
-     final InputStream input;
      if("gzip".equalsIgnoreCase(encoding) == true){
-       input = new GZIPInputStream(connection.getInputStream());
+       try{
+         return new GZIPInputStream(connection.getInputStream());
+       }catch(ZipException ex){
+         //do nothing, the raw input stream will be returned
+         LOGGER.warn(String.format("Input stream for %s said it was gzip'd but it wasnt",connection.getURL()), ex);
+       }
      }else if("deflate".equalsIgnoreCase(encoding) == true){
-       input = new InflaterInputStream(connection.getInputStream());
-     }else{
-       input = connection.getInputStream();
-     }
-     return input;
+       return new InflaterInputStream(connection.getInputStream());
+     } 
+     return connection.getInputStream();
    }
 
 }

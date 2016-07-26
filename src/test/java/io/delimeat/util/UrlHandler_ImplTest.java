@@ -417,4 +417,15 @@ public class UrlHandler_ImplTest {
      file.delete();
      file.getParentFile().delete();
    }
+  
+	@Test
+  	public void openInputUrlConnectionInvalidGzip() throws IOException{
+   	URLConnection connection = Mockito.mock(URLConnection.class);
+     	Mockito.when(connection.getContentEncoding()).thenReturn("gzip");
+     	InputStream input = Mockito.mock(InputStream.class);
+     	Mockito.when(connection.getInputStream()).thenReturn(input);
+     
+     	InputStream returnedInput = handler.openInput(connection);
+     	Assert.assertEquals(input, returnedInput); 
+   }
 }
