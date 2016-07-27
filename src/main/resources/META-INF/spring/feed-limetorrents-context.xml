@@ -12,7 +12,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       <constructor-arg index="0">
         <map merge="true">
           <entry key="eclipselink.oxm.metadata-source">
-            <value>classpath://META-INF/oxm/feed-limetorrents-oxm.xml</value>
+            <value>META-INF/oxm/feed-limetorrents-oxm.xml</value>
           </entry>
         </map>
       </constructor-arg>

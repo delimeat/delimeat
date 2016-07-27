@@ -13,7 +13,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       <constructor-arg index="0">
         <map merge="true">
           <entry key="eclipselink.oxm.metadata-source">
-            <value>classpath://META-INF/oxm/feed-torrentproject-oxm.xml</value>
+            <value>META-INF/oxm/feed-torrentproject-oxm.xml</value>
           </entry>
         </map>
       </constructor-arg>

@@ -13,7 +13,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       <constructor-arg index="0">
         <map merge="true">
           <entry key="eclipselink.oxm.metadata-source">
-            <value>classpath://META-INF/oxm/feed-kat-oxm.xml</value>
+            <value>META-INF/oxm/feed-kat-oxm.xml</value>
           </entry>
           <entry key="eclipselink.media-type">
             <value>application/json</value>
