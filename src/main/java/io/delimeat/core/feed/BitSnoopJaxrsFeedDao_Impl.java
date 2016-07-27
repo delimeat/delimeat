@@ -35,10 +35,8 @@ public class BitSnoopJaxrsFeedDao_Impl extends AbstractJaxrsClientHelper
               					.get(FeedSearch.class)
               					.getResults();
 
-        } catch (WebApplicationException ex) {
+        } catch (WebApplicationException | ProcessingException ex) {
             throw new FeedException(ex);
-        } catch (ProcessingException ex) {
-            throw new FeedException(ex);        	
         }
 	}
 

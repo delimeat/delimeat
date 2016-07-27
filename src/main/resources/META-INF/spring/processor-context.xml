@@ -75,6 +75,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
             	<ref bean="torrentProjectGuideDaoId"/>
             	<ref bean="limeTorrentsGuideDaoId"/>
             	<ref bean="bitSnoopGuideDaoId"/>
+            	<ref bean="torrentDownloadsGuideDaoId"/>
             	<!--
     		 	<ref bean="katGuideDaoId"/>
     		 	!-->
@@ -96,7 +97,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	    <list>
 				<ref bean="feedResultTitleValidatorId"/>
 				<ref bean="feedResultSeasonValidatorId"/>
-            <ref bean="feedResultExcludedKeywordValidatorId"/>
+            	<ref bean="feedResultExcludedKeywordValidatorId"/>
             </list>
         </property>
     </bean>
@@ -106,7 +107,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	    <list>
 				<ref bean="feedResultTitleValidatorId"/>
 				<ref bean="feedResultDailyValidatorId"/>
-            <ref bean="feedResultExcludedKeywordValidatorId"/>
+            	<ref bean="feedResultExcludedKeywordValidatorId"/>
             </list>
         </property>
     </bean>

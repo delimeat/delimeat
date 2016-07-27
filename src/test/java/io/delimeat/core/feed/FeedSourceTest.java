@@ -29,4 +29,9 @@ public class FeedSourceTest {
 	public void bitSnoopTest() {
 		Assert.assertEquals(4, FeedSource.BITSNOOP.getValue());
 	}
+
+	@Test
+	public void torrentDownloadsTest() {
+		Assert.assertEquals(5, FeedSource.TORRENTDOWNLOADS.getValue());
+	}
 }
