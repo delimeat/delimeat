@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -171,16 +170,14 @@ public class TvMazeJaxrsGuideDao_ImplTest {
   	@BeforeClass 
   	public static void setUpClass() throws Exception{
      	JaxbContextResolver resolver = new JaxbContextResolver();
-     	resolver.getClasses().add(GuideSearchResult.class);
-     	resolver.getClasses().add(GuideEpisode.class);
-     	resolver.getClasses().add(GuideInfo.class);
+     	resolver.setClasses(GuideSearchResult.class,GuideEpisode.class,GuideInfo.class);
+
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
      	properties.put(JAXBContextProperties.MEDIA_TYPE,"application/json");
      	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
      	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-     	JAXBContext context = JAXBContext.newInstance(new Class[]{GuideSearchResult.class, GuideEpisode.class,GuideInfo.class}, properties);
-     	resolver.setContext(context);
+     	resolver.setProperties(properties);
      	ClientConfig configuration = new ClientConfig();
      	configuration.register(resolver);
      	configuration.register(CustomMOXyJsonProvider.class);

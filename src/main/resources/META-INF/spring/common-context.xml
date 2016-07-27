@@ -24,11 +24,5 @@
 	<bean id="urlHandlerId"	class="io.delimeat.util.UrlHandler_Impl">
 		<property name="timeout" value="${io.delimeat.core.util.urlhandler.timeout}" />
 	</bean>
-	
-	<bean id="urlHandlerConnectionFactoryId" class="io.delimeat.common.util.jaxrs.client.UrlHandlerConnectionFactory">
-		<property name="urlHandler" ref="urlHandlerId"/>
-	</bean>
-	
-	<bean id="jerseyHttpUrlConnectorProviderId" class="org.glassfish.jersey.client.HttpUrlConnectorProvider" factory-bean="urlHandlerConnectionFactoryId" factory-method="createConnectionFactory"/>
 
 </beans>

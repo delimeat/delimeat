@@ -16,7 +16,6 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -192,20 +191,15 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		JaxbContextResolver resolver = new JaxbContextResolver();
-		resolver.getClasses().add(GuideSearchResult.class);
-		resolver.getClasses().add(GuideEpisode.class);
-		resolver.getClasses().add(GuideInfo.class);
+     	JaxbContextResolver resolver = new JaxbContextResolver();
+     	resolver.setClasses(GuideSearchResult.class,GuideEpisode.class,GuideInfo.class);
+
 		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,Arrays.asList(METADATA));
-		properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
-		properties.put(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-		properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		JAXBContext context = JAXBContext.newInstance(new Class[] {
-				TvdbApiKey.class, TvdbToken.class, GuideError.class,
-				GuideSearchResult.class, GuideInfo.class, TvdbEpisodes.class,
-				GuideEpisode.class }, properties);
-		resolver.setContext(context);
+		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
+     	properties.put(JAXBContextProperties.MEDIA_TYPE,"application/json");
+     	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
+     	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+     	resolver.setProperties(properties);
 		ClientConfig configuration = new ClientConfig();
 		configuration.register(resolver);
 		configuration.register(CustomMOXyJsonProvider.class);
