@@ -28,6 +28,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </bean>
 
     <bean id="bitSnoopGuideDaoId" class="io.delimeat.core.feed.BitSnoopJaxrsFeedDao_Impl">
+       <property name="feedSource" value="BITSNOOP" />
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="bitSnoopJerseyClientFactoryId" factory-method="newClient" />
       </property>

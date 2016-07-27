@@ -108,6 +108,8 @@ public class TorrentProjectJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
+		Assert.assertNull(dao.getFeedSource());
+		dao.setFeedSource(FeedSource.TORRENTPROJECT);
 		Assert.assertEquals(FeedSource.TORRENTPROJECT, dao.getFeedSource());
 	}
   

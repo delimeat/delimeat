@@ -111,6 +111,8 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
+		Assert.assertNull(dao.getFeedSource());
+		dao.setFeedSource(FeedSource.LIMETORRENTS);
 		Assert.assertEquals(FeedSource.LIMETORRENTS, dao.getFeedSource());
 	}
   

@@ -28,6 +28,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </bean>
 
     <bean id="extraTorrentGuideDaoId" class="io.delimeat.core.feed.ExtraTorrentJaxrsFeedDao_Impl">
+      <property name="feedSource" value="EXTRATORRENT" />
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="extraTorrentJerseyClientFactoryId" factory-method="newClient" />
       </property>

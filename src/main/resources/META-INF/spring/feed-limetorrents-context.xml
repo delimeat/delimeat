@@ -27,6 +27,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </bean>
 
     <bean id="limeTorrentsGuideDaoId" class="io.delimeat.core.feed.LimeTorrentsJaxrsFeedDao_Impl">
+      <property name="feedSource" value="LIMETORRENTS" />
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="limeTorrentsJerseyClientFactoryId" factory-method="newClient" />
       </property>

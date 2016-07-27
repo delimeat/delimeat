@@ -112,6 +112,8 @@ public class ExtraTorrentJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
+		Assert.assertNull(dao.getFeedSource());
+		dao.setFeedSource(FeedSource.EXTRATORRENT);
 		Assert.assertEquals(FeedSource.EXTRATORRENT, dao.getFeedSource());
 	}
   

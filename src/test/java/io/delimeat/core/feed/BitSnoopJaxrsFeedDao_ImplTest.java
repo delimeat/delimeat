@@ -112,6 +112,8 @@ public class BitSnoopJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
+		Assert.assertNull(dao.getFeedSource());
+		dao.setFeedSource(FeedSource.BITSNOOP);
 		Assert.assertEquals(FeedSource.BITSNOOP, dao.getFeedSource());
 	}
   

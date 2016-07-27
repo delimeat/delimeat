@@ -114,6 +114,8 @@ public class KickAssJaxrsFeedDao_ImplTest {
 
 	@Test
 	public void feedSourceTest() throws Exception {
+		Assert.assertNull(dao.getFeedSource());
+		dao.setFeedSource(FeedSource.KAT);
 		Assert.assertEquals(FeedSource.KAT, dao.getFeedSource());
 	}
 

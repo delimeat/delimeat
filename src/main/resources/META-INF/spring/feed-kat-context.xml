@@ -34,6 +34,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     </bean>
   
 	<bean id="katGuideDaoId" class="io.delimeat.core.feed.KickAssJaxrsFeedDao_Impl">
+      <property name="feedSource" value="KAT" />
 		<property name="client">
      		<bean  class="javax.ws.rs.client.Client" factory-bean="katJerseyClientFactoryId" factory-method="newClient"/>
      	</property>
