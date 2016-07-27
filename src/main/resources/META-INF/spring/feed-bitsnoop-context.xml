@@ -9,58 +9,30 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="bitSnoopGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-		<property name="lazyInit" value="true" />
-		<property name="classesToBeBound">
-			<list>
-				<value>io.delimeat.core.feed.FeedResult</value>
-				<value>io.delimeat.core.feed.FeedSearch</value>
-			</list>
-		</property>
-		<property name="jaxbContextProperties">
-			<map>
-				<entry key="eclipselink.oxm.metadata-source">
-					<value type="java.io.InputStream">classpath://META-INF/oxm/feed-bitsnoop-oxm.xml</value>
-				</entry>
-				<entry key="eclipselink.media-type">
-					<value>application/xml</value>
-				</entry>
-			</map>
-		</property>
-	</bean>
-    
-	<bean id="bitSnoopJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
-		<property name="context">
-     		<bean class="javax.xml.bind.JAXBContext" factory-bean="bitSnoopGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
-     	</property>
-		<property name="classes">
-			<list>
-				<value>io.delimeat.core.feed.FeedResult</value>
-				<value>io.delimeat.core.feed.FeedSearch</value>
-			</list>		
-		</property>
-	</bean>
+    <bean id="bitSnoopMoxyXmlFeatureId" parent="abstractFeedMoxyXmlFeature">
+      <constructor-arg index="0">
+        <map merge="true">
+          <entry key="eclipselink.oxm.metadata-source">
+            <value>classpath://META-INF/oxm/feed-bitsnoop-oxm.xml</value>
+          </entry>
+        </map>
+      </constructor-arg>
+    </bean>
 
-	<bean id="bitSnoopJerseyClientFactoryId"
-		class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
-		<property name="providers">
-			<list>
-				<ref bean="bitSnoopJaxbContextResolverId" />
-			</list>
-		</property>
-		<property name="providerClasses">
-			<list>
-				<value>io.delimeat.common.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
-			</list>
-		</property>
-	</bean>
+    <bean id="bitSnoopJerseyClientFactoryId" parent="abstractFeedJerseyClientFactory">
+      <property name="providers">
+        <list merge="true">
+          <ref bean="bitSnoopMoxyXmlFeatureId" />
+        </list>
+      </property>
+    </bean>
 
-	<bean id="bitSnoopGuideDaoId" class="io.delimeat.core.feed.BitSnoopJaxrsFeedDao_Impl">
-		<property name="client">
-			<bean class="javax.ws.rs.client.Client" factory-bean="bitSnoopJerseyClientFactoryId" factory-method="newClient" />
-		</property>
-		<property name="mediaType" value="APPLICATION_XML_TYPE" />
-		<property name="baseUri" value="${io.delimeat.core.feed.bitsnoop.baseUri}" />
-	</bean>    
+    <bean id="bitSnoopGuideDaoId" class="io.delimeat.core.feed.BitSnoopJaxrsFeedDao_Impl">
+      <property name="client">
+        <bean class="javax.ws.rs.client.Client" factory-bean="bitSnoopJerseyClientFactoryId" factory-method="newClient" />
+      </property>
+      <property name="mediaType" value="APPLICATION_XML_TYPE" />
+      <property name="baseUri" value="${io.delimeat.core.feed.bitsnoop.baseUri}" />
+    </bean>    
     
 </beans>

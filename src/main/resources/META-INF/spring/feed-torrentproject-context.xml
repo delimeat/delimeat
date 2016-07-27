@@ -8,61 +8,31 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
-		
-	<bean id="torrentProjectGuideJaxb2MarshallerId" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-		<property name="lazyInit" value="true" />
-		<property name="classesToBeBound">
-			<list>
-				<value>io.delimeat.core.feed.FeedResult</value>
-				<value>io.delimeat.core.feed.FeedSearch</value>
-			</list>
-		</property>
-		<property name="jaxbContextProperties">
-			<map>
-				<entry key="eclipselink.oxm.metadata-source">
-					<value type="java.io.InputStream">classpath://META-INF/oxm/feed-torrentproject-oxm.xml</value>
-				</entry>
-				<entry key="eclipselink.media-type">
-					<value>application/xml</value>
-				</entry>
-			</map>
-		</property>
-	</bean>
-    
-	<bean id="torrentProjectJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
-		<property name="context">
-     		<bean class="javax.xml.bind.JAXBContext" factory-bean="torrentProjectGuideJaxb2MarshallerId" factory-method="getJaxbContext" />
-     	</property>
-		<property name="classes">
-			<list>
-				<value>io.delimeat.core.feed.FeedResult</value>
-				<value>io.delimeat.core.feed.FeedSearch</value>
-			</list>		
-		</property>
-	</bean>
 
-	<bean id="torrentProjectJerseyClientFactoryId" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
-     	<!--
-		<property name="connectorProvider" ref="jerseyHttpUrlConnectorProviderId"/>
-		!-->
-     <property name="providers">
-			<list>
-				<ref bean="torrentProjectJaxbContextResolverId"/>
-			</list>
-		</property>
-		<property name="providerClasses">
-			<list>
-				<value>io.delimeat.common.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
-			</list>
-		</property>
-	</bean>
+    <bean id="torrentProjectMoxyXmlFeatureId" parent="abstractFeedMoxyXmlFeature">
+      <constructor-arg index="0">
+        <map merge="true">
+          <entry key="eclipselink.oxm.metadata-source">
+            <value>classpath://META-INF/oxm/feed-torrentproject-oxm.xml</value>
+          </entry>
+        </map>
+      </constructor-arg>
+    </bean>
 
-	<bean id="torrentProjectGuideDaoId" class="io.delimeat.core.feed.TorrentProjectJaxrsFeedDao_Impl">
-		<property name="client">
-			<bean class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
-     	</property>
-		<property name="mediaType" value="APPLICATION_XML_TYPE" />
-		<property name="baseUri" value="${io.delimeat.core.feed.torrentproject.baseUri}"/>
-	</bean>    
+    <bean id="torrentProjectJerseyClientFactoryId" parent="abstractFeedJerseyClientFactory">
+      <property name="providers">
+        <list merge="true">
+          <ref bean="torrentProjectMoxyXmlFeatureId" />
+        </list>
+      </property>
+    </bean>
+
+    <bean id="torrentProjectGuideDaoId" class="io.delimeat.core.feed.TorrentProjectJaxrsFeedDao_Impl">
+      <property name="client">
+        <bean class="javax.ws.rs.client.Client" factory-bean="torrentProjectJerseyClientFactoryId" factory-method="newClient"/>
+      </property>
+      <property name="mediaType" value="APPLICATION_XML_TYPE" />
+      <property name="baseUri" value="${io.delimeat.core.feed.torrentproject.baseUri}"/>
+    </bean>    
     
 </beans>

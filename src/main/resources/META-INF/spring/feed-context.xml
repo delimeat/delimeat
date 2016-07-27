@@ -8,12 +8,50 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!--
-	<import resource="feed-kat-context.xml" />
-	!-->
-	<import resource="feed-torrentproject-context.xml" />
-	<import resource="feed-extratorrent-context.xml" />
-	<import resource="feed-limetorrents-context.xml" />
-	<import resource="feed-bitsnoop-context.xml" />
+    <bean id="abstractFeedMoxyXmlFeature" class="org.glassfish.jersey.moxy.xml.MoxyXmlFeature" abstract="true">
+      <constructor-arg index="0">
+        <map>
+          <entry key="eclipselink.media-type">
+            <value>application/xml</value>
+          </entry>
+        </map>
+      </constructor-arg>
+      <constructor-arg type="java.lang.ClassLoader" index="1">
+        <null />
+      </constructor-arg>
+      <constructor-arg type="boolean" value="false" index="2"/>
+      <constructor-arg index="3">
+        <list>
+          <value>io.delimeat.core.feed.FeedResult</value>
+          <value>io.delimeat.core.feed.FeedSearch</value>
+        </list>
+      </constructor-arg>  		
+    </bean>
+
+    <bean id="abstractFeedJerseyClientFactory" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory" abstract="true">
+      <property name="providerClasses">
+        <list>
+          <value>io.delimeat.common.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
+        </list>
+      </property>
+      <property name="properties">
+        <map>
+          <entry key="jersey.config.client.connectTimeout">
+            <value>2000</value>
+          </entry>
+          <entry key="jersey.config.client.readTimeout">
+            <value>5000</value>
+          </entry>
+        </map>
+      </property>
+    </bean>
+
+    <!--
+    <import resource="feed-kat-context.xml" />
+    !-->
+    <import resource="feed-torrentproject-context.xml" />
+    <import resource="feed-extratorrent-context.xml" />
+    <import resource="feed-limetorrents-context.xml" />
+    <import resource="feed-bitsnoop-context.xml" />
 
 </beans>
