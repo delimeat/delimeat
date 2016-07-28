@@ -91,24 +91,27 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 				<ref bean="torrentSizeValidatorId"/>
 			</list>
 		</property>
-    </bean>
-    
-    <bean id="seasonFeedProcessorId" parent="abstractFeedProcessorId" scope="prototype">
+		
 		<property name="feedResultValidators">
     	    <list>
 				<ref bean="feedResultTitleValidatorId"/>
-				<ref bean="feedResultSeasonValidatorId"/>
             	<ref bean="feedResultExcludedKeywordValidatorId"/>
+            </list>
+        </property>
+    </bean>
+   
+    <bean id="seasonFeedProcessorId" parent="abstractFeedProcessorId" scope="prototype">
+		<property name="feedResultValidators">
+    	    <list merge="true">
+				<ref bean="feedResultSeasonValidatorId"/>
             </list>
         </property>
     </bean>
     
     <bean id="dailyFeedProcessorId" parent="abstractFeedProcessorId" scope="prototype">
 		<property name="feedResultValidators">
-    	    <list>
-				<ref bean="feedResultTitleValidatorId"/>
+    	    <list merge="true">
 				<ref bean="feedResultDailyValidatorId"/>
-            	<ref bean="feedResultExcludedKeywordValidatorId"/>
             </list>
         </property>
     </bean>
@@ -118,7 +121,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		<property name="guideDao" ref="tvdbGuideDaoId"/>	
     </bean>
   
- 	<bean id="guideProcessorFactoryId" class="io.delimeat.core.processor.GuideProcessorFactory_Impl">					
-	</bean> 
+ 	<bean id="guideProcessorFactoryId" class="io.delimeat.core.processor.GuideProcessorFactory_Impl"/>					
   
 </beans>
