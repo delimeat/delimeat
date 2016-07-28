@@ -34,4 +34,9 @@ public class FeedSourceTest {
 	public void torrentDownloadsTest() {
 		Assert.assertEquals(5, FeedSource.TORRENTDOWNLOADS.getValue());
 	}
+
+	@Test
+	public void zooqleTest() {
+		Assert.assertEquals(6, FeedSource.ZOOQLE.getValue());
+	}
 }
