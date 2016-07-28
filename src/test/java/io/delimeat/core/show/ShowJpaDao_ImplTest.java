@@ -147,9 +147,7 @@ public class ShowJpaDao_ImplTest {
      	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
 		TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
      	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
-     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
-     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
-     	Mockito.when(entityManager.getReference(Episode.class, 2L)).thenReturn(ep);
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodes",Episode.class)).thenReturn(episodesQuery);
 
      	dao.setEm(entityManager);
      
@@ -158,14 +156,12 @@ public class ShowJpaDao_ImplTest {
      	Assert.assertNull(show.getNextEpisode());
      	Assert.assertNull(show.getPreviousEpisode());
      
-     	Mockito.verify(entityManager, Mockito.times(2)).getReference(Show.class,1L);
-     	Mockito.verify(entityManager).createNamedQuery("Show.getAllEpisodes",Episode.class);
+     	Mockito.verify(entityManager).getReference(Show.class,1L);
+     	Mockito.verify(entityManager).createNamedQuery("Show.deleteEpisodes",Episode.class);
      	Mockito.verify(entityManager).remove(show);
-     	Mockito.verify(entityManager).getReference(Episode.class,2L);
-     	Mockito.verify(entityManager).remove(ep);
      	Mockito.verifyNoMoreInteractions(entityManager);
      	Mockito.verify(episodesQuery).setParameter("show", show);
-     	Mockito.verify(episodesQuery).getResultList();
+     	Mockito.verify(episodesQuery).executeUpdate();
      	Mockito.verifyNoMoreInteractions(episodesQuery);
    }
  	@SuppressWarnings("unchecked")
@@ -188,6 +184,7 @@ public class ShowJpaDao_ImplTest {
 		dao.delete(1);
 
    }
+  
  	@SuppressWarnings("unchecked")  
   	@Test(expected=ShowException.class)
   	public void deleteExceptionTest() throws Exception{
@@ -200,8 +197,8 @@ public class ShowJpaDao_ImplTest {
      	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
      	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
      	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
-     	Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
-     	Mockito.when(entityManager.createNamedQuery("Show.getAllEpisodes",Episode.class)).thenReturn(episodesQuery);
+     	//Mockito.when(episodesQuery.getResultList()).thenReturn(Arrays.asList(ep));
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodes",Episode.class)).thenReturn(episodesQuery);
      	Mockito.doThrow(PersistenceException.class).when(entityManager).remove(show);
       dao.setEm(entityManager);
      
@@ -536,4 +533,89 @@ public class ShowJpaDao_ImplTest {
      	dao.readNextEpisode(ep);
    }
 
+ 	@SuppressWarnings("unchecked")
+  	@Test
+  	public void deleteEpisodesTest() throws Exception{
+		Show show = new Show();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+		TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodes",Episode.class)).thenReturn(episodesQuery);
+
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisodes(show);
+     
+     	Mockito.verify(entityManager).createNamedQuery("Show.deleteEpisodes",Episode.class);
+     	Mockito.verify(episodesQuery).setParameter("show", show);
+     	Mockito.verify(episodesQuery).executeUpdate();
+     	Mockito.verifyNoMoreInteractions(episodesQuery,entityManager);
+   }
+  
+ 	@SuppressWarnings("unchecked")
+  	@Test(expected=ShowException.class)
+  	public void deleteEpisodesExceptionTest() throws Exception{
+		Show show = new Show();
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodes",Episode.class)).thenThrow(PersistenceException.class);
+
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisodes(show);
+   }
+  
+ 	@SuppressWarnings("unchecked")
+  	@Test
+  	public void deleteEpisodesAfterTest() throws Exception{
+		Episode ep = new Episode();
+     	ep.setSeasonNum(1);
+     	ep.setEpisodeNum(2);
+     	Show show = new Show();
+     	ep.setShow(show);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	Mockito.when(entityManager.getReference(Show.class, 1L)).thenReturn(show);
+		TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.setParameter("seasonNum", 1)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.setParameter("episodeNum", 2)).thenReturn(episodesQuery);
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodesAfter",Episode.class)).thenReturn(episodesQuery);
+
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisodesAfter(ep);
+     
+     	Mockito.verify(entityManager).createNamedQuery("Show.deleteEpisodesAfter",Episode.class);
+     	Mockito.verify(episodesQuery).setParameter("show", show);
+     	Mockito.verify(episodesQuery).setParameter("seasonNum", 1);
+     	Mockito.verify(episodesQuery).setParameter("episodeNum", 2);
+     	Mockito.verify(episodesQuery).executeUpdate();
+     	Mockito.verifyNoMoreInteractions(episodesQuery,entityManager);
+   }
+  
+ 	@SuppressWarnings("unchecked")
+  	@Test(expected=ShowException.class)
+  	public void deleteEpisodesAfterExceptionTest() throws Exception{
+		Episode ep = new Episode();
+     	ep.setSeasonNum(1);
+     	ep.setEpisodeNum(2);
+     	Show show = new Show();
+     	ep.setShow(show);
+     
+     	EntityManager entityManager = Mockito.mock(EntityManager.class);
+     	TypedQuery<Episode> episodesQuery = Mockito.mock(TypedQuery.class);
+     	Mockito.when(episodesQuery.setParameter("show", show)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.setParameter("seasonNum", 1)).thenReturn(episodesQuery);
+     	Mockito.when(episodesQuery.setParameter("episodeNum", 2)).thenReturn(episodesQuery);
+     	Mockito.when(entityManager.createNamedQuery("Show.deleteEpisodesAfter",Episode.class)).thenThrow(PersistenceException.class);
+
+     	dao.setEm(entityManager);
+     
+		dao.deleteEpisodesAfter(ep);
+   }
 }

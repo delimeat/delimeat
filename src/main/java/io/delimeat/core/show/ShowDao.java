@@ -111,6 +111,24 @@ public interface ShowDao {
 	 */
 	 public void deleteEpisode(long episodeId) throws ShowNotFoundException, ShowException;
   
+  	/**
+	 * Delete all episodes for a show
+	 * 
+	 * @param show
+	 * @throws ShowNotFoundException
+	 * @throws ShowException
+	 */
+	 public void deleteEpisodes(Show show) throws ShowException;
+  
+  	/**
+	 * Delete all episodes after
+	 * 
+	 * @param episode
+	 * @throws ShowNotFoundException
+	 * @throws ShowException
+	 */
+	 public void deleteEpisodesAfter(Episode episode) throws ShowException;
+  
   
 	
 }

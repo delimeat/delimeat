@@ -29,6 +29,10 @@
 		<query><![CDATA[DELETE FROM Episode e WHERE e.show = :show]]></query>
 	</named-query> 	
   
+  	<named-query name="Show.deleteEpisodesAfter">
+		<query><![CDATA[DELETE FROM Episode e WHERE e.show = :show AND e.seasonNum >= :seasonNum AND e.episodeNum > :episodeNum]]></query>
+	</named-query> 
+  
 	<entity class="Episode" name="Episode">
 		<table name="EPISODE" >
       	<unique-constraint>

@@ -53,6 +53,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 				final Show lockedShow = showDao.readAndLock(showId);
 				final String guideId = lockedShow.getGuideId();
 				boolean updated = false;
+           	boolean removeNextEps = false;
 				// episodes to create or update
 				final List<Episode> createOrUpdateEps = new ArrayList<Episode>();
 
@@ -78,8 +79,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 
 						// get the episodes and refresh them
 						final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
-
-						if (active && DelimeatUtils.isNotEmpty(foundGuideEps)) {
+						if (active == true && DelimeatUtils.isNotEmpty(foundGuideEps)) {
 
 							// get the existing episodes
 							final List<Episode> showEps = showDao.readAllEpisodes(showId);
@@ -146,7 +146,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 								}
 								prevGuideEp = guideEp;
 							}
-
+							
 							// if the show has no next episode and we have found
 							// one use that
 							if (lockedShow.getNextEpisode() == null
@@ -168,12 +168,17 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									lockedShow.setNextEpisode(nextEp);
 									updated = true;
 								}
-							}
-
+							}  //if the show as a next episode but the guides doesnt remove the shows future episodes
+                    	else if(prevGuideEp == null && lockedShow.getNextEpisode() != null){
+                        removeNextEps = true;
+                        lockedShow.setNextEpisode(null);
+                      }
 						}
-
+                 	else if(active == true && lockedShow.getNextEpisode() != null){
+                        removeNextEps = true;
+                        lockedShow.setNextEpisode(null);
+                  }
 					}
-
 				}
 				// once everything is done update the show
 				if (active == true) {
@@ -187,6 +192,15 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 						}
 					}
 					showDao.createOrUpdate(lockedShow);
+               
+              	// if there are episodes 
+               if(removeNextEps == true){
+                 	if(show.getPreviousEpisode() != null){
+                    showDao.deleteEpisodesAfter(show.getPreviousEpisode());
+                  }else{
+                    showDao.deleteEpisodes(lockedShow);
+                  }
+               }
 				}
 			} finally {
 				alertListenersComplete();

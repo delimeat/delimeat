@@ -62,10 +62,12 @@ public class ShowJpaDao_Impl implements ShowDao {
 			final Show show = read(showId);
 			show.setNextEpisode(null);
 			show.setPreviousEpisode(null);
-			//em.createNamedQuery("Show.deleteEpisodes").setParameter("show", show).executeUpdate();
+        	deleteEpisodes(show);
+        	/*
 			for(Episode ep: readAllEpisodes(showId)){
 				deleteEpisode(ep.getEpisodeId());
 			}
+         */
 			em.remove(show);
 			
 		} catch (PersistenceException ex){
@@ -172,6 +174,34 @@ public class ShowJpaDao_Impl implements ShowDao {
     		} catch (PersistenceException ex){
 				throw new ShowException(ex);
 			}
+    }
+
+    @Override
+    public void deleteEpisodesAfter(Episode episode) throws ShowException {
+		try{	         
+			em.createNamedQuery("Show.deleteEpisodesAfter",Episode.class)
+          			.setParameter("show", episode.getShow())
+          			.setParameter("seasonNum",episode.getSeasonNum())
+          			.setParameter("episodeNum",episode.getEpisodeNum())
+          			.executeUpdate();
+			
+			} catch (PersistenceException ex){
+				throw new ShowException(ex);
+			}
+        
+    }
+
+    @Override
+    public void deleteEpisodes(Show show) throws ShowException {
+		try{	         
+			em.createNamedQuery("Show.deleteEpisodes",Episode.class)
+          			.setParameter("show", show)
+          			.executeUpdate();
+			
+			} catch (PersistenceException ex){
+				throw new ShowException(ex);
+			}
+        
     }
 
 }
