@@ -1,0 +1,8 @@
+{
+  "name": "delimeat",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.5.8"
+  }
+}
