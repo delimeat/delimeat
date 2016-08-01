@@ -1,0 +1,30 @@
+<div class="row ng-cloak" ng-hide="vm.displayEps">
+	<div class="col-xs-12">
+		<h1>
+			<span ng-bind="vm.info.title"/> <small ng-bind="vm.info.firstAired | date :'yyyy'"/> <small ng-show="!vm.info.airing" translate="guide.info.ended"/>
+		</h1>
+		<div class="well" ng-bind="vm.info.description || ('guide.info.no_description' | translate)"></div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<label translate="episode.next_ep"/> <small translate="episode.more_info"/>
+		<a href="" class="well list-group-item" style="cursor:pointer;"  ng-click="vm.displayEps=!vm.displayEps">
+			<dm-episode episode="vm.show.nextEpisode" airtime="vm.info.airTime" timezone="vm.info.timezone" headingclass="'list-group-item-heading'" textclass="'list-group-item-text'"/>
+		</a>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<label translate="episode.prev_ep"/>
+		<div class="well">
+			<dm-episode episode="vm.show.previousEpisode" airtime="vm.info.airTime" timezone="vm.info.timezone" headingclass="'list-group-item-heading'" textclass="'list-group-item-text'" previous="true"/>
+		</div>
+	</div>
+	
+	<div class="text-center col-xs-12 col-md-12 bottom-btn-group">
+		<hr>
+		<button class="btn btn-primary" ng-click="vm.create()"><span class="glyphicon glyphicon-floppy-disk"/> <span translate="common.save"/></button>
+		<dm-back-btn/>
+	</div>
+</div>
+
+<dm-episodes-list episodes="vm.episodes" next="vm.show.nextEpisode" previous="vm.show.previousEpisode" display="vm.displayEps" airtime="vm.info.airTime" timezone="vm.info.timezone" />

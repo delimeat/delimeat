@@ -1,0 +1,124 @@
+<form class="row ng-cloak" name="vm.form" ng-hide="vm.displayEps" >
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.title.$invalid && vm.form.title.$dirty }">
+			<label for="title" translate="show.title"/>
+			<input type="text" class="form-control" name="title" id="title" placeholder="{{'show.title' | translate}}" ng-model="vm.show.title" required/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.type.$invalid && vm.form.type.$dirty }">
+			<label for="type" translate="show.type"/>
+			<select class="form-control" name="type" id="type" ng-model="vm.show.showType" ng-options="option.value as option.i18n | translate for option in vm.types" required/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="checkbox">
+			<label>
+			  <input type="checkbox" ng-model="vm.show.enabled"> <span translate="show.enabled"/></input>
+			</label>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-md-6">
+		<div class="checkbox">
+			<label>
+			  <input type="checkbox" ng-model="vm.show.airing"> <span translate="show.airing"/></input>
+			</label>
+		</div>
+	</div>
+	
+	<!-- 
+	<div class="col-xs-12 col-md-6">
+		<div class="checkbox">
+			<label>
+			  <input type="checkbox" disabled="disabled" ng-model="vm.show.includeSpecials"> <span translate="show.include_specials"/></input>
+			</label>
+		</div>
+	</div>
+	-->
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group">
+			<label for="guide_check" translate="show.lastGuideCheck"/><br/>
+			<span name="guide_check" id="guide_check" ng-bind="(vm.show.lastGuideCheck | date : 'yyyy-MM-dd h:mm a') || ('show.never_updated' | translate)"/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group">
+			<label for="guide_update" translate="show.lastGuideUpdate"/><br/>
+			<span name="guide_update" id="guide_update" ng-bind="(vm.show.lastGuideUpdate | date : 'yyyy-MM-dd h:mm a') || ('show.never_updated' | translate)"/>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group">
+			<label for="feed_check" translate="show.lastFeedCheck"/><br/>
+			<span name="feed_check" id="feed_check" ng-bind="(vm.show.lastFeedCheck | date : 'yyyy-MM-dd h:mm a') || ('show.never_updated' | translate)"/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group">
+			<label for="feed_update" translate="show.lastFeedUpdate"/><br/>
+			<span name="feed_update" id="feed_update" ng-bind="(vm.show.lastFeedUpdate | date : 'yyyy-MM-dd h:mm a') || ('show.never_updated' | translate)"/>
+		</div>
+	</div>
+			
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.airtime.$invalid && vm.form.airtime.$dirty }">
+			<label for="airtime" translate="show.air_time"/>
+			<input type="text" pattern="^(0?[1-9]|1[012])(:[0-5]\d) [APap][mM]$" class="form-control" name="airtime" id="airtime" placeholder="{{'show.air_time_placeholder' | translate}}" ng-model="vm.show.airTime" required/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.timezone.$invalid && vm.form.timezone.$dirty }">
+			<label for="timezone" translate="show.timezone"/>
+			<select class="form-control" name="timezone" id="timezone" ng-model="vm.show.timezone" ng-options="option.value as option.i18n | translate for option in vm.timezones"  required/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.minsize.$invalid && vm.form.minsize.$dirty }">
+			<label for="minsize" translate="show.min_size"/>
+			<input type="number" class="form-control" name="minsize" id="minsize" placeholder="{{'show.min_size'|translate}}" ng-model="vm.show.minSize" required/>
+		</div>
+	</div>
+	
+	<div class="col-xs-12 col-md-6">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.maxsize.$invalid && vm.form.maxsize.$dirty }">
+			<label for="maxsize" translate="show.max_size"/>
+			<input type="number" class="form-control" name="maxsize" id="maxsize" placeholder="{{'show.max_size'|translate}}" ng-model="vm.show.maxSize" required/>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-md-6">
+		<label translate="episode.next_ep"/> <small translate="episode.more_info"/>
+		<a class="well list-group-item" style="cursor:pointer;" ng-click="vm.displayEps=!vm.displayEps">
+			<dm-episode episode="vm.show.nextEpisode" airtime="vm.show.airTime" timezone="vm.show.timezone" headingclass="'list-group-item-heading'" textclass="'list-group-item-text'"/>
+		</a>
+	</div>
+
+	<div class="col-xs-12 col-md-6">
+		<label translate="episode.prev_ep"/>
+		<div class="well">
+			<dm-episode episode="vm.show.previousEpisode" airtime="vm.show.airTime" timezone="vm.show.timezone" headingclass="'list-group-item-heading'" textclass="'list-group-item-text'" previous="true"/>
+		</div>
+	</div>
+
+	<div class="text-center col-xs-12 col-md-12">
+		<button class="btn btn-danger" ng-click="vm.remove(vm.show.showId)"><span class="glyphicon glyphicon-trash"/> <span translate="common.delete"/></button>
+	</div>
+		
+	<div class="text-center col-xs-12 col-md-12 bottom-btn-group">
+		<hr>
+		<button class="btn btn-default" ng-class="{'btn-primary':vm.form.$valid && vm.form.$dirty}" ng-disabled="vm.form.$invalid || !vm.form.$dirty" ng-click="vm.update(vm.show)"><span class="glyphicon glyphicon-floppy-disk"/> <span translate="common.save"/></button>
+		<dm-back-btn/>
+	</div>
+</form>
+		
+<dm-episodes-list episodes="vm.episodes" next="vm.show.nextEpisode" previous="vm.show.previousEpisode" display="vm.displayEps" airtime="vm.show.airTime" timezone="vm.show.timezone" />

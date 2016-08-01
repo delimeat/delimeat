@@ -1,0 +1,30 @@
+<div class="list-group ng-cloak">
+
+  <a ng-href="#/guide/search" class="list-group-item" ng-hide="vm.shows.length>0">
+  	<h4 class="list-group-item-heading" translate="shows.no_shows_title"/>
+  	<p class="list-group-item-text" translate="shows.no_shows_suggestion"/>
+  </a>
+  
+  <a ng-href="#/show/{{show.showId}}" class="list-group-item" ng-repeat="show in vm.shows | orderBy: ['nextEpisode.airDateTime','title']">
+	<h4 class="list-group-item-heading" ng-bind="show.title"/><span class="badge" ng-show="!show.enabled" translate="shows.disabled"/><span class="badge" ng-show="!show.airing" translate="shows.ended"/>
+	<div ng-switch on="!show.nextEpisode">
+		<div ng-switch-when="true">
+			<div ng-switch on="vm.previous">
+				<div ng-switch-when="true">
+					<p class="list-group-item-text" translate="episode.no_prev_ep"/>
+					<small translate="episode.no_prev_ep_sub"/>
+				</div>
+				<div ng-switch-default>
+					<p class="list-group-item-text" translate="episode.nothing_scheduled"/>
+					<small  translate="episode.nothing_scheduled_sub"/>
+				</div>
+			</div>
+		</div>
+		<div ng-switch-default>
+			<p class="list-group-item-text" translate="episode.season_format" translate-values="{ season: show.nextEpisode.seasonNum, episode: show.nextEpisode.episodeNum, title: show.nextEpisode.title || ('episode.no_title' | translate) }"/>
+			<small ng-bind="show.nextEpisode.airDateTime | date : 'yyyy-MM-dd h:mm a'"/>
+		</div>
+	</div>
+  </a>
+  
+</div>

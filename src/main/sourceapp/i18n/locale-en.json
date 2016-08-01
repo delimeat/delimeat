@@ -1,0 +1,117 @@
+{
+    "root": {
+    	"search": "Search",
+    	"title":"Strike-ui"
+    },
+  	"common":{
+  		"save":"Save",
+  		"delete":"Delete",
+  		"back":"Back",
+  		"close":"Close",
+  		"add":"Add",
+    	"unexpected_error":"Opps, something went wrong"
+  	},
+    "episode":{
+		"next_ep":"Next Episode",
+		"more_info":"Click below to select",
+		"prev_ep":"Previous Episode",
+    	"nothing_scheduled": "Nothing Scheduled",
+    	"nothing_scheduled_sub":"No more episodes available at this time",
+    	"no_prev_ep":"No Previous Episode",
+    	"no_prev_ep_sub":"The next episode is the first",
+    	"season_format": "Season {{season}} Episode {{episode}}: '{{title}}'",
+    	"mini_series_format": "Part {{episode}}: '{{title}}'",
+    	"season":"Season",
+    	"no_title":"TBA"
+	},
+	"shows":{
+		"page_title": "Home",
+		"no_shows_title":"No Shows Added",
+		"no_shows_suggestion":"Click here to add a show",
+		"disabled":"Disabled",
+		"ended":"Ended"
+	},
+	"show":{
+		"title":"Title",
+		"type":"Type",
+		"airing":"Airing",
+		"enabled":"Enabled",
+		"include_specials":"Include Specials",
+		"air_time":"Air Time",
+		"air_time_placeholder":"hh:mm AM|PM",
+		"timezone":"Timezone",
+		"min_size":"Minimum Size",
+		"max_size":"Maximum Size",
+		"lastGuideUpdate": "Last Guide Update",
+		"lastGuideCheck": "Last Guide Check",
+		"lastFeedUpdate": "Last Feed Update",
+		"lastFeedCheck": "Last Feed Check",
+		"never_updated": "Never",
+		"confirm_remove":"Are you sure?",
+		"types":{
+				"ANIMATED":"Animated",
+				"DAILY":"Daily",
+				"MINI_SERIES":"Mini Series",
+				"SEASON":"Season"
+			},
+		"timezones":{
+			"EST":"Eastern Standard Time",
+			"CST":"Central Standard Time",
+			"PST":"Pacific Standard Time",
+			"JST":"Japan Standard Time",
+			"AET":"Australian Eastern Standard Time",
+			"GMT+12":"GMT+12",
+			"GMT+11":"GMT+11",
+			"GMT+10":"GMT+10",
+			"GMT+9":"GMT+9",
+			"GMT+8":"GMT+8",
+			"GMT+7":"GMT+7",
+			"GMT+6":"GMT+6",
+			"GMT+5":"GMT+5",
+			"GMT+4":"GMT+4",
+			"GMT+3":"GMT+3",
+			"GMT+2":"GMT+2",
+			"GMT+1":"GMT+1",
+			"GMT":"GMT",
+			"GMT-1":"GMT-1",
+			"GMT-2":"GMT-2",
+			"GMT-3":"GMT-3",
+			"GMT-4":"GMT-4",
+			"GMT-5":"GMT-5",
+			"GMT-6":"GMT-6",
+			"GMT-7":"GMT-7",
+			"GMT-8":"GMT-8",
+			"GMT-9":"GMT-9",
+			"GMT-10":"GMT-10",	
+			"GMT-11":"GMT-11",
+			"GMT-12":"GMT-12",
+			"GMT-13":"GMT-13",
+			"GMT-14":"GMT-14"		
+		}
+	},
+	"settings":{
+		"page_title": "Settings",
+		"output_directory":"Output Directory",
+		"search_interval":"Search Interval",
+		"search_delay":"Search Delay",
+		"prefer_files":"Prefer Files",
+		"ignore_folders":"Ignore Folders",
+		"ignored_file_types":"Ignored File Types",
+		"no_ignored_file_types":"No file type defined",
+		"file_type_placeholder":"Add File Type (eg. EXE, AVI, WMV)",
+		"success":"Settings Update",
+		"excluded_keywords":"Excluded Keywords",
+		"no_excluded_keywords":"No excluded keywords"
+	},
+	"guide":{
+		"search":{
+			"search_placeholder":"Search for...",
+			"no_description":"No description available"
+		},
+		"info":{
+			"ended":"(Ended)",
+			"no_description":"No description available"
+		}
+	}
+	
+}

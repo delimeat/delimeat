@@ -3,6 +3,18 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "~1.5.8"
+    "angular": "~1.5.8",
+    "angular-route": "~1.5.8",
+    "angular-aria": "~1.5.8",
+    "angular-animate": "~1.5.8",
+    "angular-resource": "~1.5.8",
+    "angular-sanitize": "~1.5.8",
+    "angular-translate":"~2.11.1",
+    "angular-translate-storage-local":"~2.11.1",
+    "angular-translate-loader-static-files":"~2.11.1",
+    "angular-translate-interpolation-messageformat":"~2.11.1",
+    "angular-translate-handler-log":"~2.11.1",
+    "bootstrap":"~3.3.7",
+    "moment":"~2.14.1"
   }
 }
