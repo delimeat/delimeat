@@ -90,7 +90,7 @@ gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyp
             }
         ))
     .pipe($.usemin({
-        css:          [$.cssnano(),$.rev()],
+        css:          [$.sourcemaps.init(),$.autoprefixer({browsers: ['last 2 versions'],cascade: false}),$.cssnano(),$.rev(),$.sourcemaps.write('.')],
         html:         [$.htmlmin({collapseWhitespace: true})],
         js:           [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')],
         js_libs:      [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')]
