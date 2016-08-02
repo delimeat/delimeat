@@ -11,8 +11,8 @@ function SettingsService( $resource, ResponseLoggingService, API) {
 	vm._logger = ResponseLoggingService;
 		
 	return $resource(API+'config', {}, {
-    	read: { method: 'GET', interceptor:{responseError: vm._logger.error, response: vm._logger.success} },
-        update: { method: 'PUT', interceptor:{responseError: vm._logger.error, response: vm._logger.success} }
+    	read: { method: 'GET', interceptor:{responseError: vm._logger.error} },
+        update: { method: 'PUT', interceptor:{responseError: vm._logger.error} }
     });
     
 }
