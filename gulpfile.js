@@ -25,6 +25,7 @@ gulp.task('lint', function() {
         .pipe($.jshint.reporter('fail'));
 });
 
+//move angular views to js file
 gulp.task('views',['clean'], function() {
     return gulp.src('./src/main/sourceapp/js/**/*.tmpl.html')
         .pipe($.ngtemplatecache({
@@ -34,27 +35,32 @@ gulp.task('views',['clean'], function() {
         .pipe(gulp.dest('target/tmp/js'));
 });
 
+//copy i18n files
 gulp.task('i18n',['clean'],  function () {
 	  gulp.src('./src/main/sourceapp/i18n/*.json')
 	  .pipe(gulp.dest('target/build/i18n'));
 });
 
+//minimise images
 gulp.task('images',['clean'], function() {
     return gulp.src('./src/main/sourceapp/img/**/*.*')
         .pipe($.imagemin())
         .pipe(gulp.dest('target/build/img'));
 });
 
+//copy bootstrap fonts
 gulp.task('glyph-icons',['clean'], function () {
 	  gulp.src('./src/main/sourceapp/components/bootstrap/fonts/*')
 	  .pipe(gulp.dest('target/build/fonts'));
 });
 
+//copy favion
 gulp.task('favicon',['clean'], function () {
 	  gulp.src('./src/main/sourceapp/*.ico')
 	  .pipe(gulp.dest('target/build'));
 });
 
+//create config file for api endpoint - DEVELOPMENT
 gulp.task('config:dev',['clean'], function () {
 	  gulp.src('./src/main/sourceapp/config.json')
 	  .pipe($.ngconfig('delimeat.config', {
@@ -64,6 +70,7 @@ gulp.task('config:dev',['clean'], function () {
 	    .pipe(gulp.dest('.tmp/js'));
 });
 
+//create config file for api endpoint - BUILD
 gulp.task('config:build',['clean'], function () {
 	  gulp.src('./src/main/sourceapp/config.json')
 	  .pipe($.ngconfig('delimeat.config', {
@@ -73,6 +80,7 @@ gulp.task('config:build',['clean'], function () {
 	    .pipe(gulp.dest('target/tmp/js'));
 });
 
+//compile the front end
 gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyph-icons','favicon'], function() {
 	return gulp.src('./src/main/sourceapp/index.html')
     .pipe($.inject(gulp.src('./target/tmp/js/templates.js', {read: false}),
@@ -97,10 +105,12 @@ gulp.task('reload:html', function () {
         .pipe($.livereload(lrserver));
 });
 
+//watch for updated source files
 gulp.task('watch',['clean'], function () {
     gulp.watch('./src/main/sourceapp/**/*.html', ['reload:html']);
 });
 
+//serve the source files for development
 gulp.task('serve:dev', ['clean','watch','config:dev'], function() {
     var server = express();
     server.use(express.static('.tmp/'));
@@ -108,6 +118,4 @@ gulp.task('serve:dev', ['clean','watch','config:dev'], function() {
     server.listen(SERVER_PORT);
 });
 
-gulp.task('default',['clean','compile'], function() {
-  // place code for your default task here
-});
+gulp.task('default',['clean','compile'], function() {});
