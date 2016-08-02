@@ -24,6 +24,7 @@
     "gulp-rename":"^1.2.2",
     "gulp-imagemin":"^3.0.2",
     "gulp-inject": "^4.1.0",
+    "gulp-sourcemaps":"^1.6.0",
     "tiny-lr": "^0.2.1",
     "gulp-livereload":"^3.8.1"
   },

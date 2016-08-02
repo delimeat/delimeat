@@ -92,8 +92,8 @@ gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyp
     .pipe($.usemin({
         css:          [$.cssnano(),$.rev()],
         html:         [$.htmlmin({collapseWhitespace: true})],
-        js:           [$.ngannotate(), $.uglify(), $.rev()],
-        js_libs:      [$.ngannotate(), $.uglify(), $.rev()]
+        js:           [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')],
+        js_libs:      [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')]
     }))
     .pipe($.size({title: 'html',showFiles:true}))
 	.pipe(gulp.dest('target/build'));
