@@ -1,4 +1,6 @@
-package io.delimeat.common.util.jaxrs.client;
+package io.delimeat.util.jaxrs.client;
+
+import io.delimeat.util.jaxrs.client.JerseyClientFactory;
 
 import java.io.IOException;
 import java.util.Arrays;

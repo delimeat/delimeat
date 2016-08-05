@@ -6,7 +6,7 @@ import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;
 import io.delimeat.core.torrent.TorrentInfo;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;

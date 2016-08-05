@@ -2,7 +2,7 @@ package io.delimeat.core.torrent;
 
 import com.google.common.io.ByteStreams;
 
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 import io.delimeat.util.bencode.BDictionary;
 import io.delimeat.util.bencode.BInteger;

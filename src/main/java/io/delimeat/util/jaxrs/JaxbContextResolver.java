@@ -1,4 +1,4 @@
-package io.delimeat.common.util.jaxrs;
+package io.delimeat.util.jaxrs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

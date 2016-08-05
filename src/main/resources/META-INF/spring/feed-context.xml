@@ -28,10 +28,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       </constructor-arg>  		
     </bean>
 
-    <bean id="abstractFeedJerseyClientFactory" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory" abstract="true">
+    <bean id="abstractFeedJerseyClientFactory" class="io.delimeat.util.jaxrs.client.JerseyClientFactory" abstract="true">
       <property name="providerClasses">
         <list>
-          <value>io.delimeat.common.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
+          <value>io.delimeat.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
         </list>
       </property>
       <property name="properties">

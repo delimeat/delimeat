@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.google.common.base.MoreObjects;
 
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 public class InfoHash {
 

@@ -1,4 +1,6 @@
-package io.delimeat.common.util.jaxrs;
+package io.delimeat.util.jaxrs;
+
+import io.delimeat.util.jaxrs.JaxbContextResolver;
 
 import javax.xml.bind.JAXBContext;
 

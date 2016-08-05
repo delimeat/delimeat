@@ -1,4 +1,4 @@
-package io.delimeat.common.util.jaxrs.client;
+package io.delimeat.util.jaxrs.client;
 
 import java.net.URI;
 

@@ -4,7 +4,7 @@ import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

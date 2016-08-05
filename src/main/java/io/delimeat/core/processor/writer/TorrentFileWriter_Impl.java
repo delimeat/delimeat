@@ -2,7 +2,7 @@ package io.delimeat.core.processor.writer;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedException;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 import java.io.IOException;

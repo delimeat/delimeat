@@ -34,7 +34,7 @@ import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
 import io.delimeat.core.torrent.TorrentNotFoundException;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 

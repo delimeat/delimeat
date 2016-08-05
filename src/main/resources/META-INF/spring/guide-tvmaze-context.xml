@@ -9,7 +9,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="tvmazeJaxbContextResolverId" class="io.delimeat.common.util.jaxrs.JaxbContextResolver">
+	<bean id="tvmazeJaxbContextResolverId" class="io.delimeat.util.jaxrs.JaxbContextResolver">
 		<property name="properties">
 			<map>
 				<entry key="eclipselink.oxm.metadata-source">
@@ -34,7 +34,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 	  
-	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.common.util.jaxrs.client.JerseyClientFactory">
+	<bean id="tvmazeJerseyClientFactoryId" class="io.delimeat.util.jaxrs.client.JerseyClientFactory">
      <property name="providers">
 			<list>
 				<ref bean="tvmazeJaxbContextResolverId"/>

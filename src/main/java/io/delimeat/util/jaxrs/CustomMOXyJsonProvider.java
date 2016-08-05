@@ -1,4 +1,4 @@
-package io.delimeat.common.util.jaxrs;
+package io.delimeat.util.jaxrs;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;

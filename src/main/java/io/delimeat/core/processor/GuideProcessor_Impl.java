@@ -19,7 +19,7 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 public class GuideProcessor_Impl extends AbstractProcessor implements Processor {
   	

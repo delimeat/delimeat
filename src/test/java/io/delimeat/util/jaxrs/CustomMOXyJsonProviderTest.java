@@ -1,4 +1,6 @@
-package io.delimeat.common.util.jaxrs;
+package io.delimeat.util.jaxrs;
+
+import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,9 +1,10 @@
-package io.delimeat.common.util;
+package io.delimeat.util;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.delimeat.core.guide.GuideEpisode;
+import io.delimeat.util.DelimeatUtils;
 
 import java.util.Arrays;
 import java.util.Collections;

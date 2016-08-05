@@ -1,6 +1,6 @@
 package io.delimeat.core.guide;
 
-import io.delimeat.common.util.jaxrs.client.AbstractJaxrsClientHelper;
+import io.delimeat.util.jaxrs.client.AbstractJaxrsClientHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

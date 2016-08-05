@@ -1,6 +1,6 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -8,7 +8,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
 
-import io.delimeat.common.util.jaxrs.client.AbstractJaxrsClientHelper;
+import io.delimeat.util.jaxrs.client.AbstractJaxrsClientHelper;
 
 public abstract class AbstractJaxrsFeedDao extends AbstractJaxrsClientHelper implements
 		FeedDao {

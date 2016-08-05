@@ -9,7 +9,7 @@ import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
 import io.delimeat.core.show.ShowNotFoundException;
-import io.delimeat.common.util.DelimeatUtils;
+import io.delimeat.util.DelimeatUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
