@@ -13,9 +13,15 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     	<property name="urlHandler" ref="urlHandlerId"/>
     </bean>
     
+    <bean id="udpScrapeBindAddressId" class="java.net.InetAddress" factory-method="getByName">
+    	<constructor-arg value="${io.delimeat.core.torrent.udp.address}"/>
+    </bean>
     <bean id="udpScrapeRequestHandlerId" class="io.delimeat.core.torrent.UDPScrapeRequestHandler_Impl">
     	<property name="socket">
-    		<bean class="java.net.DatagramSocket"/>
+    		<bean class="java.net.DatagramSocket">
+    			<constructor-arg type="int" value="${io.delimeat.core.torrent.udp.port}"/>
+    			<constructor-arg type="java.net.InetAddress" ref="udpScrapeBindAddressId"/>
+    		</bean>
     	</property>
     </bean>
     
