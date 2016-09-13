@@ -8,12 +8,12 @@
 		
 		<div class="form-group" ng-class="{ 'has-error': vm.form.interval.$invalid && vm.form.interval.$dirty }">
 			<label for="interval" translate="settings.search_interval"/>
-			<input type="number" class="form-control" name="interval" id="interval" placeholder="{{'settings.search_interval' | translate}}" ng-model="vm.settings.searchInterval" required/> 
+			<input type="number" class="form-control" name="interval" id="interval" placeholder="{{'settings.search_interval' | translate}}" ng-model="vm.settings.searchIntervalMins" required/> 
 		</div>
 		
 		<div class="form-group" ng-class="{ 'has-error': vm.form.delay.$invalid && vm.form.delay.$dirty }">
 			<label for="delay" translate="settings.search_delay"/>
-			<input type="number" class="form-control" name="delay" id="delay" placeholder="{{'settings.search_delay' | translate}}" ng-model="vm.settings.searchDelay" required/> 
+			<input type="number" class="form-control" name="delay" id="delay" placeholder="{{'settings.search_delay' | translate}}" ng-model="vm.settings.searchDelayMins" required/> 
 		</div>
 		
 		<div class="checkbox">
