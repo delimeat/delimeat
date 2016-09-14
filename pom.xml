@@ -148,7 +148,7 @@
       <!-- version > 2.0.92-beta fail, probably a java8 thing !-->
 		<org.mockito.version>2.0.92-beta</org.mockito.version>
 
-     	<com.github.tomakehurst.wiremock.version>2.1.11</com.github.tomakehurst.wiremock.version>
+     	<com.github.tomakehurst.wiremock.version>2.1.12</com.github.tomakehurst.wiremock.version>
 
 		<!-- Servelet versions ! -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
@@ -164,11 +164,11 @@
 		<org.springframework.version>4.3.2.RELEASE</org.springframework.version>
 
 		<org.eclipse.persistence.version>2.6.3</org.eclipse.persistence.version>
-		<com.zaxxer.hikaricp.version>2.4.7</com.zaxxer.hikaricp.version>
+		<com.zaxxer.hikaricp.version>2.5.0</com.zaxxer.hikaricp.version>
 		<org.liquibase.version>3.5.1</org.liquibase.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 
-		<org.glassfish.jersey.version>2.23.1</org.glassfish.jersey.version>
+		<org.glassfish.jersey.version>2.23.2</org.glassfish.jersey.version>
 
 		<org.jsoup.version>1.9.2</org.jsoup.version>
 		<com.google.guava.version>19.0</com.google.guava.version>

@@ -98,6 +98,8 @@ public class JerseyClientFactory {
 		}
 
 		configuration.register(new LoggingFeature(LOGGER));
+		//TODO this causes a NegativeArraySizeException in v2.23.2
+		//configuration.register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, Integer.MAX_VALUE));
 
 		if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);

@@ -44,7 +44,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(WebApplicationExceptionMapper.class);
 		register(GenericExceptionMapper.class);
      
-		register(new LoggingFeature(LOGGER));
+        register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, Integer.MAX_VALUE));
 
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList("META-INF/oxm/config-oxm.xml","META-INF/oxm/guide-oxm.xml","META-INF/oxm/show-oxm.xml"));
