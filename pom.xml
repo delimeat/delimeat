@@ -162,12 +162,8 @@
 
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
-      
-      	<!-- version > 2.0.92-beta fail, probably a java8 thing !-->
-		<org.mockito.version>2.0.92-beta</org.mockito.version>
-
+		<org.mockito.version>2.2.11</org.mockito.version>
      	<com.github.tomakehurst.wiremock.version>2.2.2</com.github.tomakehurst.wiremock.version>
-
 
 		<!-- Logging versions ! -->
 		<org.slf4j.version>1.7.21</org.slf4j.version>

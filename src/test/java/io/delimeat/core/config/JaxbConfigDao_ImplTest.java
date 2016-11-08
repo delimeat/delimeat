@@ -146,6 +146,8 @@ public class JaxbConfigDao_ImplTest {
      	JAXBContext jc = getJAXBContext();
 		dao.setUnmarshaller(jc.createUnmarshaller());
 
+		dao.setUrl(new URL("http://test.com"));
+		
 		Config config = dao.read();
 		Assert.assertNotNull(config);
 
@@ -179,6 +181,8 @@ public class JaxbConfigDao_ImplTest {
 		dao.setUnmarshaller(jc.createUnmarshaller());
 		dao.setMarshaller(jc.createMarshaller());
      
+		dao.setUrl(new URL("http://test.com"));
+		
 		Config config = dao.read();
      
 		Assert.assertNotNull(config);
@@ -204,6 +208,8 @@ public class JaxbConfigDao_ImplTest {
 		Mockito.when(mockedHandler.openInput(Mockito.any(URL.class))).thenThrow(IOException.class);
 		dao.setUrlHandler(mockedHandler);
 
+		dao.setUrl(new URL("http://test.com"));
+		
      	dao.read();
   	}
   
@@ -235,6 +241,8 @@ public class JaxbConfigDao_ImplTest {
      	Mockito.when(unmarshaller.unmarshal(Mockito.any(StreamSource.class),Mockito.eq(Config.class))).thenReturn(configElement);
      	dao.setUnmarshaller(unmarshaller);
      
+     	dao.setUrl(new URL("http://test.com"));
+     	
      	dao.read();
 	}
   
@@ -259,6 +267,8 @@ public class JaxbConfigDao_ImplTest {
      	config.getExcludedKeywords().add("256");
      	config.getExcludedKeywords().add("XRV");
 
+     	dao.setUrl(new URL("http://test.com"));
+     	
 		dao.createOrUpdate(config);
 
 		EntityGenerator generator = new EntityGenerator(100, true, false, Arrays.asList("AVI","MOV"), "outputDir",200, Arrays.asList("256","XRV"));
@@ -275,6 +285,8 @@ public class JaxbConfigDao_ImplTest {
 		Mockito.when(mockedHandler.openOutput(Mockito.any(URL.class))).thenThrow(new IOException());
 		dao.setUrlHandler(mockedHandler);
 
+		dao.setUrl(new URL("http://test.com"));
+		
      	dao.createOrUpdate(new Config());
   	}
   
@@ -287,7 +299,7 @@ public class JaxbConfigDao_ImplTest {
      	dao.setUrlHandler(mockedHandler);
 
      	Marshaller marshaller = Mockito.mock(Marshaller.class);
-     	Mockito.doThrow(JAXBException.class).when(marshaller).marshal(Mockito.anyObject(),Mockito.any(StreamResult.class));
+     	Mockito.doThrow(JAXBException.class).when(marshaller).marshal(Mockito.any(),Mockito.any(StreamResult.class));
      	dao.setMarshaller(marshaller);
      
      	dao.createOrUpdate(new Config());
@@ -304,6 +316,8 @@ public class JaxbConfigDao_ImplTest {
 
      	Marshaller marshaller = Mockito.mock(Marshaller.class);
      	dao.setMarshaller(marshaller);
+     	
+     	dao.setUrl(new URL("http://test.com"));
      
      	dao.createOrUpdate(new Config());
 	}

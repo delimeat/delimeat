@@ -397,7 +397,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -456,7 +456,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -516,7 +516,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -862,7 +862,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");

@@ -197,7 +197,7 @@ public class TorrentDao_ImplTest {
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
      	Mockito.when(mockedConnection.getContentType()).thenReturn("application/x-bittorrent");
 		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
 		dao.setUrlHandler(mockedUrlHandler);
 	
@@ -226,7 +226,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		dao.setUrlHandler(mockedUrlHandler);
 	
 		URI uri = new URI("http://test.com/");
@@ -240,7 +240,7 @@ public class TorrentDao_ImplTest {
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
      	Mockito.when(mockedConnection.getContentType()).thenReturn("text/html");
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		dao.setUrlHandler(mockedUrlHandler);
 	
 		URI uri = new URI("http://test.com/");
@@ -258,7 +258,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		dao.setUrlHandler(mockedUrlHandler);
 	
 		URI uri = new URI("http://test.com/");
@@ -271,7 +271,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(401);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		dao.setUrlHandler(mockedUrlHandler);
 	
 		URI uri = new URI("http://test.com/");
@@ -286,7 +286,7 @@ public class TorrentDao_ImplTest {
 		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
      	Mockito.when(mockedConnection.getContentType()).thenReturn("application/x-bittorrent");
 		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream("X".getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream("X".getBytes()));
 		dao.setUrlHandler(mockedUrlHandler);
 	
@@ -316,7 +316,7 @@ public class TorrentDao_ImplTest {
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
       HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
       Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMapOf(String.class, String.class))).thenReturn(mockedConnection);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
 
 		dao.setUrlHandler(mockedUrlHandler);
 

@@ -453,7 +453,7 @@ public class FeedProcessor_ImplTest {
 
 		Config config = new Config();
 
-		List<FeedResult> results = processor.validateResultTorrents(Arrays.asList(result1, result2, result3, result4, result5, result6, result7),null, config);
+		List<FeedResult> results = processor.validateResultTorrents(Arrays.asList(result1, result2, result3, result4, result5, result6, result7),new Show(), config);
 		
 		Mockito.verify(dao, Mockito.times(5)).read(Mockito.any(URI.class));
 		Mockito.verify(validator, Mockito.times(2)).validate(Mockito.any(Torrent.class), Mockito.any(Show.class), Mockito.any(Config.class));
@@ -493,7 +493,7 @@ public class FeedProcessor_ImplTest {
         				.thenThrow(ValidationException.class);
 		processor.setTorrentValidators(Arrays.asList(validator));
 
-		processor.validateResultTorrents(Arrays.asList(result), null, config);
+		processor.validateResultTorrents(Arrays.asList(result), new Show(), config);
      
      	Assert.assertEquals(torrent, result.getTorrent());
      

@@ -141,7 +141,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedGuideDao).episodes("2");// should be guideId = 2
 														// because that is the
 														// correct GuideSource
-		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
+		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(ArgumentMatchers.anyList());
 		Assert.assertEquals(show, actualShow); // show returned by showDao
 												// should match the show
 												// returned by the service
