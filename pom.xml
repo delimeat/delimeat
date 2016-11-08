@@ -51,12 +51,11 @@
 					</archive>
 					<webResources>
 						<resource>
-					    	<directory>target/build</directory>
-					  	</resource>
+							<directory>target/build</directory>
+						</resource>
 					</webResources>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>org.liquibase</groupId>
@@ -67,81 +66,83 @@
 				</configuration>
 			</plugin>
 
-			<!-- Front end build !-->
-	      <plugin>
-	        <groupId>com.github.eirslett</groupId>
-	        <artifactId>frontend-maven-plugin</artifactId>
-	        <version>1.2</version>
-	        <!--
-	        <configuration>
-	            <installDirectory>target</installDirectory>
-	        </configuration>
-	        !-->
-	        
-	        <executions>
-	          <execution>
-	            <id>install node and npm</id>
-	            <goals>
-	              <goal>install-node-and-npm</goal>
-	            </goals>
-	            <configuration>
-	              <nodeVersion>${node.version}</nodeVersion>
-	              <npmVersion>${npm.version}</npmVersion>
-	            </configuration>
-	          </execution>
+			<!-- Front end build ! -->
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.2</version>
+				<!-- 
+				<configuration> 
+					<installDirectory>target</installDirectory> 
+				</configuration> 
+				! -->
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+							<npmVersion>${npm.version}</npmVersion>
+						</configuration>
+					</execution>
+		
+					<execution>
+						<id>npm install</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+		
+					<execution>
+						<id>bower install</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>bower</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+		
+					<execution>
+						<id>gulp build</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>gulp</goal>
+						</goals>
+						<configuration>
+							<srcdir>${basedir}/src/main/sourceapp</srcdir>
+							<outputdir>${project.build.directory}/${project.build.finalName}</outputdir>
+							<triggerfiles>
+								<triggerfile>gulpfile.js</triggerfile>
+								<triggerfile>package.json</triggerfile>
+							</triggerfiles>
+							<environmentVariables>
+								<BUILD_DIR>${project.build.directory}/build</BUILD_DIR>
+								<TEMP_DIR>${project.build.directory}/tmp</TEMP_DIR>
+								<OUTPUT_DIR>${project.build.directory}/${project.build.finalName}</OUTPUT_DIR>
+							</environmentVariables>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 	
-	          <execution>
-	            <id>npm install</id>
-	            <goals>
-	              <goal>npm</goal>
-	            </goals>
-	            <configuration>
-	              <arguments>install</arguments>
-	            </configuration>
-	          </execution>
-	
-	          <execution>
-	            <id>bower install</id>
-	            <goals>
-	              <goal>bower</goal>
-	            </goals>
-	            <configuration>
-	              <arguments>install</arguments>
-	            </configuration>
-	          </execution>
-	
-				<execution>
-					<id>gulp build</id>
-					<goals>
-						<goal>gulp</goal>
-					</goals>
-					<configuration>
-						<srcdir>${basedir}/src/main/sourceapp</srcdir>
-						<outputdir>${project.build.directory}/${project.build.finalName}</outputdir>
-						<triggerfiles>
-							<triggerfile>gulpfile.js</triggerfile>
-							<triggerfile>package.json</triggerfile>
-						</triggerfiles>
-						<environmentVariables>
-							<BUILD_DIR>${project.build.directory}/build</BUILD_DIR>
-							<TEMP_DIR>${project.build.directory}/tmp</TEMP_DIR>
-							<OUTPUT_DIR>${project.build.directory}/${project.build.finalName}</OUTPUT_DIR>
-						</environmentVariables>
-					</configuration>
-				</execution>
-	        </executions>
-	      </plugin>
-	      
-	      
-		<plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-surefire-plugin</artifactId>
-		    <version>2.19.1</version>
-		    <configuration>
-		        <forkCount>1</forkCount>
-		        <reuseForks>false</reuseForks>
-		    </configuration>
-		  </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+				</configuration>
+			</plugin>
 		  
 		</plugins>
 	</build>
@@ -223,12 +224,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-      <dependency>
-         <groupId>com.github.tomakehurst</groupId>
-         <artifactId>wiremock</artifactId>
-         <version>${com.github.tomakehurst.wiremock.version}</version>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock</artifactId>
+			<version>${com.github.tomakehurst.wiremock.version}</version>
 			<scope>test</scope>
-      </dependency>
+		</dependency>
      
 		<!-- SERVLET ! -->
 		<dependency>
@@ -482,12 +483,12 @@
 					<plugin>
 						<groupId>org.eluder.coveralls</groupId>
 						<artifactId>coveralls-maven-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>4.3.0</version>
 					</plugin>
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.7.5.201505241946</version>
+						<version>0.7.7.201606060606</version>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
