@@ -3,7 +3,7 @@ package io.delimeat.core.processor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
@@ -397,7 +397,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -456,7 +456,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -516,7 +516,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");
@@ -862,7 +862,7 @@ public class GuideProcessor_ImplTest {
      Mockito.verify(showDao).readAndLock(Long.MAX_VALUE);
      Mockito.verify(showDao).createOrUpdate(show);
      Mockito.verify(showDao).readAllEpisodes(Long.MAX_VALUE);
-     Mockito.verify(showDao).createOrUpdateEpisodes(Matchers.anyListOf(Episode.class));
+     Mockito.verify(showDao).createOrUpdateEpisodes(ArgumentMatchers.anyListOf(Episode.class));
      Mockito.verifyNoMoreInteractions(showDao);
      
      Mockito.verify(guideDao).info("GUIDEID");

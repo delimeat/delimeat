@@ -18,48 +18,49 @@ import javax.xml.bind.JAXBException;
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@SuppressWarnings("rawtypes")
 public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 
-  	private static final Logger LOGGER = LoggerFactory.getLogger(JaxbContextResolver.class);
-   
-  	private Map<String, Object> properties = Collections.<String, Object>emptyMap();
-   private Class[] classes;
-  
-  	public void setClasses(Class... classes){
-     	this.classes = classes;
-   }
-  
-  	public Class[] getClasses(){
-     return classes;
-   }
-  
-  	public void setProperties(Map<String, Object> properties){
-     	this.properties = properties;
-   }
-  
-  	public Map<String, Object> getProperties(){
-     	return properties;
-   }
-  
-	@Override
-    public JAXBContext getContext(Class<?> type) {
-        final Class[] typeArray;
-        if (classes != null && classes.length > 0) {
-            typeArray = new Class[1 + classes.length];
-            System.arraycopy(classes, 0, typeArray, 0, classes.length);
-            typeArray[typeArray.length - 1] = type;
-        } else {
-            typeArray = new Class[]{type};
-        }
+	private static final Logger LOGGER = LoggerFactory.getLogger(JaxbContextResolver.class);
 
-        try {
-            final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
-         	LOGGER.info("Using JAXB context " + context);
-            return context;
-        } catch (JAXBException e) {
-         	LOGGER.warn("Unable to create JAXB context.");
-            return null;
-        }
-    }
+	private Map<String, Object> properties = Collections.<String, Object>emptyMap();
+	private Class[] classes;
+
+	public void setClasses(Class... classes) {
+		this.classes = classes;
+	}
+
+	public Class[] getClasses() {
+		return classes;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	@Override
+	public JAXBContext getContext(Class<?> type) {
+		final Class[] typeArray;
+		if (classes != null && classes.length > 0) {
+			typeArray = new Class[1 + classes.length];
+			System.arraycopy(classes, 0, typeArray, 0, classes.length);
+			typeArray[typeArray.length - 1] = type;
+		} else {
+			typeArray = new Class[] { type };
+		}
+
+		try {
+			final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
+			LOGGER.info("Using JAXB context " + context);
+			return context;
+		} catch (JAXBException e) {
+			LOGGER.warn("Unable to create JAXB context.");
+			return null;
+		}
+	}
 
 }
