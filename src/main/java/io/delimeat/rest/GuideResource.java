@@ -27,22 +27,23 @@ public class GuideResource {
 
 	@Path("search/{title}")
 	@GET
-   @ETag
+	@ETag
 	public List<GuideSearchResult> get(@PathParam("title") String title) throws Exception {
 		return service.readLike(title);
 	}
 
 	@Path("info/{id}")
 	@GET
-   @ETag
+	@ETag
 	public GuideInfo getInfo(@PathParam("id") String guideId) throws Exception {
 		return service.read(guideId);
 	}
-	
+
 	@Path("info/{id}/episodes")
 	@GET
-   @ETag
-	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId) throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
+	@ETag
+	public List<GuideEpisode> getEpisodes(@PathParam("id") String guideId)
+			throws GuideNotFoundException, GuideNotAuthorisedException, GuideException {
 		return service.readEpisodes(guideId);
 	}
 }

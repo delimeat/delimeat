@@ -22,27 +22,25 @@ import javax.ws.rs.core.Request;
 @Produces(MediaType.APPLICATION_JSON)
 public class ConfigResource {
 
-    @Inject
-    private ConfigService service;
+	@Inject
+	private ConfigService service;
 
-    @GET
-    @ETag
-    public Config get() throws ConfigException {
-      return service.read();
-    }
+	@GET
+	@ETag
+	public Config get() throws ConfigException {
+		return service.read();
+	}
 
-    @PUT
-    @ETag
-    public Config update(Config config, @Context Request request) throws ConfigException {   
-      return service.update(config);
-    }
-  		
-  	@ETagGenerator("update")
-  	public EntityTag generateConfigEtag() throws Exception{
+	@PUT
+	@ETag
+	public Config update(Config config, @Context Request request) throws ConfigException {
+		return service.update(config);
+	}
+
+	@ETagGenerator("update")
+	public EntityTag generateConfigEtag() throws Exception {
 		Config existingConfig = service.read();
-      return new EntityTag(Integer.toString(existingConfig.hashCode())); 
-   }
-  
-  
+		return new EntityTag(Integer.toString(existingConfig.hashCode()));
+	}
 
 }

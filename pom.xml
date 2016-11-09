@@ -143,7 +143,20 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
-		  
+
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.4.0.RC1</version>
+				<configuration>
+					<webAppSourceDirectory>${project.basedir}/src/main/sourceapp</webAppSourceDirectory>
+					<webApp>
+						<contextPath>/</contextPath>
+						<descriptor>${project.basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+					</webApp>
+				</configuration>
+			</plugin>
+    
 		</plugins>
 	</build>
 

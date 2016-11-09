@@ -13,20 +13,20 @@ import javax.ws.rs.core.MediaType;
 @Path("process")
 @Produces(MediaType.APPLICATION_JSON)
 public class ProcessorResource {
-  
+
 	@Inject
 	private ProcessorService processorService;
-  
-  	@Path("guide")
-  	@HEAD
-  	public void processAllGuide() throws ConfigException, ShowException{
-   	processorService.processAllGuideUpdates();
-   }
-  
-   @Path("feed")
-  	@HEAD
-  	public void processAllFeed() throws ConfigException, ShowException{
-   	processorService.processAllFeedUpdates();
-   }
-  
+
+	@Path("guide")
+	@HEAD
+	public void processAllGuide() throws ConfigException, ShowException {
+		processorService.processAllGuideUpdates();
+	}
+
+	@Path("feed")
+	@HEAD
+	public void processAllFeed() throws ConfigException, ShowException {
+		processorService.processAllFeedUpdates();
+	}
+
 }

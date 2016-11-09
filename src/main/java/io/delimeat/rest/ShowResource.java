@@ -27,33 +27,33 @@ public class ShowResource {
 
 	@Inject
 	private ShowService showService;
-  
-  	public void setShowService(ShowService showService){
-   	this.showService = showService;
-   }
-  	
-  	public ShowService getShowService(){
-     	return showService;
-   }
+
+	public void setShowService(ShowService showService) {
+		this.showService = showService;
+	}
+
+	public ShowService getShowService() {
+		return showService;
+	}
 
 	@GET
-  	@ETag
+	@ETag
 	public List<Show> getAll() throws Exception {
-       return showService.readAll();
+		return showService.readAll();
 	}
 
 	@Path("{id}")
 	@GET
-  	@ETag
+	@ETag
 	public Show read(@PathParam("id") Long id) throws Exception {
-       return showService.read(id);
+		return showService.read(id);
 	}
 
 	@Path("{id}")
 	@PUT
-  	@ETag
+	@ETag
 	public Show update(@PathParam("id") Long id, Show show) throws Exception {
-       return showService.update(show);
+		return showService.update(show);
 	}
 
 	@Path("{id}")
@@ -63,23 +63,22 @@ public class ShowResource {
 	}
 
 	@POST
-  	@ETag
+	@ETag
 	public Show create(Show show) throws Exception {
-       return showService.create(show);
+		return showService.create(show);
 	}
-	
+
 	@Path("{id}/episodes")
 	@GET
 	@ETag
 	public List<Episode> getAllEpisodes(@PathParam("id") Long id) throws Exception {
-       return showService.readAllEpisodes(id);
+		return showService.readAllEpisodes(id);
 	}
-  
-  	@ETagGenerator("update")
-  	public EntityTag generateEtagShow(@PathParam("id") Long id) throws Exception{
-      Show show = showService.read(id);  	
-      return new EntityTag(Integer.toString(show.hashCode()));
-   }
 
+	@ETagGenerator("update")
+	public EntityTag generateEtagShow(@PathParam("id") Long id) throws Exception {
+		Show show = showService.read(id);
+		return new EntityTag(Integer.toString(show.hashCode()));
+	}
 
 }

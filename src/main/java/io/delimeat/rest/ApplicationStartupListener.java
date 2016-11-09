@@ -23,6 +23,7 @@ public class ApplicationStartupListener implements ServletContextListener {
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
 		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.FINEST);
+		//Logger.getLogger("org.glassfish.jersey").setLevel(Level.FINEST);
 
 	}
 

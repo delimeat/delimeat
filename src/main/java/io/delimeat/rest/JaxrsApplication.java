@@ -31,7 +31,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 @ApplicationPath("api")
 public class JaxrsApplication extends ResourceConfig {
 
-	private static final Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME);
 
 	public JaxrsApplication(){
 		register(ShowResource.class);
@@ -44,7 +44,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(WebApplicationExceptionMapper.class);
 		register(GenericExceptionMapper.class);
      
-        register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, Integer.MAX_VALUE));
+        register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList("META-INF/oxm/config-oxm.xml","META-INF/oxm/guide-oxm.xml","META-INF/oxm/show-oxm.xml"));
