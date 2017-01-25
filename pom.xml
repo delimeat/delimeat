@@ -176,25 +176,25 @@
 
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
-		<org.mockito.version>2.2.11</org.mockito.version>
-     	<com.github.tomakehurst.wiremock.version>2.2.2</com.github.tomakehurst.wiremock.version>
+		<org.mockito.version>2.6.8</org.mockito.version>
+     	<com.github.tomakehurst.wiremock.version>2.5.0</com.github.tomakehurst.wiremock.version>
 
 		<!-- Logging versions ! -->
-		<org.slf4j.version>1.7.21</org.slf4j.version>
+		<org.slf4j.version>1.7.22</org.slf4j.version>
 		<org.apache.logging.log4j.version>2.5</org.apache.logging.log4j.version>
 
 		<!-- Runtime versions ! -->
-		<org.springframework.version>4.3.3.RELEASE</org.springframework.version>
+		<org.springframework.version>4.3.5.RELEASE</org.springframework.version>
 
 		<org.eclipse.persistence.version>2.6.4</org.eclipse.persistence.version>
 		<com.zaxxer.hikaricp.version>2.5.1</com.zaxxer.hikaricp.version>
 		<org.liquibase.version>3.5.3</org.liquibase.version>
 		<org.apache.derby.version>10.12.1.1</org.apache.derby.version>
 
-		<org.glassfish.jersey.version>2.24</org.glassfish.jersey.version>
+		<org.glassfish.jersey.version>2.25</org.glassfish.jersey.version>
 
-		<org.jsoup.version>1.10.1</org.jsoup.version>
-		<com.google.guava.version>20.0</com.google.guava.version>
+		<org.jsoup.version>1.10.2</org.jsoup.version>
+		<com.google.guava.version>21.0</com.google.guava.version>
 		<commons-codec.version>1.10</commons-codec.version>
 	</properties>
 
