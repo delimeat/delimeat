@@ -4,3 +4,5 @@ target/
 src/main/sourceapp/components/
 /bin/
 /.classpath
+/.project
+/derby.log
