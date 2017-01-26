@@ -1,14 +1,13 @@
 package io.delimeat.core.processor.validation;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
-
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FeedResultMiniSeriesValidator_Impl implements FeedResultValidator {
 
@@ -27,7 +26,7 @@ public class FeedResultMiniSeriesValidator_Impl implements FeedResultValidator {
 		String title;
 		for(FeedResult result: results){
 			title = result.getTitle();
-			if( DelimeatUtils.isNotEmpty(title) && episodeNum > 0 ){
+			if( title != null && episodeNum > 0 ){
 				miniSeriesMatcher = miniSeriesPattern.matcher(title);
 				if( miniSeriesMatcher.find() ){
 					int resultEpisodeNum = Integer.parseInt(miniSeriesMatcher.group());

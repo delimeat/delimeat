@@ -14,7 +14,7 @@ public class Config {
     private boolean preferFiles = true;
     private boolean ignoreFolders = false;
     private List<String> ignoredFileTypes = new ArrayList<String>();
-  	 private List<String> excludedKeywords = new ArrayList<String>();
+    private List<String> excludedKeywords = new ArrayList<String>();
 
     public int getSearchInterval() {
         return searchInterval;

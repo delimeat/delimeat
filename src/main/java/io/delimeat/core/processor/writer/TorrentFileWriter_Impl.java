@@ -2,7 +2,6 @@ package io.delimeat.core.processor.writer;
 
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedException;
-import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 	@Override
 	public void write(String fileName, byte[] bytes, Config config) throws FeedException {
 		final String outputDirectory;
-		if( DelimeatUtils.isNotEmpty(config.getOutputDirectory()) ){
+		if( config.getOutputDirectory() != null && config.getOutputDirectory().length() > 0 ){
 			outputDirectory = config.getOutputDirectory();
 		}else {
 			outputDirectory = System.getProperty("user.home");

@@ -3,6 +3,8 @@ package io.delimeat.core.processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -134,8 +136,8 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 					if (selectedResult != null
 							&& selectedResult.getTorrent() != null
 							&& selectedResult.getTorrent().getInfo() != null
-							&& DelimeatUtils.isNotEmpty(selectedResult
-									.getTorrent().getInfo().getName())) {
+							&& Strings.isNullOrEmpty(selectedResult
+									.getTorrent().getInfo().getName()) == false) {
 
 						final Torrent torrent = selectedResult.getTorrent();
 						LOGGER.debug("writing torrent: " + torrent);

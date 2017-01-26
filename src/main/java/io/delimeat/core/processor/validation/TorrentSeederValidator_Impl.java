@@ -1,5 +1,9 @@
 package io.delimeat.core.processor.validation;
 
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,11 +14,6 @@ import io.delimeat.core.torrent.InfoHash;
 import io.delimeat.core.torrent.ScrapeResult;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
-import io.delimeat.util.DelimeatUtils;
-
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.util.Iterator;
 
 public class TorrentSeederValidator_Impl implements TorrentValidator {
   	
@@ -41,7 +40,7 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
             while (scrape == null && it.hasNext()) {
                 scrape = scrape(it.next(), infoHash);
             }
-        } else if (DelimeatUtils.isNotEmpty(torrent.getTracker())) {
+        } else if (torrent.getTracker() != null) {
             scrape = scrape(torrent.getTracker(), infoHash);
         }
 

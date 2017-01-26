@@ -1,15 +1,14 @@
 package io.delimeat.core.processor.validation;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentFile;
 import io.delimeat.core.torrent.TorrentInfo;
-import io.delimeat.util.DelimeatUtils;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TorrentCompressedValidator_Impl implements TorrentValidator {
 
@@ -28,7 +27,7 @@ public class TorrentCompressedValidator_Impl implements TorrentValidator {
 					return false;
 				}
 			}
-		} else if (DelimeatUtils.isNotEmpty(info.getName())) {
+		} else if (info.getName() != null) {
 			fileTypeMatcher = fileTypePattern.matcher(info.getName()
 					.toLowerCase());
 			return fileTypeMatcher.find() == false;

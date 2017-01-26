@@ -1,19 +1,18 @@
 package io.delimeat.core.processor.validation;
 
+import java.util.List;
+
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
-
-import java.util.List;
 
 public class FeedResultTitleValidator_Impl implements FeedResultValidator {
 	
 	@Override
 	public void validate(List<FeedResult> results, Show show, Config config) throws ValidationException {
 		final String showTitle;
-		if( DelimeatUtils.isNotEmpty(show.getTitle()) ){
+		if( show.getTitle() != null ){
 			showTitle = show.getTitle().toLowerCase().replace(".", " ");
 		}else{
 			showTitle = "";
@@ -21,7 +20,7 @@ public class FeedResultTitleValidator_Impl implements FeedResultValidator {
 		String title;
 		for(FeedResult result : results){
 			title = result.getTitle();
-			if(DelimeatUtils.isEmpty(title) || title.toLowerCase().replace(".", " ").contains(showTitle) == false){
+			if(title == null || title.toLowerCase().replace(".", " ").contains(showTitle) == false){
 				result.getFeedResultRejections().add(FeedResultRejection.INCORRECT_TITLE);
 			}
 		}

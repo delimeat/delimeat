@@ -4,7 +4,6 @@ import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,7 +32,7 @@ public class FeedResultSeasonValidator_Impl implements FeedResultValidator {
 		String title;
 		for(FeedResult result: results){
 			title = result.getTitle();
-			if( DelimeatUtils.isNotEmpty(title) && seasonNum > 0  && episodeNum > 0){
+			if( title != null && seasonNum > 0  && episodeNum > 0){
 				seasonMatcher = seasonSelectPattern.matcher(title);
 				episodeMatcher = episodeSelectPattern.matcher(title);
 				

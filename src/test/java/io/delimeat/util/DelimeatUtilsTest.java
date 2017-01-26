@@ -28,22 +28,6 @@ public class DelimeatUtilsTest {
   public void isEmptyStringEmptyTest(){
     Assert.assertTrue(DelimeatUtils.isEmpty(""));
   }
-  
-  @Test
-  public void isNotEmptyStringTest(){
-    Assert.assertTrue(DelimeatUtils.isNotEmpty("TEXT"));
-  }
-  
-  @Test
-  public void isNotEmptyStringNullTest(){
-    String value = null;
-    Assert.assertFalse(DelimeatUtils.isNotEmpty(value));
-  }
-  
-  @Test
-  public void isNotEmptyStringEmptyTest(){
-    Assert.assertFalse(DelimeatUtils.isNotEmpty(""));
-  }
 
   @Test
   public void isEmptyCollectionTest(){

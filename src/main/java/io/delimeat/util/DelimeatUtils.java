@@ -26,16 +26,6 @@ public class DelimeatUtils {
     }
   
     /**
-     * Returns true if the string is not null or empty.
-     *
-     * @param value
-     * @return true if string is not null or empty
-     */
-    public static boolean isNotEmpty(String value) {
-        return !isEmpty(value);
-    }
-  
-    /**
      * Returns true if the collection is null or empty.
      *
      * @param value

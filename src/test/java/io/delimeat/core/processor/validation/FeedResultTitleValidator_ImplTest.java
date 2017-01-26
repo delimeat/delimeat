@@ -44,7 +44,8 @@ public class FeedResultTitleValidator_ImplTest {
 	}
 
 	@Test
-	public void emptyTitleFeedResultTest() throws Exception{	
+	public void emptyTitleFeedResultTest() throws Exception{
+		show.setTitle("SHOW_TITLE");
 		Episode episode = new Episode();
 		show.setNextEpisode(episode);
 		

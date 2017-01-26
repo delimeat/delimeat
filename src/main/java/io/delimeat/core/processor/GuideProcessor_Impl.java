@@ -53,11 +53,11 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 				final Show lockedShow = showDao.readAndLock(showId);
 				final String guideId = lockedShow.getGuideId();
 				boolean updated = false;
-           	boolean removeNextEps = false;
+				boolean removeNextEps = false;
 				// episodes to create or update
 				final List<Episode> createOrUpdateEps = new ArrayList<Episode>();
 
-				if (active == true && DelimeatUtils.isNotEmpty(guideId) == true) {
+				if (active == true && guideId != null && guideId.length() > 0) {
 					// get the info
 					final GuideInfo info = guideDao.info(guideId);
 					// only update if the info is newer than the last update

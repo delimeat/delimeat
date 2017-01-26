@@ -1,17 +1,16 @@
 package io.delimeat.core.processor.validation;
 
-import io.delimeat.core.config.Config;
-import io.delimeat.core.feed.FeedResult;
-import io.delimeat.core.feed.FeedResultRejection;
-import io.delimeat.core.show.Show;
-import io.delimeat.util.DelimeatUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.delimeat.core.config.Config;
+import io.delimeat.core.feed.FeedResult;
+import io.delimeat.core.feed.FeedResultRejection;
+import io.delimeat.core.show.Show;
 
 public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 
@@ -56,7 +55,7 @@ public class FeedResultDailyValidator_Impl implements FeedResultValidator {
 		String title;
 		for(FeedResult result: results){
 			title = result.getTitle();
-			if( DelimeatUtils.isNotEmpty(title) && airDate != null ){
+			if( title != null && airDate != null ){
 				yearMatcher = yearSelectPattern.matcher(title);
 				monthMatcher = monthSelectPattern.matcher(title);
 				dayMatcher = daySelectPattern.matcher(title);

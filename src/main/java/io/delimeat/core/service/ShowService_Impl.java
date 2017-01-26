@@ -46,7 +46,7 @@ public class ShowService_Impl implements ShowService {
       
       final String guideId = createdShow.getGuideId();
      
-      if(DelimeatUtils.isNotEmpty(guideId) == true){
+      if(guideId != null && guideId.length() > 0){
         final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
         final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
         Collections.sort(guideEps);
