@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.util.DelimeatUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,7 +22,10 @@ public class TvdbDateAdapter extends XmlAdapter<String, Date> {
 
 	@Override
 	public Date unmarshal(String value) throws Exception {
-		return DelimeatUtils.isEmpty(value) ? null : SDF.parse(value);
+		if(value == null || value.trim().length() == 0){
+			return null;
+		}
+		return SDF.parse(value);
 	}
 
 }

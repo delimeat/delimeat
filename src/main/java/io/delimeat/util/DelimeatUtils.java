@@ -14,17 +14,7 @@ public class DelimeatUtils {
   	private DelimeatUtils(){
      	//do nothing
    }
-  
-    /**
-     * Returns true if the string is null or empty.
-     *
-     * @param value
-     * @return true if string is null or empty
-     */
-    public static boolean isEmpty(String value) {
-        return value == null || value.trim().length() == 0;
-    }
-  
+
     /**
      * Returns true if the collection is null or empty.
      *

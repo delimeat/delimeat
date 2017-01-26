@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.util.DelimeatUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -24,7 +22,7 @@ public class AirTimeAdapter extends XmlAdapter<String, Integer> {
 
 	@Override
 	public Integer unmarshal(String value) throws Exception {
-		if(DelimeatUtils.isEmpty(value)){
+		if(value == null || value.trim().length() == 0 ){
 			return null;
 		}
 		Integer result = null;

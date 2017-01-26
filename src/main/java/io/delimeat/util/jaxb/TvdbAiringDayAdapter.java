@@ -3,10 +3,9 @@ package io.delimeat.util.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.delimeat.core.guide.AiringDay;
-import io.delimeat.util.DelimeatUtils;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import io.delimeat.core.guide.AiringDay;
 
 public class TvdbAiringDayAdapter extends XmlAdapter<String, List<AiringDay>> {
 
@@ -26,7 +25,7 @@ public class TvdbAiringDayAdapter extends XmlAdapter<String, List<AiringDay>> {
 
 	@Override
 	public List<AiringDay> unmarshal(String value) throws Exception {
-		if (DelimeatUtils.isEmpty(value)) {
+		if (value == null || value.trim().length() == 0) {
 			return null;
 		}
      

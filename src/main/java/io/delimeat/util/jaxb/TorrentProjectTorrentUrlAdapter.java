@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.util.DelimeatUtils;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class TorrentProjectTorrentUrlAdapter  extends XmlAdapter<String, String> {
@@ -13,7 +11,7 @@ public class TorrentProjectTorrentUrlAdapter  extends XmlAdapter<String, String>
 
     @Override
     public String unmarshal(String value) throws Exception {
-		if (DelimeatUtils.isEmpty(value)) {
+		if (value == null || value.trim().length() == 0) {
 			return null;
 		}
       if(value.toLowerCase().startsWith("http://")){

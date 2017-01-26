@@ -14,22 +14,6 @@ import java.util.List;
 public class DelimeatUtilsTest {
 
   @Test
-  public void isEmptyStringTest(){
-    Assert.assertFalse(DelimeatUtils.isEmpty("TEXT"));
-  }
-  
-  @Test
-  public void isEmptyStringNullTest(){
-    String value = null;
-    Assert.assertTrue(DelimeatUtils.isEmpty(value));
-  }
-  
-  @Test
-  public void isEmptyStringEmptyTest(){
-    Assert.assertTrue(DelimeatUtils.isEmpty(""));
-  }
-
-  @Test
   public void isEmptyCollectionTest(){
     Assert.assertFalse(DelimeatUtils.isEmpty(Arrays.asList("VALUE")));
   }

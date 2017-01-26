@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxb;
 
-import io.delimeat.util.DelimeatUtils;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.jsoup.Jsoup;
@@ -18,7 +16,7 @@ public class JaxbStringAdapter extends XmlAdapter<String, String> {
 
 	@Override
 	public String unmarshal(String value) throws Exception {
-		if (DelimeatUtils.isEmpty(value)) {
+		if (value == null || value.trim().length() == 0) {
 			return null;
 		}
 		return Jsoup.clean(value, WHITELIST);
