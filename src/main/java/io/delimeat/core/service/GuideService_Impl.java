@@ -1,15 +1,15 @@
 package io.delimeat.core.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
-import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.guide.GuideNotAuthorisedException;
 import io.delimeat.core.guide.GuideNotFoundException;
 import io.delimeat.core.guide.GuideSearchResult;
-
-import java.util.Iterator;
-import java.util.List;
 
 public class GuideService_Impl implements GuideService {
 
@@ -37,16 +37,10 @@ public class GuideService_Impl implements GuideService {
 	public List<GuideEpisode> readEpisodes(final String guideId)
 			throws GuideNotFoundException, GuideNotAuthorisedException,
 			GuideException {
-		List<GuideEpisode> eps = guideDao.episodes(guideId);
-		Iterator<GuideEpisode> it = eps.iterator();
-		while (it.hasNext()) {
-			GuideEpisode ep = it.next();
-			if (ep.getSeasonNum() == null || ep.getSeasonNum() == 0
-					|| ep.getAirDate() == null) {
-				it.remove();
-			}
-		}
-		return eps;
+		return guideDao.episodes(guideId).stream()
+				.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null))
+				.sorted()
+				.collect(Collectors.toList());
 	}
 
 

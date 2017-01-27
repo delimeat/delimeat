@@ -1,7 +1,5 @@
 package io.delimeat.core.torrent;
 
-import io.delimeat.util.DelimeatUtils;
-
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -16,6 +14,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import com.google.common.hash.Hashing;
 
 public class UDPScrapeRequestHandler_ImpTest {
 
@@ -46,7 +46,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 
 	@Test
 	public void createScrapeRequestTest() {
-		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,Integer.MIN_VALUE, infoHash);
 		Assert.assertEquals(36, req.length);

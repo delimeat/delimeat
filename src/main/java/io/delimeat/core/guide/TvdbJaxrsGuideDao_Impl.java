@@ -1,7 +1,5 @@
 package io.delimeat.core.guide;
 
-import io.delimeat.util.jaxrs.client.AbstractJaxrsClientHelper;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,6 +12,8 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.xml.bind.JAXBException;
+
+import io.delimeat.util.jaxrs.client.AbstractJaxrsClientHelper;
 
 public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements GuideDao {
 
@@ -73,7 +73,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
               						.path("series")
               						.queryParam("name", encodedTitle)
               						.request(getMediaType())
-                              .header("Authorization", "Bearer " + getToken().getValue())
+              						.header("Authorization", "Bearer " + getToken().getValue())
               						.get(GuideSearch.class)
               						.getResults();
           
@@ -97,11 +97,12 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
         }
 
         try {
-            return getTarget().path("series")
-              						.path(encodedGuideId)
-              						.request(getMediaType())
-                              .header("Authorization", "Bearer " + getToken().getValue())
-              						.get(GuideInfo.class);
+            return getTarget()
+            		.path("series")
+              		.path(encodedGuideId)
+              		.request(getMediaType())
+              		.header("Authorization", "Bearer " + getToken().getValue())
+              		.get(GuideInfo.class);
           
         } catch (NotAuthorizedException ex) {
             GuideError error = ex.getResponse().readEntity(GuideError.class);
@@ -141,7 +142,7 @@ public class TvdbJaxrsGuideDao_Impl extends AbstractJaxrsClientHelper implements
               						.path("episodes")
               						.queryParam("page", page)
               						.request(getMediaType())
-                              .header("Authorization", "Bearer " + getToken().getValue())
+              						.header("Authorization", "Bearer " + getToken().getValue())
               						.get(TvdbEpisodes.class);
           
         } catch (NotAuthorizedException ex) {

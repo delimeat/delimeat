@@ -1,25 +1,25 @@
 package io.delimeat.core.torrent;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import io.delimeat.util.DelimeatUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.google.common.hash.Hashing;
 
 public class InfoHashTest {
 
 	@Test
 	public void byteArrayConstructorTest() {
-		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		Assert.assertEquals("601492e054f9540eb0129c35deb385baa2faf0fe", infoHash.getHex());
 	}
 
 	@Test
 	public void getBytesTest() throws UnsupportedEncodingException {
-		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 
 		String encodedInfoHash = URLEncoder.encode( new String(infoHash.getBytes(),"ISO-8859-1"), "ISO-8859-1");
@@ -61,7 +61,7 @@ public class InfoHashTest {
 
 	@Test
 	public void toStringTest() {
-		byte[] sha1Bytes = DelimeatUtils.getSHA1("INFO_HASH".getBytes());
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		Assert.assertEquals("InfoHash{value=601492e054f9540eb0129c35deb385baa2faf0fe}", infoHash.toString());
 	}

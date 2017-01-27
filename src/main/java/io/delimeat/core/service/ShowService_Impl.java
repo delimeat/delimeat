@@ -1,21 +1,18 @@
 package io.delimeat.core.service;
 
-import io.delimeat.core.guide.GuideEpisode;
-import io.delimeat.core.guide.GuideException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
+
 import io.delimeat.core.guide.GuideDao;
+import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowConcurrencyException;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
 import io.delimeat.core.show.ShowNotFoundException;
-import io.delimeat.util.DelimeatUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.transaction.Transactional;
 
 public class ShowService_Impl implements ShowService {
 
@@ -29,7 +26,7 @@ public class ShowService_Impl implements ShowService {
 	public void setShowDao(ShowDao showDao) {
 		this.showDao = showDao;
 	}
-  
+
 	public GuideDao getGuideDao() {
 		return guideDao;
 	}
@@ -41,39 +38,27 @@ public class ShowService_Impl implements ShowService {
 	@Override
 	@Transactional
 	public Show create(Show show) throws GuideException, ShowConcurrencyException, ShowException {
-     
-      final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
-      
-      final String guideId = createdShow.getGuideId();
-     
-      if(guideId != null && guideId.length() > 0){
-        final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
-        final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
-        Collections.sort(guideEps);
 
-        final List<Episode> createEpisodes = new ArrayList<Episode>();
-        final Episode nextEp = createdShow.getNextEpisode();
-        final Episode prevEp = createdShow.getPreviousEpisode();
-        for(GuideEpisode guideEp: guideEps){
+		final Show createdShow = getShowDao().createOrUpdate(prepareShow(show));
 
-          if(nextEp != null && nextEp.equals(guideEp) ){
-            // do nothing because we alread have it
-            continue;
-          }
+		final String guideId = createdShow.getGuideId();
 
-          if(prevEp != null && prevEp.equals(guideEp) ){
-            // do nothing because we alread have it
-            continue;
-          }
+		if (guideId != null && guideId.length() > 0) {
+			final Episode nextEp = createdShow.getNextEpisode();
+			final Episode prevEp = createdShow.getPreviousEpisode();
+			final List<Episode> createEpisodes = guideDao.episodes(guideId).stream()
+					.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null)).sorted()
+					.filter(p -> (nextEp != null && !nextEp.equals(p)))
+					.filter(p -> (prevEp != null && !prevEp.equals(p)))
+					.map(Episode::new)
+					.collect(Collectors.toList());
+			
+			createEpisodes.forEach(p -> p.setShow(createdShow));
 
-          Episode ep = new Episode(guideEp);
-          ep.setShow(createdShow);
-          createEpisodes.add(ep);           
-        }
-        showDao.createOrUpdateEpisodes(createEpisodes);
-        
-      }
-      
+			showDao.createOrUpdateEpisodes(createEpisodes);
+
+		}
+
 		return createdShow;
 	}
 
@@ -100,12 +85,12 @@ public class ShowService_Impl implements ShowService {
 	public void delete(Long id) throws ShowNotFoundException, ShowException {
 		getShowDao().delete(id);
 	}
-	
-	public Show prepareShow(Show show){
+
+	public Show prepareShow(Show show) {
 		if (show.getNextEpisode() != null) {
 			show.getNextEpisode().setShow(show);
 		}
-		
+
 		if (show.getPreviousEpisode() != null) {
 			show.getPreviousEpisode().setShow(show);
 		}

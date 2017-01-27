@@ -1,10 +1,5 @@
 package io.delimeat.core.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -19,14 +14,19 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+
 import io.delimeat.core.config.Config;
 import io.delimeat.core.feed.FeedDao;
 import io.delimeat.core.feed.FeedException;
 import io.delimeat.core.feed.FeedResult;
 import io.delimeat.core.feed.FeedResultRejection;
 import io.delimeat.core.processor.validation.FeedResultValidator;
-import io.delimeat.core.processor.validation.ValidationException;
 import io.delimeat.core.processor.validation.TorrentValidator;
+import io.delimeat.core.processor.validation.ValidationException;
 import io.delimeat.core.processor.writer.TorrentWriter;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
@@ -36,7 +36,6 @@ import io.delimeat.core.torrent.Torrent;
 import io.delimeat.core.torrent.TorrentDao;
 import io.delimeat.core.torrent.TorrentException;
 import io.delimeat.core.torrent.TorrentNotFoundException;
-import io.delimeat.util.DelimeatUtils;
 
 public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
@@ -190,7 +189,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
         // keep the valid results, ignore the rest
         final List<FeedResult> foundResults = new ArrayList<FeedResult>();
         for (FeedResult result : results) {
-            if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
+            if (result.getFeedResultRejections().isEmpty()) {
                 foundResults.add(result);
             }else{
               LOGGER.debug("rejected result validation: " + result);
@@ -213,7 +212,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
         final Iterator<TorrentValidator> torrentValidatorItr = torrentValidators.iterator();
 
-        while (active == true && DelimeatUtils.isEmpty(result.getFeedResultRejections()) && torrentValidatorItr.hasNext()) {
+        while (active == true && result.getFeedResultRejections().isEmpty() && torrentValidatorItr.hasNext()) {
 
             TorrentValidator validator = torrentValidatorItr.next();
 
@@ -259,7 +258,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
             validateTorrent(result, torrent, config, show);
 
             // if it aint rejected yet its valid!
-            if (DelimeatUtils.isEmpty(result.getFeedResultRejections())) {
+            if (result.getFeedResultRejections().isEmpty()) {
                 outResults.add(result);
             }
           	else{

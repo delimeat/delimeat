@@ -1,17 +1,5 @@
 package io.delimeat.core.torrent;
 
-import com.google.common.io.ByteStreams;
-
-import io.delimeat.util.DelimeatUtils;
-import io.delimeat.util.UrlHandler;
-import io.delimeat.util.bencode.BDictionary;
-import io.delimeat.util.bencode.BInteger;
-import io.delimeat.util.bencode.BList;
-import io.delimeat.util.bencode.BObject;
-import io.delimeat.util.bencode.BString;
-import io.delimeat.util.bencode.BencodeException;
-import io.delimeat.util.bencode.BencodeUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -20,6 +8,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteStreams;
+
+import io.delimeat.util.UrlHandler;
+import io.delimeat.util.bencode.BDictionary;
+import io.delimeat.util.bencode.BInteger;
+import io.delimeat.util.bencode.BList;
+import io.delimeat.util.bencode.BObject;
+import io.delimeat.util.bencode.BString;
+import io.delimeat.util.bencode.BencodeException;
+import io.delimeat.util.bencode.BencodeUtils;
 
 public class TorrentDao_Impl implements TorrentDao {
 
@@ -137,7 +137,8 @@ public class TorrentDao_Impl implements TorrentDao {
 	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
 		final TorrentInfo info = new TorrentInfo();
 		byte[] rawBytes = BencodeUtils.encode(infoDictionary);
-		byte[] sha1Bytes = DelimeatUtils.getSHA1(rawBytes);
+		byte[] sha1Bytes = Hashing.sha1().hashBytes(rawBytes).asBytes();
+
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		info.setInfoHash(infoHash);
 		

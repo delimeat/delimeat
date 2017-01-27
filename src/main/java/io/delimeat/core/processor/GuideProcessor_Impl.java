@@ -6,26 +6,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import com.google.common.collect.ComparisonChain;
 
+import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.guide.GuideEpisode;
 import io.delimeat.core.guide.GuideException;
 import io.delimeat.core.guide.GuideInfo;
-import io.delimeat.core.guide.GuideDao;
 import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.util.DelimeatUtils;
 
 public class GuideProcessor_Impl extends AbstractProcessor implements Processor {
-  	
+
 	private ShowDao showDao;
 	private GuideDao guideDao;
-
 
 	public ShowDao getShowDao() {
 		return showDao;
@@ -43,7 +42,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 		this.guideDao = guideDao;
 	}
 
-   @Transactional
+	@Transactional
 	@Override
 	public void process() throws ShowException, GuideException {
 		if (active == false) {
@@ -85,7 +84,9 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 							final List<Episode> showEps = showDao.readAllEpisodes(showId);
 
 							// remove any specials or duds
-							final List<GuideEpisode> guideEps = DelimeatUtils.cleanEpisodes(foundGuideEps);
+							final List<GuideEpisode> guideEps = foundGuideEps.stream()
+									.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null))
+									.collect(Collectors.toList());
 							// order them by airing date ascending
 							Collections.sort(guideEps);
 							// sort the episode from latest to earliest
@@ -103,11 +104,12 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 								if (showPrevEp != null) {
 
 									int compare = ComparisonChain.start()
-															.compare(guideEp.getSeasonNum(), (Integer)showPrevEp.getSeasonNum())
-															.compare(guideEp.getEpisodeNum(),(Integer)showPrevEp.getEpisodeNum())
-                                             .result();
+											.compare(guideEp.getSeasonNum(), (Integer) showPrevEp.getSeasonNum())
+											.compare(guideEp.getEpisodeNum(), (Integer) showPrevEp.getEpisodeNum())
+											.result();
 									if (compare <= 0) {
-                             	//reached the previous episode (or further) time to stop
+										// reached the previous episode (or
+										// further) time to stop
 										continue;
 									}
 								}
@@ -131,7 +133,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 										showEp.setTitle(guideEp.getTitle());
 										updateThisEp = true;
 									}
-									if(updateThisEp==true){
+									if (updateThisEp == true) {
 										createOrUpdateEps.add(showEp);
 										updated = true;
 									}
@@ -146,11 +148,10 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 								}
 								prevGuideEp = guideEp;
 							}
-							
+
 							// if the show has no next episode and we have found
 							// one use that
-							if (lockedShow.getNextEpisode() == null
-									&& prevGuideEp != null) {
+							if (lockedShow.getNextEpisode() == null && prevGuideEp != null) {
 
 								Episode nextEp = null;
 								if (createOrUpdateEps.contains(prevGuideEp)) {
@@ -168,16 +169,16 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 									lockedShow.setNextEpisode(nextEp);
 									updated = true;
 								}
-							}  //if the show as a next episode but the guides doesnt remove the shows future episodes
-                    	else if(prevGuideEp == null && lockedShow.getNextEpisode() != null){
-                        removeNextEps = true;
-                        lockedShow.setNextEpisode(null);
-                      }
+							} // if the show as a next episode but the guides
+								// doesnt remove the shows future episodes
+							else if (prevGuideEp == null && lockedShow.getNextEpisode() != null) {
+								removeNextEps = true;
+								lockedShow.setNextEpisode(null);
+							}
+						} else if (active == true && lockedShow.getNextEpisode() != null) {
+							removeNextEps = true;
+							lockedShow.setNextEpisode(null);
 						}
-                 	else if(active == true && lockedShow.getNextEpisode() != null){
-                        removeNextEps = true;
-                        lockedShow.setNextEpisode(null);
-                  }
 					}
 				}
 				// once everything is done update the show
@@ -192,15 +193,15 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 						}
 					}
 					showDao.createOrUpdate(lockedShow);
-               
-              	// if there are episodes 
-               if(removeNextEps == true){
-                 	if(show.getPreviousEpisode() != null){
-                    showDao.deleteEpisodesAfter(show.getPreviousEpisode());
-                  }else{
-                    showDao.deleteEpisodes(lockedShow);
-                  }
-               }
+
+					// if there are episodes
+					if (removeNextEps == true) {
+						if (show.getPreviousEpisode() != null) {
+							showDao.deleteEpisodesAfter(show.getPreviousEpisode());
+						} else {
+							showDao.deleteEpisodes(lockedShow);
+						}
+					}
 				}
 			} finally {
 				alertListenersComplete();
@@ -210,10 +211,8 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 
 	@Override
 	public String toString() {
-		return "GuideProcessor_Impl [show=" + show + ", config=" + config
-				+ ", active=" + active + ", listeners=" + listeners
-				+ ", showDao=" + showDao + ", guideDao=" + guideDao + "]";
+		return "GuideProcessor_Impl [show=" + show + ", config=" + config + ", active=" + active + ", listeners="
+				+ listeners + ", showDao=" + showDao + ", guideDao=" + guideDao + "]";
 	}
-
 
 }

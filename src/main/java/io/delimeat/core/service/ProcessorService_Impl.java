@@ -1,5 +1,14 @@
 package io.delimeat.core.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.Executor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.delimeat.core.config.Config;
 import io.delimeat.core.config.ConfigDao;
 import io.delimeat.core.config.ConfigException;
@@ -12,16 +21,6 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
-import io.delimeat.util.DelimeatUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.Executor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProcessorService_Impl implements ProcessorService,
 		ProcessorListener {
@@ -84,7 +83,7 @@ public class ProcessorService_Impl implements ProcessorService,
 
 		final Date now = new Date();
 		final List<Show> shows = showDao.readAll();
-		if(DelimeatUtils.isEmpty(shows) == true){
+		if(shows == null || shows.isEmpty()){
 			return;
 		}
 		
@@ -133,7 +132,7 @@ public class ProcessorService_Impl implements ProcessorService,
 	public void processAllGuideUpdates() throws ConfigException, ShowException {
 		
 		final List<Show> shows = showDao.readAll();
-		if(DelimeatUtils.isEmpty(shows) == true){
+		if(shows == null || shows.isEmpty() ){
 			return;
 		}
 		

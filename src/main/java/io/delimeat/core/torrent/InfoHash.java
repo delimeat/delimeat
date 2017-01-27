@@ -3,8 +3,7 @@ package io.delimeat.core.torrent;
 import java.util.Arrays;
 
 import com.google.common.base.MoreObjects;
-
-import io.delimeat.util.DelimeatUtils;
+import com.google.common.io.BaseEncoding;
 
 public class InfoHash {
 
@@ -19,7 +18,7 @@ public class InfoHash {
 	}
 
 	public String getHex() {
-		return DelimeatUtils.toHex(sha1Bytes);
+		return BaseEncoding.base16().lowerCase().encode(sha1Bytes);
 	}
 
 	@Override
