@@ -8,10 +8,15 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.delimeat.util.jaxrs.client.AbstractJaxrsClientHelper;
 
 public abstract class AbstractJaxrsFeedDao extends AbstractJaxrsClientHelper implements
 		FeedDao {
+
+	private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
 	private FeedSource feedSource;
 	
@@ -36,10 +41,12 @@ public abstract class AbstractJaxrsFeedDao extends AbstractJaxrsClientHelper imp
 	        }
 	      
 	        try {
-	            return buildTarget(getTarget(), encodedTitle)
-	              					.request(getMediaType())
-	              					.get(FeedSearch.class)
-	              					.getResults();
+	        	WebTarget target = buildTarget(getTarget(), encodedTitle);
+	        	log.info(String.format("Reading from %s", target.getUri()));
+	        	
+	            return target.request(getMediaType())
+	            		.get(FeedSearch.class)
+	              		.getResults();
 
 	        } catch (WebApplicationException | ProcessingException ex) {
 	            throw new FeedException(ex);

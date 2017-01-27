@@ -30,22 +30,6 @@ public class DelimeatUtilsTest {
   }
   
   @Test
-  public void isNotEmptyCollectionTest(){
-    Assert.assertTrue(DelimeatUtils.isNotEmpty(Arrays.asList("VALUE")));
-  }
-  
-  @Test
-  public void isNotEmptyCollectionNullTest(){
-    List<String> value = null;
-    Assert.assertFalse(DelimeatUtils.isNotEmpty(value));
-  }
-  
-  @Test
-  public void isNotEmptyCollectionEmptyTest(){
-    Assert.assertFalse(DelimeatUtils.isNotEmpty(Collections.EMPTY_SET));
-  }
-  
-  @Test
   public void cleanEpisodesNullTest(){
     List<GuideEpisode> results = DelimeatUtils.cleanEpisodes(null);
     Assert.assertNotNull(results);

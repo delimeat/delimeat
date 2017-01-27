@@ -79,7 +79,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 
 						// get the episodes and refresh them
 						final List<GuideEpisode> foundGuideEps = guideDao.episodes(guideId);
-						if (active == true && DelimeatUtils.isNotEmpty(foundGuideEps)) {
+						if (active == true && !foundGuideEps.isEmpty()) {
 
 							// get the existing episodes
 							final List<Episode> showEps = showDao.readAllEpisodes(showId);
@@ -187,7 +187,7 @@ public class GuideProcessor_Impl extends AbstractProcessor implements Processor 
 					if (updated == true) {
 						lockedShow.setLastGuideUpdate(now);
 						// create/update eps if any
-						if (DelimeatUtils.isNotEmpty(createOrUpdateEps) == true) {
+						if (createOrUpdateEps != null && !createOrUpdateEps.isEmpty()) {
 							showDao.createOrUpdateEpisodes(createOrUpdateEps);
 						}
 					}

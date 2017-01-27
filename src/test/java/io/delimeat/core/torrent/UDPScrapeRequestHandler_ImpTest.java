@@ -56,8 +56,6 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Assert.assertEquals(Integer.MIN_VALUE, buf.getInt());
 		byte[] infoHashBytes = new byte[20];
 		buf.get(infoHashBytes);
-		System.out.println(infoHashBytes.length);
-		System.out.println(infoHash.getBytes().length);
 		Assert.assertTrue(Arrays.equals(infoHash.getBytes(), infoHashBytes));
 	}
 

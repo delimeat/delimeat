@@ -87,7 +87,6 @@ public class ConfigTest {
   
   	@Test
   	public void toStringTest(){
-     	System.out.println(config);
   		Assert.assertEquals("Config{outputDirectory=null, searchInterval=14400000, searchDelay=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[]}",config.toString());
   	}
   

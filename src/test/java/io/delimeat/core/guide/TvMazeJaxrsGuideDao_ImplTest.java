@@ -390,7 +390,7 @@ public class TvMazeJaxrsGuideDao_ImplTest {
 		dao.setBaseUri(new URI("http://localhost:8089"));
 
 		List<GuideSearchResult> results = dao.search("title");
-     	System.out.println(results);
+    
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals("GUIDEID", results.get(0).getGuideId());

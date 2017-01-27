@@ -36,7 +36,7 @@ public class TorrentFileTypeValidator_Impl implements TorrentValidator {
         Matcher matcher;
         final TorrentInfo info = torrent.getInfo();
         final List<String> files = new ArrayList<String>();
-        if (DelimeatUtils.isNotEmpty(info.getFiles())) {
+        if (info.getFiles() != null && !info.getFiles().isEmpty()) {
             for (TorrentFile file : info.getFiles()) {
                 files.add(file.getName());
             }

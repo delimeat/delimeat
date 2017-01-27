@@ -29,7 +29,6 @@ public class TorrentFileTest {
 
 	@Test
 	public void toStringTest() {
-		System.out.println(torrentFile);
 		Assert.assertEquals("TorrentFile{name=null, length=0}", torrentFile.toString());
 	}
 }

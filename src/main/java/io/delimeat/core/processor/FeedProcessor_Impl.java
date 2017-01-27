@@ -271,7 +271,7 @@ public class FeedProcessor_Impl extends AbstractProcessor implements Processor {
 
     public FeedResult selectResult(List<FeedResult> results, Config config) {
         FeedResult result = null;
-        if (DelimeatUtils.isNotEmpty(results) == true) {
+        if (results != null && !results.isEmpty()) {
             Collections.sort(results, resultComparator);
             result = results.get(0);// get the first one
         }

@@ -31,10 +31,11 @@ public class DelimeatUtils {
      * @param value
      * @return true if collection is null or empty
      */  
+	 /*
 	 public static boolean isNotEmpty(Collection<?> value){
 		 return !isEmpty(value);
 	 }
-
+	*/
     /**
      * Calculates the SHA1 of the byte array.
      *
@@ -73,7 +74,7 @@ public class DelimeatUtils {
      */  
   public static List<GuideEpisode> cleanEpisodes(List<GuideEpisode> episodes){
     List<GuideEpisode> cleanEps = new ArrayList<GuideEpisode>();
-    if(isNotEmpty(episodes) == true){
+    if(episodes != null){
       for(GuideEpisode ep: episodes){
         if(ep.getSeasonNum() != null && ep.getSeasonNum() != 0 && ep.getAirDate() != null ){
           cleanEps.add(ep);
