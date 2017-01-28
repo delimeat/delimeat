@@ -141,6 +141,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
 		// should be guideId = 2 because that is the correct GuideSource
 		Mockito.verify(mockedGuideDao).episodes("2");
+		@SuppressWarnings("rawtypes")
 		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
@@ -191,6 +192,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
 		// should be guideId = 2 because that is the correct GuideSource
 		Mockito.verify(mockedGuideDao).episodes("2");
+		@SuppressWarnings("rawtypes")
 		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
@@ -242,6 +244,7 @@ public class ShowService_ImplTest {
 		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
 		// should be guideId = 2 because that is the correct GuideSource
 		Mockito.verify(mockedGuideDao).episodes("2");
+		@SuppressWarnings("rawtypes")
 		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
 		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
