@@ -1,6 +1,11 @@
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
-body { padding-top: 70px;}
+body { padding-top: 55px;}
+
+body .container-fluid {
+	padding-right: 5px;
+	padding-left: 5px;
+}
 
 .working{
 	height:100vh;
