@@ -48,8 +48,8 @@ public class ShowService_Impl implements ShowService {
 			final Episode prevEp = createdShow.getPreviousEpisode();
 			final List<Episode> createEpisodes = guideDao.episodes(guideId).stream()
 					.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null)).sorted()
-					.filter(p -> (nextEp != null && !nextEp.equals(p)))
-					.filter(p -> (prevEp != null && !prevEp.equals(p)))
+					.filter(p -> (nextEp == null || !nextEp.equals(p)))
+					.filter(p -> (prevEp == null || !prevEp.equals(p)))
 					.map(Episode::new)
 					.collect(Collectors.toList());
 			

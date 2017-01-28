@@ -15,6 +15,7 @@ import io.delimeat.core.show.ShowDao;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -66,8 +67,9 @@ public class ShowService_ImplTest {
 		Assert.assertEquals(mockedShow, actualShow);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void createTest() throws Exception {
+	public void createNextAndPreviousTest() throws Exception {
 		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
 		show.setGuideId("2");
@@ -82,13 +84,12 @@ public class ShowService_ImplTest {
 		prevEp.setEpisodeNum(98);
 		show.setPreviousEpisode(prevEp);
 		show.setTimezone("EST");
-		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class)))
-				.thenReturn(show);
+		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(show);
+
 		service.setShowDao(mockedShowDao);
 
 		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
-		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(
-				GuideSource.TVDB);
+		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
 		// should be ignored becuase season = 0
 		GuideEpisode ep1 = new GuideEpisode();
 		ep1.setSeasonNum(0);
@@ -138,13 +139,116 @@ public class ShowService_ImplTest {
 
 		Show actualShow = service.create(new Show());
 		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
-		Mockito.verify(mockedGuideDao).episodes("2");// should be guideId = 2
-														// because that is the
-														// correct GuideSource
-		Mockito.verify(mockedShowDao, Mockito.times(1)).createOrUpdateEpisodes(ArgumentMatchers.anyList());
-		Assert.assertEquals(show, actualShow); // show returned by showDao
-												// should match the show
-												// returned by the service
+		// should be guideId = 2 because that is the correct GuideSource
+		Mockito.verify(mockedGuideDao).episodes("2");
+		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
+		Assert.assertEquals(2, argument.getValue().size());
+		
+		// show returned by showDao should match the show returned by the service
+		Assert.assertEquals(show, actualShow); 
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void createNextTest() throws Exception {
+		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
+		Show show = new Show();
+		show.setGuideId("2");
+		// next ep to verify we dont re-add it
+		Episode nextEp = new Episode();
+		nextEp.setSeasonNum(99);
+		nextEp.setEpisodeNum(100);
+		show.setNextEpisode(nextEp);
+
+		show.setTimezone("EST");
+		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(show);
+
+		service.setShowDao(mockedShowDao);
+
+		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
+		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
+
+		// should be ignored because it is next episode
+		GuideEpisode ep6 = new GuideEpisode();
+		ep6.setSeasonNum(99);
+		ep6.setEpisodeNum(100);
+		ep6.setTitle("title6");
+		ep6.setAirDate(SDF.parse("2016-01-24"));
+		// should be added because it is prev episode
+		GuideEpisode ep7 = new GuideEpisode();
+		ep7.setSeasonNum(97);
+		ep7.setEpisodeNum(98);
+		ep7.setTitle("title7");
+		ep7.setAirDate(SDF.parse("2016-01-25"));
+		// should be guideId = 2 because that is the correct GuideSource
+		Mockito.when(mockedGuideDao.episodes("2")).thenReturn(
+				Arrays.asList(ep6, ep7));
+		service.setGuideDao(mockedGuideDao);
+
+		Show actualShow = service.create(new Show());
+		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
+		// should be guideId = 2 because that is the correct GuideSource
+		Mockito.verify(mockedGuideDao).episodes("2");
+		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
+		Assert.assertEquals(1, argument.getValue().size());
+		
+		// show returned by showDao should match the show returned by the service
+		Assert.assertEquals(show, actualShow); 
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void createPreviousTest() throws Exception {
+		ShowDao mockedShowDao = Mockito.mock(ShowDao.class);
+		Show show = new Show();
+		show.setGuideId("2");
+		// prev ep to verify we dont re-add it
+		Episode prevEp = new Episode();
+		prevEp.setSeasonNum(97);
+		prevEp.setEpisodeNum(98);
+		show.setPreviousEpisode(prevEp);
+		show.setTimezone("EST");
+
+		Mockito.when(mockedShowDao.createOrUpdate(Mockito.any(Show.class))).thenReturn(show);
+
+		service.setShowDao(mockedShowDao);
+
+		GuideDao mockedGuideDao = Mockito.mock(GuideDao.class);
+		Mockito.when(mockedGuideDao.getGuideSource()).thenReturn(GuideSource.TVDB);
+
+		// should be added because it is next episode
+		GuideEpisode ep6 = new GuideEpisode();
+		ep6.setSeasonNum(99);
+		ep6.setEpisodeNum(100);
+		ep6.setTitle("title6");
+		ep6.setAirDate(SDF.parse("2016-01-24"));
+		// should be ignored because it is prev episode
+		GuideEpisode ep7 = new GuideEpisode();
+		ep7.setSeasonNum(97);
+		ep7.setEpisodeNum(98);
+		ep7.setTitle("title7");
+		ep7.setAirDate(SDF.parse("2016-01-25"));
+		// should be guideId = 2 because that is the correct GuideSource
+		Mockito.when(mockedGuideDao.episodes("2")).thenReturn(
+				Arrays.asList(ep6, ep7));
+		service.setGuideDao(mockedGuideDao);
+
+		Show actualShow = service.create(new Show());
+		Mockito.verify(mockedShowDao).createOrUpdate(Mockito.any(Show.class));
+		// should be guideId = 2 because that is the correct GuideSource
+		Mockito.verify(mockedGuideDao).episodes("2");
+		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(ArgumentMatchers.anyList());
+		Mockito.verify(mockedShowDao).createOrUpdateEpisodes(argument.capture());
+		Assert.assertEquals(1, argument.getValue().size());
+		
+		// show returned by showDao should match the show returned by the service
+		Assert.assertEquals(show, actualShow); 
 	}
 
 	@Test
