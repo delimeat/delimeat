@@ -45,7 +45,7 @@
 	 </div>
 	</nav>
 
-	<body class="container-fluid">
+	<body id="delimeat-main" class="container-fluid">
 		<div class="alert alert-dismissible alert-{{alert.type}}" role="alert" ng-repeat="alert in alerts">
 			<button type="button" class="close" data-dismiss="alert" ng-click="alert.close()"><span aria-hidden="true">&times;</span></button>
 			<span ng-bind="alert.msg"/>
@@ -83,9 +83,8 @@
 	<!-- build:js({.tmp,target/tmp,src/main/sourceapp}) js/app.js -->
 	<script src="js/_module_declarations.js"></script>
 	<script src="js/app.js"></script>
-	<!--  
 	<script src="js/config.js"></script>
-	!-->
+	
 	<!-- SHOWS -->
 	<script src="js/shows/shows_controller.js"></script>
 	<script src="js/shows/shows_service.js"></script>

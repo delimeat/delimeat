@@ -12,9 +12,6 @@ var app = angular.module('app', [
 'delimeat.guide'
 ]);
 
-angular.module("delimeat.config", [])
-.constant("API", "api/");
-
 app.config(TranslationConfig);
 
 TranslationConfig.$inject = ['$translateProvider'];

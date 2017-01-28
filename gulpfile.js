@@ -67,7 +67,7 @@ gulp.task('config:dev',['clean'], function () {
 		  environment: 'development'
 		}))
 	    .pipe($.rename('config.js'))
-	    .pipe(gulp.dest('.tmp/js'));
+	    .pipe(gulp.dest('target/tmp/js'));
 });
 
 //create config file for api endpoint - BUILD
@@ -113,7 +113,7 @@ gulp.task('watch',['clean'], function () {
 //serve the source files for development
 gulp.task('serve:dev', ['clean','watch','config:dev'], function() {
     var server = express();
-    server.use(express.static('.tmp/'));
+    server.use(express.static('target/tmp/'));
     server.use(express.static('./src/main/sourceapp/'));
     server.listen(SERVER_PORT);
 });
