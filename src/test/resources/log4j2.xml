@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="ALL">
   
   <Appenders>
     
@@ -10,12 +10,12 @@
   </Appenders>
   
   <Loggers>
-    <!--
-    <logger name="com.github.tomakehurst.wiremock" level="ALL" additivity="false">
+    
+    <logger name="io.delimeat" level="ALL" additivity="false">
       <AppenderRef ref="Console" />
     </logger>
-    !-->
-    <logger name="org.glassfish.jersey" level="WARN" additivity="false">
+    
+    <logger name="org.glassfish.jersey" level="ALL" additivity="false">
       <AppenderRef ref="Console" />
     </logger>
     

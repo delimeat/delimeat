@@ -80,9 +80,9 @@ public class ShowJpaDao_ImplIT {
 	@Test
 	public void createOrUpdateShowTest() throws Exception {     	
      	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"),SDF.parse("2015-10-15"), SDF.parse("2015-10-16"),SDF.parse("2015-10-14"), false,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
-		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,show);
+		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,EpisodeStatus.FOUND,0,show);
      	show.setPreviousEpisode(prevEpisode);
-		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,show);
+		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,EpisodeStatus.FOUND,0,show);
      	show.setNextEpisode(nextEpisode);
 
 		Show newShow = dao.createOrUpdate(show);
@@ -102,9 +102,9 @@ public class ShowJpaDao_ImplIT {
 	@Test(expected=ShowConcurrencyException.class)
 	public void createOrUpdateShowOptimisticLockTest() throws Exception {     	
      	Show show = new Show(0,1, "TIMEZONE", "ID1", "TITLE",true, ShowType.ANIMATED, SDF.parse("2015-10-17"),SDF.parse("2015-10-15"), SDF.parse("2015-10-16"),SDF.parse("2015-10-14"), false,true, Integer.MIN_VALUE, Integer.MAX_VALUE, 99);
-		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,0,show);
+		Episode prevEpisode = new Episode(0,"TITLE",SDF.parse("2015-10-15"),2,1,false,EpisodeStatus.FOUND,0,show);
      	show.setPreviousEpisode(prevEpisode);
-		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,0,show);
+		Episode nextEpisode = new Episode(0,"TITLE_TWO",SDF.parse("2000-01-01"),1,2,false,EpisodeStatus.FOUND,0,show);
      	show.setNextEpisode(nextEpisode);
 		
 		dao.createOrUpdate(show);
@@ -123,9 +123,9 @@ public class ShowJpaDao_ImplIT {
   	public void readShowTest() throws Exception { 
 
      	Show expectedShow = new Show(1,1200, "TIMEZONE", "GUIDEID", "TITLE",true, ShowType.ANIMATED, SDF.parse("1988-12-25"),SDF.parse("1988-12-24") , null, null, false,true, 100, 101, 99);
-		Episode prevEpisode = new Episode(2,"PREVIOUS EPISODE",SDF.parse("2016-01-01"),1,3,true,4,expectedShow);
+		Episode prevEpisode = new Episode(2,"PREVIOUS EPISODE",SDF.parse("2016-01-01"),1,3,true,EpisodeStatus.FOUND,4,expectedShow);
      	expectedShow.setPreviousEpisode(prevEpisode);
-		Episode nextEpisode = new Episode(3,"NEXT EPISODE",SDF.parse("2016-02-01"),2,1,false,3,expectedShow);
+		Episode nextEpisode = new Episode(3,"NEXT EPISODE",SDF.parse("2016-02-01"),2,1,false,EpisodeStatus.FOUND,3,expectedShow);
      	expectedShow.setNextEpisode(nextEpisode);
      
      	Show show = dao.read(1);

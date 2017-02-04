@@ -32,6 +32,14 @@
   	<named-query name="Show.deleteEpisodesAfter">
 		<query><![CDATA[DELETE FROM Episode e WHERE e.show = :show AND e.seasonNum >= :seasonNum AND e.episodeNum > :episodeNum]]></query>
 	</named-query> 
+	
+	<named-query name="Episode.getAll">
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.status IN :statusList ORDER BY e.airDate]]></query>
+	</named-query>
+	
+	<named-query name="Episode.getAll.count">
+		<query><![CDATA[SELECT count(e) FROM Episode e WHERE e.status IN :statusList]]></query>
+	</named-query>
   
 	<entity class="Episode" name="Episode">
 		<table name="EPISODE" >
@@ -70,12 +78,17 @@
 			<basic name="doubleEp" optional="false">
 				<column name="DOUBLE_EP" nullable="false" />
 			</basic>
-
+			
+			<basic name="status" optional="false">
+				<column name="STATUS" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+			
 			<version name="version">
 				<column name="VERSION" />
 			</version>
 
-			<many-to-one name="show" target-entity="Show" optional="false">
+			<many-to-one name="show" target-entity="Show" optional="false" fetch="EAGER">
 				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID" nullable="false"/>
 				<cascade>
 					<cascade-all/>

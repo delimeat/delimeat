@@ -19,6 +19,10 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
         <property name="guideDao" ref="tvdbGuideDaoId"/>
     </bean>
     
+	<bean id="episodeServiceId" class="io.delimeat.core.service.EpisodeService_Impl">
+        <property name="episodeDao" ref="episodeDaoId"/>
+    </bean>
+    
     <bean id="guideServiceId" class="io.delimeat.core.service.GuideService_Impl">
 
     	<property name="guideDao" ref="tvdbGuideDaoId"/>

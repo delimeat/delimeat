@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Episode{
+public class Episode {
 
 	private long episodeId;
 	private String title;
@@ -22,32 +22,35 @@ public class Episode{
 	private int seasonNum;
 	private int episodeNum;
 	private boolean doubleEp;
+	private EpisodeStatus status = EpisodeStatus.PENDING;
 	private int version;
 
 	@XmlTransient
 	private Show show;
-  
-   public Episode(){
-     //do nothing;
-   }
-  
-  	public Episode(long episodeId, String title, Date airDate, int seasonNum, int episodeNum, boolean doubleEp, int version, Show show){
-     this.episodeId = episodeId;
-     this.title = title;
-     this.airDate = airDate;
-     this.seasonNum = seasonNum;
-     this.episodeNum = episodeNum;
-     this.doubleEp = doubleEp;
-     this.version = version;
-     this.show = show;
-   }
-  
-   public Episode(GuideEpisode guideEp){
-     title = guideEp.getTitle();
-     airDate = guideEp.getAirDate();
-     seasonNum = guideEp.getSeasonNum();
-     episodeNum = guideEp.getEpisodeNum();
-   }
+
+	public Episode() {
+		// do nothing;
+	}
+
+	public Episode(long episodeId, String title, Date airDate, int seasonNum, int episodeNum, boolean doubleEp,
+			EpisodeStatus status, int version, Show show) {
+		this.episodeId = episodeId;
+		this.title = title;
+		this.airDate = airDate;
+		this.seasonNum = seasonNum;
+		this.episodeNum = episodeNum;
+		this.doubleEp = doubleEp;
+		this.status = status;
+		this.version = version;
+		this.show = show;
+	}
+
+	public Episode(GuideEpisode guideEp) {
+		title = guideEp.getTitle();
+		airDate = guideEp.getAirDate();
+		seasonNum = guideEp.getSeasonNum();
+		episodeNum = guideEp.getEpisodeNum();
+	}
 
 	/**
 	 * @return the episodeId
@@ -140,6 +143,21 @@ public class Episode{
 	}
 
 	/**
+	 * @return the status
+	 */
+	public EpisodeStatus getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public void setStatus(EpisodeStatus status) {
+		this.status = status;
+	}
+
+	/**
 	 * @return the version
 	 */
 	public int getVersion() {
@@ -176,46 +194,42 @@ public class Episode{
 	 */
 	@Override
 	public String toString() {
-      return MoreObjects.toStringHelper(this)
-        .add("episodeId", episodeId)
-        .add("title", title)  
-        .add("airDate", (airDate != null ? airDate : null))
-        .add("seasonNum", seasonNum)
-        .add("episodeNum", episodeNum)
-        .add("doubleEp", doubleEp)
-        .add("showId", (show != null ? show.getShowId() : null))
-        .add("version", version)
-        .toString(); 
+		return MoreObjects.toStringHelper(this).add("episodeId", episodeId).add("title", title)
+				.add("airDate", (airDate != null ? airDate : null)).add("seasonNum", seasonNum)
+				.add("episodeNum", episodeNum).add("doubleEp", doubleEp)
+				.add("showId", (show != null ? show.getShowId() : null)).add("status", status).add("version", version)
+				.toString();
 	}
-  
- 	@Override
-  	public boolean equals(Object object)
-  	{
-      if(object ==null){
-        return false;
-      }
-      
-      if(this == object){
-        return true;
-      }
-      
-      if (object instanceof Episode)
-      {
-        final Episode other = (Episode)object;
-        return Objects.equals(this.episodeId, other.episodeId) &&
-          		Objects.equals(this.version, other.version);
-      }else if (object instanceof GuideEpisode){
-        final GuideEpisode other = (GuideEpisode)object;
-        return Objects.equals(this.seasonNum, other.getSeasonNum()) &&
-          		Objects.equals(this.episodeNum, other.getEpisodeNum());
-      }
-      return false;
-  }
 
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
 
-  @Override 
-  public int hashCode() {
-    return Objects.hash(episodeId,version);
-  }
+		if (this == object) {
+			return true;
+		}
+
+		if (object instanceof Episode) {
+			final Episode other = (Episode) object;
+			return Objects.equals(this.episodeId, other.episodeId) && Objects.equals(this.version, other.version);
+		} else if (object instanceof GuideEpisode) {
+			final GuideEpisode other = (GuideEpisode) object;
+			return Objects.equals(this.seasonNum, other.getSeasonNum())
+					&& Objects.equals(this.episodeNum, other.getEpisodeNum());
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(episodeId, version);
+	}
 
 }

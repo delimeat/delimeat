@@ -37,6 +37,7 @@ public class JaxrsApplication extends ResourceConfig {
 		register(ShowResource.class);
 		register(GuideResource.class);
 		register(ConfigResource.class);
+		register(EpisodeResource.class);
 		register(ETagResponseFilter.class); 
      	register(ETagRequestFilter.class);     
 		register(ShowExceptionMapper.class);

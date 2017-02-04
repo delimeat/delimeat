@@ -1,12 +1,5 @@
 package io.delimeat.util;
 
-import io.delimeat.util.UrlHandler_Impl;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -21,6 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class UrlHandler_ImplTest {
 
@@ -389,6 +388,7 @@ public class UrlHandler_ImplTest {
      Mockito.verify(connection,Mockito.times(1)).setRequestProperty("user-agent", UrlHandler_Impl.DEFAULT_USER_AGENT );
    }
   
+  	@Ignore
   	@Test
   	public void openOutputFileProtocolTest() throws IOException{
      	URL url = ClassLoader.getSystemClassLoader().getResource("log4j2.xml");
@@ -397,6 +397,7 @@ public class UrlHandler_ImplTest {
      	returnedOutput.close();
    }
   
+  	@Ignore
   	@Test
   	public void openOutputFileNotExistsNoFolderTest()throws Exception{
      URL url = new URL("file:tmp.out");
@@ -407,6 +408,7 @@ public class UrlHandler_ImplTest {
      file.delete();
    }
   
+  	@Ignore
   	@Test
   	public void openOutputFileNotExistsWithFolderTest()throws Exception{
      URL url = new URL("file:folder/tmp.out");

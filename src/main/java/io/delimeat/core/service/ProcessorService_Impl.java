@@ -1,9 +1,8 @@
 package io.delimeat.core.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
@@ -21,6 +20,7 @@ import io.delimeat.core.show.Episode;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowDao;
 import io.delimeat.core.show.ShowException;
+import io.delimeat.core.show.ShowUtils;
 
 public class ProcessorService_Impl implements ProcessorService,
 		ProcessorListener {
@@ -81,7 +81,7 @@ public class ProcessorService_Impl implements ProcessorService,
 	@Override
 	public void processAllFeedUpdates() throws ConfigException, ShowException {
 
-		final Date now = new Date();
+		final Instant now = Instant.now();
 		final List<Show> shows = showDao.readAll();
 		if(shows == null || shows.isEmpty()){
 			return;
@@ -90,7 +90,7 @@ public class ProcessorService_Impl implements ProcessorService,
 		final Config config = configDao.read();		
 		final long searchInterval = config.getSearchInterval();
 		final long searchDelay = config.getSearchDelay();
-		final Date searchWindow = new Date(now.getTime() - searchInterval);
+		final Instant searchWindow = now.minusMillis(searchInterval);
 		for (Show show : shows) {
 			if(show.isEnabled() == false){
 				continue;
@@ -100,26 +100,22 @@ public class ProcessorService_Impl implements ProcessorService,
 				continue;
 			}
 			
-			final Date lastFeedCheck;
+			final Instant lastFeedCheck;
 			if(show.getLastFeedCheck() != null){
-				lastFeedCheck = show.getLastFeedCheck();
+				lastFeedCheck = show.getLastFeedCheck().toInstant();
 			}else{
-				lastFeedCheck = new Date(0);
+				lastFeedCheck = Instant.EPOCH;
 			}
 			
-			if(lastFeedCheck.after(searchWindow) == true){
+			if(lastFeedCheck.isAfter(searchWindow) == true){
 				continue;
 			}
 			
 			Episode nextEp = show.getNextEpisode();
-            // horrible timezone hack
-            String timezone = show.getTimezone();
-            TimeZone showTz = TimeZone.getTimeZone(timezone);
-           	int showTzOffset = showTz.getRawOffset();
-           	TimeZone localTz = TimeZone.getDefault();
-           	int localTzOffset = localTz.getRawOffset();        	
-           	Date nextEpAirDateTime = new Date(nextEp.getAirDate().getTime() + show.getAirTime() - showTzOffset + localTzOffset + searchDelay);
-           	if (nextEpAirDateTime.before(now) == true) {
+			Instant delayedAirDateTime = ShowUtils.determineAirTime(nextEp.getAirDate(), show)
+										.plusMillis(searchDelay);
+
+           	if (delayedAirDateTime.isBefore(now) == true) {
 				Processor processor = feedProcessorFactory.build(show,config);
 				processor.addListener(this);
 				processors.add(processor);

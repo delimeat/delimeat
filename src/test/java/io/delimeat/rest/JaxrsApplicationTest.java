@@ -22,10 +22,11 @@ public class JaxrsApplicationTest {
 	
 	@Test
 	public void classesTest(){
-		Assert.assertEquals(9, application.getClasses().size());
+		Assert.assertEquals(10, application.getClasses().size());
 		Assert.assertTrue(application.getClasses().contains(ShowResource.class));
 		Assert.assertTrue(application.getClasses().contains(ConfigResource.class));
 		Assert.assertTrue(application.getClasses().contains(GuideResource.class));
+		Assert.assertTrue(application.getClasses().contains(EpisodeResource.class));
 		Assert.assertTrue(application.getClasses().contains(GenericExceptionMapper.class));
 		Assert.assertTrue(application.getClasses().contains(GuideExceptionMapper.class));
 		Assert.assertTrue(application.getClasses().contains(ShowExceptionMapper.class));

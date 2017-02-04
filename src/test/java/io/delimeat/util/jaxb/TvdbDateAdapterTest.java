@@ -3,6 +3,7 @@ package io.delimeat.util.jaxb;
 import io.delimeat.util.jaxb.TvdbDateAdapter;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,7 +12,10 @@ import org.junit.Test;
 public class TvdbDateAdapterTest {
 	
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
+    static {
+    	SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+    
 	private TvdbDateAdapter adapter;
 
 	@Before
@@ -30,7 +34,7 @@ public class TvdbDateAdapterTest {
 
 	@Test
 	public void setValidDateTest() throws Exception {
-		Assert.assertEquals("2012-02-04", SDF.format(adapter.unmarshal("2012-02-04")));
+		Assert.assertEquals(SDF.parse("2012-02-04"), adapter.unmarshal("2012-02-04"));
 	}
 
 	@Test

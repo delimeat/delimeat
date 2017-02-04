@@ -57,4 +57,6 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
 	<bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
 	<bean id="showDaoId" class="io.delimeat.core.show.ShowJpaDao_Impl" />
+	
+	<bean id="episodeDaoId" class="io.delimeat.core.show.EpisodeJpaDao_Impl" />
 </beans>

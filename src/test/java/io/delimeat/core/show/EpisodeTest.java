@@ -44,13 +44,14 @@ public class EpisodeTest {
     @Test
     public void episodeConstructorTest() {
         Show show = new Show();
-        episode = new Episode(Long.MAX_VALUE, "TITLE", new Date(0), Integer.MIN_VALUE, Integer.MAX_VALUE, true, 99, show);
+        episode = new Episode(Long.MAX_VALUE, "TITLE", new Date(0), Integer.MIN_VALUE, Integer.MAX_VALUE, true,EpisodeStatus.SKIPPED, 99, show);
         Assert.assertEquals(Long.MAX_VALUE, episode.getEpisodeId());
         Assert.assertEquals("TITLE", episode.getTitle());
         Assert.assertEquals(new Date(0), episode.getAirDate());
         Assert.assertEquals(Integer.MIN_VALUE, episode.getSeasonNum());
         Assert.assertEquals(Integer.MAX_VALUE, episode.getEpisodeNum());
         Assert.assertTrue(episode.isDoubleEp());
+        Assert.assertEquals(EpisodeStatus.SKIPPED, episode.getStatus());
         Assert.assertEquals(99, episode.getVersion());
         Assert.assertEquals(show, episode.getShow());
     }
@@ -70,7 +71,7 @@ public class EpisodeTest {
     }
 
     @Test
-    public void airDateTimeTest() throws ParseException {
+    public void airDateTest() throws ParseException {
         Assert.assertNull(episode.getAirDate());
         episode.setAirDate(SDF.parse("2015-11-06"));
         Assert.assertEquals("2015-11-06", SDF.format(episode.getAirDate()));
@@ -89,12 +90,19 @@ public class EpisodeTest {
         episode.setEpisodeNum(Integer.MIN_VALUE);
         Assert.assertEquals(Integer.MIN_VALUE, episode.getEpisodeNum());
     }
-
+    
     @Test
     public void doubleEpisodeTest() {
         Assert.assertFalse(episode.isDoubleEp());
         episode.setDoubleEp(true);
         Assert.assertTrue(episode.isDoubleEp());
+    }
+    
+
+    public void statusTest() {
+        Assert.assertEquals(EpisodeStatus.PENDING, episode.getStatus());
+        episode.setStatus(EpisodeStatus.SKIPPED);
+        Assert.assertEquals(EpisodeStatus.SKIPPED, episode.getStatus());
     }
 
     @Test
@@ -175,7 +183,7 @@ public class EpisodeTest {
         otherEp.setSeasonNum(1);
         otherEp.setEpisodeNum(2);
 
-        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, Integer.MAX_VALUE, null);
+        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, EpisodeStatus.FOUND, Integer.MAX_VALUE, null);
         Assert.assertTrue(episode.equals(otherEp));
     }
 
@@ -187,7 +195,7 @@ public class EpisodeTest {
         otherEp.setSeasonNum(2);
         otherEp.setEpisodeNum(2);
 
-        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, Integer.MAX_VALUE, null);
+        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, EpisodeStatus.FOUND, Integer.MAX_VALUE, null);
         Assert.assertFalse(episode.equals(otherEp));
     }
 
@@ -199,15 +207,15 @@ public class EpisodeTest {
         otherEp.setSeasonNum(1);
         otherEp.setEpisodeNum(1);
 
-        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, Integer.MAX_VALUE, null);
+        episode = new Episode(1, "EP", SDF.parse("2000-01-28"), 1, 2, false, EpisodeStatus.FOUND, Integer.MAX_VALUE, null);
         Assert.assertFalse(episode.equals(otherEp));
     }
 
     @Test
     public void equalsEpisodeVersionTest() throws ParseException {
-        Episode otherEp = new Episode(1, null, null, 1, 1, false, Integer.MIN_VALUE, null);
+        Episode otherEp = new Episode(1, null, null, 1, 1, false, EpisodeStatus.FOUND, Integer.MIN_VALUE, null);
 
-        episode = new Episode(1, null, null, 1, 1, false, Integer.MAX_VALUE, null);
+        episode = new Episode(1, null, null, 1, 1, false, EpisodeStatus.FOUND, Integer.MAX_VALUE, null);
         Assert.assertFalse(episode.equals(otherEp));
     }
 
@@ -221,7 +229,7 @@ public class EpisodeTest {
 
     @Test
     public void toStringTest() throws ParseException {
-        Assert.assertEquals("Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, version=0}", episode.toString());
+        Assert.assertEquals("Episode{episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, showId=null, status=PENDING, version=0}", episode.toString());
     }
 
 }

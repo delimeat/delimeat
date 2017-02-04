@@ -2,12 +2,14 @@ package io.delimeat.rest;
 
 import io.delimeat.core.service.ShowService;
 import io.delimeat.core.show.Episode;
+import io.delimeat.core.show.EpisodeStatus;
 import io.delimeat.core.show.Show;
 import io.delimeat.core.show.ShowType;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
@@ -28,6 +30,10 @@ import org.mockito.Mockito;
 public class ShowResourceTest extends JerseyTest {
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+	static{
+		SDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	
 	private ShowService mockedShowService = Mockito.mock(ShowService.class);
 
 	@Override
@@ -51,10 +57,10 @@ public class ShowResourceTest extends JerseyTest {
 	private Show createShow() throws Exception{
 		Show show = new Show(1L, 9900000, "TIMEZONE", "GUIDE_ID", "TITLE", true, ShowType.MINI_SERIES, SDF.parse("1970-01-01"), SDF.parse("1970-01-02"), SDF.parse("1970-01-03"), SDF.parse("1970-01-04"), true, true, Integer.MIN_VALUE, Integer.MAX_VALUE, 99);
 
-		Episode nextEp = new Episode(Long.MIN_VALUE, "NEXT_EP_TITLE", SDF.parse("1970-01-05"), 2, 101, false, 99, null);
+		Episode nextEp = new Episode(Long.MIN_VALUE, "NEXT_EP_TITLE", SDF.parse("1970-01-05"), 2, 101, false,EpisodeStatus.SKIPPED, 99, null);
 		show.setNextEpisode(nextEp);
 
-		Episode prevEp = new Episode(Long.MIN_VALUE, "PREV_EP_TITLE", SDF.parse("1970-01-06"), 3, 102, true, 99, null);
+		Episode prevEp = new Episode(Long.MIN_VALUE, "PREV_EP_TITLE", SDF.parse("1970-01-06"), 3, 102, true, EpisodeStatus.FOUND, 99, null);
 		show.setPreviousEpisode(prevEp);
 
 		return show;
