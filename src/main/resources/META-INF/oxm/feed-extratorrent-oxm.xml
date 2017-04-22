@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xml-accessor-type="NONE" package-name="io.delimeat.core.feed"
+	xml-accessor-type="NONE" package-name="io.delimeat.feed.domain"
 	xml-mapping-metadata-complete="true">
 
 	<java-types>
@@ -13,10 +13,10 @@
 				<xml-element java-attribute="title" name="title"/>
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>
 				<xml-element java-attribute="seeders" name="seeders">
-					<xml-java-type-adapter value="io.delimeat.util.jaxb.ExtraTorrentIntegerAdapter" />
+					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
 				</xml-element>				
 				<xml-element java-attribute="leechers" name="leechers">
-					<xml-java-type-adapter value="io.delimeat.util.jaxb.ExtraTorrentIntegerAdapter" />
+					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
 				</xml-element>	
 			</java-attributes>
 		</java-type>

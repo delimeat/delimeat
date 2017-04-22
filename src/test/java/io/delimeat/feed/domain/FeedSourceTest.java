@@ -1,0 +1,44 @@
+package io.delimeat.feed.domain;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import io.delimeat.feed.domain.FeedSource;
+
+public class FeedSourceTest {
+
+	@Test
+	public void katTest() {
+		Assert.assertEquals(0, FeedSource.KAT.getValue());
+	}
+
+	@Test
+	public void torrentProjectTest() {
+		Assert.assertEquals(1, FeedSource.TORRENTPROJECT.getValue());
+	}
+
+	@Test
+	public void limeTorrentsTest() {
+		Assert.assertEquals(2, FeedSource.LIMETORRENTS.getValue());
+	}
+
+	@Test
+	public void extraTorrentTest() {
+		Assert.assertEquals(3, FeedSource.EXTRATORRENT.getValue());
+	}
+
+	@Test
+	public void bitSnoopTest() {
+		Assert.assertEquals(4, FeedSource.BITSNOOP.getValue());
+	}
+
+	@Test
+	public void torrentDownloadsTest() {
+		Assert.assertEquals(5, FeedSource.TORRENTDOWNLOADS.getValue());
+	}
+
+	@Test
+	public void zooqleTest() {
+		Assert.assertEquals(6, FeedSource.ZOOQLE.getValue());
+	}
+}

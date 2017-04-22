@@ -27,13 +27,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       </property>
     </bean>
 
-    <bean id="torrentDownloadsGuideDaoId" class="io.delimeat.core.feed.TorrentDownloadsJaxrsFeedDao_Impl">
-      <property name="feedSource" value="TORRENTDOWNLOADS" />
+    <bean id="torrentDownloadsGuideDaoId" class="io.delimeat.feed.TorrentDownloadsJaxrsFeedDao_Impl">
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="torrentDownloadsJerseyClientFactoryId" factory-method="newClient" />
       </property>
       <property name="mediaType" value="APPLICATION_XML_TYPE" />
-      <property name="baseUri" value="${io.delimeat.core.feed.torrentdownloads.baseUri}" />
+      <property name="baseUri" value="${io.delimeat.feed.torrentdownloads.baseUri}" />
     </bean>    
     
 </beans>

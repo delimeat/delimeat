@@ -26,13 +26,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       </property>
     </bean>
 
-    <bean id="limeTorrentsGuideDaoId" class="io.delimeat.core.feed.LimeTorrentsJaxrsFeedDao_Impl">
-      <property name="feedSource" value="LIMETORRENTS" />
+    <bean id="limeTorrentsGuideDaoId" class="io.delimeat.feed.LimeTorrentsJaxrsFeedDao_Impl">
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="limeTorrentsJerseyClientFactoryId" factory-method="newClient" />
       </property>
       <property name="mediaType" value="APPLICATION_XML_TYPE" />
-      <property name="baseUri" value="${io.delimeat.core.feed.limetorrents.baseUri}" />
+      <property name="baseUri" value="${io.delimeat.feed.limetorrents.baseUri}" />
     </bean>    
 
 </beans>

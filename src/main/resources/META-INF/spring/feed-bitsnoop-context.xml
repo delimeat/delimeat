@@ -27,13 +27,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       </property>
     </bean>
 
-    <bean id="bitSnoopGuideDaoId" class="io.delimeat.core.feed.BitSnoopJaxrsFeedDao_Impl">
-       <property name="feedSource" value="BITSNOOP" />
+    <bean id="bitSnoopGuideDaoId" class="io.delimeat.feed.BitSnoopJaxrsFeedDao_Impl">
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="bitSnoopJerseyClientFactoryId" factory-method="newClient" />
       </property>
       <property name="mediaType" value="APPLICATION_XML_TYPE" />
-      <property name="baseUri" value="${io.delimeat.core.feed.bitsnoop.baseUri}" />
+      <property name="baseUri" value="${io.delimeat.feed.bitsnoop.baseUri}" />
     </bean>    
     
 </beans>

@@ -27,13 +27,12 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       </property>
     </bean>
 
-    <bean id="zooqleGuideDaoId" class="io.delimeat.core.feed.ZooqleJaxrsFeedDao_Impl">
-      <property name="feedSource" value="ZOOQLE" />
+    <bean id="zooqleGuideDaoId" class="io.delimeat.feed.ZooqleJaxrsFeedDao_Impl">
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="zooqleJerseyClientFactoryId" factory-method="newClient"/>
       </property>
       <property name="mediaType" value="APPLICATION_XML_TYPE" />
-      <property name="baseUri" value="${io.delimeat.core.feed.zooqle.baseUri}"/>
+      <property name="baseUri" value="${io.delimeat.feed.zooqle.baseUri}"/>
     </bean>    
     
 </beans>

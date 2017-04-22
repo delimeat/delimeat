@@ -22,8 +22,8 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       <constructor-arg type="boolean" value="false" index="2"/>
       <constructor-arg index="3">
         <list>
-          <value>io.delimeat.core.feed.FeedResult</value>
-          <value>io.delimeat.core.feed.FeedSearch</value>
+          <value>io.delimeat.feed.domain.FeedResult</value>
+          <value>io.delimeat.feed.domain.FeedSearch</value>
         </list>
       </constructor-arg>  		
     </bean>
@@ -31,7 +31,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <bean id="abstractFeedJerseyClientFactory" class="io.delimeat.util.jaxrs.client.JerseyClientFactory" abstract="true">
       <property name="providerClasses">
         <list>
-          <value>io.delimeat.util.jaxrs.client.ReplaceContentTypeResponseFilter</value>
+          <value>io.delimeat.feed.jaxrs.ReplaceContentTypeResponseFilter</value>
         </list>
       </property>
       <property name="properties">
@@ -45,6 +45,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
         </map>
       </property>
     </bean>
+    
 
     <!--
     <import resource="feed-kat-context.xml" />
@@ -55,6 +56,22 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <import resource="feed-bitsnoop-context.xml" />
     <import resource="feed-torrentdownloads-context.xml" />
     <import resource="feed-zooqle-context.xml" />
+    
+    <bean id="feedServiceId" class="io.delimeat.feed.FeedService_Impl">
+        <property name="feedDaos">
+    		 <list>
+    		    <ref bean="extraTorrentGuideDaoId"/>
+            	<ref bean="torrentProjectGuideDaoId"/>
+            	<ref bean="limeTorrentsGuideDaoId"/>
+            	<ref bean="bitSnoopGuideDaoId"/>
+            	<ref bean="torrentDownloadsGuideDaoId"/>
+            	<ref bean="zooqleGuideDaoId"/>
+            	<!--
+    		 	<ref bean="katGuideDaoId"/>
+    		 	!-->
+          </list>
+       </property>
+    </bean>
 
 
 </beans>

@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxrs.client;
 
-import io.delimeat.util.jaxrs.client.JerseyClientFactory;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import io.delimeat.util.jaxrs.client.JerseyClientFactory;
 
 public class JerseyClientFactoryTest {
   

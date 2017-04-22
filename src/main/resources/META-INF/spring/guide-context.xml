@@ -12,6 +12,10 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
   	<!--
 	<import resource="guide-tvmaze-context.xml" />
 	!-->
+	
+    <bean id="guideServiceId" class="io.delimeat.guide.GuideService_Impl">
+    	<property name="guideDao" ref="guideDaoId"/>
+    </bean>
 
 
 </beans>

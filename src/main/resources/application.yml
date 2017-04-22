@@ -1,0 +1,14 @@
+debug: true
+logging:
+  level:
+    ROOT: ALL 
+spring:
+  application:
+    name: "delimeat"
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-date-timestamps-as-nanoseconds: false
+      indent-output: true
+    deserialization:
+      read-date-timestamps-as-nanoseconds: false

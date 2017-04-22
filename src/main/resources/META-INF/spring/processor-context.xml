@@ -2,14 +2,17 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
-http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context.xsd">
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd" >
 
-	<bean id="feedProcessorFactoryId" class="io.delimeat.core.processor.FeedProcessorFactory_Impl">
+	<bean id="feedProcessorFactoryId" class="io.delimeat.processor.FeedProcessorFactory_Impl">
 		<property name="folderTorrentValidator" ref="torrentFolderValidatorId"/>
 		<property name="preferFilesComparator" ref="preferFilesComparatorId"/>
 		<property name="maxSeedersComparator" ref="maxSeedersComparatorId"/>
@@ -32,56 +35,38 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 	</bean>   
 	
 	<!-- Feed Result Validators -->
-	<bean id="feedResultDailyValidatorId" class="io.delimeat.core.processor.validation.FeedResultDailyValidator_Impl"/>
+	<bean id="feedResultDailyValidatorId" class="io.delimeat.processor.validation.FeedResultDailyValidator_Impl"/>
 
-	<bean id="feedResultMiniSeriesValidatorId" class="io.delimeat.core.processor.validation.FeedResultMiniSeriesValidator_Impl"/>
+	<bean id="feedResultMiniSeriesValidatorId" class="io.delimeat.processor.validation.FeedResultMiniSeriesValidator_Impl"/>
 	
-	<bean id="feedResultSeasonValidatorId" class="io.delimeat.core.processor.validation.FeedResultSeasonValidator_Impl"/>
+	<bean id="feedResultSeasonValidatorId" class="io.delimeat.processor.validation.FeedResultSeasonValidator_Impl"/>
 	  
-	<bean id="feedResultTitleValidatorId" class="io.delimeat.core.processor.validation.FeedResultTitleValidator_Impl"/>
+	<bean id="feedResultTitleValidatorId" class="io.delimeat.processor.validation.FeedResultTitleValidator_Impl"/>
 
-	<bean id="feedResultExcludedKeywordValidatorId" class="io.delimeat.core.processor.validation.FeedResultExcludedKeywordValidator_Impl"/>
+	<bean id="feedResultExcludedKeywordValidatorId" class="io.delimeat.processor.validation.FeedResultExcludedKeywordValidator_Impl"/>
 
 	<!-- Torrent Validators -->
-	<bean id="torrentCompressedValidatorId" class="io.delimeat.core.processor.validation.TorrentCompressedValidator_Impl"/>
+	<bean id="torrentCompressedValidatorId" class="io.delimeat.processor.validation.TorrentCompressedValidator_Impl"/>
 
-	<bean id="torrentFileTypeValidatorId" class="io.delimeat.core.processor.validation.TorrentFileTypeValidator_Impl"/>
+	<bean id="torrentFileTypeValidatorId" class="io.delimeat.processor.validation.TorrentFileTypeValidator_Impl"/>
 
-	<bean id="torrentFolderValidatorId" class="io.delimeat.core.processor.validation.TorrentFolderValidator_Impl"/>
+	<bean id="torrentFolderValidatorId" class="io.delimeat.processor.validation.TorrentFolderValidator_Impl"/>
 
-	<bean id="torrentSeederValidatorId" class="io.delimeat.core.processor.validation.TorrentSeederValidator_Impl">
-		<property name="torrentDao" ref="torrentDaoId"/>
+	<bean id="torrentSeederValidatorId" class="io.delimeat.processor.validation.TorrentSeederValidator_Impl">
+		<property name="torrentService" ref="torrentServiceId"/>
 	</bean>
 
-	<bean id="torrentSizeValidatorId" class="io.delimeat.core.processor.validation.TorrentSizeValidator_Impl"/>
+	<bean id="torrentSizeValidatorId" class="io.delimeat.processor.validation.TorrentSizeValidator_Impl"/>
  
  	<!-- Feed Result Comparator -->
-	<bean id="maxSeedersComparatorId" class="io.delimeat.core.feed.MaxSeederFeedResultComparator_Impl"/>
+	<bean id="maxSeedersComparatorId" class="io.delimeat.feed.comparator.MaxSeederFeedResultComparator_Impl"/>
 
-	<bean id="preferFilesComparatorId" class="io.delimeat.core.feed.MaxSeederPreferFileFeedResultComparator_Impl"/>
-
- 	<!-- Torrent Writer --> 
-	<bean id="torrentWriterId" class="io.delimeat.core.processor.writer.TorrentFileWriter_Impl">
-		<property name="urlHandler" ref="urlHandlerId"/>
-	</bean>
+	<bean id="preferFilesComparatorId" class="io.delimeat.feed.comparator.MaxSeederPreferFileFeedResultComparator_Impl"/>
   
-    <bean id="abstractFeedProcessorId" class="io.delimeat.core.processor.FeedProcessor_Impl" abstract="true">
-    	<property name="torrentDao" ref="torrentDaoId"/>
-		<property name="torrentWriter" ref="torrentWriterId"/>	
-    	<property name="showDao" ref="showDaoId"/>
-    	<property name="feedDaos">
-    		 <list>
-    		    <ref bean="extraTorrentGuideDaoId"/>
-            	<ref bean="torrentProjectGuideDaoId"/>
-            	<ref bean="limeTorrentsGuideDaoId"/>
-            	<ref bean="bitSnoopGuideDaoId"/>
-            	<ref bean="torrentDownloadsGuideDaoId"/>
-            	<ref bean="zooqleGuideDaoId"/>
-            	<!--
-    		 	<ref bean="katGuideDaoId"/>
-    		 	!-->
-          </list>
-       </property>
+    <bean id="abstractFeedProcessorId" class="io.delimeat.processor.FeedProcessor_Impl" abstract="true">
+    	<property name="torrentService" ref="torrentServiceId"/>
+    	<property name="feedService" ref="feedServiceId"/>   	
+    	<property name="episodeService" ref="episodeServiceId"/>
        
 		<property name="torrentValidators">
 			<list>
@@ -116,11 +101,40 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
         </property>
     </bean>
     
-    <bean id="guideProcessorId" class="io.delimeat.core.processor.GuideProcessor_Impl" scope="prototype">
-		<property name="showDao" ref="showDaoId"/>	
-		<property name="guideDao" ref="tvdbGuideDaoId"/>	
+    <bean id="guideProcessorId" class="io.delimeat.processor.GuideProcessor_Impl" scope="prototype">
+		<property name="showService" ref="showServiceId"/>	
+		<property name="guideService" ref="guideServiceId"/>	
     </bean>
   
- 	<bean id="guideProcessorFactoryId" class="io.delimeat.core.processor.GuideProcessorFactory_Impl"/>					
+ 	<bean id="guideProcessorFactoryId" class="io.delimeat.processor.GuideProcessorFactory_Impl"/>	
+ 	
+	<bean id="processorExecutorId" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <!--
+	    <property name="corePoolSize" value="1" />
+	    <property name="maxPoolSize" value="10" />
+	    <property name="queueCapacity" value="25" />
+	    !-->	
+	</bean>
+	
+	<bean id="processorServiceId" class="io.delimeat.processor.ProcessorService_Impl">
+        <property name="showService" ref="showServiceId"/>
+        <property name="configService" ref="configServiceId"/>
+        <property name="episodeService" ref="episodeServiceId"/>
+        <property name="guideProcessorFactory" ref="guideProcessorFactoryId"/>
+        <property name="feedProcessorFactory" ref="feedProcessorFactoryId"/>
+        <property name="executor" ref="processorExecutorId"/>
+    </bean>
+    
+	<task:scheduler id="processorSchedulerId" pool-size="1" />
+
+	<task:scheduled-tasks scheduler="processorSchedulerId">
+		<task:scheduled ref="processorServiceId" method="processAllGuideUpdates"
+			fixed-delay="${io.delimeat.processor.guide.schedule}" initial-delay="${io.delimeat.processor.guide.schedule.initial}" />
+	</task:scheduled-tasks>
+	
+	<task:scheduled-tasks scheduler="processorSchedulerId">
+		<task:scheduled ref="processorServiceId" method="processAllFeedUpdates"
+			fixed-delay="${io.delimeat.processor.feed.schedule}" initial-delay="${io.delimeat.processor.feed.schedule.initial}" />
+	</task:scheduled-tasks>				
   
 </beans>

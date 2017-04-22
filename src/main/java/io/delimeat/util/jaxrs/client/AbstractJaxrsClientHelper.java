@@ -1,6 +1,8 @@
 package io.delimeat.util.jaxrs.client;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -81,5 +83,18 @@ public abstract class AbstractJaxrsClientHelper {
 	 */
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+	
+	
+	/**
+	 * @param value
+	 * @return url encoded value
+	 */
+	public String urlEncodeString(String value){
+		try {
+			return URLEncoder.encode(value, getEncoding());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}	
 	}
 }

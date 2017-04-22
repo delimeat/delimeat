@@ -24,7 +24,7 @@
     </cache:advice>
 
     <aop:config>
-      <aop:advisor advice-ref="guideCacheAdvice" pointcut="execution(* io.delimeat.core.guide.GuideDao.*(..))"/>
+      <aop:advisor advice-ref="guideCacheAdvice" pointcut="execution(* io.delimeat.guide.GuideDao.*(..))"/>
     </aop:config>
   
     <cache:advice id="torrentCacheAdvice" cache-manager="cacheManagerId">
@@ -34,7 +34,7 @@
     </cache:advice>
 
     <aop:config>
-      <aop:advisor advice-ref="torrentCacheAdvice" pointcut="execution(* io.delimeat.core.torrent.TorrentDao.*(..))"/>
+      <aop:advisor advice-ref="torrentCacheAdvice" pointcut="execution(* io.delimeat.torrent.TorrentDao.*(..))"/>
     </aop:config>
   
     <cache:advice id="feedCacheAdvice" cache-manager="cacheManagerId">
@@ -44,7 +44,7 @@
     </cache:advice>
 
     <aop:config>
-      <aop:advisor advice-ref="feedCacheAdvice" pointcut="execution(* io.delimeat.core.feed.FeedDao.*(..))"/>
+      <aop:advisor advice-ref="feedCacheAdvice" pointcut="execution(* io.delimeat.feed.FeedDao.*(..))"/>
     </aop:config>
 
     <bean id="cacheManagerId" class="org.springframework.cache.guava.GuavaCacheManager">

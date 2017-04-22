@@ -1,7 +1,5 @@
 package io.delimeat.util.jaxrs;
 
-import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,6 +11,8 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
 
 public class CustomMOXyJsonProviderTest {
 

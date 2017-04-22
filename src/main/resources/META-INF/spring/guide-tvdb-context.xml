@@ -25,14 +25,14 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 		<property name="classes">
 			<list>
-				<value>io.delimeat.core.guide.GuideSearchResult</value>
-				<value>io.delimeat.core.guide.GuideSearch</value>
-				<value>io.delimeat.core.guide.GuideEpisode</value>
-				<value>io.delimeat.core.guide.GuideInfo</value>
-				<value>io.delimeat.core.guide.TvdbApiKey</value>
-				<value>io.delimeat.core.guide.GuideError</value>
-				<value>io.delimeat.core.guide.TvdbToken</value>
-				<value>io.delimeat.core.guide.TvdbEpisodes</value>
+				<value>io.delimeat.guide.domain.GuideSearchResult</value>
+				<value>io.delimeat.guide.domain.GuideSearch</value>
+				<value>io.delimeat.guide.domain.GuideEpisode</value>
+				<value>io.delimeat.guide.domain.GuideInfo</value>
+				<value>io.delimeat.guide.domain.TvdbApiKey</value>
+				<value>io.delimeat.guide.domain.GuideError</value>
+				<value>io.delimeat.guide.domain.TvdbToken</value>
+				<value>io.delimeat.guide.domain.TvdbEpisodes</value>
 			</list>		
 		</property>
 	</bean>
@@ -45,14 +45,14 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 	
-	<bean id="tvdbGuideDaoId" class="io.delimeat.core.guide.TvdbJaxrsGuideDao_Impl">
+	<bean id="guideDaoId" class="io.delimeat.guide.TvdbJaxrsGuideDao_Impl">
 		<property name="client" >
 			<bean class="javax.ws.rs.client.Client" factory-bean="tvdbJerseyClientFactoryId" factory-method="newClient"/>
      	</property>
 		<property name="mediaType" value="APPLICATION_JSON_TYPE" />
 		<property name="apiKey" value="FE3A3CA0FE707FEF"/>
-		<property name="baseUri" value="${io.delimeat.core.guide.tvdb.baseUri}"/>
-		<property name="validPeriodInMs" value="${io.delimeat.core.guide.tvdb.validPeriod}" />
+		<property name="baseUri" value="${io.delimeat.guide.tvdb.baseUri}"/>
+		<property name="validPeriodInMs" value="${io.delimeat.guide.tvdb.validPeriod}" />
 	</bean>    
     
 </beans>

@@ -1,5 +1,6 @@
 package io.delimeat.util.jaxrs;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,22 +27,41 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 	private Map<String, Object> properties = Collections.<String, Object>emptyMap();
 	private Class[] classes;
 
+	/**
+	 * Set classes
+	 * 
+	 * @param classes
+	 */
 	public void setClasses(Class... classes) {
 		this.classes = classes;
 	}
 
+	/**
+	 * @return classes
+	 */
 	public Class[] getClasses() {
 		return classes;
 	}
 
+	/**
+	 * Set properties
+	 * 
+	 * @param properties
+	 */
 	public void setProperties(Map<String, Object> properties) {
 		this.properties = properties;
 	}
 
+	/**
+	 * @return properties
+	 */
 	public Map<String, Object> getProperties() {
 		return properties;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
+	 */
 	@Override
 	public JAXBContext getContext(Class<?> type) {
 		final Class[] typeArray;
@@ -54,11 +74,12 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 		}
 
 		try {
-			final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
+			//final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
+			final JAXBContext context = JAXBContextFactory.createContext(typeArray, properties);
 			LOGGER.info("Using JAXB context " + context);
 			return context;
 		} catch (JAXBException e) {
-			LOGGER.warn("Unable to create JAXB context.");
+			LOGGER.warn("Unable to create JAXB context.",e);
 			return null;
 		}
 	}

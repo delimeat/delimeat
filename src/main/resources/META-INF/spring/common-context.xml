@@ -7,6 +7,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+	<!--
 	<bean id="propertyPlaceholderConfigurerId"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName">
@@ -20,9 +21,10 @@
 		</property>
     	<property name="ignoreResourceNotFound" value="true" />
 	</bean>
+	!-->
 
 	<bean id="urlHandlerId"	class="io.delimeat.util.UrlHandler_Impl">
-		<property name="timeout" value="${io.delimeat.core.util.urlhandler.timeout}" />
+		<property name="timeout" value="${io.delimeat.util.urlhandler.timeout}" />
 	</bean>
 
 </beans>

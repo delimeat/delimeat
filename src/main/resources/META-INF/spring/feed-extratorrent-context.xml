@@ -27,13 +27,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       </property>
     </bean>
 
-    <bean id="extraTorrentGuideDaoId" class="io.delimeat.core.feed.ExtraTorrentJaxrsFeedDao_Impl">
-      <property name="feedSource" value="EXTRATORRENT" />
+    <bean id="extraTorrentGuideDaoId" class="io.delimeat.feed.ExtraTorrentJaxrsFeedDao_Impl">
       <property name="client">
         <bean class="javax.ws.rs.client.Client" factory-bean="extraTorrentJerseyClientFactoryId" factory-method="newClient" />
       </property>
       <property name="mediaType" value="APPLICATION_XML_TYPE" />
-      <property name="baseUri" value="${io.delimeat.core.feed.extratorrent.baseUri}" />
+      <property name="baseUri" value="${io.delimeat.feed.extratorrent.baseUri}" />
     </bean>    
     
 </beans>

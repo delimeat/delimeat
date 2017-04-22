@@ -7,43 +7,33 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-
+<!-- 
 	<bean id="showDataSourceId" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-		<property name="jdbcUrl" value="${io.delimeat.core.show.jdbcUrl}" />
-		<property name="driverClassName" value="${io.delimeat.core.show.driverClassName}" />
+		<property name="jdbcUrl" value="${io.delimeat.common.show.jdbcUrl}" />
+		<property name="driverClassName" value="${io.delimeat.common.show.driverClassName}" />
 	</bean>
-	 
-	<bean id="liquibaseId" class="liquibase.integration.spring.SpringLiquibase"> 
+	  
+	<bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase"> 
 		<property name="dataSource" ref="showDataSourceId" /> 
-		<property name="changeLog" value="classpath:io/delimeat/core/show/changelog-master.xml" /> 
+		<property name="changeLog" value="classpath:io/delimeat/common/show/changelog-master.xml" /> 
 	</bean> 
-
+ 
 	<bean id="showEntityManagerFactoryId" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="mappingResources" value="META-INF/orm.xml" />
 		<property name="dataSource" ref="showDataSourceId" />
+		<property name="persistenceUnitName" value="delimeatPU" />
+        <property name="packagesToScan" >
+            <list>
+                <value>io.delimeat.common.*.model</value>
+            </list>
+        </property>
+
 		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
 		</property>
+
 		<property name="jpaProperties">
 			<props>
-				<prop key="eclipselink.weaving">false</prop>
-				<prop key="eclipselink.logging.level">OFF</prop>
-				
-				
-				<prop key="eclipselink.ddl-generation">create-or-extend-tables</prop>
-				<prop key="eclipselink.ddl-generation.output-mode">database</prop>
-				
-				<!-- 
-				<prop key="eclipselink.ddl-generation">none</prop> 
-				!-->
-				
-				<!-- 
-				<prop key="eclipselink.logging.level">ALL</prop> 
-				<prop key="eclipselink.logging.thread">true</prop> 
-				<prop key="eclipselink.logging.session">true</prop> 
-				<prop key="eclipselink.logging.timestamp">true</prop> 
-				<prop key="eclipselink.logging.exceptions">true"</prop>
-				-->
+				<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
 			</props>
 		</property>
 	</bean>
@@ -56,7 +46,22 @@ http://www.springframework.org/schema/jee http://www.springframework.org/schema/
 
 	<bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
-	<bean id="showDaoId" class="io.delimeat.core.show.ShowJpaDao_Impl" />
+
 	
-	<bean id="episodeDaoId" class="io.delimeat.core.show.EpisodeJpaDao_Impl" />
+	<bean id="showDaoId" class="io.delimeat.common.show.ShowJpaDao_Impl" />
+	
+	<bean id="episodeDaoId" class="io.delimeat.common.show.EpisodeJpaDao_Impl" />
+	
+	<bean id="showServiceId" class="io.delimeat.common.show.ShowService_Impl">
+        <property name="showDao" ref="showDaoId"/>
+        <property name="guideService" ref="guideServiceId"/>
+        <property name="episodeService" ref="episodeServiceId"/>
+    </bean>
+    
+	<bean id="episodeServiceId" class="io.delimeat.common.show.EpisodeService_Impl">
+        <property name="episodeDao" ref="episodeDaoId"/>
+    </bean>
+    
+	!-->
+	
 </beans>

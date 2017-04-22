@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+	
+	<persistence-unit-metadata>
+		<xml-mapping-metadata-complete />
+		<persistence-unit-defaults>
+			<access>FIELD</access>
+			<cascade-persist />
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+
+	<package>io.delimeat.core.show</package>
+  
+	<named-query name="Show.getAll">
+		<query><![CDATA[SELECT s FROM Show s]]></query>
+	</named-query>
+	
+	<named-query name="Show.getAllEpisodes">
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.show = :show]]></query>
+	</named-query>
+
+	<named-query name="Episode.getAll">
+		<query><![CDATA[SELECT e FROM Episode e WHERE e.status IN :statusList ORDER BY e.airDate]]></query>
+	</named-query>
+	
+	<named-query name="Episode.getAll.count">
+		<query><![CDATA[SELECT count(e) FROM Episode e WHERE e.status IN :statusList]]></query>
+	</named-query>
+  
+	<entity class="Episode" name="Episode">
+		<table name="EPISODE" >
+      	<unique-constraint>
+            <column-name>SEASON_NUM</column-name>
+            <column-name>EPISODE_NUM</column-name>
+           	<column-name>SHOW_ID</column-name>
+        </unique-constraint>
+     	</table>
+		<attributes>
+
+			<id name="episodeId">
+				<column name="EPISODE_ID" />
+				<generated-value strategy="TABLE" generator="EP_SEQ"/>
+            	<table-generator name="EP_SEQ" table="SEQUENCE" pk-column-name="SEQ_NAME"
+                	value-column-name="SEQ_COUNT" pk-column-value="EP_SEQ"/>
+			</id>
+
+			<basic name="airDate" optional="false">
+				<column name="AIR_DATE" nullable="false" />
+				<temporal>DATE</temporal>
+			</basic>
+
+			<basic name="seasonNum" optional="false">
+				<column name="SEASON_NUM" nullable="false" />
+			</basic>
+
+			<basic name="episodeNum" optional="false">
+				<column name="EPISODE_NUM" nullable="false" />
+			</basic>
+
+			<basic name="title" optional="true">
+				<column name="TITLE" nullable="true" />
+			</basic>
+
+			<basic name="doubleEp" optional="false">
+				<column name="DOUBLE_EP" nullable="false" />
+			</basic>
+			
+			<basic name="status" optional="false">
+				<column name="STATUS" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+			
+			<basic name="lastFeedUpdate" optional="false">
+				<column name="LAST_FEED_UPDATE" />
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+
+			<basic name="lastFeedCheck" optional="false">
+				<column name="LAST_FEED_CHECK" />
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			
+			<version name="version">
+				<column name="VERSION" />
+			</version>
+
+			<many-to-one name="show" target-entity="Show" optional="false" fetch="EAGER">
+				<join-column name="SHOW_ID" referenced-column-name="SHOW_ID" nullable="false"/>
+				<cascade>
+					<cascade-all/>
+				</cascade>		
+			</many-to-one>
+
+		</attributes>
+	</entity>
+
+
+
+	<entity class="Show" name="Show">
+		<table name="SHOW" />
+		<attributes>
+
+			<id name="showId">
+				<column name="SHOW_ID" />
+				<generated-value strategy="TABLE" generator="SHOW_SEQ"/>
+            	<table-generator name="SHOW_SEQ" table="SEQUENCE" pk-column-name="SEQ_NAME"
+                	value-column-name="SEQ_COUNT" pk-column-value="SHOW_SEQ"/>
+			</id>
+
+			<basic name="airTime" optional="false">
+				<column name="AIR_TIME" nullable="false" />
+			</basic>
+
+			<basic name="timezone" optional="false">
+				<column name="TIMEZONE" length="64" />
+			</basic>
+
+			<basic name="title" optional="false">
+				<column name="TITLE" length="255" nullable="false" />
+			</basic>
+
+			<basic name="airing" optional="false">
+				<column name="AIRING" nullable="false" />
+			</basic>
+
+			<basic name="showType" optional="false">
+				<column name="SHOW_TYPE" nullable="false" />
+				<enumerated>STRING</enumerated>
+			</basic>
+
+			<basic name="lastGuideUpdate" optional="true">
+				<column name="LAST_GUIDE_UPDATE" />
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			
+			<basic name="lastGuideCheck" optional="true">
+				<column name="LAST_GUIDE_CHECK" />
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			
+			<basic name="enabled" optional="false">
+				<column name="ENABLED" nullable="false" />
+			</basic>
+        
+	        <basic name="minSize" optional="false">
+				<column name="MIN_SIZE" nullable="false" />
+			</basic>
+	       
+	      <basic name="maxSize" optional="false">
+				<column name="MAX_SIZE" nullable="false" />
+			</basic>
+        
+	      <basic name="guideId" optional="false">
+				<column name="GUIDE_ID" length="255" nullable="false" unique="true"/>
+			</basic>
+
+			<version name="version" >
+				<column name="VERSION" />
+			</version>
+			
+			<!-- 
+			<one-to-one name="previousEpisode" fetch="LAZY">
+				<join-column name="PREV_EPISODE_ID" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-one>
+
+			<one-to-one name="nextEpisode" fetch="LAZY">
+				<join-column name="NEXT_EPISODE_ID" />
+				<cascade>
+					<cascade-merge />
+					<cascade-remove />
+					<cascade-refresh />
+					<cascade-detach />
+				</cascade>
+			</one-to-one>
+			!-->
+		</attributes>
+	</entity>
+
+
+</entity-mappings>

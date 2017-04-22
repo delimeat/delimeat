@@ -19,13 +19,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 	<import resource="show-context.xml" />
 	<import resource="torrent-context.xml" />
 	<import resource="processor-context.xml" />
-	<import resource="services-context.xml" />
 	<import resource="cache-context.xml" />
 	
-	 
 	<context:component-scan base-package="io.delimeat.core.service"/>
-	
+
 	<aop:aspectj-autoproxy proxy-target-class="true"/>
+
 	
 	<bean id="customizableTraceInterceptor" class="org.springframework.aop.interceptor.CustomizableTraceInterceptor">
     	<property name="enterMessage" value="Entering $[methodName]($[arguments])"/>

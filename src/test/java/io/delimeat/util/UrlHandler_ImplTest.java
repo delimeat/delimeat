@@ -21,6 +21,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.delimeat.util.UrlHandler_Impl;
+
 public class UrlHandler_ImplTest {
 
 	private UrlHandler_Impl handler;

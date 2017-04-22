@@ -82,6 +82,11 @@ public class JerseyClientFactory {
 		this.properties = properties;
 	}
 
+	/**
+	 * Create a new client
+	 * 
+	 * @return new client
+	 */
 	public Client newClient() {
 		final ClientConfig configuration = new ClientConfig();
 
@@ -97,9 +102,9 @@ public class JerseyClientFactory {
 			configuration.property(key, properties.get(key));
 		}
 
-		configuration.register(new LoggingFeature(LOGGER));
+		//configuration.register(new LoggingFeature(LOGGER));
 		//TODO this causes a NegativeArraySizeException in v2.23.2
-		//configuration.register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, Integer.MAX_VALUE));
+		configuration.register(new LoggingFeature(LOGGER, java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 		if (connectorProvider != null) {
 			configuration.connectorProvider(connectorProvider);
