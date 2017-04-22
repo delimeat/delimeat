@@ -273,7 +273,6 @@
 			<artifactId>spring-oxm</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
-		<dependencies>
 		<!-- 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -281,8 +280,7 @@
             <version>${org.springframework.boot.version}</version>
         </dependency>
 		!-->
-    </dependencies>
-
+		
 	</dependencies>
 
 	<profiles>
