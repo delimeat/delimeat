@@ -1,10 +1,16 @@
 debug: true
 logging:
   level:
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
     ROOT: ALL 
 spring:
   application:
     name: "delimeat"
+  aop:
+    proxy-target-class: true
+  cache:
+    caffeine:
+      spec: maximumSize=100, expireAfterAccess=10m, expireAfterWrite=1h
   jackson:
     serialization:
       write-dates-as-timestamps: false

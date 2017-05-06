@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html ng-app="app" class="no-js" lang="" ng-strict-di>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="description" content=""/>
+		<meta name="viewport"
+			content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+		<title ng-bind="title + ' delimeat.io'">delimeat.io</title>
+		<!-- build:css css/style.css -->
+		<link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.css"></link> 
+		<link rel="stylesheet" type="text/css" href="css/app.css"></link>
+
+		<!-- endbuild -->
+		
+		<link rel="apple-touch-icon" sizes="any" href="img/wurst-icon.png"></link>
+		<link rel=icon href=img/wurst-icon.png sizes="any" type="image/png"></link>
+	</head>
+	
+	<div class="animate-show working" ng-show="working">
+		<div class="centered">
+			<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+		</div>
+	</div>
+						
+	<nav class="navbar navbar-default navbar-fixed-top">
+	  <div class="container-fluid">
+	   <div class="navbar-header">
+	     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar" aria-expanded="false">
+	       <span class="sr-only">Toggle navigation</span>
+	       <span class="icon-bar"></span>
+	       <span class="icon-bar"></span>
+	       <span class="icon-bar"></span>
+	     </button>
+	     <a class="navbar-brand" ng-href="#/"><img src="img/wurst-icon.png" height="50px" width="50px"/></a>
+	   </div>
+	
+	   <div class="collapse navbar-collapse" id="app-navbar">
+	     <ul class="nav navbar-nav navbar-right">
+	       <li data-toggle="collapse" data-target=".navbar-collapse.in"><a ng-href="#/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li>
+	       <li data-toggle="collapse" data-target=".navbar-collapse.in"><a ng-href="#/guide/search"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Show</a></li>
+	       <li data-toggle="collapse" data-target=".navbar-collapse.in"><a ng-href="#/settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>	      
+	     </ul>
+	   </div>
+	 </div>
+	</nav>
+
+	<body id="delimeat-main" class="container-fluid">
+		<div class="alert alert-dismissible alert-{{alert.type}}" role="alert" ng-repeat="alert in alerts">
+			<button type="button" class="close" data-dismiss="alert" ng-click="alert.close()"><span aria-hidden="true">&times;</span></button>
+			<span ng-bind="alert.msg"/>
+		</div>
+		
+		<div ng-view></div>
+		
+	</body>
+
+	<!-- build:js_libs js/libs.js -->	
+	<script src="components/jquery/dist/jquery.js"></script>
+       
+	<script src="components/angular/angular.js"></script>	
+	<script src="components/angular-route/angular-route.js"></script>
+	<script src="components/angular-resource/angular-resource.js"></script>
+	<script src="components/angular-aria/angular-aria.js"></script>
+	<script src="components/angular-animate/angular-animate.js"></script>
+    <script src="components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="components/angular-cookies/angular-cookies.js"></script>  
+   
+   	<script src="components/messageformat/messageformat.js"></script>
+    <script src="components/angular-translate/angular-translate.js"></script>
+    <script src="components/angular-translate-handler-log/angular-translate-handler-log.js"></script>
+	<script src="components/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.js"></script>
+	<script src="components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+	<script src="components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
+	<script src="components/angular-translate-storage-local/angular-translate-storage-local.js"></script>
+            
+       
+    <script src="components/bootstrap/dist/js/bootstrap.js"></script>  
+    <script src="components/moment/moment.js"></script>
+
+	<!-- endbuild -->
+	
+	<!-- build:js({.tmp,target/tmp,frontend/}) js/app.js -->
+	<script src="js/_module_declarations.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/config.js"></script>
+	
+	<!-- SHOWS -->
+	<script src="js/shows/shows_controller.js"></script>
+	<script src="js/shows/shows_service.js"></script>
+	<script src="js/shows/show_controller.js"></script>
+	<script src="js/shows/shows_route.js"></script>
+	
+	<!-- SETTINGS -->
+	<script src="js/settings/settings_controller.js"></script>
+	<script src="js/settings/settings_service.js"></script>
+	<script src="js/settings/settings_route.js"></script>
+	
+	<!-- GUIDE SEARCH-->
+	<script src="js/guide/guide_service.js"></script>
+	<script src="js/guide/guide_search_controller.js"></script>
+	<script src="js/guide/guide_info_controller.js"></script>
+	<script src="js/guide/guide_route.js"></script>
+		
+	<!-- SHARED -->
+	<script src="js/shared/alert_service.js"></script>
+	<script src="js/shared/applytz_filter.js"></script>
+	<script src="js/shared/autofocus_directive.js"></script>
+	<script src="js/shared/back_directive.js"></script>
+	<script src="js/shared/episode_directive.js"></script>
+	<script src="js/shared/episodes_directive.js"></script>
+	<script src="js/shared/response_logging_service.js"></script>	
+	
+		
+	<!-- inject:templates:js -->
+	<!-- endinject -->
+	
+	<!-- endbuild -->
+</html>

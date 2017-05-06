@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor;
 
 import java.time.Instant;
@@ -11,9 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.delimeat.common.util.exception.EntityException;
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
+import io.delimeat.guide.exception.GuideException;
 import io.delimeat.processor.FeedProcessorFactory;
 import io.delimeat.processor.GuideProcessorFactory;
 import io.delimeat.processor.Processor;
@@ -100,13 +115,13 @@ public class ProcessorService_ImplTest {
 	@Test
 	public void processAllGuideUpdatesShowExceptionTest() throws Exception {
 		ShowService showService = Mockito.mock(ShowService.class);
-		Mockito.when(showService.readAll()).thenThrow(EntityException.class);
+		Mockito.when(showService.readAll()).thenThrow(GuideException.class);
 		service.setShowService(showService);
 		
 		try {
 			service.processAllGuideUpdates();
 		} catch (Exception ex) {
-			Assert.assertTrue(ex instanceof EntityException);
+			Assert.assertTrue(ex instanceof GuideException);
 		}
 
 		Assert.assertEquals(0, service.getProcessors().size());
@@ -124,14 +139,14 @@ public class ProcessorService_ImplTest {
 		service.setShowService(showService);
 
 		ConfigService configService = Mockito.mock(ConfigService.class);
-		Mockito.when(configService.read()).thenThrow(EntityException.class);
+		Mockito.when(configService.read()).thenThrow(GuideException.class);
 		service.setConfigService(configService);
 
 
 		try {
 			service.processAllGuideUpdates();
 		} catch (Exception ex) {
-			Assert.assertTrue(ex instanceof EntityException);
+			Assert.assertTrue(ex instanceof GuideException);
 		}
 
 		Assert.assertEquals(0, service.getProcessors().size());
@@ -235,14 +250,14 @@ public class ProcessorService_ImplTest {
 	@Test
 	public void processAllFeedUpdatesShowExceptionTest() throws Exception {
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findAllPending()).thenThrow(EntityException.class);
+		Mockito.when(episodeService.findAllPending()).thenThrow(GuideException.class);
 		service.setEpisodeService(episodeService);
 
 
 		try {
 			service.processAllFeedUpdates();
 		} catch (Exception ex) {
-			Assert.assertTrue(ex instanceof EntityException);
+			Assert.assertTrue(ex instanceof GuideException);
 		}
 
 		Assert.assertEquals(0, service.getProcessors().size());
@@ -260,14 +275,14 @@ public class ProcessorService_ImplTest {
 		service.setEpisodeService(episodeService);
 
 		ConfigService configService = Mockito.mock(ConfigService.class);
-		Mockito.when(configService.read()).thenThrow(EntityException.class);
+		Mockito.when(configService.read()).thenThrow(GuideException.class);
 		service.setConfigService(configService);
 
 
 		try {
 			service.processAllFeedUpdates();
 		} catch (Exception ex) {
-			Assert.assertTrue(ex instanceof EntityException);
+			Assert.assertTrue(ex instanceof GuideException);
 		}
 
 		Assert.assertEquals(0, service.getProcessors().size());

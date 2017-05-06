@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.guide;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -13,35 +28,19 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.Marshaller;
 
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.logging.LoggingFeature;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import io.delimeat.common.util.exception.EntityAuthorizationException;
-import io.delimeat.common.util.exception.EntityException;
-import io.delimeat.common.util.exception.EntityNotFoundException;
-import io.delimeat.guide.TvdbJaxrsGuideDao_Impl;
 import io.delimeat.guide.domain.AiringDay;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
@@ -49,8 +48,9 @@ import io.delimeat.guide.domain.GuideSearchResult;
 import io.delimeat.guide.domain.GuideSource;
 import io.delimeat.guide.domain.TvdbEpisodes;
 import io.delimeat.guide.domain.TvdbToken;
-import io.delimeat.util.jaxrs.CustomMOXyJsonProvider;
-import io.delimeat.util.jaxrs.JaxbContextResolver;
+import io.delimeat.guide.exception.GuideAuthorizationException;
+import io.delimeat.guide.exception.GuideException;
+import io.delimeat.guide.exception.GuideNotFoundException;
 
 public class TvdbJaxrsGuideDao_ImplTest {
 
@@ -197,45 +197,16 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 	}
 
-	private static final String METADATA = "META-INF/oxm/guide-tvdb-oxm.xml";
-
-	private static Client client;
-
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
 
 	private TvdbJaxrsGuideDao_Impl dao;
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-     	JaxbContextResolver resolver = new JaxbContextResolver();
-     	resolver.setClasses(GuideSearchResult.class,GuideEpisode.class,GuideInfo.class);
 
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
-     	properties.put(JAXBContextProperties.MEDIA_TYPE,"application/json");
-     	properties.put(MarshallerProperties.JSON_INCLUDE_ROOT,false);
-     	properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-     	resolver.setProperties(properties);
-		ClientConfig configuration = new ClientConfig();
-		configuration.register(resolver);
-		configuration.register(CustomMOXyJsonProvider.class);
-		Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
-		configuration.register(new LoggingFeature(LOGGER));
-		configuration.property("jersey.config.disableMoxyJson", "true");
-		client = JerseyClientBuilder.createClient(configuration);
-	}
 
 	@Before
 	public void setUp() throws Exception {
 		dao = new TvdbJaxrsGuideDao_Impl();
-	}
-
-	@Test
-	public void mediaTypeTest() throws URISyntaxException {
-		Assert.assertNull(dao.getMediaType());
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, dao.getMediaType());
 	}
 
 	@Test
@@ -244,13 +215,6 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		URI uri = new URI("http://test.com");
 		dao.setBaseUri(uri);
 		Assert.assertEquals(uri, dao.getBaseUri());
-	}
-
-	@Test
-	public void encodingTest() {
-		Assert.assertEquals("UTF-8", dao.getEncoding());
-		dao.setEncoding("ENCODING");
-		Assert.assertEquals("ENCODING", dao.getEncoding());
 	}
 
 	@Test
@@ -285,8 +249,6 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withBody(response.toString())));
 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 
 		TvdbToken token = dao.login("APIKEY");
 		Assert.assertNotNull(token);
@@ -306,13 +268,10 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withBody(response.toString())));
 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 
 		try {
 			dao.login("APIKEY");
-		} catch (EntityAuthorizationException ex) {
+		} catch (GuideAuthorizationException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotAuthorizedException.class, ex.getCause().getClass());
 			return;
@@ -331,12 +290,10 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type","application/json")));
 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 
 		try {
 			dao.login("APIKEY");
-		} catch (EntityException ex) {
+		} catch (GuideException ex) {
 			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
 			return;
 		}
@@ -354,9 +311,8 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
@@ -376,17 +332,15 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withStatus(401)
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
-
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+ 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
 		try {
 			dao.refreshToken(oldToken);
-		} catch (EntityAuthorizationException ex) {
+		} catch (GuideAuthorizationException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotAuthorizedException.class, ex.getCause().getClass());
 			return;
@@ -403,16 +357,14 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
 		try {
 			dao.refreshToken(oldToken);
-		} catch (EntityException ex) {
+		} catch (GuideException ex) {
 			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
 			return;
 		}
@@ -442,10 +394,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-
+		dao.setBaseUri(new URI("http://localhost:8089"));		 
 		dao.setApiKey("APIKEY");
 
 		TvdbToken token = dao.getToken();
@@ -464,9 +413,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
@@ -491,9 +438,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -522,9 +467,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -533,7 +476,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		try {
 			dao.search("TITLE");
-		} catch (EntityAuthorizationException ex) {
+		} catch (GuideAuthorizationException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotAuthorizedException.class, ex.getCause().getClass());
 			return;
@@ -541,7 +484,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.fail();
 	}
 
-	@Test(expected=EntityNotFoundException.class)
+	@Test(expected=GuideNotFoundException.class)
 	public void searchNotFoundTest() throws Exception {
 		ErrorEntityGenerator response = new ErrorEntityGenerator("THIS IS AN ERROR");
 
@@ -552,11 +495,10 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
@@ -573,9 +515,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -584,18 +524,11 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		try {
 			dao.search("TITLE");
-		} catch (EntityException ex) {
+		} catch (GuideException ex) {
 			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
 			return;
 		}
 		Assert.fail();
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void searchUnsupportedEncodingTest() throws Exception {
-		dao.setEncoding("JIBBERISH");
-
-		dao.search("TITLE");
 	}
 
 	@Test
@@ -609,9 +542,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -646,9 +577,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -657,7 +586,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		try {
 			dao.info("GUIDEID");
-		} catch (EntityAuthorizationException ex) {
+		} catch (GuideAuthorizationException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotAuthorizedException.class, ex.getCause().getClass());
 			return;
@@ -676,9 +605,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -687,7 +614,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		try {
 			dao.info("GUIDEID");
-		} catch (EntityNotFoundException ex) {
+		} catch (GuideNotFoundException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotFoundException.class, ex.getCause().getClass());
 			return;
@@ -704,9 +631,7 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
@@ -715,18 +640,11 @@ public class TvdbJaxrsGuideDao_ImplTest {
 
 		try {
 			dao.info("GUIDEID");
-		} catch (EntityException ex) {
+		} catch (GuideException ex) {
 			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
 			return;
 		}
 		Assert.fail();
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void infoUnsupportedEncodingTest() throws Exception {
-		dao.setEncoding("JIBBERISH");
-
-		dao.info("TITLE");
 	}
 
 	@Test
@@ -741,11 +659,9 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
@@ -776,18 +692,16 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
 
 		try {
 			dao.episodes("GUIDEID", 1);
-		} catch (EntityAuthorizationException ex) {
+		} catch (GuideAuthorizationException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotAuthorizedException.class, ex.getCause().getClass());
 			return;
@@ -806,18 +720,17 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
 
 		try {
 			dao.episodes("GUIDEID", 1);
-		} catch (EntityNotFoundException ex) {
+		} catch (GuideNotFoundException ex) {
 			Assert.assertEquals("THIS IS AN ERROR", ex.getMessage());
 			Assert.assertEquals(NotFoundException.class, ex.getCause().getClass());
 			return;
@@ -834,18 +747,16 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
 
 		try {
 			dao.episodes("GUIDEID", 1);
-		} catch (EntityException ex) {
+		} catch (GuideException ex) {
 			Assert.assertTrue(WebApplicationException.class.isAssignableFrom(ex.getCause().getClass()));
 			return;
 		}
@@ -864,11 +775,10 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(response.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		 
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
@@ -905,11 +815,9 @@ public class TvdbJaxrsGuideDao_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseTwo.toString())));
 
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
-
 		dao.setValidPeriodInMs(Integer.MAX_VALUE);
+		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dao.setToken(token);
@@ -927,12 +835,5 @@ public class TvdbJaxrsGuideDao_ImplTest {
 		Assert.assertEquals(Integer.MIN_VALUE, episodes.get(1).getSeasonNum().intValue());
 		Assert.assertEquals("TITLE_TWO", episodes.get(1).getTitle());
 		Assert.assertEquals(LocalDate.parse("2005-09-29"),episodes.get(1).getAirDate());
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void episodesUnsupportedEncodingTest() throws Exception {
-		dao.setEncoding("JIBBERISH");
-
-		dao.episodes("TITLE");
 	}
 }

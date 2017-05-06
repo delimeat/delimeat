@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.torrent;
 
 import io.delimeat.torrent.bencode.BDictionary;
@@ -17,13 +32,22 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
 	private final static BString FILES_KEY = new BString("files");
 	private final static BString COMPLETE_KEY = new BString("complete");
 	private final static BString INCOMPLETE_KEY =new BString("incomplete");
-
+	
+	private final List<String> protocols = Arrays.asList("HTTP","HTTPS");
+	
+	@Autowired
 	private UrlHandler handler;
 	
 	public void setUrlHandler(UrlHandler handler){
@@ -35,7 +59,12 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	}
 	
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException{
+	public List<String> getSupportedProtocols() {
+		return protocols;
+	}
+	
+	@Override
+	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException{
 		try{
          final String protocol = uri.getScheme();
          if (!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)) {
@@ -118,5 +147,6 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 		return url;
 	}
+
 
 }

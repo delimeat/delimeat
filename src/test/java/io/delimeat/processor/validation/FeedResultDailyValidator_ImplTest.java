@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor.validation;
 
 import java.time.LocalDate;
@@ -12,6 +27,8 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.processor.validation.FeedResultDailyValidator_Impl;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.Show;
+import io.delimeat.show.domain.ShowType;
 
 public class FeedResultDailyValidator_ImplTest {
 	
@@ -22,11 +39,29 @@ public class FeedResultDailyValidator_ImplTest {
 		validator = new FeedResultDailyValidator_Impl();
 	}
 
+	@Test
+	public void notDailyFeedResultTest() throws Exception{
+		Episode episode = new Episode();
+		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.UNKNOWN);
+		episode.setShow(show);
+		
+		FeedResult result = new FeedResult();
+		result.setTitle("testtext2012.02.03");
+		List<FeedResult> results = Arrays.asList(result);
+
+		validator.validate(results, episode, null);
+		Assert.assertEquals(0, result.getFeedResultRejections().size());	
+	}
 		
 	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle(null);
@@ -41,6 +76,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void emptyTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("");
@@ -55,6 +93,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void noAirDateTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setAirDate(null);
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext12.02");
@@ -69,6 +110,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void noYearRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext12.02");
@@ -83,6 +127,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void noMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2012.JAN.02");
@@ -96,6 +143,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void noDayRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2012.02.TUES");
@@ -110,6 +160,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void wrongYearRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2013.02.03");
@@ -124,6 +177,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void wrongMonthRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2012.13.03");
@@ -137,6 +193,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void wrongDayRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2012.02.14");
@@ -151,6 +210,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void validFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext2012.02.03");
@@ -164,6 +226,9 @@ public class FeedResultDailyValidator_ImplTest {
 	public void validAndRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setAirDate(LocalDate.parse("2012-02-03"));
+		Show show = new Show();
+		show.setShowType(ShowType.DAILY);
+		episode.setShow(show);
 		
 		FeedResult result1 = new FeedResult();
 		result1.setTitle("testtext2012.02.03");

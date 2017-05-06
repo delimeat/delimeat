@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.torrent;
 
 import java.io.ByteArrayInputStream;
@@ -8,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +54,11 @@ public class HttpScrapeRequestHandler_ImplTest {
 		UrlHandler mockedHandler= Mockito.mock(UrlHandler.class);
 		scraper.setUrlHandler(mockedHandler);
 		Assert.assertEquals(mockedHandler, scraper.getUrlHandler());
+	}
+	
+	@Test
+	public void supportedProtocolTest(){
+		Assert.assertEquals(Arrays.asList("HTTP","HTTPS"),scraper.getSupportedProtocols());
 	}
 	
 	@Test(expected=UnhandledScrapeException.class)
@@ -103,7 +124,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		
 		scraper.setUrlHandler(mockedHandler);
 
-		ScrapeResult result = scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+		ScrapeResult result = scraper.doScrape(new URI("http://test/announce?test=true"), infoHash);
 		
 		Assert.assertEquals(5, result.getSeeders());
 		Assert.assertEquals(10, result.getLeechers());
@@ -124,7 +145,7 @@ public class HttpScrapeRequestHandler_ImplTest {
      	Mockito.when(mockedHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(scrapeResult));	
 		scraper.setUrlHandler(mockedHandler);
 
-		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+		scraper.doScrape(new URI("http://test/announce?test=true"), infoHash);
 	}
   
 	@Test(expected=TorrentException.class)
@@ -136,13 +157,13 @@ public class HttpScrapeRequestHandler_ImplTest {
 		Mockito.when(mockedHandler.openUrlConnection(Mockito.any(URL.class))).thenThrow(new IOException());
 		scraper.setUrlHandler(mockedHandler);
 
-		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+		scraper.doScrape(new URI("http://test/announce?test=true"), infoHash);
 	}
   
 	@Test(expected=TorrentException.class)
 	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.scrape(new URI("udp://test.com"), infoHash);
+		scraper.doScrape(new URI("udp://test.com"), infoHash);
 	}
   
 	@Test(expected=TorrentException.class)
@@ -155,6 +176,6 @@ public class HttpScrapeRequestHandler_ImplTest {
 		scraper.setUrlHandler(mockedHandler);
       InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 
-		scraper.scrape(new URI("http://test/announce?test=true"), infoHash);
+		scraper.doScrape(new URI("http://test/announce?test=true"), infoHash);
 	}
 }

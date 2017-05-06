@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor;
 
 import java.io.IOException;
@@ -15,17 +30,20 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.google.common.base.MoreObjects;
 
-import io.delimeat.common.util.exception.EntityConcurrencyException;
-import io.delimeat.common.util.exception.EntityException;
-import io.delimeat.common.util.exception.EntityNotFoundException;
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.guide.exception.GuideConcurrencyException;
+import io.delimeat.guide.exception.GuideException;
+import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.processor.exception.ProcessorInteruptedException;
 import io.delimeat.processor.validation.FeedResultValidator;
 import io.delimeat.processor.validation.TorrentValidator;
@@ -38,16 +56,24 @@ import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 
+@Component
+@Scope("prototype")
 public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Processor {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(FeedProcessor_Impl.class);
 
+  	@Autowired
     private EpisodeService episodeService;
+  	@Autowired
     private FeedService feedService;
+  	@Autowired
     private TorrentService torrentService;
     
+  	@Autowired
     private List<FeedResultValidator> feedResultValidators = new ArrayList<FeedResultValidator>(); 
+  	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
+  	
     private Comparator<FeedResult> resultComparator;
 
     public EpisodeService getEpisodeService() {
@@ -98,7 +124,7 @@ public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Pr
         this.resultComparator = resultComparator;
     }
     
-    public void doProcessing()  throws ValidationException, FeedException, TorrentException, ProcessorInteruptedException, EntityNotFoundException, EntityConcurrencyException, EntityException {
+    public void doProcessing()  throws ValidationException, FeedException, TorrentException, ProcessorInteruptedException, GuideNotFoundException, GuideConcurrencyException, GuideException {
         final Episode lockedEpisode = episodeService.read(processEntity.getEpisodeId());
         
 		// read feed results

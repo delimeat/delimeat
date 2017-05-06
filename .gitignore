@@ -1,7 +1,7 @@
 node/
 node_modules/
 target/
-src/main/sourceapp/components/
+frontend/components/
 /bin/
 /.classpath
 /.project

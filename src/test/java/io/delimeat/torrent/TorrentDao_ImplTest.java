@@ -1,20 +1,19 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.torrent;
-
-import io.delimeat.torrent.ScrapeRequestHandler;
-import io.delimeat.torrent.TorrentDao_Impl;
-import io.delimeat.torrent.bencode.BDictionary;
-import io.delimeat.torrent.bencode.BList;
-import io.delimeat.torrent.bencode.BString;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.domain.InfoHash;
-import io.delimeat.torrent.domain.ScrapeResult;
-import io.delimeat.torrent.domain.Torrent;
-import io.delimeat.torrent.domain.TorrentFile;
-import io.delimeat.torrent.domain.TorrentInfo;
-import io.delimeat.torrent.exception.TorrentException;
-import io.delimeat.torrent.exception.TorrentNotFoundException;
-import io.delimeat.torrent.exception.UnhandledScrapeException;
-import io.delimeat.util.UrlHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -23,14 +22,23 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import io.delimeat.torrent.bencode.BDictionary;
+import io.delimeat.torrent.bencode.BList;
+import io.delimeat.torrent.bencode.BString;
+import io.delimeat.torrent.bencode.BencodeException;
+import io.delimeat.torrent.domain.Torrent;
+import io.delimeat.torrent.domain.TorrentFile;
+import io.delimeat.torrent.domain.TorrentInfo;
+import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.torrent.exception.TorrentNotFoundException;
+import io.delimeat.util.UrlHandler;
 
 public class TorrentDao_ImplTest {
 
@@ -50,22 +58,6 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals(mockedUrlHandler, dao.getUrlHandler());
 	}
 
-	@Test
-	public void ScaperTestTest() {
-    	Assert.assertEquals(0, dao.getScrapeReqeustHandlers().size());
-
-		ScrapeRequestHandler mockedScraper1 = Mockito.mock(ScrapeRequestHandler.class);
-		ScrapeRequestHandler mockedScraper2 = Mockito.mock(ScrapeRequestHandler.class);
-			
-     	Map<String,ScrapeRequestHandler> handlers = new HashMap<String,ScrapeRequestHandler>();
-     	handlers.put("HTTP", mockedScraper1);
-		handlers.put("UDP", mockedScraper2);
-     	dao.setScrapeRequestHandlers(handlers);
-		
-     	Assert.assertEquals(2, dao.getScrapeReqeustHandlers().size());
-		Assert.assertEquals(mockedScraper1,	dao.getScrapeReqeustHandlers().get("HTTP"));
-		Assert.assertEquals(mockedScraper2,dao.getScrapeReqeustHandlers().get("UDP"));
-	}
 
 	@Test
 	public void parseTorrentFileTest() {
@@ -305,47 +297,23 @@ public class TorrentDao_ImplTest {
 		dao.read(uri);
    }
 
-	@Test(expected = UnhandledScrapeException.class)
-	public void scrapeUnhandledTest() throws Exception {
-		ScrapeRequestHandler mockedScraper = Mockito
-				.mock(ScrapeRequestHandler.class);
-		dao.getScrapeReqeustHandlers().put("http", mockedScraper);
-
-		URI scrapeUri = new URI("udp://scrape.me:8080");
-      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		dao.scrape(scrapeUri, infoHash);
-	}
-  
 	@Test(expected=TorrentException.class)
-	public void scrapeNotHTTPTest() throws Exception{
-		dao.read(new URI("udp://test.com"));
-	}
-  
-	@Test(expected=TorrentException.class)
-	public void scrapeNotOKTest() throws Exception{
+	public void readNotOKTest() throws Exception{
 		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-      HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-      Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
+		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
+		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class), Mockito.anyMap()))
+				.thenReturn(mockedConnection);
 
 		dao.setUrlHandler(mockedUrlHandler);
 
-      dao.read( new URI("http://test.com/"));
+		dao.read(new URI("http://test.com/"));
 	}
-
-	@Test
-	public void scrapeTest() throws Exception {
-		ScrapeResult mockedResult = Mockito.mock(ScrapeResult.class);
-		ScrapeRequestHandler mockedScraper = Mockito
-				.mock(ScrapeRequestHandler.class);
-		Mockito.when(
-				mockedScraper.scrape(Mockito.any(URI.class),
-						Mockito.any(InfoHash.class))).thenReturn(mockedResult);
-		dao.getScrapeReqeustHandlers().put("HTTP", mockedScraper);
-
-		URI uri = new URI("http://scrape.me.com");
-      InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		Assert.assertEquals(mockedResult,dao.scrape(uri, infoHash));
+	
+	  
+	@Test(expected=TorrentException.class)
+	public void readNotHTTPTest() throws Exception{
+		dao.read(new URI("udp://test.com"));
 	}
 
 }

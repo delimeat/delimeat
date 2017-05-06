@@ -1,26 +1,43 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor;
 
-import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.processor.validation.TorrentValidator;
-import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.ShowType;
-
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import io.delimeat.config.domain.Config;
+import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.show.domain.Episode;
+
+@Component
 public class FeedProcessorFactory_Impl implements BeanFactoryAware, FeedProcessorFactory {
 
 	private BeanFactory beanFactory; 
 	
-	private Map<ShowType, String> processorTypes = new HashMap<ShowType,String>();
-	private TorrentValidator folderTorrentValidator;
+	@Autowired
+	@Qualifier("preferFilesComparatorId")
 	private Comparator<FeedResult> preferFilesComparator;
+	@Autowired
+	@Qualifier("maxSeedersComparatorId")
 	private Comparator<FeedResult> maxSeedersComparator;
 
 	@Override
@@ -30,15 +47,6 @@ public class FeedProcessorFactory_Impl implements BeanFactoryAware, FeedProcesso
 	
 	public BeanFactory getBeanFactory(){
 		return beanFactory;
-	}
-	
-	public TorrentValidator getFolderTorrentValidator() {
-		return folderTorrentValidator;
-	}
-
-	public void setFolderTorrentValidator(
-			TorrentValidator folderTorrentValidator) {
-		this.folderTorrentValidator = folderTorrentValidator;
 	}
 
 	public Comparator<FeedResult> getPreferFilesComparator() {
@@ -58,30 +66,16 @@ public class FeedProcessorFactory_Impl implements BeanFactoryAware, FeedProcesso
 			Comparator<FeedResult> maxSeedersComparator) {
 		this.maxSeedersComparator = maxSeedersComparator;
 	}
-	
-	public Map<ShowType, String> getProcessorTypes() {
-		return processorTypes;
-	}
-
-	public void setProcessorTypes(Map<ShowType, String> processorTypes) {
-		this.processorTypes = processorTypes;
-	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.server.processor.FeedProcessorFactory#build(io.delimeat.common.show.model.Episode, io.delimeat.common.config.model.Config)
 	 */
 	@Override
 	public Processor build(Episode episode, Config config) {
-		final String processorId = processorTypes.get(episode.getShow().getShowType());
-		final FeedProcessor_Impl processor = (FeedProcessor_Impl)beanFactory.getBean(processorId);
+		final FeedProcessor_Impl processor = (FeedProcessor_Impl)beanFactory.getBean(FeedProcessor_Impl.class);
 	
 		processor.setProcessEntity(episode);
 		processor.setConfig(config);
-
-		// set torrent validators
-		if (config.isIgnoreFolders() == true) {
-			processor.getTorrentValidators().add(folderTorrentValidator);
-		}
 
 		// set file comparator
 		if (config.isPreferFiles() == true) {

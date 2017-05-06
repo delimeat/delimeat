@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor.validation;
 
 import io.delimeat.config.domain.Config;
@@ -53,12 +68,12 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentService dao = Mockito.mock(TorrentService.class);
 		ScrapeResult scrape = new ScrapeResult(21, Long.MIN_VALUE);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
 		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
 
-		Mockito.verify(dao).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 
 	}
 
@@ -72,12 +87,12 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentService dao = Mockito.mock(TorrentService.class);
 		ScrapeResult scrape = new ScrapeResult(19, Long.MIN_VALUE);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
 		Assert.assertEquals(Optional.of(FeedResultRejection.INSUFFICENT_SEEDERS), validator.validate(torrent, show, config));
 
-		Mockito.verify(dao).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 
 	}
 
@@ -92,13 +107,13 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentService dao = Mockito.mock(TorrentService.class);
 		ScrapeResult scrape = new ScrapeResult(21, Long.MIN_VALUE);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenThrow(new IOException())
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenThrow(new IOException())
 				.thenReturn(scrape);
 		validator.setTorrentService(dao);
 
 		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
 
-		Mockito.verify(dao, Mockito.times(2)).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao, Mockito.times(2)).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}
 
 	@Test
@@ -112,35 +127,35 @@ public class TorrentSeederValidator_ImplTest {
 
 		TorrentService dao = Mockito.mock(TorrentService.class);
 		ScrapeResult scrape = new ScrapeResult(19, Long.MIN_VALUE);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
 		Assert.assertEquals(Optional.of(FeedResultRejection.INSUFFICENT_SEEDERS), validator.validate(torrent, show, config));
 
-		Mockito.verify(dao).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}
 
 	@Test
 	public void scrapeTimeoutExceptionTest() throws Exception {
 		TorrentService dao = Mockito.mock(TorrentService.class);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class)))
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class)))
 				.thenThrow(new SocketTimeoutException());
 		validator.setTorrentService(dao);
 
 		Assert.assertNull(validator.scrape("http:test.com", new InfoHash("bytes".getBytes())));
 
-		Mockito.verify(dao).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}
 
 	@Test
 	public void scrapeExceptionTest() throws Exception {
 		TorrentService dao = Mockito.mock(TorrentService.class);
-		Mockito.when(dao.scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenThrow(new IOException());
+		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenThrow(new IOException());
 		validator.setTorrentService(dao);
 
 		Assert.assertNull(validator.scrape("http:test.com", new InfoHash("bytes".getBytes())));
 
-		Mockito.verify(dao).scrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
+		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}
 
 }

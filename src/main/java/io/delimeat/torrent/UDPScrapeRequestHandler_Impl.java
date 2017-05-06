@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.torrent;
 
 import java.io.IOException;
@@ -8,13 +23,20 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
+@Component
 public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 	private static final Random RANDOM_GEN = new Random();
@@ -22,8 +44,12 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	private static final int ACTION_SCRAPE = 2;
 	private static final int ACTION_ERROR = 3;
 	private static final long CONNECT_CONNECTION_ID = 0x41727101980L;
-	private static final int MAX_SEND_RETRYS = 3; // 3 try's is lazy, because i cant be bothered getting an new connection id
+	private static final int MAX_SEND_RETRYS = 3; // 3 try's is lazy, because i can't be bothered getting an new connection id
 	
+	private final List<String> protocols = Arrays.asList("UDP");
+	
+	@Autowired
+	@Qualifier("updScrapeDatagramSocket")
 	private DatagramSocket socket;
 	
 	public void setSocket(DatagramSocket socket){
@@ -33,9 +59,14 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	public DatagramSocket getSocket(){
 		return socket;
 	}
+
+	@Override
+	public List<String> getSupportedProtocols() {
+		return protocols;
+	}
 	
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
+	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);

@@ -14,12 +14,12 @@ var SERVER_PORT = 5000;
  
 // Clean output directory
 gulp.task('clean', function(){
-	return del(['target/tmp', 'target/build'], {dot: true});	
+	return del(['target/tmp', 'target/classes/static'], {dot: true});	
 });
 
 // linting
 gulp.task('lint', function() {
-    return gulp.src('./src/main/sourceapp/js/**/*.js')
+    return gulp.src('./frontend/js/**/*.js')
         .pipe($.jshint())
         .pipe($.jshint.reporter('jshint-stylish'))
         .pipe($.jshint.reporter('fail'));
@@ -27,7 +27,7 @@ gulp.task('lint', function() {
 
 //move angular views to js file
 gulp.task('views',['clean'], function() {
-    return gulp.src('./src/main/sourceapp/js/**/*.tmpl.html')
+    return gulp.src('./frontend/js/**/*.tmpl.html')
         .pipe($.ngtemplatecache({
             module: 'app',
             root: 'js'
@@ -37,32 +37,32 @@ gulp.task('views',['clean'], function() {
 
 //copy i18n files
 gulp.task('i18n',['clean'],  function () {
-	  gulp.src('./src/main/sourceapp/i18n/*.json')
-	  .pipe(gulp.dest('target/build/i18n'));
+	  gulp.src('./frontend/i18n/*.json')
+	  .pipe(gulp.dest('target/classes/static/i18n'));
 });
 
 //minimise images
 gulp.task('images',['clean'], function() {
-    return gulp.src('./src/main/sourceapp/img/**/*.*')
+    return gulp.src('./frontend/img/**/*.*')
         .pipe($.imagemin())
-        .pipe(gulp.dest('target/build/img'));
+        .pipe(gulp.dest('target/classes/static/img'));
 });
 
 //copy bootstrap fonts
 gulp.task('glyph-icons',['clean'], function () {
-	  gulp.src('./src/main/sourceapp/components/bootstrap/fonts/*')
-	  .pipe(gulp.dest('target/build/fonts'));
+	  gulp.src('./frontend/components/bootstrap/fonts/*')
+	  .pipe(gulp.dest('target/classes/static/fonts'));
 });
 
 //copy favion
 gulp.task('favicon',['clean'], function () {
-	  gulp.src('./src/main/sourceapp/*.ico')
-	  .pipe(gulp.dest('target/build'));
+	  gulp.src('./frontend/*.ico')
+	  .pipe(gulp.dest('target/classes/static'));
 });
 
 //create config file for api endpoint - DEVELOPMENT
 gulp.task('config:dev',['clean'], function () {
-	  gulp.src('./src/main/sourceapp/config.json')
+	  gulp.src('./frontend/config.json')
 	  .pipe($.ngconfig('delimeat.config', {
 		  environment: 'development'
 		}))
@@ -72,7 +72,7 @@ gulp.task('config:dev',['clean'], function () {
 
 //create config file for api endpoint - BUILD
 gulp.task('config:build',['clean'], function () {
-	  gulp.src('./src/main/sourceapp/config.json')
+	  gulp.src('./frontend/config.json')
 	  .pipe($.ngconfig('delimeat.config', {
 		  environment: 'production'
 		}))
@@ -82,7 +82,7 @@ gulp.task('config:build',['clean'], function () {
 
 //compile the front end
 gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyph-icons','favicon'], function() {
-	return gulp.src('./src/main/sourceapp/index.html')
+	return gulp.src('./frontend/index.html')
     .pipe($.inject(gulp.src('./target/tmp/js/templates.js', {read: false}),
             {
                 starttag: '<!-- inject:templates:js -->',
@@ -96,25 +96,25 @@ gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyp
         js_libs:      [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')]
     }))
     .pipe($.size({title: 'html',showFiles:true}))
-	.pipe(gulp.dest('target/build'));
+	.pipe(gulp.dest('target/classes/static'));
 });
 
 //Serve tasks
 gulp.task('reload:html', function () {
-    return gulp.src('./src/main/sourceapp/**/*.html')
+    return gulp.src('./frontend/**/*.html')
         .pipe($.livereload(lrserver));
 });
 
 //watch for updated source files
 gulp.task('watch',['clean'], function () {
-    gulp.watch('./src/main/sourceapp/**/*.html', ['reload:html']);
+    gulp.watch('./frontend/**/*.html', ['reload:html']);
 });
 
 //serve the source files for development
 gulp.task('serve:dev', ['clean','watch','config:dev'], function() {
     var server = express();
     server.use(express.static('target/tmp/'));
-    server.use(express.static('./src/main/sourceapp/'));
+    server.use(express.static('./frontend/'));
     server.listen(SERVER_PORT);
 });
 

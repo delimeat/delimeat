@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor.validation;
 
 import java.util.Arrays;
@@ -11,6 +26,8 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.processor.validation.FeedResultSeasonValidator_Impl;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.Show;
+import io.delimeat.show.domain.ShowType;
 
 public class FeedResultSeasonValidator_ImplTest {
 
@@ -22,10 +39,30 @@ public class FeedResultSeasonValidator_ImplTest {
 	}
 
 	@Test
+	public void notSeasonFeedResultTest() throws Exception{
+		Episode episode = new Episode();
+		episode.setSeasonNum(1);
+		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.UNKNOWN);
+		episode.setShow(show);
+		
+		FeedResult result = new FeedResult();
+		result.setTitle("texttextS01E19TEXTTEXT");
+		List<FeedResult> results = Arrays.asList(result);
+
+		validator.validate(results, episode, null);
+		Assert.assertEquals(0, result.getFeedResultRejections().size());	
+	}
+	
+	@Test
 	public void emptyTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("");
@@ -41,6 +78,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(0);
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("TITLE");
@@ -56,6 +96,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(0);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("TITLE");
@@ -71,6 +114,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("texttextS01E19TEXTTEXT");
@@ -85,6 +131,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("texttext2012.01.05_03of99TEXTTEXT");
@@ -100,6 +149,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("texttextS02E19TEXTTEXT");
@@ -115,6 +167,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("texttextS01E18TEXTTEXT");
@@ -130,6 +185,9 @@ public class FeedResultSeasonValidator_ImplTest {
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);
 		episode.setEpisodeNum(19);
+		Show show = new Show();
+		show.setShowType(ShowType.SEASON);
+		episode.setShow(show);
 		
 		FeedResult result1 = new FeedResult();
 		result1.setTitle("texttextS01E19TEXTTEXT");

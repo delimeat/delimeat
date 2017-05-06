@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.torrent;
 
 import java.io.IOException;
@@ -8,6 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
@@ -20,15 +38,14 @@ import io.delimeat.torrent.bencode.BString;
 import io.delimeat.torrent.bencode.BencodeException;
 import io.delimeat.torrent.bencode.BencodeUtils;
 import io.delimeat.torrent.domain.InfoHash;
-import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
-import io.delimeat.torrent.exception.UnhandledScrapeException;
 import io.delimeat.util.UrlHandler;
 
+@Component
 public class TorrentDao_Impl implements TorrentDao {
 
 	private final static BString ANNOUNCE_KEY = new BString("announce");
@@ -40,23 +57,15 @@ public class TorrentDao_Impl implements TorrentDao {
 	private final static BString LENGHT_KEY = new BString("length");
 	private final static BString PATH_KEY = new BString("path");
 	
+	@Autowired
 	private UrlHandler handler;
-	private Map<String, ScrapeRequestHandler> scrapeRequestHandlers = new HashMap<String, ScrapeRequestHandler>();
-	
+		
 	public void setUrlHandler(UrlHandler handler){
 		this.handler = handler;
 	}
 	
 	public UrlHandler getUrlHandler(){
 		return handler;
-	}
-	
-	public void setScrapeRequestHandlers(Map<String, ScrapeRequestHandler> scrapeRequestHandlers){
-		this.scrapeRequestHandlers = scrapeRequestHandlers;
-	}
-	
-	public Map<String,ScrapeRequestHandler> getScrapeReqeustHandlers(){
-		return scrapeRequestHandlers;
 	}
 	
 	@Override
@@ -91,18 +100,6 @@ public class TorrentDao_Impl implements TorrentDao {
      }catch(BencodeException ex){
        throw new TorrentException("Encountered an error unmarshalling torrent",ex);
      }
-	}
-
-	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
-
-		final String protocol = uri.getScheme().toUpperCase();
-		if(getScrapeReqeustHandlers().containsKey(protocol)){
-			final ScrapeRequestHandler scraper = getScrapeReqeustHandlers().get(protocol);
-			return scraper.scrape(uri, infoHash);
-		}else{
-			throw new UnhandledScrapeException("No scrape request handler found for protocol: " + protocol);
-		}
 	}
 	
 	public Torrent parseRootDictionary(BDictionary rootDictionary) throws BencodeException, IOException{

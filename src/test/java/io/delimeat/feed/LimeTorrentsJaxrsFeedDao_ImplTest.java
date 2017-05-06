@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -6,32 +21,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.logging.LoggingFeature;
-import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import io.delimeat.feed.LimeTorrentsJaxrsFeedDao_Impl;
 import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.feed.domain.FeedSearch;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
@@ -60,59 +60,16 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 		}
 
 	}
-  
-	private static final String METADATA = "META-INF/oxm/feed-limetorrents-oxm.xml";
-	
-  	private static Client client;
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
 	private LimeTorrentsJaxrsFeedDao_Impl dao;
-	
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Arrays.asList(METADATA));
-		MoxyXmlFeature feature = new MoxyXmlFeature(properties, classLoader, true, FeedResult.class, FeedSearch.class);
-		Logger LOGGER = Logger.getLogger(LoggingFeature.class.getName());
-
-		ClientConfig configuration = new ClientConfig()
-										.register(feature)
-										.register(new LoggingFeature(LOGGER))
-        								.property(ClientProperties.CONNECT_TIMEOUT, 1000)
-    									.property(ClientProperties.READ_TIMEOUT,    1000);
-				
-		client = JerseyClientBuilder.createClient(configuration);
-	}
   
 	@Before
-	public void setUp() {
-		dao = new LimeTorrentsJaxrsFeedDao_Impl();
-	}
-
-	@Test
-	public void encodingTest() {
-		Assert.assertEquals("UTF-8",dao.getEncoding());
-		dao.setEncoding("ENCODING");
-		Assert.assertEquals("ENCODING", dao.getEncoding());
-	}
-  
-	@Test
-	public void mediaTypeTest() throws Exception {
-		Assert.assertNull(dao.getMediaType());
-		dao.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, dao.getMediaType());
-	}
-
-	@Test
-	public void baseUriTest() throws Exception {
-		Assert.assertNull(dao.getBaseUri());
-		URI uri = new URI("http://test.com");
-		dao.setBaseUri(uri);
-		Assert.assertEquals(uri, dao.getBaseUri());
+	public void setUp() throws URISyntaxException {
+		dao = new LimeTorrentsJaxrsFeedDao_Impl(new URI("http://localhost:8089"));
 	}
 
 	@Test
@@ -130,11 +87,6 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 							.withStatus(200)
 							.withHeader("Content-Type", "application/xml")
 							.withBody(response.toString())));
-
-		
-		dao.setClient(client);
-		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
-		dao.setBaseUri(new URI("http://localhost:8089"));
 		
 		List<FeedResult> results = dao.read("title");
      	Assert.assertNotNull(results);
@@ -148,13 +100,6 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
      	Assert.assertEquals(0, results.get(0).getFeedResultRejections().size());
 
 	}
-
-	@Test(expected=RuntimeException.class)
-	public void readUnsupportedEncodingTest() throws Exception {
-		dao.setEncoding("JIBBERISH");
-		
-		dao.read("TITLE");
-	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
@@ -163,10 +108,6 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/xml")));
-
-		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
-		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.read("title");
 		Assert.fail();
@@ -180,10 +121,6 @@ public class LimeTorrentsJaxrsFeedDao_ImplTest {
 							.withStatus(200)
 							.withHeader("Content-Type","application/xml")
                      .withFixedDelay(2000)));
-
-		dao.setMediaType(MediaType.APPLICATION_XML_TYPE);
-		dao.setBaseUri(new URI("http://localhost:8089"));
-		dao.setClient(client);
 
 		dao.read("title");
 		Assert.fail();

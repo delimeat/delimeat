@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor.validation;
 
 import java.util.Arrays;
@@ -11,6 +26,8 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.processor.validation.FeedResultMiniSeriesValidator_Impl;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.Show;
+import io.delimeat.show.domain.ShowType;
 
 public class FeedResultMiniSeriesValidator_ImplTest {
 	
@@ -22,11 +39,29 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	}
 
 	@Test
+	public void notMiniSeriesFeedResultTest() throws Exception{
+		Episode episode = new Episode();
+		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.UNKNOWN);
+		episode.setShow(show);
+		
+		FeedResult result = new FeedResult();
+		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");
+		List<FeedResult> results = Arrays.asList(result);
+
+		validator.validate(results, episode, null);
+		Assert.assertEquals(0, result.getFeedResultRejections().size());
+	}
+	
+	@Test
 	public void nullTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 
-		
 		FeedResult result = new FeedResult();
 		result.setTitle(null);
 		List<FeedResult> results = Arrays.asList(result);
@@ -40,6 +75,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void emptyTitleFeedResultTest() throws Exception{	
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("");
@@ -54,6 +92,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void zeorEpisodeNumTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(0);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("testtext12.02");
@@ -68,6 +109,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void rejectNotMiniSeriesFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12");
@@ -81,6 +125,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void rejectIncorrectEpisodeFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_03Of99");
@@ -94,6 +141,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void validFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result = new FeedResult();
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");
@@ -107,6 +157,9 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	public void validRejectRejectTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);
+		Show show = new Show();
+		show.setShowType(ShowType.MINI_SERIES);
+		episode.setShow(show);
 		
 		FeedResult result1 = new FeedResult();
 		result1.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");

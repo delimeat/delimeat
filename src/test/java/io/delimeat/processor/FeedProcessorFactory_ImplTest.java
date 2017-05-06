@@ -1,24 +1,33 @@
+/*
+ * Copyright 2013-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.delimeat.processor;
 
-import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.processor.FeedProcessorFactory_Impl;
-import io.delimeat.processor.FeedProcessor_Impl;
-import io.delimeat.processor.Processor;
-import io.delimeat.processor.validation.TorrentValidator;
-import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.Show;
-import io.delimeat.show.domain.ShowType;
-
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.BeanFactory;
+
+import io.delimeat.config.domain.Config;
+import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.Show;
+import io.delimeat.show.domain.ShowType;
 
 public class FeedProcessorFactory_ImplTest {
 
@@ -35,26 +44,6 @@ public class FeedProcessorFactory_ImplTest {
 		BeanFactory beanFactory = Mockito.mock(BeanFactory.class);
 		factory.setBeanFactory(beanFactory);
 		Assert.assertEquals(beanFactory, factory.getBeanFactory());
-	}
-
-	@Test
-	public void processorTypesTest(){
-		Assert.assertNotNull(factory.getProcessorTypes());
-		Assert.assertTrue(factory.getProcessorTypes().isEmpty());
-		Map<ShowType, String> types = new HashMap<ShowType, String>();
-		types.put(ShowType.ANIMATED, "VALUE");
-		factory.setProcessorTypes(types);
-		Assert.assertNotNull(factory.getProcessorTypes());
-		Assert.assertEquals(1, factory.getProcessorTypes().size());
-		Assert.assertEquals("VALUE", factory.getProcessorTypes().get(ShowType.ANIMATED));
-	}
-	
-	@Test
-	public void folderTorrentValidatorTest(){
-		Assert.assertNull(factory.getFolderTorrentValidator());
-		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
-		factory.setFolderTorrentValidator(validator);
-		Assert.assertEquals(validator, factory.getFolderTorrentValidator());
 	}
 	
 	@Test
@@ -77,15 +66,12 @@ public class FeedProcessorFactory_ImplTest {
 	
 	@Test
 	public void buildPreferFilesTest(){
-		factory.getProcessorTypes().put(ShowType.SEASON, "STRING");
 		
 		BeanFactory beanFactory = Mockito.mock(BeanFactory.class);
 		FeedProcessor_Impl actualprocessor = new FeedProcessor_Impl();
-		Mockito.when(beanFactory.getBean(Mockito.anyString())).thenReturn(actualprocessor);
+		Mockito.when(beanFactory.getBean(FeedProcessor_Impl.class)).thenReturn(actualprocessor);
 		factory.setBeanFactory(beanFactory);
-		
-		TorrentValidator folderTorrentValidator = Mockito.mock(TorrentValidator.class);
-		factory.setFolderTorrentValidator(folderTorrentValidator);
+
 		
 		@SuppressWarnings("unchecked")
 		Comparator<FeedResult> comparator = Mockito.mock(Comparator.class);
@@ -107,19 +93,16 @@ public class FeedProcessorFactory_ImplTest {
 
      	Assert.assertEquals(episode, castProcessor.getProcessEntity());
 		Assert.assertEquals(config, castProcessor.getConfig());
-		Assert.assertEquals(1, castProcessor.getTorrentValidators().size());
-		Assert.assertEquals(folderTorrentValidator, castProcessor.getTorrentValidators().get(0));
 		Assert.assertEquals(comparator, castProcessor.getResultComparator());
 
 	}
   
 	@Test
 	public void buildMaxSeedersTest(){
-		factory.getProcessorTypes().put(ShowType.SEASON, "STRING");
 		
 		BeanFactory beanFactory = Mockito.mock(BeanFactory.class);
 		FeedProcessor_Impl actualprocessor = new FeedProcessor_Impl();
-		Mockito.when(beanFactory.getBean(Mockito.anyString())).thenReturn(actualprocessor);
+		Mockito.when(beanFactory.getBean(FeedProcessor_Impl.class)).thenReturn(actualprocessor);
 		factory.setBeanFactory(beanFactory);
 		
 		@SuppressWarnings("unchecked")
