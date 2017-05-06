@@ -1,6 +1,6 @@
 {
   "name": "delimeat",
-  "license": "ApacheV2",
+  "license": "Apache-2.0",
   "private": true,
   "dependencies": {
     "angular": "~1.5.8",

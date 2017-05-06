@@ -46,14 +46,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.delimeat.WebConfig;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=WebConfig.class)
+@ContextConfiguration
 @SpringBootTest()
 public class ShowControllerTest {
 

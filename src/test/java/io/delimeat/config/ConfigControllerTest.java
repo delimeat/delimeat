@@ -40,11 +40,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.delimeat.WebConfig;
 import io.delimeat.config.domain.Config;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=WebConfig.class)
+@ContextConfiguration
 @SpringBootTest()
 public class ConfigControllerTest {
 

@@ -39,14 +39,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import io.delimeat.WebConfig;
 import io.delimeat.guide.domain.AiringDay;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=WebConfig.class)
+@ContextConfiguration
 @SpringBootTest()
 public class GuideControllerTest {
 

@@ -95,12 +95,12 @@ public class Episode implements Comparable<Episode> {
 	@Enumerated(EnumType.STRING)
 	private EpisodeStatus status = EpisodeStatus.PENDING;
 	
-	@Column(name="LAST_FEED_UPDATE", nullable=false)
+	@Column(name="LAST_FEED_UPDATE", nullable=true)
 	@Basic(optional=false)
 	//@Temporal(TemporalType.TIMESTAMP)
 	private Instant lastFeedUpdate;
 	
-	@Column(name="LAST_FEED_CHECK", nullable=false)
+	@Column(name="LAST_FEED_CHECK", nullable=true)
 	@Basic(optional=false)
 	//@Temporal(TemporalType.TIMESTAMP)
 	private Instant lastFeedCheck;

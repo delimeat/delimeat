@@ -2,7 +2,7 @@
   "name": "delimeat",
   "version": "0.1.0",
   "description": "delimeat",
-  "license": "Apachev2",
+  "license": "Apache-2.0",
   "repository": "https://github.com/delimeat/delimeat.git",
   "devDependencies": {
     "bower": "^1.7.9",
