@@ -1,8 +1,3 @@
-debug: true
-logging:
-  level:
-    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
-    ROOT: ALL 
 spring:
   application:
     name: "delimeat"
@@ -18,3 +13,19 @@ spring:
       indent-output: true
     deserialization:
       read-date-timestamps-as-nanoseconds: false
+ 
+---
+spring:
+  profiles: development
+debug: true
+logging:
+  level:
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
+    ROOT: ALL   
+    
+---    
+spring:
+  profiles: production
+logging:
+  level:
+    ROOT: WARN

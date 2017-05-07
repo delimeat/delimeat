@@ -96,13 +96,11 @@ public class Episode implements Comparable<Episode> {
 	private EpisodeStatus status = EpisodeStatus.PENDING;
 	
 	@Column(name="LAST_FEED_UPDATE", nullable=true)
-	@Basic(optional=false)
-	//@Temporal(TemporalType.TIMESTAMP)
+	@Basic(optional=true)
 	private Instant lastFeedUpdate;
 	
 	@Column(name="LAST_FEED_CHECK", nullable=true)
-	@Basic(optional=false)
-	//@Temporal(TemporalType.TIMESTAMP)
+	@Basic(optional=true)
 	private Instant lastFeedCheck;
 	
 	@Version
