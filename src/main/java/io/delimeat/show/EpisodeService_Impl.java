@@ -25,7 +25,7 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 
-@Service("episodeServiceId")
+@Service
 public class EpisodeService_Impl implements EpisodeService {
 
 	@Autowired

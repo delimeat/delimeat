@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.delimeat.guide.GuideDao;
+import io.delimeat.guide.GuideDataSource;
 import io.delimeat.guide.GuideService_Impl;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
@@ -42,21 +42,21 @@ public class GuideService_ImplTest {
 
 	@Test
 	public void guideDaoTest() {
-		Assert.assertNull(service.getGuideDao());
-		GuideDao mockedDao = Mockito.mock(GuideDao.class);
-		service.setGuideDao(mockedDao);
-		Assert.assertEquals(mockedDao, service.getGuideDao());
+		Assert.assertNull(service.getGuideDataSource());
+		GuideDataSource mockedDataSource = Mockito.mock(GuideDataSource.class);
+		service.setGuideDataSource(mockedDataSource);
+		Assert.assertEquals(mockedDataSource, service.getGuideDataSource());
 	}
 
 	@Test
 	public void readLikeTest() throws IOException, Exception {
-		GuideDao mockedDao = Mockito.mock(GuideDao.class);
+		GuideDataSource mockedDataSource = Mockito.mock(GuideDataSource.class);
 		List<GuideSearchResult> results = new ArrayList<GuideSearchResult>();
 		GuideSearchResult mockedResult = Mockito.mock(GuideSearchResult.class);
 		results.add(mockedResult);
-		Mockito.when(mockedDao.search("ANYTHING")).thenReturn(results);
+		Mockito.when(mockedDataSource.search("ANYTHING")).thenReturn(results);
 
-		service.setGuideDao(mockedDao);
+		service.setGuideDataSource(mockedDataSource);
 
 		List<GuideSearchResult> actualResults = service.readLike("ANYTHING");
 		Assert.assertNotNull(actualResults);
@@ -66,10 +66,10 @@ public class GuideService_ImplTest {
 
 	@Test
 	public void readTest() throws IOException, Exception {
-		GuideDao mockedDao = Mockito.mock(GuideDao.class);
+		GuideDataSource mockedDataSource = Mockito.mock(GuideDataSource.class);
 		GuideInfo mockedInfo = Mockito.mock(GuideInfo.class);
-		Mockito.when(mockedDao.info("guideid")).thenReturn(mockedInfo);
-		service.setGuideDao(mockedDao);
+		Mockito.when(mockedDataSource.info("guideid")).thenReturn(mockedInfo);
+		service.setGuideDataSource(mockedDataSource);
 		
 		GuideInfo actualInfo = service.read("guideid");
 		Assert.assertNotNull(actualInfo);
@@ -78,7 +78,7 @@ public class GuideService_ImplTest {
 	
 	@Test
 	public void readEpisodesTest() throws IOException, Exception {
-		GuideDao mockedDao = Mockito.mock(GuideDao.class);
+		GuideDataSource mockedDataSource = Mockito.mock(GuideDataSource.class);
 		GuideEpisode guideEp1 = new GuideEpisode();
      	guideEp1.setSeasonNum(1);
      	guideEp1.setAirDate(LocalDate.ofEpochDay(0));
@@ -100,8 +100,8 @@ public class GuideService_ImplTest {
      	expectedEpisodes.add(guideEp2);
      	expectedEpisodes.add(guideEp3);
      	expectedEpisodes.add(guideEp4);
-     	Mockito.when(mockedDao.episodes("guideId")).thenReturn(expectedEpisodes);
-		service.setGuideDao(mockedDao);	
+     	Mockito.when(mockedDataSource.episodes("guideId")).thenReturn(expectedEpisodes);
+		service.setGuideDataSource(mockedDataSource);	
 		
 		List<GuideEpisode> actualEpisodes = service.readEpisodes("guideId");
 		Assert.assertNotNull(actualEpisodes);

@@ -29,13 +29,11 @@ import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass=true)
 public class WebConfig  {
 
 	@Inject Environment env;
@@ -76,10 +74,11 @@ public class WebConfig  {
 	@Bean
 	public CustomizableTraceInterceptor customizableTraceInterceptor() {
 		CustomizableTraceInterceptor cti = new CustomizableTraceInterceptor();
-		cti.setUseDynamicLogger(true);
-		cti.setEnterMessage("Entering $[methodName]($[arguments])");
-		cti.setExitMessage("Entering $[methodName]($[arguments]), Returned $[returnValue]");
-		cti.setExceptionMessage("Exception $[methodName]($[arguments]): $[exception]");
+		//cti.setUseDynamicLogger(true);
+		cti.setHideProxyClassNames(true);
+		cti.setEnterMessage("Entering $[targetClassName].$[methodName]($[arguments])");
+		cti.setExitMessage("Leaving $[targetClassName].$[methodName](): $[returnValue]");
+		cti.setExceptionMessage("Exception $[targetClassName].$[methodName]($[arguments]): $[exception]");
 		return cti;
 	}
 
@@ -87,6 +86,7 @@ public class WebConfig  {
 	public Advisor jpaRepositoryAdvisor() {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression("within(io.delimeat..*)");
+	    //pointcut.setExpression("execution(public * io.delimeat..*.*(..))");
 		return new DefaultPointcutAdvisor(pointcut, customizableTraceInterceptor());
 	}
 

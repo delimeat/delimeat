@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.client.util.jaxrs;
+package io.delimeat.feed;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
-import javax.ws.rs.NameBinding;
+import org.springframework.cache.annotation.Cacheable;
 
-@NameBinding
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ETag {
-  
+import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedException;
+
+public interface FeedDataSource {
+
+	public FeedSource getFeedSource();
+	
+	/**
+	 * @param title
+	 * @return list of Feed Results
+	 * @throws FeedException
+	 */
+	@Cacheable("feed")
+	public List<FeedResult> read(String title) throws FeedException;
+	
 }

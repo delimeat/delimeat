@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
-@Component("urlHandlerId")
+@Component
 public class UrlHandler_Impl implements UrlHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlHandler_Impl.class);

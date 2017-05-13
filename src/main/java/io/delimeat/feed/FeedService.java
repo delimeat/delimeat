@@ -24,7 +24,7 @@ public interface FeedService {
 
 	/**
 	 * @param title
-	 * @return
+	 * @return list of Feed Results
 	 * @throws FeedException
 	 */
 	public List<FeedResult> read(String title) throws FeedException;

@@ -45,14 +45,14 @@ public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 			return null;
 		}
 		
-		final String upperValue = value.toUpperCase();
+		final String upperValue = value.toUpperCase().replaceAll(" ", "");
 		final String format;
 		if (upperValue.matches("(([0-1][0-2]|[1-9])\\s?(AM|PM))")) {
-			format = "h a";
+			format = "ha";
 		} else if (upperValue.matches("[0-2]?[0-9]:[0-5][0-9]")) {
 			format = "HH:m";
 		} else {
-			format = "h:m a";
+			format = "h:ma";
 		}
 		try{
 			return LocalTime.parse(upperValue,  DateTimeFormatter.ofPattern(format));

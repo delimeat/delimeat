@@ -107,8 +107,7 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(showService).readAll();
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 
 	}
 
@@ -135,6 +134,7 @@ public class ProcessorService_ImplTest {
 	public void processAllGuideUpdatesConfigExceptionTest() throws Exception {
 		ShowService showService = Mockito.mock(ShowService.class);
 		Show show = new Show();
+		show.setEnabled(true);
 		Mockito.when(showService.readAll()).thenReturn(Arrays.asList(show));
 		service.setShowService(showService);
 
@@ -219,8 +219,7 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(showService).readAll();
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 
 	}
 
@@ -242,8 +241,7 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 
 	}
 
@@ -271,6 +269,9 @@ public class ProcessorService_ImplTest {
 	public void processAllFeedUpdatesConfigExceptionTest() throws Exception {
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		Episode episode = new Episode();
+		Show show = new Show();
+		show.setEnabled(true);
+		episode.setShow(show);
 		Mockito.when(episodeService.findAllPending()).thenReturn(Arrays.asList(episode));
 		service.setEpisodeService(episodeService);
 
@@ -317,8 +318,7 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 	}
   
 	@Test
@@ -344,14 +344,14 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 	}
 
 	@Test
 	public void processAllFeedUpdatesNextEpAfterNowTest() throws Exception {		
 		Show show = new Show();
-		show.setTimezone("EST");
+		show.setTimezone("US/Pacific");
+		show.setEnabled(true);
 		Episode episode = new Episode();
 		LocalDate later = LocalDate.MAX;
 		episode.setAirDate(later);
@@ -523,8 +523,7 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
 		
-		Mockito.verify(configService).read();
-		Mockito.verifyNoMoreInteractions(configService);
+		Mockito.verifyZeroInteractions(configService);
 	}
 
 	@Test

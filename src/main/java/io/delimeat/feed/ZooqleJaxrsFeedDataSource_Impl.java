@@ -20,26 +20,44 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
 
 @Component
-public class ZooqleJaxrsFeedDao_Impl extends AbstractJaxrsFeedDao implements FeedDao {
+public class ZooqleJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource {
 
-	@Autowired
-	public ZooqleJaxrsFeedDao_Impl(@Value("${io.delimeat.feed.zooqle.baseUri}") URI baseUri) {
-		super(FeedSource.ZOOQLE, MediaType.APPLICATION_XML_TYPE, "META-INF/oxm/feed-zooqle-oxm.xml",baseUri);
+	@Value("${io.delimeat.feed.zooqle.baseUri}") 
+	private URI baseUri;
+
+	public ZooqleJaxrsFeedDataSource_Impl(){
+		super(FeedSource.ZOOQLE, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-zooqle-oxm.xml");
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
+	 */
+	@Override
+	public URI getBaseUri() {
+		return baseUri;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
+	 */
+	@Override
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 */
 	@Override
-	protected WebTarget prepareRequest(String title) {
-		return getTarget()
-				.path("search")
+	protected WebTarget prepareRequest(final WebTarget target, final String title) {
+		return target.path("search")
 				.queryParam("q", title + " after:60 category:TV")
 				.queryParam("fmt", "rss");
 	}
-
 }

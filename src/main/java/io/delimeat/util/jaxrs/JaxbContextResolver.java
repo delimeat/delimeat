@@ -38,7 +38,7 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JaxbContextResolver.class);
 
-	private Map<String, Object> properties = Collections.emptyMap();
+	private Map<String, Object> properties = Collections.<String,Object>emptyMap();
 	private Class[] classes;
 
 	/**
@@ -86,7 +86,6 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 		} else {
 			typeArray = new Class[] { type };
 		}
-
 		try {
 			//final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
 			final JAXBContext context = JAXBContextFactory.createContext(typeArray, properties);

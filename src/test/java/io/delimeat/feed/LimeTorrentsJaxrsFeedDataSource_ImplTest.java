@@ -16,9 +16,10 @@
 package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,93 +36,83 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class ExtraTorrentJaxrsFeedDao_ImplTest {
-	
-	private class ItemEntityGenerator {
-
-		private StringBuffer xml;
-
-		public ItemEntityGenerator() {
-			xml = new StringBuffer();
-        	xml.append("<?xml version='1.0' encoding='UTF-8'?>");
-			xml.append("<rss><channel>");
-		}
-     	public void addItem(String title, String torrentUrl, long length,long seeders, long leechers){
-			xml.append("<item>");
-        	xml.append("<title><![CDATA["+title+"]]></title>");
-			xml.append("<enclosure url='"+torrentUrl+"' length='"+length+"' type='application/x-bittorrent' />");
-        	xml.append("<seeders>"+ seeders + "</seeders>");
-        	xml.append("<leechers>" + leechers + "</leechers>");			
-			xml.append("</item>");        
-
-      }
-
-		public String toString() {
-			return xml.toString() + "</channel></rss>";
-		}
-
-	}
+public class LimeTorrentsJaxrsFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private ExtraTorrentJaxrsFeedDao_Impl dao;
+	private LimeTorrentsJaxrsFeedDataSource_Impl dataSource;
+
   
 	@Before
 	public void setUp() throws URISyntaxException {
-		dao = new ExtraTorrentJaxrsFeedDao_Impl(new URI("http://localhost:8089"));
+		dataSource = new LimeTorrentsJaxrsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.EXTRATORRENT, dao.getFeedSource());
+		Assert.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
 	}
   
 	@Test
 	public void readTest() throws Exception{
-		ItemEntityGenerator response = new ItemEntityGenerator();
-     	response.addItem("title", "torrentUrl", Long.MAX_VALUE, 1, 1000);
-     
-		stubFor(get(urlEqualTo("/?type=search&search=title"))
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
+     			+ "<size>9223372036854775807</size>"
+     			+ "</item></channel></rss>";
+     	
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type", "application/xml")
-							.withBody(response.toString())));
+							.withBody(responseBody)));
 		
-		List<FeedResult> results = dao.read("title");
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		
+		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
-     	Assert.assertEquals(1, results.get(0).getSeeders());
-     	Assert.assertEquals(1000, results.get(0).getLeechers());
+     	Assert.assertEquals(0, results.get(0).getSeeders());
+     	Assert.assertEquals(0, results.get(0).getLeechers());
+     	Assert.assertNull(results.get(0).getTorrent());
+     	Assert.assertEquals(0, results.get(0).getFeedResultRejections().size());
 
 	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlEqualTo("/?type=search&search=title"))
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/xml")));
 
-
-		dao.read("title");
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		
+		dataSource.read("title");
 		Assert.fail();
 	}
   
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlEqualTo("/?type=search&search=title"))
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type","application/xml")
                      .withFixedDelay(2000)));
 
-		dao.read("title");
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		
+		dataSource.read("title");
 		Assert.fail();
 	}
+
 }

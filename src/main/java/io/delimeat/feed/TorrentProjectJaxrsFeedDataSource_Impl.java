@@ -20,24 +20,43 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
 
 @Component
-public class TorrentProjectJaxrsFeedDao_Impl extends AbstractJaxrsFeedDao{
+public class TorrentProjectJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource{
 	
-	@Autowired
-	public TorrentProjectJaxrsFeedDao_Impl(@Value("${io.delimeat.feed.torrentproject.baseUri}") final URI baseUri) {
-		super(FeedSource.TORRENTPROJECT, MediaType.APPLICATION_XML_TYPE, "META-INF/oxm/feed-torrentproject-oxm.xml", baseUri);
+	@Value("${io.delimeat.feed.torrentproject.baseUri}") 
+	private URI baseUri;
+
+	public TorrentProjectJaxrsFeedDataSource_Impl(){
+		super(FeedSource.TORRENTPROJECT, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-torrentproject-oxm.xml");
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
+	 */
+	@Override
+	public URI getBaseUri() {
+		return baseUri;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
+	 */
+	@Override
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 */
 	@Override
-	protected WebTarget prepareRequest(String title) {
-		return getTarget()
-				.queryParam("s", title)
+	protected WebTarget prepareRequest(final WebTarget target, final String title) {
+		return target.queryParam("s", title)
 				.queryParam("out", "rss");
 	}
 

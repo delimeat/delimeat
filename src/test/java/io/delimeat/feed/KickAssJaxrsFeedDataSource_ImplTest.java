@@ -18,10 +18,11 @@ package io.delimeat.feed;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -35,88 +36,83 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class TorrentProjectJaxrsFeedDao_ImplTest {
-
-	private class ItemEntityGenerator {
-
-		private StringBuffer xml;
-
-		public ItemEntityGenerator() {
-			xml = new StringBuffer();
-        	xml.append("<?xml version='1.0' encoding='UTF-8'?>");
-			xml.append("<rss><channel>");
-		}
-     	public void addItem(String title, String torrentUrl, long length){
-			xml.append("<item>");
-        	xml.append("<title><![CDATA["+title+"]]></title>");
-			xml.append("<enclosure url='"+torrentUrl+"' length='"+length+"' type='application/x-bittorrent' />");
-			xml.append("</item>");        
-
-      }
-
-		public String toString() {
-			return xml.toString() + "</channel></rss>";
-		}
-
-	}
+public class KickAssJaxrsFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private TorrentProjectJaxrsFeedDao_Impl dao;
+	private KickAssJaxrsFeedDataSource_Impl dataSource;
+
   
 	@Before
-	public void setUp() throws URISyntaxException {
-		dao = new TorrentProjectJaxrsFeedDao_Impl(new URI("http://localhost:8089"));
+	public void setUp() throws Exception {
+		dataSource = new KickAssJaxrsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.TORRENTPROJECT, dao.getFeedSource());
+		Assert.assertEquals(FeedSource.KAT, dataSource.getFeedSource());
 	}
-  
+
 	@Test
-	public void readTest() throws Exception{
-		ItemEntityGenerator response = new ItemEntityGenerator();
-     	response.addItem("title", "torrentUrl", Long.MAX_VALUE);
+	public void readTest() throws Exception {
+		
+		String responseBody = "{\"list\": [{\"title\":\"title\",\"size\":100,"
+				+ "\"seeds\":\"50\",\"leechs\":\"30\","
+				+ "\"torrentLink\":\"http://test.com\"}]}";
      
-		stubFor(get(urlEqualTo("/?s=title&out=rss"))
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
-							.withBody(response.toString())));
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
 		
-		List<FeedResult> results = dao.read("title");
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+				
+		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
-     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals("http://test.com",results.get(0).getTorrentURL());
+     	Assert.assertEquals(100,results.get(0).getContentLength());
+     	Assert.assertEquals(50,results.get(0).getSeeders());
+     	Assert.assertEquals(30,results.get(0).getLeechers());
 
 	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlEqualTo("/?s=title&out=rss"))
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","application/json")));
 
-		dao.read("title");
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		
+		dataSource.read("title");
 		Assert.fail();
 	}
   
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlEqualTo("/?s=title&out=rss"))
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","application/json")
                      .withFixedDelay(2000)));
 
-		dao.read("title");
+
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		
+		dataSource.read("title");
 		Assert.fail();
 	}
 

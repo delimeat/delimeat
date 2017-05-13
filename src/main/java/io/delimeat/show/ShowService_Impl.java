@@ -29,7 +29,7 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 
-@Service("showServiceId")
+@Service
 public class ShowService_Impl implements ShowService {
 
 	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s]";

@@ -20,23 +20,43 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
 
 @Component
-public class LimeTorrentsJaxrsFeedDao_Impl extends AbstractJaxrsFeedDao implements FeedDao{
+public class LimeTorrentsJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource{
 	
-	@Autowired
-	public LimeTorrentsJaxrsFeedDao_Impl(@Value("${io.delimeat.feed.limetorrents.baseUri}") URI baseUri) {
-		super(FeedSource.LIMETORRENTS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-limetorrents-oxm.xml",baseUri);
+	@Value("${io.delimeat.feed.limetorrents.baseUri}") 
+	private URI baseUri;
+	
+	public LimeTorrentsJaxrsFeedDataSource_Impl() {
+		super(FeedSource.LIMETORRENTS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-limetorrents-oxm.xml");
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
+	 */
 	@Override
-	protected WebTarget prepareRequest(String title) {
-		return getTarget()
+	public URI getBaseUri() {
+		return baseUri;
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
+	 */
+	@Override
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;	
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 */
+	@Override
+	protected WebTarget prepareRequest(final WebTarget target, final String title) {
+		return target.path("searchrss")
 				.path(String.format("%s/", title));
 	}
 

@@ -20,25 +20,45 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
 
 @Component
-public class BitSnoopJaxrsFeedDao_Impl extends AbstractJaxrsFeedDao implements FeedDao {
+public class BitSnoopJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource {
 
-	@Autowired
-	public BitSnoopJaxrsFeedDao_Impl(@Value("${io.delimeat.feed.bitsnoop.baseUri}") final URI baseUri) {
-		super(FeedSource.BITSNOOP,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-bitsnoop-oxm.xml",baseUri);
+	@Value("${io.delimeat.feed.bitsnoop.baseUri}") 
+	private URI baseUri;
+
+	public BitSnoopJaxrsFeedDataSource_Impl(){
+		super(FeedSource.BITSNOOP, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-bitsnoop-oxm.xml");
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
+	 */
+	@Override
+	public URI getBaseUri() {
+		return baseUri;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
+	 */
+	@Override
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 */
 	@Override
-	protected WebTarget prepareRequest(String title) {
-		return getTarget().path("search/video")
+	protected WebTarget prepareRequest(final WebTarget target, final String title) {
+		return target.path("/search/video/")
 				.path(title)
-				.path("c/d/1/")
+				.path("/c/d/1/")
 				.queryParam("fmt", "rss");
 	}
 

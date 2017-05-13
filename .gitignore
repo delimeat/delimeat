@@ -1,8 +1,8 @@
+/.classpath
+/.project
+/.settings/
 node/
 node_modules/
 target/
 frontend/components/
-/bin/
-/.classpath
-/.project
 /derby.log

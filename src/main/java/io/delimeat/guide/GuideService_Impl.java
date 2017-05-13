@@ -25,33 +25,33 @@ import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
 
-@Service("guideServiceId")
+@Service
 public class GuideService_Impl implements GuideService {
 
 	@Autowired
-	private GuideDao guideDao;
+	private GuideDataSource guideDataSource;
 
-	public GuideDao getGuideDao() {
-		return guideDao;
+	public GuideDataSource getGuideDataSource() {
+		return guideDataSource;
 	}
 
-	public void setGuideDao(GuideDao infoDao) {
-		this.guideDao = infoDao;
+	public void setGuideDataSource(GuideDataSource guideDataSource) {
+		this.guideDataSource = guideDataSource;
 	}
 
 	@Override
 	public List<GuideSearchResult> readLike(final String title) throws Exception {
-		return guideDao.search(title);
+		return guideDataSource.search(title);
 	}
 
 	@Override
 	public GuideInfo read(final String guideId) throws Exception {
-		return guideDao.info(guideId);
+		return guideDataSource.info(guideId);
 	}
 
 	@Override
 	public List<GuideEpisode> readEpisodes(final String guideId) throws Exception {
-		return guideDao.episodes(guideId).stream()
+		return guideDataSource.episodes(guideId).stream()
 				.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null))
 				.sorted()
 				.collect(Collectors.toList());

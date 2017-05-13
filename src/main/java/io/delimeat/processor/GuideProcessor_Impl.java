@@ -42,7 +42,7 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 
-@Component("guideProcessorId")
+@Component
 @Scope("prototype")
 public class GuideProcessor_Impl extends AbstractProcessor<Show> implements Processor {
 

@@ -44,7 +44,7 @@ public class ErrorDTOTest {
     @Test
     public void toStringTest() {
         ErrorDto error = new ErrorDto(500, "THIS IS AN ERROR");
-        Assert.assertEquals("Status: 500 Error: THIS IS AN ERROR", error.toString());
+        Assert.assertEquals("ErrorDto{status=500, error=THIS IS AN ERROR}", error.toString());
 
     }
 }

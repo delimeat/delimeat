@@ -19,7 +19,15 @@ import io.delimeat.config.domain.Config;
 
 public interface ConfigService {
 
+    /**
+     * @return the config instance
+     */
     public Config read();
 
+    /**
+     * Update the config instance
+     * @param config
+     * @return the config that was updated
+     */
     public Config update(Config config);
 }

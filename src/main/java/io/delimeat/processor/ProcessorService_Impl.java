@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ import io.delimeat.show.ShowUtils;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
 
-@Service("processorServiceId")
+@Service
 public class ProcessorService_Impl implements ProcessorService,
 		ProcessorListener {
 
@@ -117,15 +118,21 @@ public class ProcessorService_Impl implements ProcessorService,
 	public void processAllFeedUpdates() throws GuideException {
 
 		final Instant now = Instant.now();
-		final List<Episode> episodes = episodeService.findAllPending();	
+		final List<Episode> episodes = episodeService.findAllPending()
+										.stream()
+										.filter(ep->ep.getShow().isEnabled())
+										.collect(Collectors.toList());
+		
+		// stop is there is nothing to process
+		if(episodes.isEmpty()){
+			return;
+		}
+		
 		final Config config = configService.read();		
 		final long searchInterval = config.getSearchInterval();
 		final long searchDelay = config.getSearchDelay();
 		final Instant searchWindow = now.minusMillis(searchInterval);
 		for (Episode episode : episodes) {
-			if(episode.getShow().isEnabled() == false){
-				continue;
-			}
 			
 			final Instant lastFeedCheck = Optional.ofNullable(episode.getLastFeedCheck())
 												.orElse(Instant.EPOCH);
@@ -150,13 +157,19 @@ public class ProcessorService_Impl implements ProcessorService,
 	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.schedule.initial}")
 	public void processAllGuideUpdates()  throws Exception {
 		
-		final List<Show> shows = showService.readAll();
-		final Config config = configService.read();
-		for (Show show : shows) {	
+		final List<Show> shows = showService.readAll()
+									.stream()
+									.filter(show->show.isEnabled())
+									.collect(Collectors.toList());
 		
-			if(show.isEnabled() == false){
-				continue;
-			}
+		// stop if there is nothing to process
+		if(shows.isEmpty()){
+			return;
+		}
+		
+		final Config config = configService.read();
+		
+		for (Show show : shows) {	
 			
 			Processor processor = guideProcessorFactory.build(show,config);
 			processor.addListener(this);

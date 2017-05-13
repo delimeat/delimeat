@@ -39,17 +39,15 @@ import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
 
-public abstract class AbstractJaxrsFeedDao implements FeedDao {
+public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
 
 	private final FeedSource feedSource;
 	private final MediaType mediaType;
 	private final Client client;
-	private final URI baseUri;
-	
-	AbstractJaxrsFeedDao(FeedSource feedSource, MediaType mediaType, String metadata_source, URI baseUri){
+
+	public AbstractJaxrsFeedDataSource(FeedSource feedSource, MediaType mediaType, String metadata_source){
 		this.feedSource = feedSource;
 		this.mediaType =  mediaType;
-		this.baseUri = baseUri;
 		client = ClientBuilder.newClient();
 		JaxbContextResolver resolver = new JaxbContextResolver();
 		resolver.setClasses(FeedSearch.class,FeedResult.class);
@@ -59,15 +57,18 @@ public abstract class AbstractJaxrsFeedDao implements FeedDao {
 		properties.put("eclipselink.json.include-root", false);
 		resolver.setProperties(properties);
 		client.register(resolver);
-		client.register(new LoggingFeature(Logger.getLogger(LoggingFeature.class.getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
+		client.register(new LoggingFeature(Logger.getLogger(this.getClass().getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 	}
 	
 	/**
 	 * @return the baseUri
 	 */
-	protected URI getBaseUri() {
-		return baseUri;
-	}
+	public abstract URI getBaseUri();
+	
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public abstract void setBaseUri(URI baseUri);
 	
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.FeedDao#getFeedSource()
@@ -77,11 +78,7 @@ public abstract class AbstractJaxrsFeedDao implements FeedDao {
 		return feedSource;
 	}
 	
-	protected WebTarget getTarget(){
-		return client.target(baseUri);
-	}
-	
-	protected abstract WebTarget prepareRequest(String title);
+	protected abstract WebTarget prepareRequest(final WebTarget target, final String title);
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.FeedDao#read(java.lang.String)
@@ -90,7 +87,7 @@ public abstract class AbstractJaxrsFeedDao implements FeedDao {
 	public List<FeedResult> read(String title) throws FeedException {
 		try {
 			
-			return prepareRequest(UrlEscapers.urlPathSegmentEscaper().escape(title))
+			return prepareRequest(client.target(getBaseUri()), UrlEscapers.urlPathSegmentEscaper().escape(title))
 					.request(mediaType)
 					.get(new GenericType<FeedSearch>(){})
 					.getResults();
@@ -99,16 +96,5 @@ public abstract class AbstractJaxrsFeedDao implements FeedDao {
             throw new FeedException(ex);
         }
 	}
-	/*
-	protected static <T> T get(Builder builder, GenericType<T> returnType) throws FeedException{
-		try {
-			
-			return builder.get(returnType);
-
-        } catch (WebApplicationException | ProcessingException ex) {
-            throw new FeedException(ex);
-        }
-		
-	}*/
 
 }

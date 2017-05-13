@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.delimeat.feed.FeedDao;
+import io.delimeat.feed.FeedDataSource;
 import io.delimeat.feed.FeedService_Impl;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
@@ -41,24 +41,24 @@ public class FeedService_ImplTest {
 	
 	@Test
 	public void setFeedDaos(){
-		Assert.assertNull(service.getFeedDaos());
-		FeedDao dao = Mockito.mock(FeedDao.class);
-		service.setFeedDaos(Arrays.asList(dao));
+		Assert.assertNull(service.getFeedDataSources());
+		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
+		service.setFeedDataSources(Arrays.asList(dao));
 		
-		Assert.assertNotNull(service.getFeedDaos());
-		Assert.assertEquals(1, service.getFeedDaos().size());
-		Assert.assertEquals(dao, service.getFeedDaos().get(0));
+		Assert.assertNotNull(service.getFeedDataSources());
+		Assert.assertEquals(1, service.getFeedDataSources().size());
+		Assert.assertEquals(dao, service.getFeedDataSources().get(0));
 	}
 
 
 	@Test
 	public void fetchResultsSuccessTest() throws Exception {
-		FeedDao dao = Mockito.mock(FeedDao.class);
+		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
 		Mockito.when(dao.read("TITLE")).thenReturn(Arrays.asList(feedResult));
 
-		service.setFeedDaos(Arrays.asList(dao));
+		service.setFeedDataSources(Arrays.asList(dao));
 
 		Show show = new Show();
 		show.setTitle("TITLE");
@@ -74,14 +74,14 @@ public class FeedService_ImplTest {
 
 	@Test
 	public void fetchResultsOneErrorTest() throws Exception {
-		FeedDao dao = Mockito.mock(FeedDao.class);
+		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
 		Mockito.when(dao.read("TITLE"))
 				.thenThrow(FeedException.class)
 				.thenReturn(Arrays.asList(feedResult));
 
-		service.setFeedDaos(Arrays.asList(dao,dao));
+		service.setFeedDataSources(Arrays.asList(dao,dao));
 
 		Show show = new Show();
 		show.setTitle("TITLE");

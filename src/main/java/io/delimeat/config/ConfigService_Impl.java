@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 import io.delimeat.config.domain.Config;
 
-@Service("configServiceId")
+@Service
 public class ConfigService_Impl implements ConfigService {
 
 	@Autowired
@@ -75,7 +75,6 @@ public class ConfigService_Impl implements ConfigService {
 			defaultConfig.setOutputDirectory(defaultOutputDir);
 			config = update(defaultConfig);
 		}
-		
 		return config;
 		
 	}

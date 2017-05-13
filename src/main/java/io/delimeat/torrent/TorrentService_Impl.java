@@ -32,7 +32,7 @@ import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
-@Service("torrentServiceId")
+@Service
 public class TorrentService_Impl implements TorrentService {
 
 	@Autowired

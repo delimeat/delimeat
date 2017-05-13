@@ -58,6 +58,11 @@ public class LocalTimeAdapterTest {
 	}
 	
 	@Test
+	public void airTime12HourMintuesNoSpaceTest() throws Exception {
+		Assert.assertEquals(LocalTime.parse("20:00"), adapter.unmarshal("8:00PM"));
+	}
+	
+	@Test
 	public void airTime12HourMinutes2DigitsTest() throws Exception {
 		Assert.assertEquals(LocalTime.parse("20:00"), adapter.unmarshal("08:00 PM"));
 	}

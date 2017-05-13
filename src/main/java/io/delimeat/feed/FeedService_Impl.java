@@ -26,26 +26,35 @@ import org.springframework.stereotype.Service;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
 
-@Service("feedServiceId")
+@Service
 public class FeedService_Impl implements FeedService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedService_Impl.class);
 	
 	@Autowired
-	private List<FeedDao> feedDaos;
+	private List<FeedDataSource> feedDataSources;
 	
-    public List<FeedDao> getFeedDaos() {
-        return feedDaos;
+    /**
+     * @return the list of data sources
+     */
+    public List<FeedDataSource> getFeedDataSources() {
+        return feedDataSources;
     }
 
-    public void setFeedDaos(List<FeedDao> feedDaos) {
-        this.feedDaos = feedDaos;
+    /**
+     * @param feedDataSources the data sources to set
+     */
+    public void setFeedDataSources(List<FeedDataSource> feedDataSources) {
+        this.feedDataSources = feedDataSources;
     }
     
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.FeedService#read(java.lang.String)
+	 */
 	@Override
 	public List<FeedResult> read(String title) throws FeedException {
 		List<FeedResult> readResults =  new ArrayList<>();
-		for(FeedDao dao: feedDaos){
+		for(FeedDataSource dao: feedDataSources){
 			try{
 				LOGGER.debug(String.format("Reading from %s ",dao.getFeedSource()));
 				List<FeedResult> results = dao.read(title);

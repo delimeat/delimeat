@@ -27,7 +27,7 @@ import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 
-public interface GuideDao {
+public interface GuideDataSource {
 
 	public GuideSource getGuideSource();
 

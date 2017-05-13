@@ -20,23 +20,43 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
 
 @Component
-public class KickAssJaxrsFeedDao_Impl extends AbstractJaxrsFeedDao implements FeedDao{
+public class KickAssJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource{
 
-	@Autowired
-	public KickAssJaxrsFeedDao_Impl(@Value("${io.delimeat.feed.kat.baseUri}") final URI baseUri ) {
-		super(FeedSource.KAT,MediaType.APPLICATION_JSON_TYPE,"META-INF/oxm/feed-kat-oxm.xml",baseUri);
+	@Value("${io.delimeat.feed.kat.baseUri}") 
+	private URI baseUri;
+	
+	public KickAssJaxrsFeedDataSource_Impl() {
+		super(FeedSource.KAT,MediaType.APPLICATION_JSON_TYPE,"META-INF/oxm/feed-kat-oxm.xml");
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
+	 */
 	@Override
-	protected WebTarget prepareRequest(String title) {
-		return getTarget()
+	public URI getBaseUri() {
+		return baseUri;
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
+	 */
+	@Override
+	public void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;	
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 */
+	@Override
+	protected WebTarget prepareRequest(final WebTarget target, final String title) {
+		return target.path("json.php")
 				.queryParam("q", String.format("%s category:tv", title));
 	}
 

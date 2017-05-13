@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -52,7 +53,7 @@ import io.delimeat.guide.jaxrs.GuideJaxrsUtils;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
 
 @Component
-public class TvdbJaxrsGuideDao_Impl implements GuideDao {
+public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	
 	private final MediaType mediaType;
 	private final Client client;
@@ -68,18 +69,18 @@ public class TvdbJaxrsGuideDao_Impl implements GuideDao {
 	
     private TvdbToken token;
     
-	public TvdbJaxrsGuideDao_Impl(){
+	public TvdbGuideDataSource_Impl(){
 		mediaType =  MediaType.APPLICATION_JSON_TYPE;
 		client = ClientBuilder.newClient();
 		JaxbContextResolver resolver = new JaxbContextResolver();
 		resolver.setClasses(GuideSearchResult.class,GuideSearch.class,GuideEpisode.class,GuideInfo.class,TvdbApiKey.class,GuideError.class,TvdbToken.class,TvdbEpisodes.class);
 		Map<String,Object> properties = new HashMap<String,Object>();
 		properties.put("eclipselink.oxm.metadata-source", "META-INF/oxm/guide-tvdb-oxm.xml");
-		properties.put("eclipselink.media-type", "application/json");
+		properties.put("eclipselink.media-type", mediaType.toString());
 		properties.put("eclipselink.json.include-root", false);
 		resolver.setProperties(properties);
 		client.register(resolver);
-		client.register(new LoggingFeature(Logger.getLogger(LoggingFeature.class.getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
+		client.register(new LoggingFeature(Logger.getLogger(this.getClass().getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 	}
     
     public void setBaseUri(URI baseUri){
@@ -156,7 +157,11 @@ public class TvdbJaxrsGuideDao_Impl implements GuideDao {
 				.path("series")
 				.queryParam("name", title)
 				.request(mediaType)
-				.header("Authorization", getAuthorization()), new GenericType<GuideSearch>(){}).getResults();
+				.header("Authorization", getAuthorization()), new GenericType<GuideSearch>(){})
+					.getResults()
+					.stream()
+					.filter(result->!result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter out invalid series
+					.collect(Collectors.toList());
 	}
 	
     public TvdbToken login(String apiKey) throws GuideAuthorizationException, GuideException {

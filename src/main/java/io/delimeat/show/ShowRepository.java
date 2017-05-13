@@ -21,7 +21,6 @@ import org.springframework.data.repository.Repository;
 
 import io.delimeat.show.domain.Show;
 
-
 public interface ShowRepository extends Repository<Show, Long> {
 
 	public Show findOne(Long id);
