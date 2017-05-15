@@ -33,6 +33,13 @@ public class ConfigTest {
 	}
 
 	@Test
+	public void configIdTest(){
+		Assert.assertNull(config.getConfigId());
+		config.setConfigId(1L);
+		Assert.assertEquals(1, config.getConfigId().longValue());
+		
+	}
+	@Test
 	public void searchIntervalTest() {
 		Assert.assertEquals(0, config.getSearchInterval());
 		config.setSearchInterval(100);

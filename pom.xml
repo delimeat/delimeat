@@ -7,11 +7,11 @@
 	<artifactId>delimeat</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
+    
 	<licenses>
 		<license>
-			<name>The MIT License (MIT)</name>
-			<url>http://opensource.org/licenses/MIT</url>
+			<name>Apache License, Version 2.0</name>
+			<url>https://opensource.org/licenses/Apache-2.0</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -439,4 +439,6 @@
 		</profile>
 		
 	</profiles>
+
+	
 </project>

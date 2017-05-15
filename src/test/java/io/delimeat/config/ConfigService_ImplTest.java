@@ -92,6 +92,8 @@ public class ConfigService_ImplTest {
 	@Test
 	public void updateTest() throws Exception {
 		Config config = new Config();
+		config.setIgnoreFolders(true);
+		config.setPreferFiles(false);
 		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
 		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
 		service.setConfigRepository(repository);
@@ -99,6 +101,9 @@ public class ConfigService_ImplTest {
 
 		Config result = service.update(config);
 		Assert.assertEquals(config ,result);
+		Assert.assertTrue(config.isIgnoreFolders());
+		Assert.assertTrue(config.isPreferFiles());
+		
 
 		Mockito.verify(repository).save(config);
 		Mockito.verifyNoMoreInteractions(repository);

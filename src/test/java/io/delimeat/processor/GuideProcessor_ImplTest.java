@@ -79,6 +79,14 @@ public class GuideProcessor_ImplTest {
 		processor.setGuideService(guideService);
 		Assert.assertEquals(guideService, processor.getGuideService());
 	}
+	
+	@Test
+	public void episodeServiceTest() {
+		Assert.assertNull(processor.getEpisodeService());
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		processor.setEpisodeService(episodeService);
+		Assert.assertEquals(episodeService, processor.getEpisodeService());
+	}
 
 	@Test
 	public void abortTest() {

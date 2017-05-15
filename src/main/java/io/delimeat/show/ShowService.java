@@ -17,7 +17,6 @@ package io.delimeat.show;
 
 import java.util.List;
 
-import io.delimeat.guide.exception.GuideConcurrencyException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.show.domain.Episode;

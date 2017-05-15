@@ -63,6 +63,14 @@ public class ProcessorService_ImplTest {
 		service.setConfigService(configService);
 		Assert.assertEquals(configService, service.getConfigService());
 	}
+	
+	@Test
+	public void episodeServiceTest() {
+		Assert.assertNull(service.getEpisodeService());
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		service.setEpisodeService(episodeService);
+		Assert.assertEquals(episodeService, service.getEpisodeService());
+	}
 
 	@Test
 	public void executorTest() {

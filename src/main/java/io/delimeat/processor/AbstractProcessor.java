@@ -77,7 +77,7 @@ public abstract class AbstractProcessor<T> implements Processor {
     
     public void checkThreadStatus() throws ProcessorInteruptedException{
     	if(Thread.currentThread().isInterrupted()){
-    		throw new ProcessorInteruptedException();
+    		throw new ProcessorInteruptedException(this);
     	}	
     }
     

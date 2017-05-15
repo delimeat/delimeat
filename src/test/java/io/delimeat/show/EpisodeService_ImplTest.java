@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
+import io.delimeat.show.domain.Show;
 
 public class EpisodeService_ImplTest {
 
@@ -100,6 +101,26 @@ public class EpisodeService_ImplTest {
 		
 		Mockito.verify(repository).findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
 		Mockito.verifyNoMoreInteractions(repository);
+	}
+	
+	@Test
+	public void findByShowTest() throws Exception{
+		Episode ep = new Episode();
+		Show show = new Show();
+		ep.setShow(show);
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doReturn(Arrays.asList(ep))
+			.when(repository)
+			.findByShow(show);
+		service.setEpisodeRepository(repository);	
+		
+		List<Episode> result = service.findByShow(show);
+		Assert.assertEquals("results size",1, result.size());
+		Assert.assertEquals("first result", ep, result.get(0));
+		
+		Mockito.verify(repository).findByShow(show);
+		Mockito.verifyNoMoreInteractions(repository);		
 	}
 
 }

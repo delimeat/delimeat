@@ -24,9 +24,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
@@ -49,7 +53,6 @@ import io.delimeat.guide.domain.TvdbToken;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
-import io.delimeat.guide.jaxrs.GuideJaxrsUtils;
 import io.delimeat.util.jaxrs.JaxbContextResolver;
 
 @Component
@@ -101,7 +104,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 */
 	@Override
 	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-		return GuideJaxrsUtils.get(
+		return get(
 				client.target(baseUri)
         		.path("series")
           		.path(UrlEscapers.urlPathSegmentEscaper().escape(guideId))
@@ -136,7 +139,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
      * @throws GuideException
      */
     public TvdbEpisodes episodes(String guideId, int page) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-		return GuideJaxrsUtils.get(client.target(baseUri)
+		return get(client.target(baseUri)
 				.path("series")
 				.path(guideId)
 				.path("episodes")
@@ -152,7 +155,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	public List<GuideSearchResult> search(String title)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
 		
-		return GuideJaxrsUtils.get(client.target(baseUri)
+		return get(client.target(baseUri)
 				.path("search")
 				.path("series")
 				.queryParam("name", title)
@@ -168,13 +171,13 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
     	 TvdbApiKey key = new TvdbApiKey();
          key.setValue(apiKey);
          Entity<TvdbApiKey> entity = Entity.entity(key, mediaType);
-         return GuideJaxrsUtils.put(client.target(baseUri)
+         return put(client.target(baseUri)
         		 .path("login")
               	.request(mediaType), entity, new GenericType<TvdbToken>(){});
     }
 
     public TvdbToken refreshToken(TvdbToken token) throws GuideAuthorizationException, GuideException {
-    	return GuideJaxrsUtils.get(client.target(baseUri)
+    	return get(client.target(baseUri)
 				.path("refresh_token")
 				.request(mediaType)
 				.header("Authorization", "Bearer "+ token.getValue()), new GenericType<TvdbToken>(){});
@@ -241,5 +244,36 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
     public void setValidPeriodInMs(int validPeriodInMs) {
         this.validPeriodInMs = validPeriodInMs;
     }
+    
+	private <T> T get(Builder builder, GenericType<T> returnType) throws GuideException{
+		try {
+			
+			return builder.get(returnType);
+
+		} catch (NotAuthorizedException ex) {
+			GuideError error = ex.getResponse().readEntity(GuideError.class);
+			throw new GuideAuthorizationException(error.getMessage(), ex);
+		} catch (NotFoundException ex) {
+			GuideError error = ex.getResponse().readEntity(GuideError.class);
+			throw new GuideNotFoundException(error.getMessage(), ex);
+		} catch (WebApplicationException ex) {
+			throw new GuideException(ex);
+		}
+	}
+	
+	private <T,S> T put(Builder builder, Entity<S> entity, GenericType<T> returnType) throws GuideException{
+        try {
+            return builder.post(entity, returnType);
+          
+		} catch (NotAuthorizedException ex) {
+			GuideError error = ex.getResponse().readEntity(GuideError.class);
+			throw new GuideAuthorizationException(error.getMessage(), ex);
+		} catch (NotFoundException ex) {
+			GuideError error = ex.getResponse().readEntity(GuideError.class);
+			throw new GuideAuthorizationException(error.getMessage(), ex);
+		} catch (WebApplicationException ex) {
+			throw new GuideException(ex);
+		}
+	}
     
 }

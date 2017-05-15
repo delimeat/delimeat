@@ -24,7 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.slf4j.Logger;
@@ -87,12 +86,11 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 			typeArray = new Class[] { type };
 		}
 		try {
-			//final JAXBContext context = JAXBContext.newInstance(typeArray, properties);
 			final JAXBContext context = JAXBContextFactory.createContext(typeArray, properties);
 			LOGGER.info("Using JAXB context " + context);
 			return context;
-		} catch (JAXBException e) {
-			LOGGER.warn("Unable to create JAXB context.",e);
+		} catch (Exception  e) {
+			LOGGER.warn("Unable to create JAXB context.", e);
 			return null;
 		}
 	}

@@ -77,6 +77,9 @@ public class EpisodeService_Impl implements EpisodeService {
 		return episodeRepository.findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.show.EpisodeService#findByShow(io.delimeat.show.domain.Show)
+	 */
 	@Override
 	public List<Episode> findByShow(Show show) {
 		return episodeRepository.findByShow(show);

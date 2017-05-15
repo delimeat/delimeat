@@ -15,17 +15,14 @@
  */
 package io.delimeat.util.jaxrs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.bind.JAXBContext;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import io.delimeat.util.jaxrs.JaxbContextResolver;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class JaxbContextResolverTest {
 
@@ -59,14 +56,11 @@ public class JaxbContextResolverTest {
 		Assert.assertNotNull(context);
    }
   
-  	//TODO fix or remove
   	@Test
-  	@Ignore
   	public void contextInvalidTest(){
      	Map<String, Object> properties = new HashMap<String,Object>();
-     	properties.put("TEST", "VALUE");
+     	properties.put("eclipselink.oxm.metadata-source", "JIBBERISH");
      	resolver.setProperties(properties);
-     	JAXBContext context = resolver.getContext(Class.class);
-		Assert.assertNull(context);
+     	Assert.assertNull(resolver.getContext(Class.class));
    }
 }

@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.processor.exception;
+package io.delimeat.guide.exception;
 
-import io.delimeat.processor.Processor;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class ProcessorInteruptedException extends Exception {
+public class GuideAuthorizationExceptionTest {
 
-	private static final long serialVersionUID = 1L;
-
-	private final Processor processor;
-	
-	public ProcessorInteruptedException(Processor processor){
-		this.processor = processor;
-	}
-	
-	public Processor getProcessor(){
-		return processor;
+	@Test
+	public void constructorTest(){
+		GuideAuthorizationException ex = new GuideAuthorizationException("MESSAGE", new Exception());
+		
+		Assert.assertEquals("MESSAGE", ex.getMessage());
+		Assert.assertEquals(Exception.class, ex.getCause().getClass());
 	}
 }

@@ -15,19 +15,19 @@
  */
 package io.delimeat.processor.exception;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import io.delimeat.processor.Processor;
 
-public class ProcessorInteruptedException extends Exception {
+public class ProcessorInteruptedExceptionTest {
 
-	private static final long serialVersionUID = 1L;
-
-	private final Processor processor;
-	
-	public ProcessorInteruptedException(Processor processor){
-		this.processor = processor;
-	}
-	
-	public Processor getProcessor(){
-		return processor;
+	@Test
+	public void constructorTest(){
+		Processor processor = Mockito.mock(Processor.class);
+		ProcessorInteruptedException ex = new ProcessorInteruptedException(processor);
+		
+		Assert.assertEquals(processor, ex.getProcessor());
 	}
 }

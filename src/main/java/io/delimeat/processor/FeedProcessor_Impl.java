@@ -41,7 +41,6 @@ import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.guide.exception.GuideConcurrencyException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.processor.exception.ProcessorInteruptedException;
@@ -124,7 +123,7 @@ public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Pr
         this.resultComparator = resultComparator;
     }
     
-    public void doProcessing()  throws ValidationException, FeedException, TorrentException, ProcessorInteruptedException, GuideNotFoundException, GuideConcurrencyException, GuideException {
+    public void doProcessing()  throws ValidationException, FeedException, TorrentException, ProcessorInteruptedException, GuideNotFoundException, GuideException {
         final Episode lockedEpisode = episodeService.read(processEntity.getEpisodeId());
         
 		// read feed results

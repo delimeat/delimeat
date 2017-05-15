@@ -232,11 +232,54 @@ public class EpisodeTest {
     }
 
     @Test
-    public void hashTest() throws ParseException {
+    public void hashTest() {
         episode.setEpisodeId(Long.MIN_VALUE);
         episode.setVersion(Integer.MIN_VALUE);
 
         Assert.assertEquals(961, episode.hashCode());
+    }
+    
+    @Test
+    public void compareToEmptyTest() {
+    	Episode comparedEp = new Episode();
+    	Assert.assertEquals(0, episode.compareTo(comparedEp));
+    }
+    
+    @Test
+    public void compareToAirDateToNullTest() {
+    	Episode comparedEp = new Episode();
+    	comparedEp.setAirDate(LocalDate.now());
+    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
+    }
+    
+    @Test
+    public void compareToAirDateToEpochTest() {
+    	episode.setAirDate(LocalDate.ofEpochDay(0));
+    	
+    	Episode comparedEp = new Episode();
+    	comparedEp.setAirDate(LocalDate.now());
+    	
+    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
+    }
+    
+    @Test
+    public void compareToSeasonNumTest() {
+    	episode.setSeasonNum(126);
+    	
+    	Episode comparedEp = new Episode();
+    	comparedEp.setSeasonNum(125);
+    	
+    	Assert.assertEquals(1, episode.compareTo(comparedEp));
+    }
+    
+    @Test
+    public void compareToEpisodeNumTest() {
+    	episode.setEpisodeNum(124);
+    	
+    	Episode comparedEp = new Episode();
+    	comparedEp.setSeasonNum(125);
+    	
+    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
     }
 
     @Test
