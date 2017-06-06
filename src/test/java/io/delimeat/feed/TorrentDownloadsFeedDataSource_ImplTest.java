@@ -36,41 +36,44 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class BitSnoopJaxrsFeedDataSource_ImplTest {
 
+public class TorrentDownloadsFeedDataSource_ImplTest {
+	
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private BitSnoopJaxrsFeedDataSource_Impl dataSource;
-  
+	private TorrentDownloadsFeedDataSource_Impl dataSource;
+
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new BitSnoopJaxrsFeedDataSource_Impl();
+		dataSource = new TorrentDownloadsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.BITSNOOP, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.TORRENTDOWNLOADS, dataSource.getFeedSource());
 	}
   
 	@Test
 	public void readTest() throws Exception{
-		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-				+ "<rss><channel><item>"
-				+ "<title><![CDATA[title]]></title>"
-				+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
-				+ "<numSeeders>1</numSeeders>"
-				+ "<numLeechers>1000</numLeechers>"
-				+ "</item></channel></rss>";
+    	
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<info_hash>INFO_HASH</info_hash>"
+     			+ "<size>9223372036854775807</size>"
+     			+ "<seeders>1</seeders>"
+     			+ "<leechers>1000</leechers>"
+     			+ "</item></channel></rss>";
      
-		stubFor(get(urlPathEqualTo("/search/video/title/c/d/1/"))
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
 				.withHeader("Accept", equalTo("application/xml"))
-				.withQueryParam("fmt", equalTo("rss"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type", "application/xml")
 							.withBody(responseBody)));
-
 		
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
 		
@@ -78,7 +81,7 @@ public class BitSnoopJaxrsFeedDataSource_ImplTest {
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
+     	Assert.assertEquals("http://itorrents.org/torrent/INFO_HASH.torrent",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
      	Assert.assertEquals(1, results.get(0).getSeeders());
      	Assert.assertEquals(1000, results.get(0).getLeechers());
@@ -88,9 +91,10 @@ public class BitSnoopJaxrsFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/search/video/title/c/d/1/"))
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
 				.withHeader("Accept", equalTo("application/xml"))
-				.withQueryParam("fmt", equalTo("rss"))
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/xml")));
@@ -98,14 +102,16 @@ public class BitSnoopJaxrsFeedDataSource_ImplTest {
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
 		
 		dataSource.read("title");
+		Assert.fail();
 	}
   
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/search/video/title/c/d/1/"))
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
 				.withHeader("Accept", equalTo("application/xml"))
-				.withQueryParam("fmt", equalTo("rss"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type","application/xml")
@@ -114,5 +120,6 @@ public class BitSnoopJaxrsFeedDataSource_ImplTest {
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
 		
 		dataSource.read("title");
+		Assert.fail();
 	}
 }

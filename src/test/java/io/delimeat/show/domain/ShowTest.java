@@ -131,12 +131,12 @@ public class ShowTest {
   	public void hashCodeTest() throws ParseException{
 		show.setShowId(Long.MAX_VALUE);
 		show.setVersion(Integer.MIN_VALUE);
-		Assert.assertEquals(961, show.hashCode());
+		Assert.assertEquals(3481, show.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-		Assert.assertEquals("Show{showId=0, enabled=false, airing=false, minSize=0, maxSize=0, version=0}",show.toString());
+		Assert.assertEquals("Show(showId=0, airTime=null, timezone=null, guideId=null, title=null, airing=false, showType=null, lastGuideUpdate=null, lastGuideCheck=null, enabled=false, minSize=0, maxSize=0, version=0)",show.toString());
    }
   
   	@Test

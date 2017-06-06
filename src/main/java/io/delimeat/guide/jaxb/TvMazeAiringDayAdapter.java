@@ -29,11 +29,17 @@ public class TvMazeAiringDayAdapter extends XmlAdapter<String, AiringDay> {
 	private static final String SAT = "saturday";
 	private static final String SUN = "sunday";
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
 	public String marshal(AiringDay value) throws Exception {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
 	@Override
 	public AiringDay unmarshal(String value) throws Exception {
 		if (value == null || value.trim().length() == 0) {

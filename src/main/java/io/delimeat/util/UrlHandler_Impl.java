@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,6 +39,8 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
 @Component
+@Getter
+@Setter
 public class UrlHandler_Impl implements UrlHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlHandler_Impl.class);
@@ -83,21 +88,6 @@ public class UrlHandler_Impl implements UrlHandler {
 		}
 		BufferedOutputStream bos = new BufferedOutputStream(os);
 		return bos;
-	}
-
-	/**
-	 * @return the timeout
-	 */
-	public int getTimeout() {
-		return timeout;
-	}
-
-	/**
-	 * @param timeout
-	 *            the timeout to set
-	 */
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
 	}
 
 	/* (non-Javadoc)

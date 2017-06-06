@@ -119,74 +119,18 @@ public class GuideInfoTest {
 		info.setLastUpdated(LocalDate.parse("2005-04-03"));
 		Assert.assertEquals(LocalDate.parse("2005-04-03"), info.getLastUpdated());
 	}
-  
-	@Test
-	public void compareTitleMatchTest() {
-		info.setTitle("ABC");
-		GuideInfo info2 = new GuideInfo();
-		info2.setTitle("ABC");
-
-		Assert.assertEquals(0, info.compareTo(info2));
-	}
-
-	@Test
-	public void compareNullTitlesTest() {
-		Assert.assertNull(info.getTitle());
-		GuideInfo info2 = new GuideInfo();
-		Assert.assertNull(info2.getTitle());
-
-		Assert.assertEquals(0, info.compareTo(info2));
-	}
-
-	@Test
-	public void compareTitleOtherNullTest() {
-		info.setTitle("ABC");
-		Assert.assertNotNull(info.getTitle());
-		GuideInfo info2 = new GuideInfo();
-		Assert.assertNull(info2.getTitle());
-
-		Assert.assertEquals(1, info.compareTo(info2));
-	}
-
-	@Test
-	public void compareTitleNullOtherNotNullTest() {
-		Assert.assertNull(info.getTitle());
-		GuideInfo info2 = new GuideInfo();
-		info2.setTitle("ABC");
-		Assert.assertNotNull(info2.getTitle());
-
-		Assert.assertEquals(-1, info.compareTo(info2));
-	}
-
-	@Test
-	public void compareTitleBeforeTest() {
-		info.setTitle("ABC");
-		GuideInfo info2 = new GuideInfo();
-		info2.setTitle("BCD");
-
-		Assert.assertEquals(-1, info.compareTo(info2));
-	}
-
-	@Test
-	public void compareTitleAfterTest() {
-		info.setTitle("BCD");
-		GuideInfo info2 = new GuideInfo();
-		info2.setTitle("ABC");
-
-		Assert.assertEquals(1, info.compareTo(info2));
-	}
-  
+    
   	
 	@Test
   	public void hashCodeTest() throws ParseException{
      	info.setTitle("TITLE");
      	info.setLastUpdated(LocalDate.parse("2016-02-19"));
-     	Assert.assertEquals(-1815994084, info.hashCode());
+     	Assert.assertEquals(-276385284, info.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-  		Assert.assertEquals("GuideInfo{airing=true, airDays=[], genres=[], runningTime=0}",info.toString());
+  		Assert.assertEquals("GuideInfo(description=null, runningTime=0, timezone=null, firstAired=null, genres=[], airDays=[], airing=true, title=null, airTime=null, guideId=null, lastUpdated=null)",info.toString());
   	}
   
   	@Test

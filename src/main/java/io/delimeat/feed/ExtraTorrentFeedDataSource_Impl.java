@@ -21,35 +21,21 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
-@Component
-public class ExtraTorrentJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource{
+//@Component
+@Getter
+@Setter
+public class ExtraTorrentFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource{
 
 	@Value("${io.delimeat.feed.extratorrent.baseUri}") 
 	private URI baseUri;
 	
-	public ExtraTorrentJaxrsFeedDataSource_Impl() {
+	public ExtraTorrentFeedDataSource_Impl() {
 		super(FeedSource.EXTRATORRENT,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-extratorrent-oxm.xml");
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;
-		
 	}
 
 	/* (non-Javadoc)

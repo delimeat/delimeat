@@ -16,11 +16,10 @@
 package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,37 +36,34 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class ExtraTorrentJaxrsFeedDataSource_ImplTest {
+public class ZooqleFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private ExtraTorrentJaxrsFeedDataSource_Impl dataSource;
+	private ZooqleFeedDataSource_Impl dataSource;
   
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new ExtraTorrentJaxrsFeedDataSource_Impl();
+		dataSource = new ZooqleFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.EXTRATORRENT, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.ZOOQLE, dataSource.getFeedSource());
 	}
   
 	@Test
-	public void readTest() throws Exception{
-     	
+	public void readTest() throws Exception{    	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
      			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
-     			+ "<seeders>1</seeders>"
-     			+ "<leechers>1000</leechers>"
      			+ "</item></channel></rss>";
      
-		stubFor(get(urlPathEqualTo("/rss.xml"))
-				.withQueryParam("type", equalTo("search"))
-				.withQueryParam("search", equalTo("title"))
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
@@ -82,17 +78,15 @@ public class ExtraTorrentJaxrsFeedDataSource_ImplTest {
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
-     	Assert.assertEquals(1, results.get(0).getSeeders());
-     	Assert.assertEquals(1000, results.get(0).getLeechers());
 
 	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss.xml"))
-				.withQueryParam("type", equalTo("search"))
-				.withQueryParam("search", equalTo("title"))
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
@@ -107,9 +101,9 @@ public class ExtraTorrentJaxrsFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss.xml"))
-				.withQueryParam("type", equalTo("search"))
-				.withQueryParam("search", equalTo("title"))
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)

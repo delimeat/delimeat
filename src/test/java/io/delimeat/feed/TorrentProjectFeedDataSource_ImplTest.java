@@ -36,16 +36,16 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class TorrentProjectJaxrsFeedDataSource_ImplTest {
+public class TorrentProjectFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private TorrentProjectJaxrsFeedDataSource_Impl dataSource;
+	private TorrentProjectFeedDataSource_Impl dataSource;
   
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new TorrentProjectJaxrsFeedDataSource_Impl();
+		dataSource = new TorrentProjectFeedDataSource_Impl();
 	}
 
 	@Test

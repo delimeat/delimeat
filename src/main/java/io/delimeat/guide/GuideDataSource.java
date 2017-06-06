@@ -29,14 +29,44 @@ import io.delimeat.guide.exception.GuideNotFoundException;
 
 public interface GuideDataSource {
 
+	/**
+	 * @return the guide data source
+	 */
 	public GuideSource getGuideSource();
 
+	/**
+	 * Fetch a guide info
+	 * 
+	 * @param guideId
+	 * @return
+	 * @throws GuideNotFoundException
+	 * @throws GuideAuthorizationException
+	 * @throws GuideException
+	 */
 	@Cacheable("guide-info")
 	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
 
+	/**
+	 * Fetch all episodes for a show
+	 * 
+	 * @param guideId
+	 * @return
+	 * @throws GuideNotFoundException
+	 * @throws GuideAuthorizationException
+	 * @throws GuideException
+	 */
 	@Cacheable("guide-episodes")
 	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
 
+	/**
+	 * Search for shows
+	 * 
+	 * @param title
+	 * @return
+	 * @throws GuideNotFoundException
+	 * @throws GuideAuthorizationException
+	 * @throws GuideException
+	 */
 	@Cacheable("guide-search")
 	public List<GuideSearchResult> search(String title) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
 

@@ -131,6 +131,31 @@ public class TvdbGuideDataSource_ImplTest {
 		}
 		Assert.fail();
 	}
+	
+	@Test(expected=GuideNotFoundException.class)
+	public void loginNotFoundTest() throws Exception {
+		String requestBody = "{\"apikey\": \"APIKEY\"}";
+		String responseBody = "{\"Error\": \"LOGIN_NOT_FOUND_ERROR\"}";
+		
+		stubFor(post(urlPathEqualTo("/login"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Content-Type", equalTo("application/json"))
+				.withRequestBody(equalToJson(requestBody))
+				.willReturn(aResponse()
+							.withStatus(404)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
+		
+		dataSource.setBaseUri(new URI("http://localhost:8089"));
+
+		try {
+			dataSource.login("APIKEY");
+		} catch (GuideNotFoundException ex) {
+			Assert.assertEquals("LOGIN_NOT_FOUND_ERROR", ex.getMessage());
+			throw ex;
+		}
+		Assert.fail();
+	}
 
 	@Test(expected=GuideException.class)
 	public void loginExceptionTest() throws Exception {

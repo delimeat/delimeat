@@ -24,26 +24,16 @@ import org.springframework.stereotype.Service;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
+@Getter
+@Setter
 public class EpisodeService_Impl implements EpisodeService {
 
 	@Autowired
 	private EpisodeRepository episodeRepository;
-	
-	/**
-	 * @return the episodeRepository
-	 */
-	public EpisodeRepository getEpisodeRepository() {
-		return episodeRepository;
-	}
-
-	/**
-	 * @param episodeRepository the episodeRepository to set
-	 */
-	public void setEpisodeRepository(EpisodeRepository episodeRepository) {
-		this.episodeRepository = episodeRepository;
-	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#read(java.lang.Long)

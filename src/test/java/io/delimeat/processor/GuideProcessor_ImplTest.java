@@ -464,6 +464,6 @@ public class GuideProcessor_ImplTest {
 
 	@Test
 	public void toStringTest() {
-		Assert.assertEquals("GuideProcessor_Impl{active=false, listeners=[]}",processor.toString());
+		Assert.assertEquals("GuideProcessor_Impl(showService=null, episodeService=null, guideService=null)",processor.toString());
 	}
 }

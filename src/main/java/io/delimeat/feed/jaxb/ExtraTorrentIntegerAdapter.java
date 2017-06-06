@@ -19,11 +19,17 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ExtraTorrentIntegerAdapter extends XmlAdapter<String, Long>  {
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
 	public String marshal(Long value) throws Exception {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
 	@Override
 	public Long unmarshal(String value) throws Exception {
 		if (value == null || value.trim().length() == 0) {

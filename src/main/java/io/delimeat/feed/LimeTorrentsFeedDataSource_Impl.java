@@ -24,31 +24,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
-public class BitSnoopJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource {
-
-	@Value("${io.delimeat.feed.bitsnoop.baseUri}") 
+@Getter
+@Setter
+public class LimeTorrentsFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource{
+	
+	@Value("${io.delimeat.feed.limetorrents.baseUri}") 
 	private URI baseUri;
-
-	public BitSnoopJaxrsFeedDataSource_Impl(){
-		super(FeedSource.BITSNOOP, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-bitsnoop-oxm.xml");
-	}
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;
+	public LimeTorrentsFeedDataSource_Impl() {
+		super(FeedSource.LIMETORRENTS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-limetorrents-oxm.xml");
 	}
 
 	/* (non-Javadoc)
@@ -56,10 +44,8 @@ public class BitSnoopJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSourc
 	 */
 	@Override
 	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("/search/video/")
-				.path(title)
-				.path("/c/d/1/")
-				.queryParam("fmt", "rss");
+		return target.path("searchrss")
+				.path(String.format("%s/", title));
 	}
 
 }

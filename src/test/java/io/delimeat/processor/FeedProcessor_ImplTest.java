@@ -61,7 +61,7 @@ public class FeedProcessor_ImplTest {
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("FeedProcessor_Impl{active=false, listeners=[], feedResultValidators=[], torrentValidators=[]}", processor.toString());
+     	Assert.assertEquals("FeedProcessor_Impl(episodeService=null, feedService=null, torrentService=null, feedResultValidators=[], torrentValidators=[], resultComparator=null)", processor.toString());
    }
 
 	@Test

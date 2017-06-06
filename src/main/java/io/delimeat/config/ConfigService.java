@@ -16,18 +16,24 @@
 package io.delimeat.config;
 
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigConcurrencyException;
+import io.delimeat.config.exception.ConfigException;
 
 public interface ConfigService {
 
     /**
      * @return the config instance
      */
-    public Config read();
+    public Config read() throws ConfigException;
+
 
     /**
      * Update the config instance
+     * 
      * @param config
-     * @return the config that was updated
+     * @return
+     * @throws ConfigConcurrencyException
+     * @throws ConfigException
      */
-    public Config update(Config config);
+    public Config update(Config config) throws ConfigConcurrencyException, ConfigException;
 }

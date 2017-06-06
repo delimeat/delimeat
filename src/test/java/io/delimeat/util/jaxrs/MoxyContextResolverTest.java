@@ -24,13 +24,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JaxbContextResolverTest {
+public class MoxyContextResolverTest {
 
-	private JaxbContextResolver resolver;
+	private MoxyContextResolver resolver;
 
 	@Before
 	public void setUp() {
-		resolver = new JaxbContextResolver();
+		resolver = new MoxyContextResolver();
 	}
 
   	@Test

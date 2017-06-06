@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @SuppressWarnings("rawtypes")
-public class JaxbContextResolver implements ContextResolver<JAXBContext> {
+public class MoxyContextResolver implements ContextResolver<JAXBContext> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JaxbContextResolver.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MoxyContextResolver.class);
 
-	private Map<String, Object> properties = Collections.<String,Object>emptyMap();
+	private Map<String, Object> properties = Collections.emptyMap();
 	private Class[] classes;
 
 	/**

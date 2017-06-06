@@ -39,6 +39,11 @@ public class FeedResultMiniSeriesValidator_ImplTest {
 	}
 
 	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedResultRejection.INVALID_MINI_SERIES_RESULT, validator.getRejection());
+	}
+	
+	@Test
 	public void notMiniSeriesFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setEpisodeNum(1);

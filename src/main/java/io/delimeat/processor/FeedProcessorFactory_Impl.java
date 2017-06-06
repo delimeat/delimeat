@@ -17,7 +17,6 @@ package io.delimeat.processor;
 
 import java.util.Comparator;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,12 @@ import org.springframework.stereotype.Component;
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.show.domain.Episode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
+@Getter
+@Setter
 public class FeedProcessorFactory_Impl implements BeanFactoryAware, FeedProcessorFactory {
 
 	private BeanFactory beanFactory; 
@@ -39,33 +42,6 @@ public class FeedProcessorFactory_Impl implements BeanFactoryAware, FeedProcesso
 	@Autowired
 	@Qualifier("maxSeedersComparatorId")
 	private Comparator<FeedResult> maxSeedersComparator;
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;		
-	}
-	
-	public BeanFactory getBeanFactory(){
-		return beanFactory;
-	}
-
-	public Comparator<FeedResult> getPreferFilesComparator() {
-		return preferFilesComparator;
-	}
-
-	public void setPreferFilesComparator(
-			Comparator<FeedResult> preferFilesComparator) {
-		this.preferFilesComparator = preferFilesComparator;
-	}
-
-	public Comparator<FeedResult> getMaxSeedersComparator() {
-		return maxSeedersComparator;
-	}
-
-	public void setMaxSeedersComparator(
-			Comparator<FeedResult> maxSeedersComparator) {
-		this.maxSeedersComparator = maxSeedersComparator;
-	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.server.processor.FeedProcessorFactory#build(io.delimeat.common.show.model.Episode, io.delimeat.common.config.model.Config)

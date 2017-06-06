@@ -23,7 +23,8 @@ public enum FeedSource {
     EXTRATORRENT(3),
     BITSNOOP(4),
     TORRENTDOWNLOADS(5),
-    ZOOQLE(6);
+    ZOOQLE(6),
+    PIRATEBAY(7);
 
     private final int value;
 

@@ -25,6 +25,9 @@ import io.delimeat.feed.exception.FeedException;
 
 public interface FeedDataSource {
 
+	/**
+	 * @return the feed source
+	 */
 	public FeedSource getFeedSource();
 	
 	/**

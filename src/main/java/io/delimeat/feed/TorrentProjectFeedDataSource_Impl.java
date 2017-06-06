@@ -24,32 +24,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
-public class TorrentDownloadsJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource {
+@Getter
+@Setter
+public class TorrentProjectFeedDataSource_Impl extends AbstractMoxyFeedDataSource{
 	
-	@Value("${io.delimeat.feed.torrentdownloads.baseUri}") 
+	@Value("${io.delimeat.feed.torrentproject.baseUri}") 
 	private URI baseUri;
-	
-	public TorrentDownloadsJaxrsFeedDataSource_Impl() {
-		super(FeedSource.TORRENTDOWNLOADS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-torrentdownloads-oxm.xml");
 
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;
+	public TorrentProjectFeedDataSource_Impl(){
+		super(FeedSource.TORRENTPROJECT, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-torrentproject-oxm.xml");
 	}
 
 	/* (non-Javadoc)
@@ -57,9 +44,9 @@ public class TorrentDownloadsJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedD
 	 */
 	@Override
 	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("/rss.xml")
-				.queryParam("type", "search")
-				.queryParam("search", title);
+		return target.queryParam("s", title)
+				.queryParam("out", "rss");
 	}
+
 
 }

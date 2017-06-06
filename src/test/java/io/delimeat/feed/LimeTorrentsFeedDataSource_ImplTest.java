@@ -36,34 +36,33 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class ZooqleJaxrsFeedDataSource_ImplTest {
+public class LimeTorrentsFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private ZooqleJaxrsFeedDataSource_Impl dataSource;
+	private LimeTorrentsFeedDataSource_Impl dataSource;
+
   
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new ZooqleJaxrsFeedDataSource_Impl();
+		dataSource = new LimeTorrentsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.ZOOQLE, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
 	}
   
 	@Test
-	public void readTest() throws Exception{    	
+	public void readTest() throws Exception{
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title>"
-     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
+     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
+     			+ "<size>9223372036854775807</size>"
      			+ "</item></channel></rss>";
-     
-		stubFor(get(urlPathEqualTo("/search"))
-				.withQueryParam("q", equalTo("title after:60 category:TV"))
-				.withQueryParam("fmt", equalTo("rss"))
+     	
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
@@ -78,15 +77,17 @@ public class ZooqleJaxrsFeedDataSource_ImplTest {
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals(0, results.get(0).getSeeders());
+     	Assert.assertEquals(0, results.get(0).getLeechers());
+     	Assert.assertNull(results.get(0).getTorrent());
+     	Assert.assertEquals(0, results.get(0).getFeedResultRejections().size());
 
 	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/search"))
-				.withQueryParam("q", equalTo("title after:60 category:TV"))
-				.withQueryParam("fmt", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
@@ -101,9 +102,7 @@ public class ZooqleJaxrsFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/search"))
-				.withQueryParam("q", equalTo("title after:60 category:TV"))
-				.withQueryParam("fmt", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
 				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
@@ -115,4 +114,5 @@ public class ZooqleJaxrsFeedDataSource_ImplTest {
 		dataSource.read("title");
 		Assert.fail();
 	}
+
 }

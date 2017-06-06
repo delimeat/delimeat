@@ -23,6 +23,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 @Priority(Priorities.HEADER_DECORATOR)
 public class ReplaceContentTypeResponseFilter implements ClientResponseFilter {
@@ -32,11 +33,13 @@ public class ReplaceContentTypeResponseFilter implements ClientResponseFilter {
 	 */
 	@Override
 	public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException {
-		final String acceptString = request.getHeaderString("Accept");
-		final MultivaluedMap<String, String> headers = response.getHeaders();
-		if (acceptString != null && acceptString.length() > 0 && headers.getFirst("Content-Type") != acceptString) {
-			headers.remove("Content-Type");
-			headers.add("Content-Type", acceptString);
+		if(Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())){
+			final String acceptString = request.getHeaderString("Accept");
+			final MultivaluedMap<String, String> headers = response.getHeaders();
+			if (acceptString != null && acceptString.length() > 0 && acceptString.equals(headers.getFirst("Content-Type")) == false) {
+				headers.remove("Content-Type");
+				headers.add("Content-Type", acceptString);
+			}
 		}
 	}
 

@@ -42,14 +42,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.util.jaxb.LocalDateAdapter;
+import lombok.Data;
 
 
+//TODO remove equals and move to comparator
 @Entity
 @Table(name="EPISODE",uniqueConstraints={@UniqueConstraint(columnNames={"SEASON_NUM","EPISODE_NUM","SHOW_ID"})})
 @NamedQueries({
@@ -59,8 +58,8 @@ import io.delimeat.util.jaxb.LocalDateAdapter;
 	@NamedQuery(name="Episode.findAllPending", query="SELECT e FROM Episode e WHERE e.status = 'PENDING' ORDER BY e.airDate")
 })
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Episode implements Comparable<Episode> {
-
+@Data
+public class Episode {
 
 	@Id
 	@Column(name="EPISODE_ID")
@@ -74,7 +73,6 @@ public class Episode implements Comparable<Episode> {
 	
 	@Column(name="AIR_DATE", nullable=false)
 	@Basic(optional=false)
-	//@Temporal(TemporalType.DATE)
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate airDate;
 	
@@ -112,194 +110,6 @@ public class Episode implements Comparable<Episode> {
 	@JoinColumn(name="SHOW_ID", referencedColumnName="SHOW_ID", nullable=false)
 	private Show show;
 
-	/**
-	 * @return the episodeId
-	 */
-	public long getEpisodeId() {
-		return episodeId;
-	}
-
-	/**
-	 * @param episodeId
-	 *            the episodeId to set
-	 */
-	public void setEpisodeId(long episodeId) {
-		this.episodeId = episodeId;
-	}
-
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
-	}
-
-	/**
-	 * @param title
-	 *            the title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	/**
-	 * @return the airDate
-	 */
-	public LocalDate getAirDate() {
-		return airDate;
-	}
-
-	/**
-	 * @param airDate
-	 *            the airDate to set
-	 */
-	public void setAirDate(LocalDate airDate) {
-		this.airDate = airDate;
-	}
-
-	/**
-	 * @return the seasonNum
-	 */
-	public int getSeasonNum() {
-		return seasonNum;
-	}
-
-	/**
-	 * @param seasonNum
-	 *            the seasonNum to set
-	 */
-	public void setSeasonNum(int seasonNum) {
-		this.seasonNum = seasonNum;
-	}
-
-	/**
-	 * @return the episodeNum
-	 */
-	public int getEpisodeNum() {
-		return episodeNum;
-	}
-
-	/**
-	 * @param episodeNum
-	 *            the episodeNum to set
-	 */
-	public void setEpisodeNum(int episodeNum) {
-		this.episodeNum = episodeNum;
-	}
-
-	/**
-	 * @return the doubleEp
-	 */
-	public boolean isDoubleEp() {
-		return doubleEp;
-	}
-
-	/**
-	 * @param doubleEp
-	 *            the doubleEp to set
-	 */
-	public void setDoubleEp(boolean doubleEp) {
-		this.doubleEp = doubleEp;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public EpisodeStatus getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status
-	 *            the status to set
-	 */
-	public void setStatus(EpisodeStatus status) {
-		this.status = status;
-	}
-
-	/**
-	 * @return the lastFeedUpdate
-	 */
-	public Instant getLastFeedUpdate() {
-		return lastFeedUpdate;
-	}
-
-	/**
-	 * @param lastFeedUpdate
-	 *            the lastFeedUpdate to set
-	 */
-	public void setLastFeedUpdate(Instant lastFeedUpdate) {
-		this.lastFeedUpdate = lastFeedUpdate;
-	}
-
-	/**
-	 * @return the lastFeedCheck
-	 */
-	public Instant getLastFeedCheck() {
-		return lastFeedCheck;
-	}
-
-	/**
-	 * @param lastFeedCheck
-	 *            the lastFeedCheck to set
-	 */
-	public void setLastFeedCheck(Instant lastFeedCheck) {
-		this.lastFeedCheck = lastFeedCheck;
-	}
-
-	/**
-	 * @return the version
-	 */
-	public int getVersion() {
-		return version;
-	}
-
-	/**
-	 * @param version
-	 *            the version to set
-	 */
-	public void setVersion(int version) {
-		this.version = version;
-	}
-
-	/**
-	 * @return the show
-	 */
-	public Show getShow() {
-		return show;
-	}
-
-	/**
-	 * @param show
-	 *            the show to set
-	 */
-	public void setShow(Show show) {
-		this.show = show;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-					.add("episodeId", episodeId)
-					.add("title", title)
-					.add("airDate", airDate)
-					.add("seasonNum", seasonNum)
-					.add("episodeNum", episodeNum)
-					.add("doubleEp", doubleEp)
-					.add("show", show)
-					.add("lastFeedCheck", lastFeedCheck)
-					.add("lastFeedUpdate", lastFeedUpdate)
-					.add("status", status)
-					.add("version", version)
-					.omitNullValues()
-					.toString();
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
@@ -331,14 +141,5 @@ public class Episode implements Comparable<Episode> {
 	public int hashCode() {
 		return Objects.hash(episodeId, version);
 	}
-
-	@Override
-	public int compareTo(Episode other) {
-		return ComparisonChain.start()
-				.compare(this.getAirDate(), other.getAirDate(), Ordering.natural().nullsFirst())
-				.compare(this.getSeasonNum(), other.getSeasonNum(), Ordering.natural().nullsFirst())
-				.compare(this.getEpisodeNum(), other.getEpisodeNum(), Ordering.natural().nullsFirst())
-				.result(); 
-	}
-
+	
 }

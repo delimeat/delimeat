@@ -17,7 +17,6 @@ package io.delimeat.config.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -31,9 +30,13 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
+@Data
+@EqualsAndHashCode(of={"configId","version"})
 public class Config {
 
 	@Id
@@ -75,187 +78,5 @@ public class Config {
 
 	@Version
 	private Long version;
-
-	/**
-	 * @return the configId
-	 */
-	public Long getConfigId() {
-		return configId;
-	}
-
-	/**
-	 * @param configId the configId to set
-	 */
-	public void setConfigId(Long configId) {
-		this.configId = configId;
-	}
-
-	/**
-	 * @return the outputDirectory
-	 */
-	public String getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	/**
-	 * @param outputDirectory the outputDirectory to set
-	 */
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
-	}
-
-	/**
-	 * @return the searchInterval
-	 */
-	public int getSearchInterval() {
-		return searchInterval;
-	}
-
-	/**
-	 * @param searchInterval the searchInterval to set
-	 */
-	public void setSearchInterval(int searchInterval) {
-		this.searchInterval = searchInterval;
-	}
-
-	/**
-	 * @return the searchDelay
-	 */
-	public int getSearchDelay() {
-		return searchDelay;
-	}
-
-	/**
-	 * @param searchDelay the searchDelay to set
-	 */
-	public void setSearchDelay(int searchDelay) {
-		this.searchDelay = searchDelay;
-	}
-
-	/**
-	 * @return the preferFiles
-	 */
-	public boolean isPreferFiles() {
-		return preferFiles;
-	}
-
-	/**
-	 * @param preferFiles the preferFiles to set
-	 */
-	public void setPreferFiles(boolean preferFiles) {
-		this.preferFiles = preferFiles;
-	}
-
-	/**
-	 * @return the ignoreFolders
-	 */
-	public boolean isIgnoreFolders() {
-		return ignoreFolders;
-	}
-
-	/**
-	 * @param ignoreFolders the ignoreFolders to set
-	 */
-	public void setIgnoreFolders(boolean ignoreFolders) {
-		this.ignoreFolders = ignoreFolders;
-	}
-
-	/**
-	 * @return the ignoredFileTypes
-	 */
-	public List<String> getIgnoredFileTypes() {
-		return ignoredFileTypes;
-	}
-
-	/**
-	 * @param ignoredFileTypes the ignoredFileTypes to set
-	 */
-	public void setIgnoredFileTypes(List<String> ignoredFileTypes) {
-		this.ignoredFileTypes = ignoredFileTypes;
-	}
-
-	/**
-	 * @return the excludedKeywords
-	 */
-	public List<String> getExcludedKeywords() {
-		return excludedKeywords;
-	}
-
-	/**
-	 * @param excludedKeywords the excludedKeywords to set
-	 */
-	public void setExcludedKeywords(List<String> excludedKeywords) {
-		this.excludedKeywords = excludedKeywords;
-	}
-
-	/**
-	 * @return the version
-	 */
-	public Long getVersion() {
-		return version;
-	}
-
-	/**
-	 * @param version the version to set
-	 */
-	public void setVersion(Long version) {
-		this.version = version;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("configId", configId)
-				.add("outputDirectory", outputDirectory)
-				.add("searchInterval", searchInterval)
-				.add("searchDelay", searchDelay)
-				.add("preferFiles", preferFiles)
-				.add("ignoreFolders", ignoreFolders)
-				.add("ignoredFileTypes", ignoredFileTypes)
-				.add("excludedKeywords", excludedKeywords)
-				.add("version", version)
-				.omitNullValues()
-				.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (this == object) {
-			return true;
-		}
-
-		if (object instanceof Config) {
-			Config other = (Config) object;
-			return Objects.equals(this.configId, other.configId)
-					&& Objects.equals(this.outputDirectory, other.outputDirectory)
-					&& Objects.equals(this.searchInterval, other.searchInterval)
-					&& Objects.equals(this.searchDelay, other.searchDelay)
-					&& Objects.equals(this.preferFiles, other.preferFiles)
-					&& Objects.equals(this.ignoreFolders, other.ignoreFolders)
-					&& Objects.equals(this.ignoredFileTypes, other.ignoredFileTypes)
-					&& Objects.equals(this.excludedKeywords, other.excludedKeywords)
-					&& Objects.equals(this.version, other.version);
-		}
-		
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return Objects.hash(configId, version);
-	}
 
 }

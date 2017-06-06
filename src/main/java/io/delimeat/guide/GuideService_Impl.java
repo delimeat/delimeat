@@ -21,39 +21,45 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.delimeat.guide.comparator.GuideEpisodeComparator;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
+@Getter
+@Setter
 public class GuideService_Impl implements GuideService {
 
 	@Autowired
 	private GuideDataSource guideDataSource;
 
-	public GuideDataSource getGuideDataSource() {
-		return guideDataSource;
-	}
-
-	public void setGuideDataSource(GuideDataSource guideDataSource) {
-		this.guideDataSource = guideDataSource;
-	}
-
+	/* (non-Javadoc)
+	 * @see io.delimeat.guide.GuideService#readLike(java.lang.String)
+	 */
 	@Override
 	public List<GuideSearchResult> readLike(final String title) throws Exception {
 		return guideDataSource.search(title);
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.guide.GuideService#read(java.lang.String)
+	 */
 	@Override
 	public GuideInfo read(final String guideId) throws Exception {
 		return guideDataSource.info(guideId);
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.guide.GuideService#readEpisodes(java.lang.String)
+	 */
 	@Override
 	public List<GuideEpisode> readEpisodes(final String guideId) throws Exception {
 		return guideDataSource.episodes(guideId).stream()
 				.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null))
-				.sorted()
+				.sorted(new GuideEpisodeComparator())
 				.collect(Collectors.toList());
 	}
 

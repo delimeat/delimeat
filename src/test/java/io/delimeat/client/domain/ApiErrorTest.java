@@ -18,33 +18,32 @@ package io.delimeat.client.domain;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.delimeat.client.domain.ErrorDto;
+import io.delimeat.util.ApiError;
 
-public class ErrorDTOTest {
+public class ApiErrorTest {
 
     @Test
     public void nullConstructorTest() {
-        ErrorDto error = new ErrorDto();
+        ApiError error = new ApiError();
         Assert.assertNull(error.getError());
         Assert.assertEquals(0, error.getStatus());
         error.setError("THIS IS AN ERROR");
         error.setStatus(500);
         Assert.assertEquals(500, error.getStatus());
         Assert.assertEquals("THIS IS AN ERROR", error.getError());
-
     }
 
     @Test
     public void constructorTest() {
-        ErrorDto error = new ErrorDto(500, "THIS IS AN ERROR");
+        ApiError error = ApiError.builder().error("THIS IS AN ERROR").status(500).build();
         Assert.assertEquals(500, error.getStatus());
         Assert.assertEquals("THIS IS AN ERROR", error.getError());
     }
 
     @Test
     public void toStringTest() {
-        ErrorDto error = new ErrorDto(500, "THIS IS AN ERROR");
-        Assert.assertEquals("ErrorDto{status=500, error=THIS IS AN ERROR}", error.toString());
+        ApiError error =  ApiError.builder().error("THIS IS AN ERROR").status(500).build();
+        Assert.assertEquals("ApiError(error=THIS IS AN ERROR, status=500)", error.toString());
 
     }
 }

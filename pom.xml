@@ -7,7 +7,7 @@
 	<artifactId>delimeat</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
-    
+
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -39,6 +39,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${org.springframework.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             
 			<plugin>
@@ -50,6 +57,7 @@
 				</configuration>
 			</plugin>
 	
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -59,6 +67,7 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
+
 			
 			<!-- Front end build ! -->
 			<plugin>
@@ -184,21 +193,11 @@
 			<version>${org.mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${org.springframework.version}</version>
-			<scope>test</scope>
-		</dependency>
-		!-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<version>${org.springframework.boot.version}</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock</artifactId>
@@ -291,6 +290,12 @@
 		</dependency>
 
 		<!-- OTHER ! -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>1.16.16</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>

@@ -23,10 +23,31 @@ import io.delimeat.guide.domain.GuideSearchResult;
 
 public interface GuideService {
 
+	/**
+	 * Search for shows
+	 * 
+	 * @param title
+	 * @return
+	 * @throws Exception
+	 */
 	public List<GuideSearchResult> readLike(final String title) throws Exception;
 	
+	/**
+	 * Fetch a guide info
+	 * 
+	 * @param guideId
+	 * @return
+	 * @throws Exception
+	 */
 	public GuideInfo read(final String guideId) throws Exception;
 	
+	/**
+	 * Fetch all episodes for a show
+	 * 
+	 * @param guideId
+	 * @return
+	 * @throws Exception
+	 */
 	public List<GuideEpisode> readEpisodes(final String guideId) throws Exception;
 	
 }

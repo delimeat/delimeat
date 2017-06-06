@@ -24,7 +24,11 @@ import javax.transaction.Transactional.TxType;
 
 import io.delimeat.config.domain.Config;
 import io.delimeat.processor.exception.ProcessorInteruptedException;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public abstract class AbstractProcessor<T> implements Processor {
 
 	protected T processEntity;
@@ -37,14 +41,6 @@ public abstract class AbstractProcessor<T> implements Processor {
       active = false;
     }
 
-    public void setActive(boolean active) {
-      this.active = active;
-    }
-
-    public boolean isActive() {
-      return active;
-    }
-
     @Override
     public void addListener(ProcessorListener listener) {
       listeners.add(listener);
@@ -53,26 +49,6 @@ public abstract class AbstractProcessor<T> implements Processor {
     @Override
     public void removeListener(ProcessorListener listener) {
       listeners.remove(listener);
-    }
-
-    public List<ProcessorListener> getListeners(){
-      return listeners;
-    }
-  
-    public void setProcessEntity(T processEntity){
-    	this.processEntity = processEntity;
-    }
-    
-    public T getProcessEntity(){
-    	return processEntity;
-    }
-    
-    public Config getConfig() {
-        return config;
-    }
-
-    public void setConfig(Config config) {
-        this.config = config;
     }
     
     public void checkThreadStatus() throws ProcessorInteruptedException{

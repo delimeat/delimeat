@@ -28,8 +28,12 @@ import io.delimeat.guide.GuideService;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
+@Getter
+@Setter
 public class ShowService_Impl implements ShowService {
 
 	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s]";
@@ -42,54 +46,6 @@ public class ShowService_Impl implements ShowService {
 	
 	@Autowired
 	private GuideService guideService;
-
-	/**
-	 * Get show dao
-	 * @return ShowRepository
-	 */
-	public ShowRepository getShowRepository() {
-		return showRepository;
-	}
-
-	/**
-	 * Set show dao
-	 * @param ShowRepository
-	 */
-	public void setShowRepository(ShowRepository ShowRepository) {
-		this.showRepository = ShowRepository;
-	}
-
-	/**
-	 * Get guide service
-	 * @return guideService
-	 */
-	public GuideService getGuideService() {
-		return guideService;
-	}
-
-	/**
-	 * Set guide service
-	 * @param guideService
-	 */
-	public void setGuideService(GuideService guideService) {
-		this.guideService = guideService;
-	}
-
-	/**
-	 * Get episode service
-	 * @return episodeService
-	 */
-	public EpisodeService getEpisodeService() {
-		return episodeService;
-	}
-
-	/**
-	 * Set episode service
-	 * @param episodeService
-	 */
-	public void setEpisodeService(EpisodeService episodeService) {
-		this.episodeService = episodeService;
-	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.common.show.ShowService#create(io.delimeat.common.show.model.Show)

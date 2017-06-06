@@ -36,6 +36,11 @@ public class FeedResultExcludedKeywordValidator_ImplTest {
 	public void setUp(){
 		validator = new FeedResultExcludedKeywordValidator_Impl();
 	}
+	
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedResultRejection.EXCLUDED_KEYWORD, validator.getRejection());
+	}
   
   	@Test
   	public void nullExcludedKeywordsTest() throws Exception{

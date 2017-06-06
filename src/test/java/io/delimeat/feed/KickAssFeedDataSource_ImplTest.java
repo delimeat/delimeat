@@ -16,13 +16,13 @@
 package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -36,62 +36,61 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class LimeTorrentsJaxrsFeedDataSource_ImplTest {
+public class KickAssFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private LimeTorrentsJaxrsFeedDataSource_Impl dataSource;
+	private KickAssFeedDataSource_Impl dataSource;
 
   
 	@Before
-	public void setUp() throws URISyntaxException {
-		dataSource = new LimeTorrentsJaxrsFeedDataSource_Impl();
+	public void setUp() throws Exception {
+		dataSource = new KickAssFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.KAT, dataSource.getFeedSource());
 	}
-  
+
 	@Test
-	public void readTest() throws Exception{
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
-     			+ "<size>9223372036854775807</size>"
-     			+ "</item></channel></rss>";
-     	
-		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+	public void readTest() throws Exception {
+		
+		String responseBody = "{\"list\": [{\"title\":\"title\",\"size\":100,"
+				+ "\"seeds\":\"50\",\"leechs\":\"30\","
+				+ "\"torrentLink\":\"http://test.com\"}]}";
+     
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
+							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
-		
+				
 		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
-     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
-     	Assert.assertEquals(0, results.get(0).getSeeders());
-     	Assert.assertEquals(0, results.get(0).getLeechers());
-     	Assert.assertNull(results.get(0).getTorrent());
-     	Assert.assertEquals(0, results.get(0).getFeedResultRejections().size());
+     	Assert.assertEquals("http://test.com",results.get(0).getTorrentURL());
+     	Assert.assertEquals(100,results.get(0).getContentLength());
+     	Assert.assertEquals(50,results.get(0).getSeeders());
+     	Assert.assertEquals(30,results.get(0).getLeechers());
 
 	}
   
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","application/json")));
 
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
 		
@@ -102,12 +101,14 @@ public class LimeTorrentsJaxrsFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+		stubFor(get(urlPathEqualTo("/json.php"))
+				.withQueryParam("q", equalTo("title category:tv"))
+				.withHeader("Accept", equalTo("application/json"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","application/json")
                      .withFixedDelay(2000)));
+
 
 		dataSource.setBaseUri(new URI("http://localhost:8089"));
 		

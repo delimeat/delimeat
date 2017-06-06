@@ -23,13 +23,14 @@ spring:
 debug: true
 logging:
   level:
-    io.delimeat: ALL
     org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
-    ROOT: ALL   
+    io:
+      delimeat: TRACE
+    ROOT: DEBUG   
     
 ---    
 spring:
   profiles: production
 logging:
   level:
-    ROOT: INFO
+    ROOT: WARN

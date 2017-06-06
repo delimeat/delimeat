@@ -24,31 +24,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
-public class ZooqleJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource {
+@Getter
+@Setter
+public class ZooqleFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource {
 
 	@Value("${io.delimeat.feed.zooqle.baseUri}") 
 	private URI baseUri;
 
-	public ZooqleJaxrsFeedDataSource_Impl(){
+	public ZooqleFeedDataSource_Impl(){
 		super(FeedSource.ZOOQLE, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-zooqle-oxm.xml");
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;
 	}
 
 	/* (non-Javadoc)

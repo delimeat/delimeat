@@ -21,34 +21,21 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
-@Component
-public class LimeTorrentsJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource{
-	
-	@Value("${io.delimeat.feed.limetorrents.baseUri}") 
+//@Component
+@Getter
+@Setter
+public class KickAssFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource{
+
+	@Value("${io.delimeat.feed.kat.baseUri}") 
 	private URI baseUri;
 	
-	public LimeTorrentsJaxrsFeedDataSource_Impl() {
-		super(FeedSource.LIMETORRENTS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-limetorrents-oxm.xml");
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;	
+	public KickAssFeedDataSource_Impl() {
+		super(FeedSource.KAT,MediaType.APPLICATION_JSON_TYPE,"META-INF/oxm/feed-kat-oxm.xml");
 	}
 
 	/* (non-Javadoc)
@@ -56,8 +43,8 @@ public class LimeTorrentsJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataS
 	 */
 	@Override
 	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("searchrss")
-				.path(String.format("%s/", title));
+		return target.path("json.php")
+				.queryParam("q", String.format("%s category:tv", title));
 	}
 
 }

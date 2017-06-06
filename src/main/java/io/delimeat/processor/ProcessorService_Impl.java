@@ -31,14 +31,19 @@ import org.springframework.stereotype.Service;
 
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.show.EpisodeService;
 import io.delimeat.show.ShowService;
 import io.delimeat.show.ShowUtils;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
+@Getter
+@Setter
 public class ProcessorService_Impl implements ProcessorService,
 		ProcessorListener {
 
@@ -60,62 +65,9 @@ public class ProcessorService_Impl implements ProcessorService,
 	@Qualifier("processorExecutorId")
 	private Executor executor;
 
-	public void setGuideProcessorFactory(GuideProcessorFactory guideProcessorFactory) {
-		this.guideProcessorFactory = guideProcessorFactory;
-	}
-
-	public GuideProcessorFactory getGuideProcessorFactory() {
-		return guideProcessorFactory;
-	}
-
-	public void setFeedProcessorFactory(FeedProcessorFactory feedProcessorFactory) {
-		this.feedProcessorFactory = feedProcessorFactory;
-	}
-
-	public FeedProcessorFactory getFeedProcessorFactory() {
-		return feedProcessorFactory;
-	}
-
-
-	public ShowService getShowService() {
-		return showService;
-	}
-
-	public void setShowService(ShowService showService) {
-		this.showService = showService;
-	}
-
-	public EpisodeService getEpisodeService() {
-		return episodeService;
-	}
-
-	public void setEpisodeService(EpisodeService episodeService) {
-		this.episodeService = episodeService;
-	}
-
-	public ConfigService getConfigService() {
-		return configService;
-	}
-
-	public void setConfigService(ConfigService configService) {
-		this.configService = configService;
-	}
-
-	public Executor getExecutor() {
-		return executor;
-	}
-
-	public void setExecutor(Executor executor) {
-		this.executor = executor;
-	}
-  
-  	public List<Processor> getProcessors(){
-   	return processors;
-   }
-
 	@Override
 	@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.schedule.initial}")
-	public void processAllFeedUpdates() throws GuideException {
+	public void processAllFeedUpdates() throws GuideException, ConfigException {
 
 		final Instant now = Instant.now();
 		final List<Episode> episodes = episodeService.findAllPending()
@@ -155,7 +107,7 @@ public class ProcessorService_Impl implements ProcessorService,
 
 	@Override
 	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.schedule.initial}")
-	public void processAllGuideUpdates()  throws Exception {
+	public void processAllGuideUpdates()  throws ConfigException, Exception {
 		
 		final List<Show> shows = showService.readAll()
 									.stream()

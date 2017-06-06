@@ -24,31 +24,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
-public class KickAssJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource implements FeedDataSource{
-
-	@Value("${io.delimeat.feed.kat.baseUri}") 
+@Getter
+@Setter
+public class TorrentDownloadsFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource {
+	
+	@Value("${io.delimeat.feed.torrentdownloads.baseUri}") 
 	private URI baseUri;
 	
-	public KickAssJaxrsFeedDataSource_Impl() {
-		super(FeedSource.KAT,MediaType.APPLICATION_JSON_TYPE,"META-INF/oxm/feed-kat-oxm.xml");
-	}
+	public TorrentDownloadsFeedDataSource_Impl() {
+		super(FeedSource.TORRENTDOWNLOADS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-torrentdownloads-oxm.xml");
 
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#getBaseUri()
-	 */
-	@Override
-	public URI getBaseUri() {
-		return baseUri;
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#setBaseUri(java.net.URI)
-	 */
-	@Override
-	public void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;	
 	}
 
 	/* (non-Javadoc)
@@ -56,8 +45,9 @@ public class KickAssJaxrsFeedDataSource_Impl extends AbstractJaxrsFeedDataSource
 	 */
 	@Override
 	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("json.php")
-				.queryParam("q", String.format("%s category:tv", title));
+		return target.path("/rss.xml")
+				.queryParam("type", "search")
+				.queryParam("search", title);
 	}
 
 }

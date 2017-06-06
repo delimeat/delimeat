@@ -36,7 +36,8 @@ import org.springframework.web.filter.ShallowEtagHeaderFilter;
 @Configuration
 public class WebConfig  {
 
-	@Inject Environment env;
+	@Inject 
+	private Environment env;
 
 	@Bean
 	public InetAddress udpScrapeBindAddress() throws UnknownHostException{

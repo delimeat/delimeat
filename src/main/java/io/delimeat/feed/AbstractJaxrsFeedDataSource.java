@@ -16,9 +16,7 @@
 package io.delimeat.feed;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.ProcessingException;
@@ -30,6 +28,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.logging.LoggingFeature;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.net.UrlEscapers;
 
@@ -37,27 +36,44 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSearch;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.util.jaxrs.JaxbContextResolver;
+import io.delimeat.feed.jaxrs.ReplaceContentTypeResponseFilter;
+import io.delimeat.http.jaxrs.HttpStatisticsResponseFilter;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
-
-	private final FeedSource feedSource;
+	
 	private final MediaType mediaType;
-	private final Client client;
+	private final FeedSource feedSource;
+	private final List<Object> resources;
+	private final List<Class<?>> resourceClasses;
+	
+	@Autowired
+	private HttpStatisticsResponseFilter statsFilter;
+	
+	private Client client;
 
-	public AbstractJaxrsFeedDataSource(FeedSource feedSource, MediaType mediaType, String metadata_source){
+	public AbstractJaxrsFeedDataSource(FeedSource feedSource, MediaType mediaType, List<Object> resources, List<Class<?>> resourceClasses){
 		this.feedSource = feedSource;
-		this.mediaType =  mediaType;
-		client = ClientBuilder.newClient();
-		JaxbContextResolver resolver = new JaxbContextResolver();
-		resolver.setClasses(FeedSearch.class,FeedResult.class);
-		Map<String,Object> properties = new HashMap<String,Object>();
-		properties.put("eclipselink.oxm.metadata-source", metadata_source);
-		properties.put("eclipselink.media-type", mediaType.toString());
-		properties.put("eclipselink.json.include-root", false);
-		resolver.setProperties(properties);
-		client.register(resolver);
-		client.register(new LoggingFeature(Logger.getLogger(this.getClass().getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
+		this.mediaType = mediaType;
+		this.resources = resources;
+		this.resourceClasses = resourceClasses;
+	}
+	
+	private Client getClient(){
+		if(client == null){
+			client = ClientBuilder.newClient();
+			resources.forEach(resource->client.register(resource));
+			resourceClasses.forEach(resource->client.register(resource));
+			if(statsFilter != null){
+				client.register(statsFilter);
+			}
+			client.register(ReplaceContentTypeResponseFilter.class);
+			client.register(new LoggingFeature(Logger.getLogger(this.getClass().getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
+		}
+		return client;
 	}
 	
 	/**
@@ -70,14 +86,12 @@ public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
 	 */
 	public abstract void setBaseUri(URI baseUri);
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.FeedDao#getFeedSource()
+	/**
+	 * Prepare a jax-rs request
+	 * @param target
+	 * @param title
+	 * @return target
 	 */
-	@Override
-	public FeedSource getFeedSource() {
-		return feedSource;
-	}
-	
 	protected abstract WebTarget prepareRequest(final WebTarget target, final String title);
 
 	/* (non-Javadoc)
@@ -85,14 +99,15 @@ public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
 	 */
 	@Override
 	public List<FeedResult> read(String title) throws FeedException {
+		
 		try {
-			
-			return prepareRequest(client.target(getBaseUri()), UrlEscapers.urlPathSegmentEscaper().escape(title))
+
+			return prepareRequest(getClient().target(getBaseUri()), UrlEscapers.urlPathSegmentEscaper().escape(title))
 					.request(mediaType)
 					.get(new GenericType<FeedSearch>(){})
 					.getResults();
 
-        } catch (WebApplicationException | ProcessingException ex) {
+        } catch ( WebApplicationException | ProcessingException ex) {
             throw new FeedException(ex);
         }
 	}

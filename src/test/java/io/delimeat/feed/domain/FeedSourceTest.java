@@ -56,4 +56,9 @@ public class FeedSourceTest {
 	public void zooqleTest() {
 		Assert.assertEquals(6, FeedSource.ZOOQLE.getValue());
 	}
+	
+	@Test
+	public void priateBayTest() {
+		Assert.assertEquals(7, FeedSource.PIRATEBAY.getValue());
+	}
 }

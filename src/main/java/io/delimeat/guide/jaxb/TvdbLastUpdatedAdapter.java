@@ -21,19 +21,25 @@ import java.time.ZoneId;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class TvdbLastUpdatedAdapter extends XmlAdapter<Long, LocalDate>{
+public class TvdbLastUpdatedAdapter extends XmlAdapter<Long, LocalDate> {
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
 	public Long marshal(LocalDate arg0) throws Exception {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
 	@Override
 	public LocalDate unmarshal(Long lastUpdated) throws Exception {
-		if(lastUpdated == null){
+		if (lastUpdated == null) {
 			return null;
 		}
-		return Instant.ofEpochMilli(lastUpdated*1000).atZone(ZoneId.systemDefault()).toLocalDate();
+		return Instant.ofEpochMilli(lastUpdated * 1000).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 }

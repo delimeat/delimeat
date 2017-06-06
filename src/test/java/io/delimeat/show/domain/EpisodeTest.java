@@ -238,53 +238,10 @@ public class EpisodeTest {
 
         Assert.assertEquals(961, episode.hashCode());
     }
-    
-    @Test
-    public void compareToEmptyTest() {
-    	Episode comparedEp = new Episode();
-    	Assert.assertEquals(0, episode.compareTo(comparedEp));
-    }
-    
-    @Test
-    public void compareToAirDateToNullTest() {
-    	Episode comparedEp = new Episode();
-    	comparedEp.setAirDate(LocalDate.now());
-    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
-    }
-    
-    @Test
-    public void compareToAirDateToEpochTest() {
-    	episode.setAirDate(LocalDate.ofEpochDay(0));
-    	
-    	Episode comparedEp = new Episode();
-    	comparedEp.setAirDate(LocalDate.now());
-    	
-    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
-    }
-    
-    @Test
-    public void compareToSeasonNumTest() {
-    	episode.setSeasonNum(126);
-    	
-    	Episode comparedEp = new Episode();
-    	comparedEp.setSeasonNum(125);
-    	
-    	Assert.assertEquals(1, episode.compareTo(comparedEp));
-    }
-    
-    @Test
-    public void compareToEpisodeNumTest() {
-    	episode.setEpisodeNum(124);
-    	
-    	Episode comparedEp = new Episode();
-    	comparedEp.setSeasonNum(125);
-    	
-    	Assert.assertEquals(-1, episode.compareTo(comparedEp));
-    }
 
     @Test
     public void toStringTest() throws ParseException {
-        Assert.assertEquals("Episode{episodeId=0, seasonNum=0, episodeNum=0, doubleEp=false, status=PENDING, version=0}", episode.toString());
+        Assert.assertEquals("Episode(episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, status=PENDING, lastFeedUpdate=null, lastFeedCheck=null, version=0, show=null)", episode.toString());
     }
 
 }

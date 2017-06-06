@@ -98,12 +98,13 @@ public class ConfigTest {
   	public void hashCodeTest(){
   		config.setConfigId(1L);
   		config.setVersion(99L);
-		Assert.assertEquals(1091, config.hashCode());
-   }
+		Assert.assertEquals(3639, config.hashCode());
+  	}
   
   	@Test
   	public void toStringTest(){
-  		Assert.assertEquals("Config{searchInterval=0, searchDelay=0, preferFiles=false, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[]}",config.toString());
+  		Assert.assertEquals("Config(configId=null, outputDirectory=null, searchInterval=0, searchDelay=0, preferFiles=false, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[], version=null)"
+  				,config.toString());
   	}
   
   	@Test

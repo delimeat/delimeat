@@ -19,16 +19,20 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class TvdbAiringStatusAdapter extends XmlAdapter<String, Boolean> {
 
-	private static final String CONTINUING = "continuing";
-
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
 	public String marshal(Boolean value) throws Exception {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
 	@Override
 	public Boolean unmarshal(String value) throws Exception {
-		return CONTINUING.equalsIgnoreCase(value);
+		return "continuing".equalsIgnoreCase(value);
 	}
 
 }

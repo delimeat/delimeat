@@ -38,6 +38,11 @@ public class FeedResultDailyValidator_ImplTest {
 	public void setUp(){
 		validator = new FeedResultDailyValidator_Impl();
 	}
+	
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedResultRejection.INVALID_DAILY_RESULT, validator.getRejection());
+	}
 
 	@Test
 	public void notDailyFeedResultTest() throws Exception{

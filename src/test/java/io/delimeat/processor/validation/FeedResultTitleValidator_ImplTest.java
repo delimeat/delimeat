@@ -38,6 +38,10 @@ public class FeedResultTitleValidator_ImplTest {
 
 	}
 		
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedResultRejection.INCORRECT_TITLE, validator.getRejection());
+	}
 
 	@Test
 	public void emptyTitleFeedResultTest() throws Exception{

@@ -62,71 +62,15 @@ public class GuideSearchResultTest {
 	}
   
 	@Test
-	public void compareTitleMatchTest() {
-		result.setTitle("ABC");
-		GuideSearchResult result2 = new GuideSearchResult();
-		result2.setTitle("ABC");
-     
-		Assert.assertEquals(0, result.compareTo(result2));
-	}
-
-	@Test
-	public void compareNullTitlesTest() {
-		Assert.assertNull(result.getTitle());
-		GuideSearchResult result2 = new GuideSearchResult();
-		Assert.assertNull(result2.getTitle());
-
-		Assert.assertEquals(0, result.compareTo(result2));
-	}
-
-	@Test
-	public void compareTitleOtherNullTest() {
-		result.setTitle("ABC");
-		Assert.assertNotNull(result.getTitle());
-		GuideSearchResult result2 = new GuideSearchResult();
-		Assert.assertNull(result2.getTitle());
-
-		Assert.assertEquals(1, result.compareTo(result2));
-	}
-
-	@Test
-	public void compareTitleNullOtherNotNullTest() {
-		Assert.assertNull(result.getTitle());
-		GuideSearchResult result2 = new GuideSearchResult();
-		result2.setTitle("ABC");
-		Assert.assertNotNull(result2.getTitle());
-
-		Assert.assertEquals(-1, result.compareTo(result2));
-	}
-
-	@Test
-	public void compareTitleBeforeTest() {
-		result.setTitle("ABC");
-		GuideSearchResult result2 = new GuideSearchResult();
-		result2.setTitle("BCD");
-
-		Assert.assertEquals(-1, result.compareTo(result2));
-	}
-
-	@Test
-	public void compareTitleAfterTest() {
-		result.setTitle("BCD");
-		GuideSearchResult result2 = new GuideSearchResult();
-		result2.setTitle("ABC");
-
-		Assert.assertEquals(1, result.compareTo(result2));
-	}
-  
-	@Test
   	public void hashCodeTest() throws ParseException{
      	result.setTitle("TITLE");
      	result.setFirstAired(LocalDate.parse("2016-02-19"));
-     	Assert.assertEquals(-1815994084, result.hashCode());
+     	Assert.assertEquals(1588636078, result.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-     	Assert.assertEquals("GuideSearchResult{}", result.toString());
+     	Assert.assertEquals("GuideSearchResult(description=null, firstAired=null, guideId=null, title=null)", result.toString());
    }
   
   	@Test

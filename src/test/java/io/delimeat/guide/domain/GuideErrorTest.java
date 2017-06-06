@@ -36,4 +36,10 @@ public class GuideErrorTest {
 		error.setMessage("MESSAGE");
 		Assert.assertEquals("MESSAGE", error.getMessage());
 	}
+	
+	@Test
+	public void toStringTest(){
+		error.setMessage("MESSAGE");
+		Assert.assertEquals("GuideError(message=MESSAGE)", error.toString());
+	}
 }

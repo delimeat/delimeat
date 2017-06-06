@@ -30,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.MoreObjects;
-
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
@@ -41,9 +39,15 @@ import io.delimeat.show.ShowUtils;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Component
 @Scope("prototype")
+@Getter
+@Setter
+@ToString
 public class GuideProcessor_Impl extends AbstractProcessor<Show> implements Processor {
 
 	@Autowired
@@ -53,30 +57,6 @@ public class GuideProcessor_Impl extends AbstractProcessor<Show> implements Proc
 	@Autowired
 	private GuideService guideService;
 
-	public ShowService getShowService() {
-		return showService;
-	}
-
-	public void setShowService(ShowService showService) {
-		this.showService = showService;
-	}
-
-	
-	public EpisodeService getEpisodeService() {
-		return episodeService;
-	}
-
-	public void setEpisodeService(EpisodeService episodeService) {
-		this.episodeService = episodeService;
-	}
-
-	public GuideService getGuideService() {
-		return guideService;
-	}
-
-	public void setGuideService(GuideService guideService) {
-		this.guideService = guideService;
-	}
 	
 	@Override
 	public void doProcessing() throws Exception {
@@ -184,19 +164,6 @@ public class GuideProcessor_Impl extends AbstractProcessor<Show> implements Proc
 			})
 			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
-	}
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("processEntity", processEntity)
-				.add("config", config)
-				.add("active", active)
-				.add("listeners", listeners)
-				.add("showService", showService)
-				.add("guideService", guideService)
-				.omitNullValues()
-				.toString();
 	}
 
 }

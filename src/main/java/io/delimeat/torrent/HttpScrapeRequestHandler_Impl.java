@@ -119,33 +119,29 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
 	public URL generateScrapeURL(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException{
 		
-      String path;
-		if(uri.getPath().contains("announce")){
+		String path;
+		if (uri.getPath().contains("announce")) {
 			path = uri.getPath().replace("announce", "scrape");
-		}else if(uri.getPath().contains("scrape")){
+		} else if (uri.getPath().contains("scrape")) {
 			path = uri.getPath();
-		}else {
-			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s",uri.toString()));
+		} else {
+			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s", uri.toString()));
 		}
-                     
-     	final String infoHashString = new String(infoHash.getBytes(),"ISO-8859-1");
-     	final String infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
+
+		final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
+		final String infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
 
 		final String query;
-		if(uri.getRawQuery()==null){
+		if (uri.getRawQuery() == null) {
 			query = infoHashQuery;
-		}
-		else if(uri.getRawQuery().contains(infoHashQuery)){
+		} else if (uri.getRawQuery().contains(infoHashQuery)) {
 			query = uri.getRawQuery();
-		}
-		else{
+		} else {
 			query = uri.getRawQuery() + "&" + infoHashQuery;
 		}
-     
-      final URL url;
-     	url = new URL(uri.getScheme(), uri.getHost(), uri.getPort(), path+"?"+query);
 
-		return url;
+		return new URL(uri.getScheme(), uri.getHost(), uri.getPort(), path + "?" + query);
+
 	}
 
 

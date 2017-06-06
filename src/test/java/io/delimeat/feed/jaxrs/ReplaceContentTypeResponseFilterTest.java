@@ -21,6 +21,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +48,7 @@ public class ReplaceContentTypeResponseFilterTest {
 		
 		headers.add("Content-Type", "CONTENT");
 		ClientResponseContext response = Mockito.mock(ClientResponseContext.class);
+		Mockito.when(response.getStatusInfo()).thenReturn(Response.Status.OK);
 		Mockito.when(response.getHeaders()).thenReturn(headers);
 		
 		filter.filter(request, response);
@@ -60,6 +62,7 @@ public class ReplaceContentTypeResponseFilterTest {
 		
 		headers.add("Content-Type", "CONTENT");
 		ClientResponseContext response = Mockito.mock(ClientResponseContext.class);
+		Mockito.when(response.getStatusInfo()).thenReturn(Response.Status.OK);
 		Mockito.when(response.getHeaders()).thenReturn(headers);
 		
 		filter.filter(request, response);
@@ -73,6 +76,7 @@ public class ReplaceContentTypeResponseFilterTest {
 		
 		headers.add("Content-Type", "DIFFERENT");
 		ClientResponseContext response = Mockito.mock(ClientResponseContext.class);
+		Mockito.when(response.getStatusInfo()).thenReturn(Response.Status.OK);
 		Mockito.when(response.getHeaders()).thenReturn(headers);
 		
 		filter.filter(request, response);
@@ -86,10 +90,25 @@ public class ReplaceContentTypeResponseFilterTest {
 		
 		headers.add("Content-Type", "CONTENT");
 		ClientResponseContext response = Mockito.mock(ClientResponseContext.class);
+		Mockito.when(response.getStatusInfo()).thenReturn(Response.Status.OK);
 		Mockito.when(response.getHeaders()).thenReturn(headers);
 		
 		filter.filter(request, response);
 		Assert.assertEquals("CONTENT", headers.getFirst("Content-Type"));
+	}
+	
+	@Test
+	public void filterNotSuccessfulTest() throws IOException{
+		ClientRequestContext request = Mockito.mock(ClientRequestContext.class);
+		Mockito.when(request.getHeaderString("Accept")).thenReturn("CONTENT");
+		
+		headers.add("Content-Type", "DIFFERENT");
+		ClientResponseContext response = Mockito.mock(ClientResponseContext.class);
+		Mockito.when(response.getStatusInfo()).thenReturn(Response.Status.BAD_GATEWAY);
+		Mockito.when(response.getHeaders()).thenReturn(headers);
+		
+		filter.filter(request, response);
+		Assert.assertEquals("DIFFERENT", headers.getFirst("Content-Type"));
 	}
 
 }

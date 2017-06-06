@@ -39,6 +39,11 @@ public class FeedResultSeasonValidator_ImplTest {
 	}
 
 	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedResultRejection.INVALID_SEASON_RESULT, validator.getRejection());
+	}
+	
+	@Test
 	public void notSeasonFeedResultTest() throws Exception{
 		Episode episode = new Episode();
 		episode.setSeasonNum(1);

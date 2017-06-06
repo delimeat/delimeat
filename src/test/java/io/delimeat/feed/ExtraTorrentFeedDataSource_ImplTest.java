@@ -21,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -36,32 +37,30 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
+public class ExtraTorrentFeedDataSource_ImplTest {
 
-public class TorrentDownloadsJaxrsFeedDataSource_ImplTest {
-	
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private TorrentDownloadsJaxrsFeedDataSource_Impl dataSource;
-
+	private ExtraTorrentFeedDataSource_Impl dataSource;
+  
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new TorrentDownloadsJaxrsFeedDataSource_Impl();
+		dataSource = new ExtraTorrentFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.TORRENTDOWNLOADS, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.EXTRATORRENT, dataSource.getFeedSource());
 	}
   
 	@Test
 	public void readTest() throws Exception{
-    	
+     	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
-     			+ "<info_hash>INFO_HASH</info_hash>"
-     			+ "<size>9223372036854775807</size>"
+     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
      			+ "<seeders>1</seeders>"
      			+ "<leechers>1000</leechers>"
      			+ "</item></channel></rss>";
@@ -81,7 +80,7 @@ public class TorrentDownloadsJaxrsFeedDataSource_ImplTest {
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("http://itorrents.org/torrent/INFO_HASH.torrent",results.get(0).getTorrentURL());
+     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
      	Assert.assertEquals(1, results.get(0).getSeeders());
      	Assert.assertEquals(1000, results.get(0).getLeechers());

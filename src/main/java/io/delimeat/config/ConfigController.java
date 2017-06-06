@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigConcurrencyException;
+import io.delimeat.config.exception.ConfigException;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -31,13 +33,13 @@ public class ConfigController {
 	ConfigService configService;
 	
 	@RequestMapping(value = "/config", method = RequestMethod.GET, produces = "application/json")
-    public Config read() {
+    public Config read() throws ConfigException{
         return configService.read();
     }
 	
 	
 	@RequestMapping(value = "/config", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-	public Config update(@RequestBody Config config) {
+	public Config update(@RequestBody Config config) throws ConfigConcurrencyException, ConfigException{
 		return configService.update(config);
 	}
 		

@@ -46,13 +46,13 @@ public class FeedSearchTest {
   	@Test
   	public void hashCodeTest(){
    	search.getResults().add(new FeedResult());
-		Assert.assertEquals(887503743,search.hashCode());
+		Assert.assertEquals(428881122,search.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
 		search.getResults().add(new FeedResult());
-     	Assert.assertEquals("FeedSearch{results=[FeedResult{contentLength=0, seeders=0, leechers=0, feedResultRejections=[]}]}",search.toString());
+     	Assert.assertEquals("FeedSearch(results=[FeedResult(torrentURL=null, title=null, contentLength=0, seeders=0, leechers=0, feedResultRejections=[], torrent=null)])",search.toString());
    }
 
 }

@@ -34,8 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.MoreObjects;
-
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
@@ -54,9 +52,15 @@ import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Component
 @Scope("prototype")
+@Getter
+@Setter
+@ToString
 public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Processor {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(FeedProcessor_Impl.class);
@@ -67,61 +71,12 @@ public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Pr
     private FeedService feedService;
   	@Autowired
     private TorrentService torrentService;
-    
   	@Autowired
     private List<FeedResultValidator> feedResultValidators = new ArrayList<FeedResultValidator>(); 
   	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
-  	
     private Comparator<FeedResult> resultComparator;
 
-    public EpisodeService getEpisodeService() {
-		return episodeService;
-	}
-
-	public void setEpisodeService(EpisodeService episodeService) {
-		this.episodeService = episodeService;
-	}
-
-	public FeedService getFeedService() {
-        return feedService;
-    }
-
-    public void setFeedService(FeedService feedService) {
-        this.feedService = feedService;
-    }
-
-    public TorrentService getTorrentService() {
-        return torrentService;
-    }
-
-    public void setTorrentService(TorrentService torrentService) {
-        this.torrentService = torrentService;
-    }
-
-    public List<FeedResultValidator> getFeedResultValidators() {
-        return feedResultValidators;
-    }
-
-    public void setFeedResultValidators(List<FeedResultValidator> feedResultValidators) {
-        this.feedResultValidators = feedResultValidators;
-    }
-
-    public List<TorrentValidator> getTorrentValidators() {
-        return torrentValidators;
-    }
-
-    public void setTorrentValidators(List<TorrentValidator> torrentValidators) {
-        this.torrentValidators = torrentValidators;
-    }
-
-    public Comparator<FeedResult> getResultComparator() {
-        return resultComparator;
-    }
-
-    public void setResultComparator(Comparator<FeedResult> resultComparator) {
-        this.resultComparator = resultComparator;
-    }
     
     public void doProcessing()  throws ValidationException, FeedException, TorrentException, ProcessorInteruptedException, GuideNotFoundException, GuideException {
         final Episode lockedEpisode = episodeService.read(processEntity.getEpisodeId());
@@ -281,23 +236,5 @@ public class FeedProcessor_Impl extends AbstractProcessor<Episode> implements Pr
     	}
     	
     }
-
-    
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("processEntity", processEntity)
-				.add("config", config)
-				.add("active", active)
-				.add("listeners", listeners)
-				.add("episodeService", episodeService)
-				.add("torrentService", torrentService)
-				.add("feedService", feedService)
-				.add("feedResultValidators", feedResultValidators)
-				.add("torrentValidators", torrentValidators)
-				.add("resultComparator", resultComparator)
-				.omitNullValues()
-				.toString();
-	}
 
 }

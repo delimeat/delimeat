@@ -21,12 +21,7 @@ import java.time.format.DateTimeParseException;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(LocalTimeAdapter.class);
 	
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
@@ -57,7 +52,6 @@ public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 		try{
 			return LocalTime.parse(upperValue,  DateTimeFormatter.ofPattern(format));
 		}catch(DateTimeParseException ex){
-			LOG.warn("Encountered time format exception", ex);
 			return LocalTime.MIDNIGHT;
 		}
 	}
