@@ -17,6 +17,8 @@ package io.delimeat.config;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
@@ -44,6 +46,7 @@ public class ConfigService_Impl implements ConfigService {
 	 * @see io.delimeat.config.ConfigService#read()
 	 */
 	@Override
+	@Transactional
 	public Config read() throws ConfigException {
 		try {
 			Config config = configRepository.findOne(1L);
@@ -68,6 +71,7 @@ public class ConfigService_Impl implements ConfigService {
 	 * @see io.delimeat.config.ConfigService#update(io.delimeat.config.domain.Config)
 	 */
 	@Override
+	@Transactional
 	public Config update(Config config) throws ConfigConcurrencyException, ConfigException {
 		try {
 			config.setConfigId(1L);

@@ -39,8 +39,6 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.net.UrlEscapers;
-
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideError;
 import io.delimeat.guide.domain.GuideInfo;
@@ -53,6 +51,7 @@ import io.delimeat.guide.domain.TvdbToken;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.jaxrs.MoxyContextResolver;
 import lombok.Getter;
 import lombok.Setter;
@@ -108,7 +107,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return get(
 				client.target(baseUri)
         		.path("series")
-          		.path(UrlEscapers.urlPathSegmentEscaper().escape(guideId))
+          		.path(DelimeatUtils.urlEscape(guideId))
           		.request(mediaType)
           		.header("Authorization", getAuthorization()), new GenericType<GuideInfo>(){});
 	}
@@ -119,7 +118,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	@Override
 	public List<GuideEpisode> episodes(String guideId)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-        String encodedGuideId = UrlEscapers.urlPathSegmentEscaper().escape(guideId);
+        String encodedGuideId = DelimeatUtils.urlEscape(guideId);
 		List<GuideEpisode> episodes = new ArrayList<GuideEpisode>();
         Integer page = 1;
         do {

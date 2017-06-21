@@ -22,9 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.guide.domain.GuideEpisode;
-import io.delimeat.show.domain.Episode;
-
 public class GuideEpisodeTest {
 
 	private GuideEpisode ep;
@@ -93,8 +90,8 @@ public class GuideEpisodeTest {
 		otherEp.setSeasonNum(1);
 		otherEp.setEpisodeNum(2);
 
-		ep.setTitle("EP");
-		ep.setAirDate(LocalDate.parse("2000-01-28"));
+		ep.setTitle("OTHER");
+		ep.setAirDate(LocalDate.parse("2016-01-28"));
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 
@@ -134,67 +131,13 @@ public class GuideEpisodeTest {
 	}
 
 	@Test
-	public void equalsEpisodeTest() throws ParseException {
-		Episode otherEp = new Episode();
-		otherEp.setTitle("OTHER");
-		otherEp.setAirDate(LocalDate.parse("2000-01-28"));
-		otherEp.setSeasonNum(1);
-		otherEp.setEpisodeNum(2);
-		otherEp.setEpisodeId(Long.MAX_VALUE);
-		otherEp.setVersion(Integer.MIN_VALUE);
-
-		ep.setTitle("EP");
-		ep.setAirDate(LocalDate.parse("2000-01-28"));
-		ep.setSeasonNum(1);
-		ep.setEpisodeNum(2);
-
-		Assert.assertTrue(ep.equals(otherEp));
-	}
-
-	@Test
-	public void equalsEpisodeSeasonNumTest() throws ParseException {
-		Episode otherEp = new Episode();
-		otherEp.setTitle("OTHER");
-		otherEp.setAirDate(LocalDate.parse("2016-01-28"));
-		otherEp.setSeasonNum(2);
-		otherEp.setEpisodeNum(2);
-		otherEp.setEpisodeId(Long.MAX_VALUE);
-		otherEp.setVersion(Integer.MIN_VALUE);
-
-		ep.setTitle("EP");
-		ep.setAirDate(LocalDate.parse("2000-01-28"));
-		ep.setSeasonNum(1);
-		ep.setEpisodeNum(2);
-
-		Assert.assertFalse(ep.equals(otherEp));
-	}
-
-	@Test
-	public void equalsEpisodeEpisodeNumTest() throws ParseException {
-		Episode otherEp = new Episode();
-		otherEp.setTitle("OTHER");
-		otherEp.setAirDate(LocalDate.parse("2016-01-28"));
-		otherEp.setSeasonNum(1);
-		otherEp.setEpisodeNum(1);
-		otherEp.setEpisodeId(Long.MAX_VALUE);
-		otherEp.setVersion(Integer.MIN_VALUE);
-
-		ep.setTitle("EP");
-		ep.setAirDate(LocalDate.parse("2000-01-28"));
-		ep.setSeasonNum(1);
-		ep.setEpisodeNum(2);
-
-		Assert.assertFalse(ep.equals(otherEp));
-	}
-
-	@Test
 	public void hashCodeTest() throws ParseException {
 		ep.setTitle("EP");
 		ep.setAirDate(LocalDate.parse("2000-01-28"));
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 
-		Assert.assertEquals(-291593101, ep.hashCode());
+		Assert.assertEquals(1898519495, ep.hashCode());
 	}
 
 	@Test

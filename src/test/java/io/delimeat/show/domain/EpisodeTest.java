@@ -174,21 +174,6 @@ public class EpisodeTest {
     }
 
     @Test
-    public void equalsGuideEpisodeTest() throws ParseException {
-        GuideEpisode otherEp = new GuideEpisode();
-        otherEp.setTitle("OTHER");
-        otherEp.setAirDate(LocalDate.ofEpochDay(0));
-        otherEp.setSeasonNum(2);
-        otherEp.setEpisodeNum(3);
-
-		Episode ep = new Episode();
-		ep.setSeasonNum(2);
-		ep.setEpisodeNum(3);
-		
-        Assert.assertTrue(ep.equals(otherEp));
-    }
-
-    @Test
     public void equalsGuideEpisodeSeasonNumTest() throws ParseException {
         GuideEpisode otherEp = new GuideEpisode();
         otherEp.setTitle("OTHER");
@@ -236,7 +221,7 @@ public class EpisodeTest {
         episode.setEpisodeId(Long.MIN_VALUE);
         episode.setVersion(Integer.MIN_VALUE);
 
-        Assert.assertEquals(961, episode.hashCode());
+        Assert.assertEquals(3481, episode.hashCode());
     }
 
     @Test

@@ -15,126 +15,50 @@
  */
 package io.delimeat.processor;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import io.delimeat.config.ConfigService;
-import io.delimeat.config.domain.Config;
-import io.delimeat.config.exception.ConfigException;
-import io.delimeat.guide.exception.GuideException;
-import io.delimeat.show.EpisodeService;
-import io.delimeat.show.ShowService;
-import io.delimeat.show.ShowUtils;
-import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.Show;
 import lombok.Getter;
 import lombok.Setter;
 
 @Service
 @Getter
 @Setter
-public class ProcessorService_Impl implements ProcessorService,
-		ProcessorListener {
-
-  	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorService_Impl.class);
+public class ProcessorService_Impl implements ProcessorService  {
+		
+	@Autowired
+	private ApplicationContext applicationContext;
 	
-	private final List<Processor> processors = new ArrayList<>();
-
-  	@Autowired
-	private GuideProcessorFactory guideProcessorFactory;
-  	@Autowired
-	private FeedProcessorFactory feedProcessorFactory;
-	@Autowired
-	private ShowService showService;
-	@Autowired
-	private EpisodeService episodeService;
-	@Autowired
-	private ConfigService configService;
-	@Autowired
-	@Qualifier("processorExecutorId")
-	private Executor executor;
-
 	@Override
 	@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.schedule.initial}")
-	public void processAllFeedUpdates() throws GuideException, ConfigException {
-
-		final Instant now = Instant.now();
-		final List<Episode> episodes = episodeService.findAllPending()
-										.stream()
-										.filter(ep->ep.getShow().isEnabled())
-										.collect(Collectors.toList());
+	public void processAllFeedUpdates() throws Exception {
+		FeedItemReader_Impl reader = applicationContext.getBean(FeedItemReader_Impl.class);
+		FeedItemProcessor_Impl processor = applicationContext.getBean(FeedItemProcessor_Impl.class);
 		
-		// stop is there is nothing to process
-		if(episodes.isEmpty()){
-			return;
-		}
-		
-		final Config config = configService.read();		
-		final long searchInterval = config.getSearchInterval();
-		final long searchDelay = config.getSearchDelay();
-		final Instant searchWindow = now.minusMillis(searchInterval);
-		for (Episode episode : episodes) {
-			
-			final Instant lastFeedCheck = Optional.ofNullable(episode.getLastFeedCheck())
-												.orElse(Instant.EPOCH);
-			
-			if(lastFeedCheck.isAfter(searchWindow) == true){
-				continue;
-			}
-			
-			Instant delayedAirDateTime = ShowUtils.determineAirTime(episode.getAirDate(), episode.getShow().getAirTime(), episode.getShow().getTimezone())
-														.plusMillis(searchDelay);
-
-           	if (delayedAirDateTime.isBefore(now) == true) {
-				Processor processor = feedProcessorFactory.build(episode,config);
-				processor.addListener(this);
-				processors.add(processor);
-				executor.execute(new ProcessorThread(processor,LOGGER));
-			}
-		}
+		run(reader, processor);
 	}
-
+	
 	@Override
 	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.schedule.initial}")
-	public void processAllGuideUpdates()  throws ConfigException, Exception {
-		
-		final List<Show> shows = showService.readAll()
-									.stream()
-									.filter(show->show.isEnabled())
-									.collect(Collectors.toList());
-		
-		// stop if there is nothing to process
-		if(shows.isEmpty()){
-			return;
-		}
-		
-		final Config config = configService.read();
-		
-		for (Show show : shows) {	
-			
-			Processor processor = guideProcessorFactory.build(show,config);
-			processor.addListener(this);
-			processors.add(processor);
-           	executor.execute(new ProcessorThread(processor,LOGGER));
-		}
+	public void processAllGuideUpdates()  throws Exception {
 
+		GuideItemReader_Impl reader = applicationContext.getBean(GuideItemReader_Impl.class);
+		GuideItemProcessor_Impl processor = applicationContext.getBean(GuideItemProcessor_Impl.class);
+		
+		run(reader, processor);
 	}
 
-	@Override
-	public void alertComplete(Processor processor) {
-		processors.remove(processor);
-		processor.removeListener(this);
+	
+	@Transactional
+	public <I> void run(ItemReader<I> itemReader, ItemProcessor<I> itemProcessor) throws Exception{
+		I inputItem = null;
+		while((inputItem = itemReader.read()) != null){
+			itemProcessor.process(inputItem);
+		}
 	}
 
 }

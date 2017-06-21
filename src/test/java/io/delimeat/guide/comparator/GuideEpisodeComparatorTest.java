@@ -49,7 +49,7 @@ public class GuideEpisodeComparatorTest {
 		ep1.setAirDate(LocalDate.parse("2005-01-02"));
 		ep2.setAirDate(null);
 
-		Assert.assertEquals(1, comparator.compare(ep1,ep2));
+		Assert.assertTrue(comparator.compare(ep1,ep2) >= 1);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class GuideEpisodeComparatorTest {
 		
 		ep2.setAirDate(LocalDate.parse("2005-01-02"));
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assert.assertTrue(comparator.compare(ep1,ep2) <= -1);
 	}
 
 	@Test

@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.processor.exception;
+package io.delimeat.feed.jaxrs;
 
-import io.delimeat.processor.Processor;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
-public class ProcessorInteruptedException extends Exception {
+@Provider
+@Consumes({MediaType.TEXT_HTML})
+public class JSoupContextResolver implements ContextResolver<JSoupContext>  {
 
-	private static final long serialVersionUID = 1L;
-
-	private final Processor processor;
+	private final JSoupContext context;
 	
-	public ProcessorInteruptedException(Processor processor){
-		this.processor = processor;
+	public JSoupContextResolver(JSoupContext context){
+		this.context = context;
 	}
-	
-	public Processor getProcessor(){
-		return processor;
+	/* (non-Javadoc)
+	 * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
+	 */
+	@Override
+	public JSoupContext getContext(Class<?> classes) {
+		return context;
 	}
+
 }

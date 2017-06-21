@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent;
+package io.delimeat.torrent.domain;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,6 +46,6 @@ public class TorrentFileTest {
 
 	@Test
 	public void toStringTest() {
-		Assert.assertEquals("TorrentFile{length=0}", torrentFile.toString());
+		Assert.assertEquals("TorrentFile(length=0, name=null)", torrentFile.toString());
 	}
 }

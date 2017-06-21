@@ -15,47 +15,18 @@
  */
 package io.delimeat.torrent.domain;
 
-import java.util.Arrays;
+import io.delimeat.util.DelimeatUtils;
+import lombok.Data;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.io.BaseEncoding;
-
+@Data
 public class InfoHash {
 
-	private byte[] sha1Bytes;
+	private final byte[] bytes;
+	private final String hex;
 
-	public InfoHash(byte[] sha1Bytes) {
-		this.sha1Bytes = sha1Bytes;
+	public InfoHash(byte[] bytes) {
+		this.bytes = bytes;
+		hex = DelimeatUtils.toHex(bytes);
 	}
 
-	public byte[] getBytes() {
-		return sha1Bytes;
-	}
-
-	public String getHex() {
-		return BaseEncoding.base16().lowerCase().encode(sha1Bytes);
-	}
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("value", getHex())
-				.omitNullValues()
-				.toString();
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other == null)
-			return false;
-
-		if (this == other)
-			return true;
-
-		if (other instanceof InfoHash) {
-			InfoHash otherInfoHash = (InfoHash) other;
-			return Arrays.equals(sha1Bytes, otherInfoHash.sha1Bytes);
-		}
-		return false;
-	}
 }

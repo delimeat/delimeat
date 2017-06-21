@@ -15,10 +15,9 @@
  */
 package io.delimeat.guide.comparator;
 
+import java.time.LocalDate;
 import java.util.Comparator;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
+import java.util.Optional;
 
 import io.delimeat.guide.domain.GuideEpisode;
 
@@ -29,12 +28,22 @@ public class GuideEpisodeComparator implements Comparator<GuideEpisode> {
 	 */
 	@Override
 	public int compare(GuideEpisode episode1, GuideEpisode episode2) {
+		LocalDate airDate1 = Optional.ofNullable(episode1.getAirDate()).orElse(LocalDate.MIN);
+		LocalDate airDate2 = Optional.ofNullable(episode2.getAirDate()).orElse(LocalDate.MIN);
+		int result = airDate1.compareTo(airDate2);
+		if(result == 0){
+			Integer seasonNum1 = Optional.ofNullable(episode1.getSeasonNum()).orElse(0);
+			Integer seasonNum2 = Optional.ofNullable(episode2.getSeasonNum()).orElse(0);
+			result = seasonNum1.compareTo(seasonNum2);
+		}
 		
-		return ComparisonChain.start()
-				.compare(episode1.getAirDate(), episode2.getAirDate(), Ordering.natural().nullsFirst())
-				.compare(episode1.getSeasonNum(), episode2.getSeasonNum(), Ordering.natural().nullsFirst())
-				.compare(episode1.getEpisodeNum(), episode2.getEpisodeNum(), Ordering.natural().nullsFirst())
-				.result();
+		if(result == 0){
+			Integer episodeNum1 = Optional.ofNullable(episode1.getEpisodeNum()).orElse(0);
+			Integer episodeNum2 = Optional.ofNullable(episode2.getEpisodeNum()).orElse(0);
+			result = episodeNum1.compareTo(episodeNum2);
+		}
+		
+		return result;
 	}
 
 }

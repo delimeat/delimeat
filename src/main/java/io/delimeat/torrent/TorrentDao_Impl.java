@@ -27,9 +27,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteStreams;
-
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BInteger;
 import io.delimeat.torrent.bencode.BList;
@@ -43,6 +40,7 @@ import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
+import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.UrlHandler;
 
 @Component
@@ -92,7 +90,7 @@ public class TorrentDao_Impl implements TorrentDao {
      }
      
      try(InputStream input = getUrlHandler().openInput(conn)){
-       final byte[] bytes = ByteStreams.toByteArray(input);
+       final byte[] bytes = DelimeatUtils.inputStreamToBytes(input);
        final BDictionary dictionary = BencodeUtils.decode(bytes);
        final Torrent torrent = parseRootDictionary(dictionary);
        torrent.setBytes(bytes);
@@ -142,7 +140,7 @@ public class TorrentDao_Impl implements TorrentDao {
 	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
 		final TorrentInfo info = new TorrentInfo();
 		byte[] rawBytes = BencodeUtils.encode(infoDictionary);
-		byte[] sha1Bytes = Hashing.sha1().hashBytes(rawBytes).asBytes();
+		byte[] sha1Bytes = DelimeatUtils.sha1Hash(rawBytes);
 
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		info.setInfoHash(infoHash);

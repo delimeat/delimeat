@@ -30,14 +30,13 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.net.UrlEscapers;
-
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSearch;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 import io.delimeat.feed.jaxrs.ReplaceContentTypeResponseFilter;
 import io.delimeat.http.jaxrs.HttpStatisticsResponseFilter;
+import io.delimeat.util.DelimeatUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -102,7 +101,7 @@ public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
 		
 		try {
 
-			return prepareRequest(getClient().target(getBaseUri()), UrlEscapers.urlPathSegmentEscaper().escape(title))
+			return prepareRequest(getClient().target(getBaseUri()), DelimeatUtils.urlEscape(title))
 					.request(mediaType)
 					.get(new GenericType<FeedSearch>(){})
 					.getResults();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent;
+package io.delimeat.torrent.domain;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +34,6 @@ public class ScrapeResultTest {
   	@Test
   	public void toStringTest(){
  		result = new ScrapeResult(Long.MIN_VALUE,Long.MAX_VALUE);
-		Assert.assertEquals("ScrapeResult{seeders=-9223372036854775808, leechers=9223372036854775807}", result.toString());    	
+		Assert.assertEquals("ScrapeResult(seeders=-9223372036854775808, leechers=9223372036854775807)", result.toString());    	
    }
 }

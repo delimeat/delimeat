@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent;
+package io.delimeat.torrent.domain;
 
 import java.util.Arrays;
 
@@ -70,6 +70,6 @@ public class TorrentTest {
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("Torrent{trackers=[]}", torrent.toString());
+     	Assert.assertEquals("Torrent(tracker=null, trackers=[], info=null, bytes=null)", torrent.toString());
    }
 }

@@ -4,6 +4,16 @@ spring:
   cache:
     caffeine:
       spec: maximumSize=100, expireAfterAccess=10m, expireAfterWrite=1h
+  datasource:
+     url: jdbc:derby:${io.delimeat.home}/db;create=true
+  jpa:
+    hibernate:
+      ddl-auto: update   
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: true
+          dialect: org.hibernate.dialect.DerbyTenSevenDialect
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -14,7 +24,7 @@ spring:
 logging:
   level:
     io.delimeat: INFO
-    ROOT: INFO 
+    ROOT: WARN 
 ---
 spring:
   profiles: development
@@ -26,7 +36,7 @@ logging:
     org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
     io:
       delimeat: TRACE
-    ROOT: DEBUG   
+    ROOT: INFO   
     
 ---    
 spring:

@@ -17,7 +17,6 @@ package io.delimeat.show.domain;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Objects;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -43,9 +42,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.util.jaxb.LocalDateAdapter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 //TODO remove equals and move to comparator
@@ -59,6 +58,7 @@ import lombok.Data;
 })
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@EqualsAndHashCode(of={"episodeId","version"})
 public class Episode {
 
 	@Id
@@ -109,37 +109,5 @@ public class Episode {
 	@ManyToOne(targetEntity=Show.class, optional=false, fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="SHOW_ID", referencedColumnName="SHOW_ID", nullable=false)
 	private Show show;
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (this == object) {
-			return true;
-		}
-
-		if (object instanceof Episode) {
-			final Episode other = (Episode) object;
-			return Objects.equals(this.episodeId, other.episodeId) 
-					&& Objects.equals(this.version, other.version);
-		} else if (object instanceof GuideEpisode) {
-			final GuideEpisode other = (GuideEpisode) object;
-			return Objects.equals(this.seasonNum, other.getSeasonNum())
-					&& Objects.equals(this.episodeNum, other.getEpisodeNum());
-		}
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return Objects.hash(episodeId, version);
-	}
 	
 }

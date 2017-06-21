@@ -174,7 +174,7 @@
 		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
 
 		<org.jsoup.version>1.10.2</org.jsoup.version>
-		<com.google.guava.version>21.0</com.google.guava.version>
+		<com.google.guava.version>22.0</com.google.guava.version>
 		<com.github.ben-manes.caffeine.version>2.4.0</com.github.ben-manes.caffeine.version>
 	</properties>
 
@@ -197,6 +197,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<version>${org.springframework.boot.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
@@ -212,11 +213,13 @@
 		</dependency>
 		
 		<!-- SPRING BOOT -->
+		<!-- 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-undertow</artifactId>
             <version>${org.springframework.boot.version}</version>
 		</dependency>
+		!-->
 		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -288,23 +291,17 @@
 			<artifactId>derbyclient</artifactId>
 			<version>${org.apache.derby.version}</version>
 		</dependency>
-
+		
 		<!-- OTHER ! -->
 		<dependency>
 		    <groupId>org.projectlombok</groupId>
 		    <artifactId>lombok</artifactId>
 		    <version>1.16.16</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>${org.jsoup.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${com.google.guava.version}</version>
 		</dependency>
 		<dependency>
     		<groupId>com.github.ben-manes.caffeine</groupId>
@@ -358,85 +355,6 @@
 									<goal>prepare-agent</goal>
 								</goals>
 							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		
-		<profile>
-			<id>frontend</id>
-			<activation>
-			</activation>
-			<build>
-				<plugins>
-					<!-- Front end build ! -->
-					<plugin>
-						<groupId>com.github.eirslett</groupId>
-						<artifactId>frontend-maven-plugin</artifactId>
-						<version>${com.github.eirslett.version}</version>
-						<!--
-						<configuration>
-					        <workingDirectory>frontend</workingDirectory>
-							<installDirectory>target</installDirectory> 
-						</configuration> 
-						! -->
-						<executions>
-							<execution>
-								<id>install node and npm</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>install-node-and-npm</goal>
-								</goals>
-								<configuration>
-									<nodeVersion>${node.version}</nodeVersion>
-									<npmVersion>${npm.version}</npmVersion>
-								</configuration>
-							</execution>
-				
-							<execution>
-								<id>npm install</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>npm</goal>
-								</goals>
-								<configuration>
-									<arguments>install</arguments>
-								</configuration>
-							</execution>
-				
-							<execution>
-								<id>bower install</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>bower</goal>
-								</goals>
-								<configuration>
-									<arguments>install</arguments>
-								</configuration>
-							</execution>
-				
-							<execution>
-								<id>gulp build</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>gulp</goal>
-								</goals>
-								<configuration>
-									<srcdir>${basedir}/frontend</srcdir>
-									<outputdir>${project.build.directory}/${project.build.finalName}/static</outputdir>
-									<triggerfiles>
-										<triggerfile>gulpfile.js</triggerfile>
-										<triggerfile>package.json</triggerfile>
-									</triggerfiles>
-									<environmentVariables>
-										<BUILD_DIR>${project.build.directory}/frontend</BUILD_DIR>
-										<TEMP_DIR>${project.build.directory}/tmp</TEMP_DIR>
-										<OUTPUT_DIR>${project.build.directory}/${project.build.finalName}/static</OUTPUT_DIR>
-									</environmentVariables>
-								</configuration>
-							</execution>
-							
 						</executions>
 					</plugin>
 				</plugins>

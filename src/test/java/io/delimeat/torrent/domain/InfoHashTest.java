@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent;
+package io.delimeat.torrent.domain;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -22,8 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.hash.Hashing;
-
-import io.delimeat.torrent.domain.InfoHash;
 
 public class InfoHashTest {
 
@@ -80,7 +78,7 @@ public class InfoHashTest {
 	public void toStringTest() {
 		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
-		Assert.assertEquals("InfoHash{value=601492e054f9540eb0129c35deb385baa2faf0fe}", infoHash.toString());
+		Assert.assertEquals("InfoHash(bytes=[96, 20, -110, -32, 84, -7, 84, 14, -80, 18, -100, 53, -34, -77, -123, -70, -94, -6, -16, -2], hex=601492e054f9540eb0129c35deb385baa2faf0fe)", infoHash.toString());
 	}
   	
 }

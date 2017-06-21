@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.processor.exception;
+package io.delimeat.processor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+public interface ItemProcessor<I>{
 
-import io.delimeat.processor.Processor;
-
-public class ProcessorInteruptedExceptionTest {
-
-	@Test
-	public void constructorTest(){
-		Processor processor = Mockito.mock(Processor.class);
-		ProcessorInteruptedException ex = new ProcessorInteruptedException(processor);
-		
-		Assert.assertEquals(processor, ex.getProcessor());
-	}
+	public void process(I item) throws Exception;
+	
 }

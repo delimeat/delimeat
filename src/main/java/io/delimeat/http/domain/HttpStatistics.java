@@ -19,77 +19,16 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.MoreObjects;
+import lombok.Data;
 
+@Data
 public class HttpStatistics {
 
 	private final String host;
-	private final Map<Integer, Integer> responseCounts;
+	private final Map<Integer, Integer> responseCounts = new HashMap<>();
 	
 	private Instant lastSuccess;
 	private Instant lastFailure;
+
 	
-	public HttpStatistics(String host){
-		this.host = host;
-		responseCounts = new HashMap<>();
-	}
-
-	/**
-	 * @return the feedSource
-	 */
-	public String getHost() {
-		return host;
-	}
-
-	/**
-	 * @return the responseCounts
-	 */
-	public Map<Integer, Integer> getResponseCounts() {
-		return responseCounts;
-	}
-	
-	/**
-	 * @return the lastSuccess
-	 */
-	public Instant getLastSuccess() {
-		return lastSuccess;
-	}
-
-	/**
-	 * @param lastSuccess the lastSuccess to set
-	 */
-	public void setLastSuccess(Instant lastSuccess) {
-		this.lastSuccess = lastSuccess;
-	}
-
-	/**
-	 * @return the lastFailure
-	 */
-	public Instant getLastFailure() {
-		return lastFailure;
-	}
-
-	/**
-	 * @param lastFailure the lastFailure to set
-	 */
-	public void setLastFailure(Instant lastFailure) {
-		this.lastFailure = lastFailure;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-							.add("host", host)
-							.add("responseCounts", responseCounts)
-							.add("lastSuccess", lastSuccess)
-							.add("lastFailure", lastFailure)
-							.omitNullValues()
-							.toString();
-	}
-
 }
