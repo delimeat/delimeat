@@ -15,27 +15,21 @@
  */
 package io.delimeat.guide;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 
-import org.glassfish.jersey.logging.LoggingFeature;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -52,73 +46,194 @@ import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.util.DelimeatUtils;
-import io.delimeat.util.jaxrs.MoxyContextResolver;
-import lombok.Getter;
-import lombok.Setter;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @Component
 public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	
-	@Getter
-	private final GuideSource guideSource;
+	private final Map<String,Object> properties;
+	private final Map<String,String> headers;
 	
-	@Getter
-	private final MediaType mediaType;
-	private final Client client;
+	@Value("${io.delimeat.guide.tvdb.baseUri}")
+	private String baseUri;
+	
+	@Value("${io.delimeat.guide.tvdb.validPeriod}")
+    private int validPeriodInMs = 0;
 	
 	@Value("${io.delimeat.guide.tvdb.apikey}")
-	@Getter
-	@Setter
 	private String apiKey;
-    
-	@Value("${io.delimeat.guide.tvdb.validPeriod}")
-	@Getter
-	@Setter
-    private int validPeriodInMs = 0;
-
-	@Value("${io.delimeat.guide.tvdb.baseUri}")
-	@Getter
-	@Setter
-	private URI baseUri;
 	
-	@Setter
     private TvdbToken token;
-    
-	public TvdbGuideDataSource_Impl(){
-		guideSource = GuideSource.TVDB;
-		mediaType =  MediaType.APPLICATION_JSON_TYPE;
-		client = ClientBuilder.newClient();
-		MoxyContextResolver resolver = new MoxyContextResolver();
-		resolver.setClasses(GuideSearchResult.class,GuideSearch.class,GuideEpisode.class,GuideInfo.class,TvdbApiKey.class,GuideError.class,TvdbToken.class,TvdbEpisodes.class);
-		Map<String,Object> properties = new HashMap<String,Object>();
-		properties.put("eclipselink.oxm.metadata-source", "META-INF/oxm/guide-tvdb-oxm.xml");
-		properties.put("eclipselink.media-type", mediaType.toString());
+	
+	public TvdbGuideDataSource_Impl() {
+		properties = new HashMap<String,Object>();
+		properties.put("eclipselink.oxm.metadata-source", "oxm/guide-tvdb-oxm.xml");
+		properties.put("eclipselink.media-type", "application/json");
 		properties.put("eclipselink.json.include-root", false);
-		resolver.setProperties(properties);
-		client.register(resolver);
-		client.register(new LoggingFeature(Logger.getLogger(this.getClass().getName()), java.util.logging.Level.SEVERE, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
+		
+		headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+
+	}
+	
+	/**
+	 * @return the baseUri
+	 */
+	public String getBaseUri() {
+		return baseUri;
+	}
+
+
+
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public void setBaseUri(String baseUri) {
+		this.baseUri = baseUri;
+	}
+
+
+
+	/**
+	 * @return the validPeriodInMs
+	 */
+	public int getValidPeriodInMs() {
+		return validPeriodInMs;
+	}
+
+
+
+	/**
+	 * @param validPeriodInMs the validPeriodInMs to set
+	 */
+	public void setValidPeriodInMs(int validPeriodInMs) {
+		this.validPeriodInMs = validPeriodInMs;
+	}
+
+
+
+	/**
+	 * @return the apiKey
+	 */
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	/**
+	 * @param apiKey the apiKey to set
+	 */
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	/**
+	 * @return the properties
+	 */
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setToken(TvdbToken token) {
+		this.token = token;
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.common.guide.GuideDao#info(java.lang.String)
+	 * @see io.delimeat.guide.GuideDataSource#getGuideSource()
+	 */
+	@Override
+	public GuideSource getGuideSource() {
+		return GuideSource.TVDB;
+	}
+	
+	/**
+	 * @param url
+	 * @return
+	 * @throws GuideException
+	 */
+	private URL buildUrl(String url) throws GuideException{
+		try{
+			return new URL(url);
+		}catch(MalformedURLException ex){
+			throw new GuideException(ex);
+		}
+	}
+	
+	/**
+	 * @return
+	 * @throws JAXBException
+	 */
+	private JAXBContext getContext() throws JAXBException{
+		return JAXBContextFactory.createContext(new Class[]{GuideSearchResult.class,GuideSearch.class,GuideEpisode.class,GuideInfo.class,TvdbApiKey.class,GuideError.class,TvdbToken.class,TvdbEpisodes.class}, properties);		
+	}
+	
+    public TvdbToken login(String apiKey) throws GuideException {
+    	TvdbApiKey key = new TvdbApiKey();
+	    key.setValue(apiKey);
+	    URL url = buildUrl(String.format("%s/login", baseUri));
+	    Map<String,String> putHeaders = new HashMap<>();
+    	putHeaders.putAll(headers);
+    	putHeaders.put("Content-Type", "application/json");
+	    return post(url, key, TvdbToken.class, putHeaders );
+   }
+    
+
+    public TvdbToken refreshToken(TvdbToken token) throws GuideException {
+    	URL url = buildUrl(String.format("%s/refresh_token", baseUri));
+	    Map<String,String> reqHeaders = new HashMap<>();
+	    reqHeaders.putAll(headers);
+	    reqHeaders.put("Authorization", String.format("Bearer %s", token.getValue()));
+    	return get(url,TvdbToken.class, reqHeaders);
+    }
+    
+    /**
+     * @return the token
+     * @throws IOException
+     * @throws JAXBException
+     */
+    public TvdbToken getToken() throws GuideException {
+        long now = System.currentTimeMillis();
+        if (token == null || now >= token.getTime() + validPeriodInMs) {
+            token = login(apiKey);
+        } else if (now >= token.getTime() + validPeriodInMs - 10 * 60 * 1000) {
+            token = refreshToken(token);
+        }
+        return token;
+    }
+    
+    public Map<String,String> getHeaders(){
+    	Map<String,String> reqHeaders = headers;
+    	try{
+    		reqHeaders.put("Authorization", String.format("Bearer %s", getToken().getValue()));
+    	}catch(GuideException ex){
+    		//do nothing
+    	}
+    	return reqHeaders;
+    }
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.guide.GuideDataSource#info(java.lang.String)
 	 */
 	@Override
 	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-		return get(
-				client.target(baseUri)
-        		.path("series")
-          		.path(DelimeatUtils.urlEscape(guideId))
-          		.request(mediaType)
-          		.header("Authorization", getAuthorization()), new GenericType<GuideInfo>(){});
+		URL url = buildUrl(String.format("%s/series/%s", baseUri, DelimeatUtils.urlEscape(guideId, "UTF-8")));
+		return get(url, GuideInfo.class, getHeaders());
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.common.guide.GuideDao#episodes(java.lang.String)
+	 * @see io.delimeat.guide.GuideDataSource#episodes(java.lang.String)
 	 */
 	@Override
 	public List<GuideEpisode> episodes(String guideId)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-        String encodedGuideId = DelimeatUtils.urlEscape(guideId);
+        String encodedGuideId = DelimeatUtils.urlEscape(guideId, "UTF-8");
 		List<GuideEpisode> episodes = new ArrayList<GuideEpisode>();
         Integer page = 1;
         do {
@@ -139,103 +254,95 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
      * @throws GuideException
      */
     public TvdbEpisodes episodes(String guideId, int page) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-		return get(client.target(baseUri)
-				.path("series")
-				.path(guideId)
-				.path("episodes")
-				.queryParam("page", page)
-				.request(mediaType)
-          		.header("Authorization", getAuthorization()), new GenericType<TvdbEpisodes>(){});
+    	URL url = buildUrl(String.format("%s/series/%s/episodes?page=%s", baseUri, guideId,page));
+    	return get(url, TvdbEpisodes.class, getHeaders());
     }
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.common.guide.GuideDao#search(java.lang.String)
+	 * @see io.delimeat.guide.GuideDataSource#search(java.lang.String)
 	 */
 	@Override
 	public List<GuideSearchResult> search(String title)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-		
-		return get(client.target(baseUri)
-				.path("search")
-				.path("series")
-				.queryParam("name", title)
-				.request(mediaType)
-				.header("Authorization", getAuthorization()), new GenericType<GuideSearch>(){})
+		URL url = buildUrl(String.format("%s/search/series?name=%s", baseUri, DelimeatUtils.urlEscape(title, "UTF-8")));
+		return get(url, GuideSearch.class, getHeaders())
 					.getResults()
 					.stream()
 					.filter(result->!result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter out invalid series
 					.collect(Collectors.toList());
 	}
 	
-    public TvdbToken login(String apiKey) throws GuideAuthorizationException, GuideException {
-    	 TvdbApiKey key = new TvdbApiKey();
-         key.setValue(apiKey);
-         Entity<TvdbApiKey> entity = Entity.entity(key, mediaType);
-         return put(client.target(baseUri)
-        		 .path("login")
-              	.request(mediaType), entity, new GenericType<TvdbToken>(){});
-    }
+	private <T> T get(URL url, Class<T> returnType, Map<String,String> headers) throws GuideException{
+		try{
+			OkHttpClient client = new OkHttpClient();
+			Request request = new Request.Builder()
+									.url(url)
+									.headers(Headers.of(headers))
+									.build();
 
-    public TvdbToken refreshToken(TvdbToken token) throws GuideAuthorizationException, GuideException {
-    	return get(client.target(baseUri)
-				.path("refresh_token")
-				.request(mediaType)
-				.header("Authorization", "Bearer "+ token.getValue()), new GenericType<TvdbToken>(){});
-    }
-
-    /**
-     * @return the token
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public TvdbToken getToken() throws GuideAuthorizationException, GuideException {
-        long now = System.currentTimeMillis();
-        if (token == null || now >= token.getTime() + validPeriodInMs) {
-            token = login(apiKey);
-        } else if (now >= token.getTime() + validPeriodInMs - 10 * 60 * 1000) {
-            token = refreshToken(token);
-        }
-        return token;
-    }
-    
-    /**
-     * @return the authorisation
-     * @throws GuideAuthorizationException
-     * @throws GuideException
-     */
-    public String getAuthorization() throws GuideAuthorizationException, GuideException{
-    	return String.format("Bearer %s", getToken().getValue());
-    }
-    
-	private <T> T get(Builder builder, GenericType<T> returnType) throws GuideException{
-		try {
-			
-			return builder.get(returnType);
-
-		} catch (NotAuthorizedException ex) {
-			GuideError error = ex.getResponse().readEntity(GuideError.class);
-			throw new GuideAuthorizationException(error.getMessage(), ex);
-		} catch (NotFoundException ex) {
-			GuideError error = ex.getResponse().readEntity(GuideError.class);
-			throw new GuideNotFoundException(error.getMessage(), ex);
-		} catch (WebApplicationException ex) {
+			Response response = client.newCall(request).execute();
+			if (response.isSuccessful()) {
+				StreamSource source = new StreamSource(response.body().byteStream());
+				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
+			}else{
+				switch(response.code()){
+				case 404:
+					throw new GuideNotFoundException();
+				case 401:
+				case 403:
+					throw new GuideAuthorizationException();
+				default:
+					throw new GuideException(String.format("Guide returned code %s with message \"%s\" for url: %s",
+							response.code(), response.message(), response.request().url()));
+				}
+			}
+		}catch(IOException | JAXBException ex){
 			throw new GuideException(ex);
 		}
 	}
 	
-	private <T,S> T put(Builder builder, Entity<S> entity, GenericType<T> returnType) throws GuideException{
-        try {
-            return builder.post(entity, returnType);
-          
-		} catch (NotAuthorizedException ex) {
-			GuideError error = ex.getResponse().readEntity(GuideError.class);
-			throw new GuideAuthorizationException(error.getMessage(), ex);
-		} catch (NotFoundException ex) {
-			GuideError error = ex.getResponse().readEntity(GuideError.class);
-			throw new GuideNotFoundException(error.getMessage(), ex);
-		} catch (WebApplicationException ex) {
+	private <T,S> T post(URL url, S entity, Class<T> returnType, Map<String,String> headers) throws GuideException{
+		try{
+			OkHttpClient client = new OkHttpClient();
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			getContext().createMarshaller().marshal(entity, output);
+			Request request = new Request.Builder()
+									.url(url)
+									.headers(Headers.of(headers))
+									.post(RequestBody.create(MediaType.parse("application/json"), output.toByteArray()))
+									.build();
+
+			Response response = client.newCall(request).execute();
+			if (response.isSuccessful()) {
+				StreamSource source = new StreamSource(response.body().byteStream());
+				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
+			}else{
+				switch(response.code()){
+				case 404:
+					throw new GuideNotFoundException();
+				case 401:
+				case 403:
+					throw new GuideAuthorizationException();
+				default:
+					throw new GuideException(String.format("Guide returned code %s with message \"%s\" for url: %s",
+							response.code(), response.message(), response.request().url()));
+				}
+			}
+		}catch(IOException | JAXBException ex){
 			throw new GuideException(ex);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TvdbGuideDataSource_Impl [" + (properties != null ? "properties=" + properties + ", " : "")
+				+ (headers != null ? "headers=" + headers + ", " : "")
+				+ (baseUri != null ? "baseUri=" + baseUri + ", " : "") + "validPeriodInMs=" + validPeriodInMs + ", "
+				+ (apiKey != null ? "apiKey=" + apiKey + ", " : "")
+				+ (token != null ? "token=" + token : "") + "]";
 	}
     
 }

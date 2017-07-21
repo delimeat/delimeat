@@ -18,10 +18,8 @@ package io.delimeat.http.domain;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import lombok.Data;
-
-@Data
 public class HttpStatistics {
 
 	private final String host;
@@ -29,6 +27,96 @@ public class HttpStatistics {
 	
 	private Instant lastSuccess;
 	private Instant lastFailure;
-
+		
+	/**
+	 * @param host
+	 */
+	public HttpStatistics(String host) {
+		super();
+		this.host = host;
+	}
+	/**
+	 * @return the lastSuccess
+	 */
+	public Instant getLastSuccess() {
+		return lastSuccess;
+	}
+	/**
+	 * @param lastSuccess the lastSuccess to set
+	 */
+	public void setLastSuccess(Instant lastSuccess) {
+		this.lastSuccess = lastSuccess;
+	}
+	/**
+	 * @return the lastFailure
+	 */
+	public Instant getLastFailure() {
+		return lastFailure;
+	}
+	/**
+	 * @param lastFailure the lastFailure to set
+	 */
+	public void setLastFailure(Instant lastFailure) {
+		this.lastFailure = lastFailure;
+	}
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
+	/**
+	 * @return the responseCounts
+	 */
+	public Map<Integer, Integer> getResponseCounts() {
+		return responseCounts;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(host,lastFailure,lastSuccess);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		HttpStatistics other = (HttpStatistics) obj;
+		if (host == null) {
+			if (other.host != null)
+				return false;
+		} else if (!host.equals(other.host))
+			return false;
+		if (lastFailure == null) {
+			if (other.lastFailure != null)
+				return false;
+		} else if (!lastFailure.equals(other.lastFailure))
+			return false;
+		if (lastSuccess == null) {
+			if (other.lastSuccess != null)
+				return false;
+		} else if (!lastSuccess.equals(other.lastSuccess))
+			return false;
+		return true;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "HttpStatistics [" + (host != null ? "host=" + host + ", " : "")
+				+ (responseCounts != null ? "responseCounts=" + responseCounts + ", " : "")
+				+ (lastSuccess != null ? "lastSuccess=" + lastSuccess + ", " : "")
+				+ (lastFailure != null ? "lastFailure=" + lastFailure : "") + "]";
+	}
+	
 	
 }

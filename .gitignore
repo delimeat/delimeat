@@ -6,3 +6,4 @@ node_modules/
 target/
 frontend/components/
 /derby.log
+/delimeat.log

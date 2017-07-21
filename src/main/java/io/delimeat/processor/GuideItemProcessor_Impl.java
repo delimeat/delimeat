@@ -21,12 +21,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.delimeat.guide.GuideService;
@@ -39,12 +43,10 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.util.DelimeatUtils;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
+
+  	private static final Logger LOGGER = LoggerFactory.getLogger(GuideItemProcessor_Impl.class);
 
 	@Autowired
 	private ShowService showService;
@@ -55,15 +57,59 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 	@Autowired
 	private EpisodeService episodeService;
 
+	/**
+	 * @return the showService
+	 */
+	public ShowService getShowService() {
+		return showService;
+	}
+
+	/**
+	 * @param showService the showService to set
+	 */
+	public void setShowService(ShowService showService) {
+		this.showService = showService;
+	}
+
+	/**
+	 * @return the guideService
+	 */
+	public GuideService getGuideService() {
+		return guideService;
+	}
+
+	/**
+	 * @param guideService the guideService to set
+	 */
+	public void setGuideService(GuideService guideService) {
+		this.guideService = guideService;
+	}
+
+	/**
+	 * @return the episodeService
+	 */
+	public EpisodeService getEpisodeService() {
+		return episodeService;
+	}
+
+	/**
+	 * @param episodeService the episodeService to set
+	 */
+	public void setEpisodeService(EpisodeService episodeService) {
+		this.episodeService = episodeService;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
 	 */
-	@Transactional
+	@Transactional(TxType.REQUIRES_NEW)
 	@Override
 	public void process(Show show) throws Exception {
+    	LOGGER.debug(String.format("starting guide item processor for %s", show.getTitle()));
+
 		GuideInfo info = guideService.read(show.getGuideId());
 		boolean updated = false;
 
@@ -97,20 +143,22 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 			updated = updated | updateEpisodes(guideEps, showEps);
 		}
 
-		Instant now = Instant.now();
 		// once everything is done update the show
+		Instant now = Instant.now();
 		if (updated == true) {
 			show.setLastGuideUpdate(now);
 		}
 		show.setLastGuideCheck(now);
 		showService.update(show);
 
+    	LOGGER.debug(String.format("ending guide item processor for %s", show.getTitle()));	
 	}
 
 	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) {
 		List<Episode> episodesToCreate = guideEps.stream()
 											.filter(guideEp -> showEps.stream().noneMatch(ep->DelimeatUtils.equals(guideEp, ep)))
-											.map(ShowUtils::fromGuideEpisode).map(ep -> {
+											.map(ShowUtils::fromGuideEpisode)
+											.map(ep -> {
 												ep.setShow(show);
 												return ep;
 											})
@@ -126,7 +174,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 
 	public boolean deleteEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) {
 		List<Long> episodesToDelete = showEps.stream()
-											.filter(p -> p.getStatus().equals(EpisodeStatus.PENDING))
+											.filter(ep -> EpisodeStatus.PENDING.equals(ep.getStatus()))
 											.filter(ep-> guideEps.stream().noneMatch(guideEp->DelimeatUtils.equals(guideEp, ep)))
 											.map(p ->p.getEpisodeId())
 											.collect(Collectors.toList());
@@ -138,20 +186,20 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 		return !episodesToDelete.isEmpty();
 	}
 
+	/**
+	 * Update pending episodes when the air date or title change
+	 * 
+	 * @param guideEps
+	 * @param showEps
+	 * @return if there were any updates
+	 */
 	public boolean updateEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) {
+		List<Episode> pendingShowEps = showEps.stream()
+												.filter(ep->EpisodeStatus.PENDING.equals(ep.getStatus()))
+												.collect(Collectors.toList());
+		
 		List<Episode> episodesToUpdate = guideEps.stream()
-											.filter(guideEp -> !showEps.stream().noneMatch(ep->DelimeatUtils.equals(guideEp, ep)))
-											.map(guideEp -> {
-												Episode showEp = showEps.stream().filter(ep->DelimeatUtils.equals(guideEp, ep)).findFirst().get();
-												if ((showEp.getStatus().equals(EpisodeStatus.PENDING)
-														&& (!Objects.equals(showEp.getAirDate(), guideEp.getAirDate())
-																|| !Objects.equals(showEp.getTitle(), guideEp.getTitle())))) {
-													showEp.setAirDate(guideEp.getAirDate());
-													showEp.setTitle(guideEp.getTitle());
-													return showEp;
-												}
-												return null;
-											})
+											.map(guideEp->determineEpisodeToUpdate(guideEp,pendingShowEps))
 											.filter(Objects::nonNull)
 											.collect(Collectors.toList());
 
@@ -160,6 +208,41 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 		}
 
 		return !episodesToUpdate.isEmpty();
+	}
+	
+	/**
+	 * Determine episode to update when air date or title have changed
+	 * 
+	 * @param guideEp
+	 * @param showEps
+	 * @return showEp to update
+	 */
+	public Episode determineEpisodeToUpdate(GuideEpisode guideEp, List<Episode> showEps){
+		try{
+			Episode showEp = showEps.stream()
+									.filter(ep->DelimeatUtils.equals(guideEp, ep))
+									.filter(ep->!Objects.equals(ep.getAirDate(), guideEp.getAirDate())
+												|| ! Objects.equals(ep.getTitle(), guideEp.getTitle()))
+									.findFirst()
+									.get();
+			
+			showEp.setAirDate(guideEp.getAirDate());
+			showEp.setTitle(guideEp.getTitle());
+			return showEp;
+			
+		}catch(NoSuchElementException ex){
+			return null;
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "GuideItemProcessor_Impl [" + (showService != null ? "showService=" + showService + ", " : "")
+				+ (guideService != null ? "guideService=" + guideService + ", " : "")
+				+ (episodeService != null ? "episodeService=" + episodeService : "") + "]";
 	}
 
 }

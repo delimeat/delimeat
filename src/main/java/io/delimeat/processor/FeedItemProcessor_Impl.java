@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigException;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
@@ -51,13 +53,9 @@ import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
-import lombok.Getter;
-import lombok.Setter;
 
 @Component
 @Scope("prototype")
-@Getter
-@Setter
 public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(FeedItemProcessor_Impl.class);
@@ -74,26 +72,111 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     private List<FeedResultValidator> feedResultValidators = new ArrayList<FeedResultValidator>(); 
   	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
-    
+  	
+  	private Config config;
+      	
+	/**
+	 * @return the configService
+	 */
+	public ConfigService getConfigService() {
+		return configService;
+	}
+
+	/**
+	 * @param configService the configService to set
+	 */
+	public void setConfigService(ConfigService configService) {
+		this.configService = configService;
+	}
+
+	/**
+	 * @return the episodeService
+	 */
+	public EpisodeService getEpisodeService() {
+		return episodeService;
+	}
+
+	/**
+	 * @param episodeService the episodeService to set
+	 */
+	public void setEpisodeService(EpisodeService episodeService) {
+		this.episodeService = episodeService;
+	}
+
+	/**
+	 * @return the feedService
+	 */
+	public FeedService getFeedService() {
+		return feedService;
+	}
+
+	/**
+	 * @param feedService the feedService to set
+	 */
+	public void setFeedService(FeedService feedService) {
+		this.feedService = feedService;
+	}
+
+	/**
+	 * @return the torrentService
+	 */
+	public TorrentService getTorrentService() {
+		return torrentService;
+	}
+
+	/**
+	 * @param torrentService the torrentService to set
+	 */
+	public void setTorrentService(TorrentService torrentService) {
+		this.torrentService = torrentService;
+	}
+
+	/**
+	 * @return the feedResultValidators
+	 */
+	public List<FeedResultValidator> getFeedResultValidators() {
+		return feedResultValidators;
+	}
+
+	/**
+	 * @param feedResultValidators the feedResultValidators to set
+	 */
+	public void setFeedResultValidators(List<FeedResultValidator> feedResultValidators) {
+		this.feedResultValidators = feedResultValidators;
+	}
+
+	/**
+	 * @return the torrentValidators
+	 */
+	public List<TorrentValidator> getTorrentValidators() {
+		return torrentValidators;
+	}
+
+	/**
+	 * @param torrentValidators the torrentValidators to set
+	 */
+	public void setTorrentValidators(List<TorrentValidator> torrentValidators) {
+		this.torrentValidators = torrentValidators;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.processor.ItemProcessor#process(java.lang.Object)
 	 */
-    @Transactional
+    @Transactional(TxType.REQUIRES_NEW)
 	@Override
 	public void process(Episode episode) throws Exception {
-		// read the config
-		Config config = configService.read();
+    	LOGGER.debug(String.format("starting feed item processor for %s", episode.getTitle()));
 		
 		// read feed results
 		final List<FeedResult> readResults = feedService.read(episode.getShow().getTitle());
 		LOGGER.debug(String.format("read %s results, %s", readResults.size(), readResults));
 		
 		// validate the read results
-		final List<FeedResult> foundResults = validateFeedResults(readResults, episode, config);
+		final List<FeedResult> foundResults = validateFeedResults(readResults, episode, getConfig());
 		LOGGER.debug(String.format("found %s results, %s", foundResults.size(), foundResults));
 		
 		// select all the valid results based on the torrent files
-		final List<FeedResult> validResults = validateResultTorrents(foundResults, episode.getShow(), config);
+		final List<FeedResult> validResults = validateResultTorrents(foundResults, episode.getShow(), getConfig());
 		LOGGER.debug(String.format("validated %s results, %s", validResults.size(), validResults));
  		
 		Instant now = Instant.now();
@@ -102,7 +185,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
             final Torrent torrent = selectBestResultTorrent(validResults);
             LOGGER.debug("selected torrent: " + torrent);
     		
-			torrentService.write(generateTorrentFileName(episode), torrent, config);
+			torrentService.write(generateTorrentFileName(episode), torrent, getConfig());
 
 			episode.setLastFeedUpdate(now);
 		}
@@ -111,6 +194,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
         episode.setLastFeedCheck(now);	   
 		episodeService.save(episode);
 		
+    	LOGGER.debug(String.format("ending feed item processor for %s", episode.getTitle()));	
 	}
 
     /**
@@ -222,7 +306,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 						return Long.compare(o2.getSeeders(), o1.getSeeders());
 					}
 				})
-        		//.sorted(resultComparator)
         		.findFirst()
         		.get()
         		.getTorrent();
@@ -242,4 +325,31 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	}
     	
     }
+    
+  	/**
+  	 * Get an instance of Config
+  	 * @return config
+  	 * @throws ConfigException
+  	 */
+  	public Config getConfig() throws ConfigException{
+  		if(config == null){
+  			config = configService.read();
+  		}
+  		return config;
+  	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "FeedItemProcessor_Impl [" + (configService != null ? "configService=" + configService + ", " : "")
+				+ (episodeService != null ? "episodeService=" + episodeService + ", " : "")
+				+ (feedService != null ? "feedService=" + feedService + ", " : "")
+				+ (torrentService != null ? "torrentService=" + torrentService + ", " : "")
+				+ (feedResultValidators != null ? "feedResultValidators=" + feedResultValidators + ", " : "")
+				+ (torrentValidators != null ? "torrentValidators=" + torrentValidators + ", " : "")
+				+ (config != null ? "config=" + config : "") + "]";
+	}
+  	
 }

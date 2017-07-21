@@ -15,19 +15,25 @@
  */
 package io.delimeat.torrent;
 
-import java.io.ByteArrayInputStream;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BList;
@@ -38,10 +44,12 @@ import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
-import io.delimeat.util.UrlHandler;
 
 public class TorrentDao_ImplTest {
 
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(8089);
+	
 	private String sep = System.getProperty("file.separator");
 	private TorrentDao_Impl dao;
 
@@ -49,15 +57,6 @@ public class TorrentDao_ImplTest {
 	public void setUp() {
 		dao = new TorrentDao_Impl();
 	}
-
-	@Test
-	public void UrlHandlerTest() {
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		Assert.assertNull(dao.getUrlHandler());
-		dao.setUrlHandler(mockedUrlHandler);
-		Assert.assertEquals(mockedUrlHandler, dao.getUrlHandler());
-	}
-
 
 	@Test
 	public void parseTorrentFileTest() {
@@ -194,18 +193,17 @@ public class TorrentDao_ImplTest {
 	@Test
 	public void readTest() throws Exception {
 		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-     	Mockito.when(mockedConnection.getContentType()).thenReturn("application/x-bittorrent");
-		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream(bytesVal.getBytes()));
-		dao.setUrlHandler(mockedUrlHandler);
+		
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							.withBody(bytesVal)
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		Torrent torrent = dao.read(uri);
+		Torrent torrent = dao.read(new URI("http://localhost:8089"));
 		Assert.assertEquals("TRACKER_1", torrent.getTracker());
 		Assert.assertEquals(4, torrent.getTrackers().size());
 		Assert.assertEquals("1_tracker_1", torrent.getTrackers().get(0));
@@ -225,95 +223,79 @@ public class TorrentDao_ImplTest {
   
 	@Test(expected=TorrentException.class)
 	public void readNoContentTypeTest() throws Exception {
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		dao.setUrlHandler(mockedUrlHandler);
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		dao.read(uri);
+		dao.read(new URI("http://localhost:8089"));
+
 	}
   
+	//TODO re-enable after content type validation is enabled
+	@Ignore
 	@Test(expected=TorrentException.class)
 	public void readInvalidContentTypeTest() throws Exception {
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-     	Mockito.when(mockedConnection.getContentType()).thenReturn("text/html");
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		dao.setUrlHandler(mockedUrlHandler);
+		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
+		
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "text/html")
+							.withBody(bytesVal)
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		dao.read(uri);
+		dao.read(new URI("http://localhost:8089"));
 	}
   
-  	@Test(expected=TorrentException.class)
+  	@Test(expected=MalformedURLException.class)
   	public void readUnsupportedProtocalTest() throws Exception{
    	dao.read(new URI("udp://read.com:8080"));  	
    }
   
   	@Test(expected=TorrentNotFoundException.class)
 	public void readNotFoundTest() throws Exception {
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		dao.setUrlHandler(mockedUrlHandler);
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(404)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		dao.read(uri);
+		dao.read(new URI("http://localhost:8089"));
 	}
   
   	@Test(expected=TorrentException.class)
 	public void readNotOkTest() throws Exception {
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(401);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		dao.setUrlHandler(mockedUrlHandler);
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(401)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		dao.read(uri);
+		dao.read(new URI("http://localhost:8089"));
 	}
   
   	@Test(expected=TorrentException.class)
   	public void readBencodeExceptionTest() throws Exception{
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(200);
-     	Mockito.when(mockedConnection.getContentType()).thenReturn("application/x-bittorrent");
-		Mockito.when(mockedConnection.getInputStream()).thenReturn(new ByteArrayInputStream("X".getBytes()));
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class),Mockito.anyMap())).thenReturn(mockedConnection);
-		Mockito.when(mockedUrlHandler.openInput(Mockito.any(URLConnection.class))).thenReturn(new ByteArrayInputStream("X".getBytes()));
-		dao.setUrlHandler(mockedUrlHandler);
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							.withBody("X")
+							));
 	
-		URI uri = new URI("http://test.com/");
-	
-		dao.read(uri);
+		dao.read(new URI("http://localhost:8089"));
    }
-
-	@Test(expected=TorrentException.class)
-	public void readNotOKTest() throws Exception{
-		UrlHandler mockedUrlHandler = Mockito.mock(UrlHandler.class);
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
-		Mockito.when(mockedConnection.getResponseCode()).thenReturn(404);
-		Mockito.when(mockedUrlHandler.openUrlConnection(Mockito.any(URL.class), Mockito.anyMap()))
-				.thenReturn(mockedConnection);
-
-		dao.setUrlHandler(mockedUrlHandler);
-
-		dao.read(new URI("http://test.com/"));
-	}
-	
-	  
-	@Test(expected=TorrentException.class)
-	public void readNotHTTPTest() throws Exception{
-		dao.read(new URI("udp://test.com"));
-	}
 
 }

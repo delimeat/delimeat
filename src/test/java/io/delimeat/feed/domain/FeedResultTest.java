@@ -97,11 +97,11 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-     	Assert.assertEquals(336855758,result.hashCode());
+     	Assert.assertEquals(-29520557,result.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("FeedResult(torrentURL=null, title=null, contentLength=0, seeders=0, leechers=0, feedResultRejections=[], torrent=null)",result.toString());
+     	Assert.assertEquals("FeedResult [contentLength=0, seeders=0, leechers=0, feedResultRejections=[], ]",result.toString());
    }
 }

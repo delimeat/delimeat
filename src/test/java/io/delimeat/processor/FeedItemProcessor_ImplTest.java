@@ -332,7 +332,7 @@ public class FeedItemProcessor_ImplTest {
      	episode.setTitle("EPISODE_TITLE");
      	episode.setSeasonNum(1);
      	episode.setEpisodeNum(2);
-     	episode.setEpisodeId(1);
+     	episode.setEpisodeId(1L);
      	episode.setLastFeedCheck(Instant.EPOCH);
      	episode.setLastFeedUpdate(Instant.EPOCH);
      	episode.setShow(show);

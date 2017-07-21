@@ -9,15 +9,13 @@
 		<java-type name="FeedResult">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="torrentURL" xml-path="enclosure/@url/text()" />
+				<xml-element java-attribute="torrentURL" name="link" />
 				<xml-element java-attribute="title" name="title"/>
+				<!-- need to add adapter to get the size, seeders & leechers from the description
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>
-				<xml-element java-attribute="seeders" name="seeders">
-					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
-				</xml-element>				
-				<xml-element java-attribute="leechers" name="leechers">
-					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
-				</xml-element>	
+				<xml-element java-attribute="seeders" name="numSeeders" />			
+				<xml-element java-attribute="leechers" name="numLeechers" />
+				!-->
 			</java-attributes>
 		</java-type>
 

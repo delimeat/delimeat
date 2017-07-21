@@ -6,6 +6,7 @@ var app = angular.module('app', [
 'ngSanitize',
 'pascalprecht.translate',
 'delimeat.config',
+'delimeat.episodes',
 'delimeat.shared',
 'delimeat.shows',
 'delimeat.settings',

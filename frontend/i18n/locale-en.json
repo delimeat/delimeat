@@ -1,7 +1,7 @@
 {
     "root": {
     	"search": "Search",
-    	"title":"Strike-ui"
+    	"title":"Delimeat"
     },
   	"common":{
   		"save":"Save",
@@ -11,21 +11,19 @@
   		"add":"Add",
     	"unexpected_error":"Opps, something went wrong"
   	},
+	"episodes":{
+		"page_title": "Home",
+		"no_episodes_title":"No Episodes awaiting download",
+		"no_episodes_suggestion":"Either your all up to date or you have not added any shows"
+	},
     "episode":{
-		"next_ep":"Next Episode",
-		"more_info":"Click below to select",
-		"prev_ep":"Previous Episode",
-    	"nothing_scheduled": "Nothing Scheduled",
-    	"nothing_scheduled_sub":"No more episodes available at this time",
-    	"no_prev_ep":"No Previous Episode",
-    	"no_prev_ep_sub":"The next episode is the first",
     	"season_format": "Season {{season}} Episode {{episode}}: '{{title}}'",
     	"mini_series_format": "Part {{episode}}: '{{title}}'",
     	"season":"Season",
     	"no_title":"TBA"
 	},
 	"shows":{
-		"page_title": "Home",
+		"page_title": "Shows",
 		"no_shows_title":"No Shows Added",
 		"no_shows_suggestion":"Click here to add a show",
 		"disabled":"Disabled",

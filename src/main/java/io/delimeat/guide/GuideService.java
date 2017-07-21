@@ -20,6 +20,9 @@ import java.util.List;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
+import io.delimeat.guide.exception.GuideAuthorizationException;
+import io.delimeat.guide.exception.GuideException;
+import io.delimeat.guide.exception.GuideNotFoundException;
 
 public interface GuideService {
 
@@ -30,7 +33,7 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<GuideSearchResult> readLike(final String title) throws Exception;
+	public List<GuideSearchResult> readLike(final String title) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 	/**
 	 * Fetch a guide info
@@ -39,7 +42,7 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
-	public GuideInfo read(final String guideId) throws Exception;
+	public GuideInfo read(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 	/**
 	 * Fetch all episodes for a show
@@ -48,6 +51,6 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<GuideEpisode> readEpisodes(final String guideId) throws Exception;
+	public List<GuideEpisode> readEpisodes(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 }

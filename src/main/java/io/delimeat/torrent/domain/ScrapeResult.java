@@ -15,12 +15,64 @@
  */
 package io.delimeat.torrent.domain;
 
-import lombok.Data;
+import java.util.Objects;
 
-@Data
 public class ScrapeResult {
 
 	private final long seeders;
 	private final long leechers;
-
+	
+	/**
+	 * @param seeders
+	 * @param leechers
+	 */
+	public ScrapeResult(long seeders, long leechers) {
+		super();
+		this.seeders = seeders;
+		this.leechers = leechers;
+	}
+	/**
+	 * @return the seeders
+	 */
+	public long getSeeders() {
+		return seeders;
+	}
+	/**
+	 * @return the leechers
+	 */
+	public long getLeechers() {
+		return leechers;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(leechers,seeders);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ScrapeResult other = (ScrapeResult) obj;
+		if (leechers != other.leechers)
+			return false;
+		if (seeders != other.seeders)
+			return false;
+		return true;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ScrapeResult [seeders=" + seeders + ", leechers=" + leechers + "]";
+	}
 }

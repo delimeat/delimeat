@@ -15,9 +15,8 @@
  */
 package io.delimeat.guide.domain;
 
-import lombok.Data;
+import java.util.Objects;
 
-@Data
 public class TvdbToken {
 
 	private long time;
@@ -25,6 +24,72 @@ public class TvdbToken {
 
 	public TvdbToken() {
 		time = System.currentTimeMillis();
+	}
+
+	/**
+	 * @return the time
+	 */
+	public long getTime() {
+		return time;
+	}
+
+	/**
+	 * @param time the time to set
+	 */
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(time, value);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TvdbToken other = (TvdbToken) obj;
+		if (time != other.time)
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TvdbToken [time=" + time + ", " + (value != null ? "value=" + value : "") + "]";
 	}
 
 }

@@ -17,15 +17,56 @@ package io.delimeat.feed.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-import lombok.Data;
-
-@XmlRootElement
-@Data
 public class FeedSearch {
 
 	private List<FeedResult> results = new ArrayList<FeedResult>();
+
+	public List<FeedResult> getResults() {
+		return results;
+	}
+
+	public void setResults(List<FeedResult> results) {
+		this.results = results;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(results);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FeedSearch other = (FeedSearch) obj;
+		if (results == null) {
+			if (other.results != null)
+				return false;
+		} else if (!results.equals(other.results))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "FeedSearch [" + (results != null ? "results=" + results : "") + "]";
+	}
+	
+	
 
 }

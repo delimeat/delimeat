@@ -37,9 +37,9 @@ public class ShowTest {
 
 	@Test
 	public void showIdTest() {
-		Assert.assertEquals(0, show.getShowId());
+		Assert.assertNull(show.getShowId());
 		show.setShowId(Long.MAX_VALUE);
-		Assert.assertEquals(Long.MAX_VALUE, show.getShowId());
+		Assert.assertEquals(Long.MAX_VALUE, show.getShowId().longValue());
 	}
 
 	@Test
@@ -131,12 +131,12 @@ public class ShowTest {
   	public void hashCodeTest() throws ParseException{
 		show.setShowId(Long.MAX_VALUE);
 		show.setVersion(Integer.MIN_VALUE);
-		Assert.assertEquals(3481, show.hashCode());
+		Assert.assertEquals(961, show.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-		Assert.assertEquals("Show(showId=0, airTime=null, timezone=null, guideId=null, title=null, airing=false, showType=null, lastGuideUpdate=null, lastGuideCheck=null, enabled=false, minSize=0, maxSize=0, version=0)",show.toString());
+		Assert.assertEquals("Show [airing=false, enabled=false, minSize=0, maxSize=0, version=0]",show.toString());
    }
   
   	@Test
@@ -156,29 +156,29 @@ public class ShowTest {
   
   	@Test
   	public void equalsTest(){
-     	show.setShowId(1);
+     	show.setShowId(1L);
      	show.setVersion(99);
      	Show other = new Show();
-     	other.setShowId(1);
+     	other.setShowId(1L);
      	other.setVersion(99);
      	Assert.assertTrue(show.equals(other));
    }
   
   	@Test
   	public void equalsShowIdTest(){
-     	show.setShowId(1);
+     	show.setShowId(1L);
      	show.setVersion(99);
      	Show other = new Show();
-     	other.setShowId(2);
+     	other.setShowId(2L);
      	other.setVersion(99);
      	Assert.assertFalse(show.equals(other));
    }
   	@Test
   	public void equalsVersionTest(){
-     	show.setShowId(1);
+     	show.setShowId(1L);
       show.setVersion(99);
      	Show other = new Show();
-     	other.setShowId(1);
+     	other.setShowId(1L);
       other.setVersion(98);
      	Assert.assertFalse(show.equals(other));
    }

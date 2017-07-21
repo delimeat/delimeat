@@ -39,9 +39,9 @@ public class EpisodeTest {
 
     @Test
     public void episodeIdTest() {
-        Assert.assertEquals(0, episode.getEpisodeId());
+        Assert.assertNull(episode.getEpisodeId());
         episode.setEpisodeId(Long.MAX_VALUE);
-        Assert.assertEquals(Long.MAX_VALUE, episode.getEpisodeId());
+        Assert.assertEquals(Long.MAX_VALUE, episode.getEpisodeId().longValue());
     }
 
     @Test
@@ -206,11 +206,11 @@ public class EpisodeTest {
     @Test
     public void equalsEpisodeVersionTest() throws ParseException {
 		Episode otherEp = new Episode();
-		otherEp.setEpisodeId(1);
+		otherEp.setEpisodeId(1L);
 		otherEp.setVersion(Integer.MIN_VALUE);
         
 		Episode episode = new Episode();
-		episode.setEpisodeId(1);
+		episode.setEpisodeId(1L);
 		episode.setVersion(Integer.MAX_VALUE);
 		
         Assert.assertFalse(episode.equals(otherEp));
@@ -221,12 +221,12 @@ public class EpisodeTest {
         episode.setEpisodeId(Long.MIN_VALUE);
         episode.setVersion(Integer.MIN_VALUE);
 
-        Assert.assertEquals(3481, episode.hashCode());
+        Assert.assertEquals(961, episode.hashCode());
     }
 
     @Test
     public void toStringTest() throws ParseException {
-        Assert.assertEquals("Episode(episodeId=0, title=null, airDate=null, seasonNum=0, episodeNum=0, doubleEp=false, status=PENDING, lastFeedUpdate=null, lastFeedCheck=null, version=0, show=null)", episode.toString());
+        Assert.assertEquals("Episode [seasonNum=0, episodeNum=0, doubleEp=false, status=PENDING, version=0, ]", episode.toString());
     }
 
 }

@@ -35,15 +35,15 @@ public class ApiErrorTest {
 
     @Test
     public void constructorTest() {
-        ApiError error = ApiError.builder().error("THIS IS AN ERROR").status(500).build();
+        ApiError error = new ApiError("THIS IS AN ERROR",500);
         Assert.assertEquals(500, error.getStatus());
         Assert.assertEquals("THIS IS AN ERROR", error.getError());
     }
 
     @Test
     public void toStringTest() {
-        ApiError error =  ApiError.builder().error("THIS IS AN ERROR").status(500).build();
-        Assert.assertEquals("ApiError(error=THIS IS AN ERROR, status=500)", error.toString());
+        ApiError error = new ApiError("THIS IS AN ERROR",500);
+        Assert.assertEquals("ApiError [error=THIS IS AN ERROR, status=500]", error.toString());
 
     }
 }

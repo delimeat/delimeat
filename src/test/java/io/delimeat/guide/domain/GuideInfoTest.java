@@ -125,12 +125,12 @@ public class GuideInfoTest {
   	public void hashCodeTest() throws ParseException{
      	info.setTitle("TITLE");
      	info.setLastUpdated(LocalDate.parse("2016-02-19"));
-     	Assert.assertEquals(-276385284, info.hashCode());
+     	Assert.assertEquals(1002632019, info.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-  		Assert.assertEquals("GuideInfo(description=null, runningTime=0, timezone=null, firstAired=null, genres=[], airDays=[], airing=true, title=null, airTime=null, guideId=null, lastUpdated=null)",info.toString());
+  		Assert.assertEquals("GuideInfo [runningTime=0, genres=[], airDays=[], airing=true, ]",info.toString());
   	}
   
   	@Test

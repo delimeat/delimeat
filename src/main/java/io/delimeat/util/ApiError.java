@@ -15,18 +15,89 @@
  */
 package io.delimeat.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ApiError {
 
 	private String error;
 	private int status;
+	
+	/**
+	 * null constructor 
+	 */
+	public ApiError(){}
+	
+	/**
+	 * @param error
+	 * @param status
+	 */
+	public ApiError(String error, int status) {
+		this.error = error;
+		this.status = status;
+	}
+	
+	/**
+	 * @return the error
+	 */
+	public String getError() {
+		return error;
+	}
 
+	/**
+	 * @param error the error to set
+	 */
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public int getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(error,status);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ApiError other = (ApiError) obj;
+		if (error == null) {
+			if (other.error != null)
+				return false;
+		} else if (!error.equals(other.error))
+			return false;
+		if (status != other.status)
+			return false;
+		return true;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ApiError [" + (error != null ? "error=" + error + ", " : "") + "status=" + status + "]";
+	}
+	
 }

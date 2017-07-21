@@ -25,22 +25,35 @@ import io.delimeat.guide.comparator.GuideEpisodeComparator;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
-import lombok.Getter;
-import lombok.Setter;
+import io.delimeat.guide.exception.GuideAuthorizationException;
+import io.delimeat.guide.exception.GuideException;
+import io.delimeat.guide.exception.GuideNotFoundException;
 
 @Service
-@Getter
-@Setter
 public class GuideService_Impl implements GuideService {
 
 	@Autowired
 	private GuideDataSource guideDataSource;
 
+	/**
+	 * @return the guideDataSource
+	 */
+	public GuideDataSource getGuideDataSource() {
+		return guideDataSource;
+	}
+
+	/**
+	 * @param guideDataSource the guideDataSource to set
+	 */
+	public void setGuideDataSource(GuideDataSource guideDataSource) {
+		this.guideDataSource = guideDataSource;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.guide.GuideService#readLike(java.lang.String)
 	 */
 	@Override
-	public List<GuideSearchResult> readLike(final String title) throws Exception {
+	public List<GuideSearchResult> readLike(final String title) throws GuideNotFoundException,GuideAuthorizationException, GuideException {
 		return guideDataSource.search(title);
 	}
 
@@ -48,7 +61,7 @@ public class GuideService_Impl implements GuideService {
 	 * @see io.delimeat.guide.GuideService#read(java.lang.String)
 	 */
 	@Override
-	public GuideInfo read(final String guideId) throws Exception {
+	public GuideInfo read(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException {
 		return guideDataSource.info(guideId);
 	}
 
@@ -56,12 +69,19 @@ public class GuideService_Impl implements GuideService {
 	 * @see io.delimeat.guide.GuideService#readEpisodes(java.lang.String)
 	 */
 	@Override
-	public List<GuideEpisode> readEpisodes(final String guideId) throws Exception {
+	public List<GuideEpisode> readEpisodes(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException {
 		return guideDataSource.episodes(guideId).stream()
 				.filter(p -> (p.getSeasonNum() != null && p.getSeasonNum() != 0 && p.getAirDate() != null))
 				.sorted(new GuideEpisodeComparator())
 				.collect(Collectors.toList());
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "GuideService_Impl [" + (guideDataSource != null ? "guideDataSource=" + guideDataSource : "") + "]";
+	}
 
 }

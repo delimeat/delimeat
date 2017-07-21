@@ -15,36 +15,56 @@
  */
 package io.delimeat.feed;
 
-import java.net.URI;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Value;
 
 import io.delimeat.feed.domain.FeedSource;
-import lombok.Getter;
-import lombok.Setter;
 
 //@Component
-@Getter
-@Setter
-public class KickAssFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource{
+public class KickAssFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource{
 
 	@Value("${io.delimeat.feed.kat.baseUri}") 
-	private URI baseUri;
+	private String baseUri;
 	
 	public KickAssFeedDataSource_Impl() {
-		super(FeedSource.KAT,MediaType.APPLICATION_JSON_TYPE,"META-INF/oxm/feed-kat-oxm.xml");
+		super(FeedSource.KAT, "application/json","oxm/feed-kat-oxm.xml");
+	}
+
+	/**
+	 * @return the baseUri
+	 */
+	public String getBaseUri() {
+		return baseUri;
+	}
+
+
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public void setBaseUri(String baseUri) {
+		this.baseUri = baseUri;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxbFeedDataSource#generateUrl(java.lang.String)
+	 */
+	@Override
+	public URL generateUrl(String title) throws MalformedURLException {
+		return new URL(String.format("%s/json.php?q=%s+category:tv", baseUri, title));
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("json.php")
-				.queryParam("q", String.format("%s category:tv", title));
+	public String toString() {
+		return "KickAssFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
+				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
 	}
-
+	
 }

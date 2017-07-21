@@ -15,37 +15,57 @@
  */
 package io.delimeat.feed;
 
-import java.net.URI;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
-import lombok.Getter;
-import lombok.Setter;
 
 @Component
-@Getter
-@Setter
-public class ZooqleFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource {
+public class ZooqleFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource {
 
 	@Value("${io.delimeat.feed.zooqle.baseUri}") 
-	private URI baseUri;
+	private String baseUri;
 
 	public ZooqleFeedDataSource_Impl(){
-		super(FeedSource.ZOOQLE, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-zooqle-oxm.xml");
+		super(FeedSource.ZOOQLE, "application/xml","oxm/feed-zooqle-oxm.xml");
+	}
+
+	/**
+	 * @return the baseUri
+	 */
+	public String getBaseUri() {
+		return baseUri;
+	}
+
+
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public void setBaseUri(String baseUri) {
+		this.baseUri = baseUri;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxbFeedDataSource#generateUrl(java.lang.String)
+	 */
+	@Override
+	public URL generateUrl(String title) throws MalformedURLException {
+		return new URL(String.format("%s/search?q=%s+after:60+category:TV&fmt=rss", baseUri, title));
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("search")
-				.queryParam("q", title + " after:60 category:TV")
-				.queryParam("fmt", "rss");
+	public String toString() {
+		return "ZooqleFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
+				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
 	}
+	
 }

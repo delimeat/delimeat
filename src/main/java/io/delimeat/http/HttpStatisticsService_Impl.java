@@ -64,4 +64,12 @@ public class HttpStatisticsService_Impl implements HttpStatisticsService {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "HttpStatisticsService_Impl [" + (stats != null ? "stats=" + stats : "") + "]";
+	}
+
 }

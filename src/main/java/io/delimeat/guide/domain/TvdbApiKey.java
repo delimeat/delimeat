@@ -15,11 +15,60 @@
  */
 package io.delimeat.guide.domain;
 
-import lombok.Data;
+import java.util.Objects;
 
-@Data
 public class TvdbApiKey {
 
 	private String value;
+
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TvdbApiKey other = (TvdbApiKey) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TvdbApiKey [" + (value != null ? "value=" + value : "") + "]";
+	}
 
 }

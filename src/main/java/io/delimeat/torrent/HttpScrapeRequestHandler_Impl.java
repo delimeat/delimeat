@@ -15,6 +15,14 @@
  */
 package io.delimeat.torrent;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BInteger;
 import io.delimeat.torrent.bencode.BString;
@@ -24,40 +32,20 @@ import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
-import io.delimeat.util.UrlHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import io.delimeat.util.DelimeatUtils;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Component
 public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
-	private final static BString FILES_KEY = new BString("files");
-	private final static BString COMPLETE_KEY = new BString("complete");
-	private final static BString INCOMPLETE_KEY =new BString("incomplete");
+	private final BString FILES_KEY = new BString("files");
+	private final BString COMPLETE_KEY = new BString("complete");
+	private final BString INCOMPLETE_KEY =new BString("incomplete");
 	
 	private final List<String> protocols = Arrays.asList("HTTP","HTTPS");
-	
-	@Autowired
-	private UrlHandler handler;
-	
-	public void setUrlHandler(UrlHandler handler){
-		this.handler = handler;
-	}
-	
-	public UrlHandler getUrlHandler(){
-		return handler;
-	}
-	
+
 	@Override
 	public List<String> getSupportedProtocols() {
 		return protocols;
@@ -65,35 +53,63 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
 	@Override
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException{
-		try{
-         final String protocol = uri.getScheme();
-         if (!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)) {
-           throw new TorrentException(String.format("Unsupported protocol %s expected one of HTTP or HTTPS",protocol));
+		
+         try{
+        	 final URL scrapeURL = generateScrapeURL(uri, infoHash);
+        	 
+ 			OkHttpClient client = new OkHttpClient();
+ 			Request request = new Request.Builder()
+ 									.url(scrapeURL)
+ 									.build();
+
+ 			Response response = client.newCall(request).execute();
+ 			if (response.isSuccessful()) {
+ 				BDictionary dictionary = BencodeUtils.decode(response.body().byteStream());
+ 				return umarshalScrapeResult(dictionary,infoHash);
+ 			}else{
+ 				throw new TorrentException(String.format("Scrape returned code %s with message \"%s\" for url: %s",
+						response.code(), response.message(), response.request().url()));
+ 			}
+
+         }catch(BencodeException | IOException e){
+        	 throw new TorrentException(e);
          }
+	}
+	
+	public URL generateScrapeURL(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException{
+		
+		String path;
+		if (uri.getPath().contains("announce")) {
+			path = uri.getPath().replace("announce", "scrape");
+		} else if (uri.getPath().contains("scrape")) {
+			path = uri.getPath();
+		} else {
+			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s", uri.toString()));
+		}
 
-         final URL scrapeURL = generateScrapeURL(uri, infoHash);
-         HttpURLConnection conn = (HttpURLConnection) getUrlHandler().openUrlConnection(scrapeURL);
-         final int responseCode = conn.getResponseCode();
-         if (responseCode != 200) {
-           throw new TorrentException(String.format("Receieved response %s from %s", responseCode,scrapeURL));
-         }
+		//TODO fix encoding of infoHash
+		final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
+		//final String infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
+		final String infoHashQuery = "info_hash=" + DelimeatUtils.urlEscape(infoHashString, "ISO-8859-1");
 
-         try(InputStream input = getUrlHandler().openInput(conn)){
 
-           final BDictionary dictionary = BencodeUtils.decode(input);
-           return umarshalDictionary(dictionary, infoHash);
+		//final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
+		//final String infoHashQuery = "info_hash=" + DelimeatUtils.urlEscape(infoHashString, "UTF-8");
+		
+		final String query;
+		if (uri.getRawQuery() == null) {
+			query = infoHashQuery;
+		} else if (uri.getRawQuery().contains(infoHashQuery)) {
+			query = uri.getRawQuery();
+		} else {
+			query = uri.getRawQuery() + "&" + infoHashQuery;
+		}
 
-         } catch (BencodeException ex) {
-           throw new TorrentException("Encountered an error unmarshalling torrent", ex);
-         }
-        
-      }catch(IOException e){
-        	throw new TorrentException(e);
-      }
+		return new URL(uri.getScheme(), uri.getHost(), uri.getPort(), path + "?" + query);
 
 	}
-  
-  	public ScrapeResult umarshalDictionary(BDictionary dictionary, InfoHash infoHash){
+	
+  	public ScrapeResult umarshalScrapeResult(BDictionary dictionary, InfoHash infoHash){
 		long seeders = 0;
 		long leechers = 0;
 		if (dictionary.containsKey(FILES_KEY) && dictionary.get(FILES_KEY) instanceof BDictionary) {
@@ -116,33 +132,6 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		}
 		return new ScrapeResult(seeders, leechers);   
    }
-	
-	public URL generateScrapeURL(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException{
-		
-		String path;
-		if (uri.getPath().contains("announce")) {
-			path = uri.getPath().replace("announce", "scrape");
-		} else if (uri.getPath().contains("scrape")) {
-			path = uri.getPath();
-		} else {
-			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s", uri.toString()));
-		}
-
-		final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
-		final String infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
-
-		final String query;
-		if (uri.getRawQuery() == null) {
-			query = infoHashQuery;
-		} else if (uri.getRawQuery().contains(infoHashQuery)) {
-			query = uri.getRawQuery();
-		} else {
-			query = uri.getRawQuery() + "&" + infoHashQuery;
-		}
-
-		return new URL(uri.getScheme(), uri.getHost(), uri.getPort(), path + "?" + query);
-
-	}
 
 
 }

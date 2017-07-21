@@ -15,65 +15,56 @@
  */
 package io.delimeat.show;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Before;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
+import spark.Spark;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@SpringBootTest()
+
 public class ShowControllerTest {
 
-	private MockMvc mockMvc;
-	
-	@InjectMocks
-    private ShowController showController;
-	
-	@Mock
-	private ShowService showService;
-	
-	@Mock
-	private EpisodeService episodeService;
-	
-	@Before
-	public void setUp(){
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders
-                .standaloneSetup(showController)
-                .build();
-	}
+	private static Client client;
+	private static ShowController controller;
+    
+	@BeforeClass
+    public static void setup() {
+
+		controller = new ShowController();
+		controller.init();
+        
+        Spark.awaitInitialization();
+        
+        client = ClientBuilder.newClient();
+        
+        Spark.after((request,response)->{
+        	response.type("application/json");
+        });
+    }
+    
+	@AfterClass
+    public static void tearDown() {
+        Spark.stop();
+        client.close();
+    }
 	
 	@Test
 	public void getAllTest() throws Exception{
@@ -86,41 +77,27 @@ public class ShowControllerTest {
 		show.setLastGuideUpdate(Instant.EPOCH);
 		show.setMaxSize(Integer.MAX_VALUE);
 		show.setMinSize(Integer.MIN_VALUE);
-		show.setShowId(99);
+		show.setShowId(99L);
 		show.setShowType(ShowType.DAILY);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
 		show.setVersion(999);
 		
+		ShowService showService = Mockito.mock(ShowService.class);
 		Mockito.when(showService.readAll()).thenReturn(Arrays.asList(show));
+		controller.setShowService(showService);
 		
-		mockMvc.perform(
-            get("/api/show")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.length()").value(1))
-			.andExpect(jsonPath("$[0].airing").value(true))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].airTime").exists())
-			//.andExpect(jsonPath("$[0].airTime").value(LocalTime.MIDNIGHT.toString()))
-			.andExpect(jsonPath("$[0].enabled").value(false))
-			.andExpect(jsonPath("$[0].guideId").value("GUIDEID"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].lastGuideCheck").exists())
-			//.andExpect(jsonPath("$[0].lastGuideCheck").value(Instant.ofEpochMilli(1).toString()))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].lastGuideUpdate").exists())
-			//.andExpect(jsonPath("$[0].lastGuideUpdate").value(Instant.EPOCH.toString()))
-			.andExpect(jsonPath("$[0].maxSize").value(Integer.MAX_VALUE))
-			.andExpect(jsonPath("$[0].minSize").value(Integer.MIN_VALUE))
-			.andExpect(jsonPath("$[0].showId").value(99))
-			.andExpect(jsonPath("$[0].showType").value("DAILY"))
-			.andExpect(jsonPath("$[0].timezone").value("TIMEZONE"))
-			.andExpect(jsonPath("$[0].title").value("TITLE"))
-			.andExpect(jsonPath("$[0].version").doesNotExist());
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	List<Show> results = response.readEntity(new GenericType<List<Show>>(){});
+    	Assert.assertEquals(1, results.size());
+    	Assert.assertEquals(show, results.get(0));
 								
 		Mockito.verify(showService).readAll();
 		Mockito.verifyNoMoreInteractions(showService);
@@ -137,40 +114,25 @@ public class ShowControllerTest {
 		show.setLastGuideUpdate(Instant.EPOCH);
 		show.setMaxSize(Integer.MAX_VALUE);
 		show.setMinSize(Integer.MIN_VALUE);
-		show.setShowId(99);
+		show.setShowId(99L);
 		show.setShowType(ShowType.DAILY);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
 		show.setVersion(999);
-		
+			
+		ShowService showService = Mockito.mock(ShowService.class);
 		Mockito.when(showService.read(1L)).thenReturn(show);
+		controller.setShowService(showService);
 		
-		mockMvc.perform(
-            get("/api/show/1")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.airing").value(true))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.airTime").exists())
-			//.andExpect(jsonPath("$[0].airTime").value(LocalTime.MIDNIGHT.toString()))
-			.andExpect(jsonPath("$.enabled").value(false))
-			.andExpect(jsonPath("$.guideId").value("GUIDEID"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideCheck").exists())
-			//.andExpect(jsonPath("$[0].lastGuideCheck").value(Instant.ofEpochMilli(1).toString()))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideUpdate").exists())
-			//.andExpect(jsonPath("$[0].lastGuideUpdate").value(Instant.EPOCH.toString()))
-			.andExpect(jsonPath("$.maxSize").value(Integer.MAX_VALUE))
-			.andExpect(jsonPath("$.minSize").value(Integer.MIN_VALUE))
-			.andExpect(jsonPath("$.showId").value(99))
-			.andExpect(jsonPath("$.showType").value("DAILY"))
-			.andExpect(jsonPath("$.timezone").value("TIMEZONE"))
-			.andExpect(jsonPath("$.title").value("TITLE"))
-			.andExpect(jsonPath("$.version").doesNotExist());
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals(show, response.readEntity(Show.class));
 								
 		Mockito.verify(showService).read(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -187,55 +149,45 @@ public class ShowControllerTest {
 		show.setLastGuideUpdate(Instant.EPOCH);
 		show.setMaxSize(Integer.MAX_VALUE);
 		show.setMinSize(Integer.MIN_VALUE);
-		show.setShowId(99);
+		show.setShowId(99L);
 		show.setShowType(ShowType.DAILY);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
 		show.setVersion(999);
+				
+		ShowService showService = Mockito.mock(ShowService.class);
+		Mockito.when(showService.update(show)).thenReturn(show);
+		controller.setShowService(showService);
 		
-		Mockito.when(showService.update(Mockito.any())).thenReturn(show);
-		
-		mockMvc.perform(
-            put("/api/show/1")
-            		.content(json(show))
-            		.accept(MediaType.APPLICATION_JSON)
-            		.contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.airing").value(true))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.airTime").exists())
-			//.andExpect(jsonPath("$[0].airTime").value(LocalTime.MIDNIGHT.toString()))
-			.andExpect(jsonPath("$.enabled").value(false))
-			.andExpect(jsonPath("$.guideId").value("GUIDEID"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideCheck").exists())
-			//.andExpect(jsonPath("$[0].lastGuideCheck").value(Instant.ofEpochMilli(1).toString()))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideUpdate").exists())
-			//.andExpect(jsonPath("$[0].lastGuideUpdate").value(Instant.EPOCH.toString()))
-			.andExpect(jsonPath("$.maxSize").value(Integer.MAX_VALUE))
-			.andExpect(jsonPath("$.minSize").value(Integer.MIN_VALUE))
-			.andExpect(jsonPath("$.showId").value(99))
-			.andExpect(jsonPath("$.showType").value("DAILY"))
-			.andExpect(jsonPath("$.timezone").value("TIMEZONE"))
-			.andExpect(jsonPath("$.title").value("TITLE"))
-			.andExpect(jsonPath("$.version").doesNotExist());
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1")
+    			.request()
+    			.accept("application/json")
+    			.put(Entity.entity(show, "application/json"));
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals(show, response.readEntity(Show.class));
 								
-		Mockito.verify(showService).update(Mockito.any());
+		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
 	}	
 	
 	@Test
 	public void deleteTest() throws Exception{
 		
-		mockMvc.perform(
-            delete("/api/show/1")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk());
+		ShowService showService = Mockito.mock(ShowService.class);
+		controller.setShowService(showService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1")
+    			.request()
+    			.accept("application/json")
+    			.delete();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertFalse(response.hasEntity());
 								
 		Mockito.verify(showService).delete(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -252,39 +204,25 @@ public class ShowControllerTest {
 		show.setLastGuideUpdate(Instant.EPOCH);
 		show.setMaxSize(Integer.MAX_VALUE);
 		show.setMinSize(Integer.MIN_VALUE);
-		show.setShowId(99);
+		show.setShowId(99L);
 		show.setShowType(ShowType.DAILY);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
 		show.setVersion(999);
 		
-		mockMvc.perform(
-            post("/api/show")
-            		.content(json(show))
-            		.accept(MediaType.APPLICATION_JSON)
-            		.contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.airing").value(true))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.airTime").exists())
-			//.andExpect(jsonPath("$[0].airTime").value(LocalTime.MIDNIGHT.toString()))
-			.andExpect(jsonPath("$.enabled").value(false))
-			.andExpect(jsonPath("$.guideId").value("GUIDEID"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideCheck").exists())
-			//.andExpect(jsonPath("$[0].lastGuideCheck").value(Instant.ofEpochMilli(1).toString()))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastGuideUpdate").exists())
-			//.andExpect(jsonPath("$[0].lastGuideUpdate").value(Instant.EPOCH.toString()))
-			.andExpect(jsonPath("$.maxSize").value(Integer.MAX_VALUE))
-			.andExpect(jsonPath("$.minSize").value(Integer.MIN_VALUE))
-			.andExpect(jsonPath("$.showId").value(99))
-			.andExpect(jsonPath("$.showType").value("DAILY"))
-			.andExpect(jsonPath("$.timezone").value("TIMEZONE"))
-			.andExpect(jsonPath("$.title").value("TITLE"))
-			.andExpect(jsonPath("$.version").doesNotExist());
+		ShowService showService = Mockito.mock(ShowService.class);
+		Mockito.when(showService.update(show)).thenReturn(show);
+		controller.setShowService(showService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show")
+    			.request()
+    			.accept("application/json")
+    			.post(Entity.entity(show, "application/json"));
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals(show, response.readEntity(Show.class));
 								
 		Mockito.verify(showService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(showService);
@@ -301,7 +239,7 @@ public class ShowControllerTest {
 		show.setLastGuideUpdate(Instant.EPOCH);
 		show.setMaxSize(Integer.MAX_VALUE);
 		show.setMinSize(Integer.MIN_VALUE);
-		show.setShowId(99);
+		show.setShowId(99L);
 		show.setShowType(ShowType.DAILY);
 		show.setTimezone("TIMEZONE");
 		show.setTitle("TITLE");
@@ -315,47 +253,35 @@ public class ShowControllerTest {
 		episode.setLastFeedCheck(Instant.ofEpochSecond(100000));
 		episode.setLastFeedUpdate(Instant.ofEpochSecond(10000));
 		episode.setSeasonNum(50);
-		episode.setShow(show);
 		episode.setStatus(EpisodeStatus.SKIPPED);
 		episode.setTitle("TITLE");
 		episode.setVersion(1);
 		
-		Mockito.when(episodeService.findByShow(Mockito.any())).thenReturn(Arrays.asList(episode));
+		ShowService showService = Mockito.mock(ShowService.class);
+		Mockito.when(showService.read(1L)).thenReturn(show);
+		controller.setShowService(showService);
 		
-		mockMvc.perform(
-            get("/api/show/1/episodes")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.length()").value(1))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].airDate").exists())
-			//.andExpect(jsonPath("$[0].airDate").value(LocalDate.ofEpochDay(100)))
-			.andExpect(jsonPath("$[0].doubleEp").value(true))
-			.andExpect(jsonPath("$[0].episodeId").value(Long.MAX_VALUE))
-			.andExpect(jsonPath("$[0].episodeNum").value(99))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].lastFeedCheck").exists())
-			//.andExpect(jsonPath("$[0].lastFeedCheck").value(Instant.ofEpochSecond(100000)))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].lastFeedUpdate").exists())
-			//.andExpect(jsonPath("$[0].lastFeedUpdate").value(Instant.ofEpochSecond(10000)))
-			.andExpect(jsonPath("$[0].seasonNum").value(50))
-			.andExpect(jsonPath("$[0].status").value("SKIPPED"))
-			.andExpect(jsonPath("$[0].title").value("TITLE"))
-			.andExpect(jsonPath("$[0].version").doesNotExist())
-			.andExpect(jsonPath("$[0].show").doesNotExist());
-								
-		Mockito.verify(episodeService).findByShow(Mockito.any());
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		Mockito.when(episodeService.findByShow(show)).thenReturn(Arrays.asList(episode));
+		controller.setEpisodeService(episodeService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1/episodes")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
+    	Assert.assertEquals(1, results.size());
+    	Assert.assertEquals(episode, results.get(0));
+		
+		Mockito.verify(showService).read(1L);
+		Mockito.verifyNoMoreInteractions(showService);
+		
+		Mockito.verify(episodeService).findByShow(show);
 		Mockito.verifyNoMoreInteractions(episodeService);
-	}
-	
-	private String json(Object object) throws Exception{
-		return new ObjectMapper()
-				.registerModule(new JavaTimeModule())
-				.writeValueAsString(object);
 	}
 
 }

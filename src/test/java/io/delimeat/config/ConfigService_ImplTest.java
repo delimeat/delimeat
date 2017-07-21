@@ -20,10 +20,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
+import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.RecoverableDataAccessException;
 
 import io.delimeat.config.ConfigRepository;
 import io.delimeat.config.ConfigService_Impl;
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigConcurrencyException;
+import io.delimeat.config.exception.ConfigException;
 
 public class ConfigService_ImplTest {
 
@@ -68,7 +73,7 @@ public class ConfigService_ImplTest {
 	public void readEnityNotFoundExceptionTest() throws Exception {
 		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
 		Mockito.when(repository.findOne(1L)).thenReturn(null);
-		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(repository.save(Mockito.any(Config.class))).then(AdditionalAnswers.returnsFirstArg());
 
 		service.setConfigRepository(repository);
 		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
@@ -87,6 +92,18 @@ public class ConfigService_ImplTest {
 		Mockito.verifyNoMoreInteractions(repository);
 	}
 	
+	@Test(expected=ConfigException.class)
+	public void readEnityDataAccessExceptionTest() throws Exception {
+		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
+		DataAccessException ex = new RecoverableDataAccessException("ERROR");
+		Mockito.when(repository.findOne(1L)).thenThrow(ex);
+
+		service.setConfigRepository(repository);
+		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
+		
+		service.read();
+	}
+	
 	
 
 	@Test
@@ -95,7 +112,7 @@ public class ConfigService_ImplTest {
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(false);
 		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(repository.save(Mockito.any(Config.class))).then(AdditionalAnswers.returnsFirstArg());
 		service.setConfigRepository(repository);
 
 
@@ -108,6 +125,33 @@ public class ConfigService_ImplTest {
 		Mockito.verify(repository).save(config);
 		Mockito.verifyNoMoreInteractions(repository);
 		
+	}
+	
+	@Test(expected=ConfigException.class)
+	public void updateDataAccessExceptionTest() throws Exception {
+		Config config = new Config();
+		config.setIgnoreFolders(true);
+		config.setPreferFiles(false);
+		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
+		DataAccessException ex = new RecoverableDataAccessException("ERROR");
+		Mockito.when(repository.save(Mockito.any(Config.class))).thenThrow(ex);
+		service.setConfigRepository(repository);
+
+
+		service.update(config);
+	}
+	@Test(expected=ConfigConcurrencyException.class)
+	public void updateConcurrencyExceptionTest() throws Exception {
+		Config config = new Config();
+		config.setIgnoreFolders(true);
+		config.setPreferFiles(false);
+		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
+		DataAccessException ex = new ConcurrencyFailureException("ERROR");
+		Mockito.when(repository.save(Mockito.any(Config.class))).thenThrow(ex);
+		service.setConfigRepository(repository);
+
+
+		service.update(config);
 	}
 
 }

@@ -43,13 +43,13 @@ public class TvdbTokenTest {
   	public void hashCodeTest(){
      	token.setValue("VALUE");
      	token.setTime(1455858100917L);
-     	Assert.assertEquals(658457895, token.hashCode());
+     	Assert.assertEquals(166227467, token.hashCode());
    }
    
   	@Test
   	public void toStringTest(){
      	token.setValue("VALUE");
      	token.setTime(1455858100917L);
-     	Assert.assertEquals("TvdbToken(time=1455858100917, value=VALUE)", token.toString());
+     	Assert.assertEquals("TvdbToken [time=1455858100917, value=VALUE]", token.toString());
    }
 }

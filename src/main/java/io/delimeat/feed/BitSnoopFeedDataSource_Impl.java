@@ -15,39 +15,57 @@
  */
 package io.delimeat.feed;
 
-import java.net.URI;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
-import lombok.Getter;
-import lombok.Setter;
 
 @Component
-@Getter
-@Setter
-public class BitSnoopFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource {
+public class BitSnoopFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource {
 
 	@Value("${io.delimeat.feed.bitsnoop.baseUri}") 
-	private URI baseUri;
+	private String baseUri;
 
 	public BitSnoopFeedDataSource_Impl(){
-		super(FeedSource.BITSNOOP, MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-bitsnoop-oxm.xml");
+		super(FeedSource.BITSNOOP, "application/xml","oxm/feed-bitsnoop-oxm.xml");
+	}
+
+	/**
+	 * @return the baseUri
+	 */
+	public String getBaseUri() {
+		return baseUri;
+	}
+
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public void setBaseUri(String baseUri) {
+		this.baseUri = baseUri;
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 * @see io.delimeat.feed.AbstractJaxbFeedDataSource#generateUrl(java.lang.String)
 	 */
 	@Override
-	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("/search/video/")
-				.path(title)
-				.path("/c/d/1/")
-				.queryParam("fmt", "rss");
+	public URL generateUrl(String title) throws MalformedURLException {
+		return new URL(String.format("%s/search/video/%s/c/d/1/?fmt=rss", baseUri, title));
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "BitSnoopFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
+				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
+	}
+	
+	
 
 }

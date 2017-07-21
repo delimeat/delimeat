@@ -70,6 +70,6 @@ public class TorrentTest {
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("Torrent(tracker=null, trackers=[], info=null, bytes=null)", torrent.toString());
+     	Assert.assertEquals("Torrent [trackers=[], ]", torrent.toString());
    }
 }

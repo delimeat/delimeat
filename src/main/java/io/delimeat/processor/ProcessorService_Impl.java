@@ -17,24 +17,37 @@ package io.delimeat.processor;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Service
-@Getter
-@Setter
 public class ProcessorService_Impl implements ProcessorService  {
 		
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorService_Impl.class);
+	
 	@Autowired
 	private ApplicationContext applicationContext;
 	
+	/**
+	 * @return the applicationContext
+	 */
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
+	/**
+	 * @param applicationContext the applicationContext to set
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
 	@Override
-	@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.schedule.initial}")
+	@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.initial}")
 	public void processAllFeedUpdates() throws Exception {
 		FeedItemReader_Impl reader = applicationContext.getBean(FeedItemReader_Impl.class);
 		FeedItemProcessor_Impl processor = applicationContext.getBean(FeedItemProcessor_Impl.class);
@@ -43,7 +56,7 @@ public class ProcessorService_Impl implements ProcessorService  {
 	}
 	
 	@Override
-	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.schedule.initial}")
+	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.initial}")
 	public void processAllGuideUpdates()  throws Exception {
 
 		GuideItemReader_Impl reader = applicationContext.getBean(GuideItemReader_Impl.class);
@@ -57,8 +70,21 @@ public class ProcessorService_Impl implements ProcessorService  {
 	public <I> void run(ItemReader<I> itemReader, ItemProcessor<I> itemProcessor) throws Exception{
 		I inputItem = null;
 		while((inputItem = itemReader.read()) != null){
-			itemProcessor.process(inputItem);
+			try{
+				itemProcessor.process(inputItem);
+			}catch(Exception ex){
+				LOGGER.error(String.format("encountered an error processing %s for item %s", itemProcessor, inputItem), ex);
+			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ProcessorService_Impl ["
+				+ (applicationContext != null ? "applicationContext=" + applicationContext : "") + "]";
 	}
 
 }

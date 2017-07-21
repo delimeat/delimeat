@@ -19,26 +19,56 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.config.domain.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
 import io.delimeat.config.exception.ConfigException;
-import lombok.Data;
 
 @Service
-@Data
 public class ConfigService_Impl implements ConfigService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigService_Impl.class);
 
 	@Autowired
 	private ConfigRepository configRepository;
 
 	@Value("${io.delimeat.config.defaultOutputDir}")
 	private String defaultOutputDir;
+
+	/**
+	 * @return the configRepository
+	 */
+	public ConfigRepository getConfigRepository() {
+		return configRepository;
+	}
+
+	/**
+	 * @param configRepository the configRepository to set
+	 */
+	public void setConfigRepository(ConfigRepository configRepository) {
+		this.configRepository = configRepository;
+	}
+
+	/**
+	 * @return the defaultOutputDir
+	 */
+	public String getDefaultOutputDir() {
+		return defaultOutputDir;
+	}
+
+	/**
+	 * @param defaultOutputDir the defaultOutputDir to set
+	 */
+	public void setDefaultOutputDir(String defaultOutputDir) {
+		this.defaultOutputDir = defaultOutputDir;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -57,6 +87,7 @@ public class ConfigService_Impl implements ConfigService {
 				defaultConfig.setPreferFiles(true);
 				defaultConfig.setIgnoreFolders(false);
 				defaultConfig.setOutputDirectory(defaultOutputDir);
+				LOGGER.trace(String.format("No config exists, creating default %s", defaultConfig));
 				config = update(defaultConfig);
 			}
 			return config;
@@ -79,10 +110,19 @@ public class ConfigService_Impl implements ConfigService {
 				config.setPreferFiles(true);
 			}
 			return configRepository.save(config);
-		} catch (ObjectOptimisticLockingFailureException e) {
+		} catch (ConcurrencyFailureException e) {
 			throw new ConfigConcurrencyException(e);
 		} catch (DataAccessException e) {
 			throw new ConfigException(e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ConfigService_Impl [" + (configRepository != null ? "configRepository=" + configRepository + ", " : "")
+				+ (defaultOutputDir != null ? "defaultOutputDir=" + defaultOutputDir : "") + "]";
 	}
 }

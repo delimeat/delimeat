@@ -21,7 +21,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -36,79 +35,79 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-public class PirateBayFeedDataSource_ImplTest {
+public class SkyTorrentsFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
   
-	private PirateBayFeedDataSource_Impl dataSource;
+	private SkyTorrentsFeedDataSource_Impl dataSource;
   
 	@Before
 	public void setUp() throws URISyntaxException {
-		dataSource = new PirateBayFeedDataSource_Impl();
+		dataSource = new SkyTorrentsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.PIRATEBAY, dataSource.getFeedSource());
+		Assert.assertEquals(FeedSource.SKYTORRENTS, dataSource.getFeedSource());
 	}
   
 	@Test
-	public void readTest() throws Exception{
-		String responseBody = "<html><body>"
-				+ "<div class=\"items\">"
-				+ "<div class=\"title\">title</div>"
-				+ "<div class=\"url\">torrentUrl</div>"
-				+ "<div class=\"length\">9223372036854775807</div>"
-				+ "<div class=\"seeders\">1</div>"
-				+ "<div class=\"leechers\">1000</div>"
-				+ "</div></body></html>";
+	public void readTest() throws Exception{    	
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<link><![CDATA[torrentUrl]]></link>"
+     			+ "<description><![CDATA[2 Seeders, 3 Leechers 168 MB]]></description>"
+     			+ "</item></channel></rss>";
      
-		stubFor(get(urlPathEqualTo("/title"))
-				.withHeader("Accept", equalTo("text/html"))
+		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "text/html")
+							.withHeader("Content-Type", "application/xml")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
-     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
-     	Assert.assertEquals(1, results.get(0).getSeeders());
-     	Assert.assertEquals(1000, results.get(0).getLeechers());
+     	//TODO add back when adapter is ready
+     	//Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
 
 	}
   
 	@Test(expected=FeedException.class)
-	public void readIOExceptionTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/title"))
-				.withHeader("Accept", equalTo("text/html"))
+	public void readWebAppExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type", "text/html")));
+							.withHeader("Content-Type","application/xml")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
+		Assert.fail();
 	}
   
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/title"))
-				.withHeader("Accept", equalTo("text/html"))
+		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
+				.withHeader("Accept", equalTo("application/xml"))
 				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type", "text/html")
+							.withStatus(200)
+							.withHeader("Content-Type","application/xml")
                      .withFixedDelay(2000)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
+		Assert.fail();
 	}
 }

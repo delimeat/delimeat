@@ -15,24 +15,18 @@
  */
 package io.delimeat.http;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
-import io.delimeat.http.domain.HttpStatistics;
-
-@RestController
-@RequestMapping(path = "/api")
+//@RestController
+//@RequestMapping(path = "/api")
 public class HttpStatisticsController {
 
 	@Autowired
 	HttpStatisticsService service;
-	
+	/*
 	@RequestMapping(value = "/stats", method = RequestMethod.GET, produces = "application/json")
 	public List<HttpStatistics> get() throws Exception {
 		return service.getStatistics();
 	}
+	*/
 }

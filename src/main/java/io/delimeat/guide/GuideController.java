@@ -15,38 +15,60 @@
  */
 package io.delimeat.guide;
 
-import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
-import io.delimeat.guide.domain.GuideEpisode;
-import io.delimeat.guide.domain.GuideInfo;
-import io.delimeat.guide.domain.GuideSearchResult;
+import io.delimeat.show.ShowController;
+import io.delimeat.util.JsonUtil;
+import io.delimeat.util.spark.SparkController;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
-@RestController
-@RequestMapping(path = "/api")
-public class GuideController {
-	
+@Component
+public class GuideController implements SparkController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ShowController.class);
+
 	@Autowired
-	private GuideService service;
+	private GuideService guideService;
 
-	@RequestMapping(value = "/guide/search/{title}", method = RequestMethod.GET, produces = "application/json")
-	public List<GuideSearchResult> get(@PathVariable(value="title", required=true) String title) throws Exception {
-		return service.readLike(title);
+	/**
+	 * @return the guideService
+	 */
+	public GuideService getGuideService() {
+		return guideService;
 	}
 
-	@RequestMapping(value = "/guide/info/{id}", method = RequestMethod.GET, produces = "application/json")
-	public GuideInfo getInfo(@PathVariable(value="id", required=true) String guideId) throws Exception {
-		return service.read(guideId);
+	/**
+	 * @param guideService the guideService to set
+	 */
+	public void setGuideService(GuideService guideService) {
+		this.guideService = guideService;
 	}
 
-	@RequestMapping(value = "/guide/info/{id}/episodes", method = RequestMethod.GET, produces = "application/json")
-	public List<GuideEpisode> getEpisodes(@PathVariable(value="id", required=true) String guideId) throws Exception{
-		return service.readEpisodes(guideId);
-	}
+	@Override
+	public void init(){
+		LOGGER.trace("Entering init");
+		
+		Spark.path("/api/guide", () -> {
+	
+			Spark.get("/search/:title", (Request request, Response response)-> {
+				return guideService.readLike(request.params(":title"));
+			}, JsonUtil::toJson);
 
+			Spark.get("/info/:id", (Request request, Response response) -> {
+				return guideService.read(request.params(":id"));
+			}, JsonUtil::toJson);
+			
+			Spark.get("/info/:id/episodes", (Request request, Response response) -> {
+				return guideService.readEpisodes(request.params(":id"));
+			}, JsonUtil::toJson);
+		});
+			
+		LOGGER.trace("Leaving init");
+			
+	}
 }

@@ -25,12 +25,8 @@ import org.springframework.stereotype.Service;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import lombok.Getter;
-import lombok.Setter;
 
 @Service
-@Getter
-@Setter
 public class FeedService_Impl implements FeedService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedService_Impl.class);
@@ -38,6 +34,20 @@ public class FeedService_Impl implements FeedService {
 	@Autowired
 	private List<FeedDataSource> feedDataSources;
     
+	/**
+	 * @return the feedDataSources
+	 */
+	public List<FeedDataSource> getFeedDataSources() {
+		return feedDataSources;
+	}
+
+	/**
+	 * @param feedDataSources the feedDataSources to set
+	 */
+	public void setFeedDataSources(List<FeedDataSource> feedDataSources) {
+		this.feedDataSources = feedDataSources;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.FeedService#read(java.lang.String)
 	 */
@@ -57,5 +67,15 @@ public class FeedService_Impl implements FeedService {
 		}
 		return readResults;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources : "") + "]";
+	}
+	
+	
 
 }

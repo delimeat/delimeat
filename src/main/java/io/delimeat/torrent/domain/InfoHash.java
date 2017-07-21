@@ -15,18 +15,64 @@
  */
 package io.delimeat.torrent.domain;
 
-import io.delimeat.util.DelimeatUtils;
-import lombok.Data;
+import java.util.Arrays;
+import java.util.Objects;
 
-@Data
+import io.delimeat.util.DelimeatUtils;
+
 public class InfoHash {
 
 	private final byte[] bytes;
-	private final String hex;
 
 	public InfoHash(byte[] bytes) {
 		this.bytes = bytes;
-		hex = DelimeatUtils.toHex(bytes);
+	}
+	
+	/**
+	 * @return the bytes
+	 */
+	public byte[] getBytes() {
+		return bytes;
+	}
+
+	/**
+	 * @return the hex
+	 */
+	public String getHex() {
+		return DelimeatUtils.toHex(bytes);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(bytes);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InfoHash other = (InfoHash) obj;
+		if (!Arrays.equals(bytes, other.bytes))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "InfoHash [" + (getHex() != null ? "getHex()=" + getHex() : "") + "]";
 	}
 
 }

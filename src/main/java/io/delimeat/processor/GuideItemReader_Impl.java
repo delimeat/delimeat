@@ -24,21 +24,33 @@ import org.springframework.stereotype.Component;
 
 import io.delimeat.show.ShowService;
 import io.delimeat.show.domain.Show;
-import lombok.Getter;
-import lombok.Setter;
 
 
 @Component
 @Scope("prototype")
 public class GuideItemReader_Impl implements ItemReader<Show> {
 
-	@Getter
-	@Setter
 	@Autowired
 	private ShowService showService;
 	
 	private List<Show> shows = null;
 	
+	/**
+	 * @return the showService
+	 */
+	public ShowService getShowService() {
+		return showService;
+	}
+
+
+	/**
+	 * @param showService the showService to set
+	 */
+	public void setShowService(ShowService showService) {
+		this.showService = showService;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see org.springframework.batch.item.ItemReader#read()
 	 */
@@ -56,6 +68,16 @@ public class GuideItemReader_Impl implements ItemReader<Show> {
 		}catch(IndexOutOfBoundsException ex){
 			return null;
 		}
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "GuideItemReader_Impl [" + (showService != null ? "showService=" + showService + ", " : "")
+				+ (shows != null ? "shows=" + shows : "") + "]";
 	}
 
 }

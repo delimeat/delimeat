@@ -19,6 +19,8 @@ public class GuideException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	
+	public GuideException(){}
+	
 	public GuideException(String message) {
 		super(message);
 	}

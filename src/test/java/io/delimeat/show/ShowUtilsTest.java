@@ -47,7 +47,7 @@ public class ShowUtilsTest {
         guideEp.setSeasonNum(1);
         guideEp.setTitle("TITLE");
         Episode episode = ShowUtils.fromGuideEpisode(guideEp);
-        Assert.assertEquals(0, episode.getEpisodeId());
+        Assert.assertNull(episode.getEpisodeId());
         Assert.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
         Assert.assertEquals(2, episode.getEpisodeNum());
         Assert.assertEquals(1, episode.getSeasonNum());
@@ -63,7 +63,7 @@ public class ShowUtilsTest {
         guideEp.setSeasonNum(null);
         guideEp.setTitle("TITLE");
         Episode episode = ShowUtils.fromGuideEpisode(guideEp);
-        Assert.assertEquals(0, episode.getEpisodeId());
+        Assert.assertNull(episode.getEpisodeId());
         Assert.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
         Assert.assertEquals(0, episode.getEpisodeNum());
         Assert.assertEquals(0, episode.getSeasonNum());

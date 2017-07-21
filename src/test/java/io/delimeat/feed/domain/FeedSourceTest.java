@@ -61,4 +61,9 @@ public class FeedSourceTest {
 	public void priateBayTest() {
 		Assert.assertEquals(7, FeedSource.PIRATEBAY.getValue());
 	}
+	
+	@Test
+	public void skytorrentsTest() {
+		Assert.assertEquals(8, FeedSource.SKYTORRENTS.getValue());
+	}
 }

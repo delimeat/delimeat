@@ -4,8 +4,8 @@ angular
 
 ShowsRouteConfig.$inject = ['$routeProvider'];
 
-function ShowsRouteConfig($routeProvider,ShowsService) {
-	$routeProvider.when('/', {
+function ShowsRouteConfig($routeProvider, ShowsService) {
+	$routeProvider.when('/show', {
 		templateUrl : 'js/shows/shows.tmpl.html',
 		controller : 'ShowsController',
 		controllerAs : 'vm',
@@ -31,7 +31,5 @@ function ShowsRouteConfig($routeProvider,ShowsService) {
 		title: function(locals){
 			return locals.show.title;
 		}
-	}).otherwise({
-		redirectTo : '/'
 	});
   }

@@ -15,39 +15,57 @@
  */
 package io.delimeat.feed;
 
-import java.net.URI;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.feed.domain.FeedSource;
-import lombok.Getter;
-import lombok.Setter;
 
 @Component
-@Getter
-@Setter
-public class TorrentDownloadsFeedDataSource_Impl extends AbstractMoxyFeedDataSource implements FeedDataSource {
+public class TorrentDownloadsFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource {
 	
 	@Value("${io.delimeat.feed.torrentdownloads.baseUri}") 
-	private URI baseUri;
+	private String baseUri;
 	
 	public TorrentDownloadsFeedDataSource_Impl() {
-		super(FeedSource.TORRENTDOWNLOADS,MediaType.APPLICATION_XML_TYPE,"META-INF/oxm/feed-torrentdownloads-oxm.xml");
+		super(FeedSource.TORRENTDOWNLOADS, "application/xml","oxm/feed-torrentdownloads-oxm.xml");
+	}
 
+	/**
+	 * @return the baseUri
+	 */
+	public String getBaseUri() {
+		return baseUri;
+	}
+
+
+	/**
+	 * @param baseUri the baseUri to set
+	 */
+	public void setBaseUri(String baseUri) {
+		this.baseUri = baseUri;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.AbstractJaxbFeedDataSource#generateUrl(java.lang.String)
+	 */
+	@Override
+	public URL generateUrl(String title) throws MalformedURLException {
+		return new URL(String.format("%s/rss.xml?type=search&search=%s", baseUri, title));
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.AbstractJaxrsFeedDataSource#prepareRequest(javax.ws.rs.client.WebTarget, java.lang.String)
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	protected WebTarget prepareRequest(final WebTarget target, final String title) {
-		return target.path("/rss.xml")
-				.queryParam("type", "search")
-				.queryParam("search", title);
+	public String toString() {
+		return "TorrentDownloadsFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
+				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
 	}
 
 }

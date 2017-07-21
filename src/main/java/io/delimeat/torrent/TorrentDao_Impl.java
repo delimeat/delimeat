@@ -16,15 +16,10 @@
 package io.delimeat.torrent;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.bencode.BDictionary;
@@ -41,7 +36,9 @@ import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.util.DelimeatUtils;
-import io.delimeat.util.UrlHandler;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Component
 public class TorrentDao_Impl implements TorrentDao {
@@ -54,52 +51,42 @@ public class TorrentDao_Impl implements TorrentDao {
 	private final static BString NAME_KEY = new BString("name");
 	private final static BString LENGHT_KEY = new BString("length");
 	private final static BString PATH_KEY = new BString("path");
-	
-	@Autowired
-	private UrlHandler handler;
-		
-	public void setUrlHandler(UrlHandler handler){
-		this.handler = handler;
-	}
-	
-	public UrlHandler getUrlHandler(){
-		return handler;
-	}
-	
+
 	@Override
 	public Torrent read(URI uri) throws TorrentNotFoundException, TorrentException, IOException {
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder()
+									.addHeader("Referer", uri.toASCIIString())
+									.addHeader("Accept", "application/x-bittorrent")
+									.url(uri.toURL())
+									.build();
+		try {
 
-     final String protocol = uri.getScheme();
-     if(!"HTTP".equalsIgnoreCase(protocol) && !"HTTPS".equalsIgnoreCase(protocol)){
-       throw new TorrentException(String.format("Unsupported protocol %s expected one of HTTP or HTTPS",protocol));
-     }
+			Response response = client.newCall(request).execute();
+			if (response.isSuccessful()) {
+				final byte[] bytes = response.body().bytes();
+				BDictionary dictionary = BencodeUtils.decode(bytes);
+				Torrent torrent = parseRootDictionary(dictionary);
+				torrent.setBytes(bytes);
+				return torrent;
+			} else {
+				switch (response.code()) {
+				case 404:
+					throw new TorrentNotFoundException(
+							String.format("Scrape returned code %s with message \"%s\" for url: %s", response.code(),
+									response.message(), response.request().url()));
+				default:
+					throw new TorrentException(String.format("Scrape returned code %s with message \"%s\" for url: %s",
+							response.code(), response.message(), response.request().url()));
+				}
+			}
 
-     final Map<String,String> headers = new HashMap<String,String>();
-     headers.put("referer", uri.toASCIIString());
-     final HttpURLConnection conn = (HttpURLConnection)getUrlHandler().openUrlConnection(uri.toURL(),headers);
-     
-     final int responseCode = conn.getResponseCode();
-     if(responseCode == HttpURLConnection.HTTP_NOT_FOUND){
-    	throw new TorrentNotFoundException(String.format("Unnable to retrieve torrent at url %s",uri.toURL()));
-     }else if(responseCode != HttpURLConnection.HTTP_OK){
-       throw new TorrentException(String.format("Receieved response %s  from %s",responseCode, uri.toURL()));
-     }
-     final String contentType = conn.getContentType();
-     if("application/x-bittorrent".equalsIgnoreCase(contentType) == false){
-       throw new TorrentException(String.format("Receieved content type \"%s\"  from %s, expected \"application/x-bittorrent\"",contentType, uri.toURL()));       
-     }
-     
-     try(InputStream input = getUrlHandler().openInput(conn)){
-       final byte[] bytes = DelimeatUtils.inputStreamToBytes(input);
-       final BDictionary dictionary = BencodeUtils.decode(bytes);
-       final Torrent torrent = parseRootDictionary(dictionary);
-       torrent.setBytes(bytes);
-       return torrent;       
-     }catch(BencodeException ex){
-       throw new TorrentException("Encountered an error unmarshalling torrent",ex);
-     }
+		} catch (BencodeException | IOException e) {
+			throw new TorrentException(e);
+		}
+
 	}
-	
+
 	public Torrent parseRootDictionary(BDictionary rootDictionary) throws BencodeException, IOException{
 		final Torrent torrent = new Torrent();
 		if(rootDictionary.containsKey(ANNOUNCE_KEY) && rootDictionary.get(ANNOUNCE_KEY) instanceof BString){
@@ -119,7 +106,7 @@ public class TorrentDao_Impl implements TorrentDao {
 		}
 		return torrent;
 	}
-	
+
 	public List<String> parseAnnounceList(BList announceList){
 		List<String> trackers = new ArrayList<String>();
 		for (BObject tier : announceList) {
@@ -136,25 +123,25 @@ public class TorrentDao_Impl implements TorrentDao {
 		}
 		return trackers;
 	}
-	
+
 	public TorrentInfo parseInfoDictionary(BDictionary infoDictionary ) throws BencodeException, IOException{
 		final TorrentInfo info = new TorrentInfo();
 		byte[] rawBytes = BencodeUtils.encode(infoDictionary);
-		byte[] sha1Bytes = DelimeatUtils.sha1Hash(rawBytes);
+		byte[] sha1Bytes = DelimeatUtils.hashBytes(rawBytes, "SHA-1");
 
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		info.setInfoHash(infoHash);
-		
+
 		if (infoDictionary.containsKey(NAME_KEY) && infoDictionary.get(NAME_KEY) instanceof BString) {
 			BString nameValue = (BString)infoDictionary.get(NAME_KEY);
 			info.setName(nameValue.toString());
 		}
-		
+
 		if (infoDictionary.containsKey(LENGTH_KEY) && infoDictionary.get(LENGTH_KEY) instanceof BInteger) {
 			BInteger lenghtValue =(BInteger)infoDictionary.get(LENGTH_KEY);
 			info.setLength(lenghtValue.longValue());
 		}
-		
+
 		if (infoDictionary.containsKey(FILES_KEY) && infoDictionary.get(FILES_KEY) instanceof BList) {
 			// get the files list
 			BList filesValue = (BList)infoDictionary.get(FILES_KEY);
@@ -166,10 +153,10 @@ public class TorrentDao_Impl implements TorrentDao {
 				}
 			}
 		}
-		
+
 		return info;
 	}
-	
+
 	public TorrentFile parseTorrentFile(BDictionary fileDictionary){
 		TorrentFile file = new TorrentFile();
 		if(fileDictionary.containsKey(LENGTH_KEY) && fileDictionary.get(LENGHT_KEY) instanceof BInteger){
@@ -194,7 +181,7 @@ public class TorrentDao_Impl implements TorrentDao {
 					}else{
 						name += System.getProperty("file.separator") + pathStr;
 					}
-					
+
 				}
 			}
 			file.setName(name);

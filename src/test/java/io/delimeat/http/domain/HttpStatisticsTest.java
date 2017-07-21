@@ -67,7 +67,7 @@ public class HttpStatisticsTest {
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("HttpStatistics(host=host, responseCounts={}, lastSuccess=null, lastFailure=null)", new HttpStatistics("host").toString());
+		Assert.assertEquals("HttpStatistics [host=host, responseCounts={}, ]", new HttpStatistics("host").toString());
 	}
 	
 }

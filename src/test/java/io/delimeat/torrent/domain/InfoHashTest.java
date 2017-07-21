@@ -78,7 +78,7 @@ public class InfoHashTest {
 	public void toStringTest() {
 		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
-		Assert.assertEquals("InfoHash(bytes=[96, 20, -110, -32, 84, -7, 84, 14, -80, 18, -100, 53, -34, -77, -123, -70, -94, -6, -16, -2], hex=601492e054f9540eb0129c35deb385baa2faf0fe)", infoHash.toString());
+		Assert.assertEquals("InfoHash [getHex()=601492e054f9540eb0129c35deb385baa2faf0fe]", infoHash.toString());
 	}
   	
 }

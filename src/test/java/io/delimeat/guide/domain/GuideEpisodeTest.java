@@ -137,11 +137,11 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 
-		Assert.assertEquals(1898519495, ep.hashCode());
+		Assert.assertEquals(-1010516861, ep.hashCode());
 	}
 
 	@Test
 	public void toStringTest() throws ParseException {
-		Assert.assertEquals("GuideEpisode(airDate=null, seasonNum=0, episodeNum=0, productionNum=0, title=null)", ep.toString());
+		Assert.assertEquals("GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]", ep.toString());
 	}
 }

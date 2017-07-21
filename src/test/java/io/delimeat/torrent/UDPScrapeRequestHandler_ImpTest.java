@@ -317,7 +317,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 		scraper.setSocket(mockedSocket);
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 
-		ScrapeResult result = scraper.doScrape(new URI("udp://test.com:8080"),infoHash);
+		ScrapeResult result = scraper.doScrape(new URI("udp://localhost:8080"),infoHash);
 		Assert.assertEquals(200, result.getSeeders());
 		Assert.assertEquals(100, result.getLeechers());
 	}

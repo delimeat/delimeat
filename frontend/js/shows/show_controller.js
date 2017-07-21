@@ -2,31 +2,21 @@ angular
 	.module('delimeat.shows')
 	.controller('ShowController', ShowController);
 
-ShowController.$inject = ['$scope','$log', '$location', '$filter', '$window','$translate','ShowsService', 'show'];
+ShowController.$inject = ['$log', '$location', '$window','$translate', 'show'];
 
-function ShowController($scope, $log, $location, $filter,$window,$translate, ShowsService, show) {
+function ShowController($log, $location, $window, $translate, show) {
 
 	var vm = this;	
 
-	vm._scope = $scope;
 	vm._log = $log;
 	vm._location = $location;
-	vm._filter = $filter;
 	vm._window = $window;
 	vm._translate = $translate;
 
-	vm._showsService = ShowsService;
-
 	vm.remove = remove;
 	vm.update = update;
-	
-	vm._scope.$watch("vm.displayEps", _watchDisplayEps);
-	vm._scope.$watch("vm.show.nextEpisode", _watchNextEpisode);
 
 	vm.show = show;
-	vm.episodes = [];
-
-	vm.displayEps = false;
 	
 	function update(){
 		vm._log.debug('START - CONTROLLER - SHOW - update');
@@ -47,29 +37,6 @@ function ShowController($scope, $log, $location, $filter,$window,$translate, Sho
 
           });
 		vm._log.debug('END - CONTROLLER - SHOW - remove');
-	}
-	
-	function _watchDisplayEps(displayEps){
-		vm._log.debug('START - CONTROLLER - SHOW - _watchDisplayEps');
-		if(displayEps === true && vm.episodes.length === 0){
-			vm._showsService.episodes({id:vm.show.showId}).$promise.then(_loadedEpisodes);	
-		}
-		vm._log.debug('END - CONTROLLER - SHOW - _watchDisplayEps');			
-	}
-	
-	function _loadedEpisodes(episodes){
-		vm._log.info('START - CONTROLLER - SHOW - _loadedEpisodes');
-		vm._log.debug(angular.toJson(episodes, true));
-		vm.episodes = vm._filter('orderBy')(episodes, ['seasonNum','episodeNum','airDate'], true);
-		vm._log.info('END - CONTROLLER - SHOW - _loadedEpisodes');
-	}
-	
-	function _watchNextEpisode(newEpisode, oldEpisode){
-		vm._log.debug('START - CONTROLLER - SHOW - _watchNextEpisode');
-		if(angular.equals(newEpisode, oldEpisode) !== true){
-			vm.form.$setDirty();			
-		}
-		vm._log.debug('END - CONTROLLER - SHOW - _watchNextEpisode');			
 	}
 
 	vm.types = [

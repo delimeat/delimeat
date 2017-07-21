@@ -46,13 +46,13 @@ public class GuideSearchTest {
   	@Test
   	public void hashCodeTest(){
    	search.getResults().add(new GuideSearchResult());
-		Assert.assertEquals(21101011,search.hashCode());
+		Assert.assertEquals(923583,search.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
 		search.getResults().add(new GuideSearchResult());
-     	Assert.assertEquals("GuideSearch(results=[GuideSearchResult(description=null, firstAired=null, guideId=null, title=null)])",search.toString());
+     	Assert.assertEquals("GuideSearch [results=[GuideSearchResult []]]",search.toString());
    }
 
 }

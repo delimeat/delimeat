@@ -15,6 +15,7 @@
  */
 package io.delimeat.processor;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -23,7 +24,6 @@ import org.springframework.context.ApplicationContext;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
 
-
 public class ProcessorService_ImplTest {
 
 	private ProcessorService_Impl service;
@@ -31,6 +31,15 @@ public class ProcessorService_ImplTest {
 	@Before
 	public void setUp() throws Exception {
 		service = new ProcessorService_Impl();
+	}
+	
+	@Test
+	public void applicationContextTest(){
+		Assert.assertNull(service.getApplicationContext());
+		ApplicationContext context = Mockito.mock(ApplicationContext.class);
+		service.setApplicationContext(context);
+		
+		Assert.assertEquals(context, service.getApplicationContext());
 	}
 
 	@Test

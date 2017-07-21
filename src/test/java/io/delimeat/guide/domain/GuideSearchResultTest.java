@@ -65,12 +65,12 @@ public class GuideSearchResultTest {
   	public void hashCodeTest() throws ParseException{
      	result.setTitle("TITLE");
      	result.setFirstAired(LocalDate.parse("2016-02-19"));
-     	Assert.assertEquals(1588636078, result.hashCode());
+     	Assert.assertEquals(-246322804, result.hashCode());
    }
   
   	@Test
   	public void toStringTest() throws ParseException{
-     	Assert.assertEquals("GuideSearchResult(description=null, firstAired=null, guideId=null, title=null)", result.toString());
+     	Assert.assertEquals("GuideSearchResult []", result.toString());
    }
   
   	@Test

@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed.jaxrs;
+package io.delimeat.config.exception;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import org.junit.Assert;
+import org.junit.Test;
 
-@Provider
-@Consumes({MediaType.TEXT_HTML})
-public class JSoupContextResolver implements ContextResolver<JSoupContext>  {
+public class ConfigExceptionTest {
 
-	private final JSoupContext context;
-	
-	public JSoupContextResolver(JSoupContext context){
-		this.context = context;
+	@Test
+	public void constructorTest(){
+		Exception throwable = new Exception();
+		ConfigException ex = new ConfigException(throwable);
+		
+		Assert.assertEquals(throwable, ex.getCause());
 	}
-	/* (non-Javadoc)
-	 * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
-	 */
-	@Override
-	public JSoupContext getContext(Class<?> classes) {
-		return context;
-	}
-
 }

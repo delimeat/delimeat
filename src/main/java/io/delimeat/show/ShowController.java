@@ -15,61 +15,115 @@
  */
 package io.delimeat.show;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowNotFoundException;
+import io.delimeat.util.JsonUtil;
+import io.delimeat.util.spark.SparkController;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
-@RestController
-@RequestMapping(path = "/api")
-public class ShowController {
+@Controller
+public class ShowController implements SparkController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ShowController.class);
 
 	@Autowired
 	private ShowService showService;
-	
+
 	@Autowired
 	private EpisodeService episodeService;
 	
-	@RequestMapping(value = "/show", method = RequestMethod.GET, produces = "application/json")
-	public List<Show> getAll() throws Exception {
-		return showService.readAll();
+	/**
+	 * @return the showService
+	 */
+	public ShowService getShowService() {
+		return showService;
 	}
 
-	@RequestMapping(value = "/show/{id}", method = RequestMethod.GET, produces = "application/json")
-	public Show read(@PathVariable(value="id", required=true) Long id) throws Exception {
-		return showService.read(id);
+	/**
+	 * @param showService the showService to set
+	 */
+	public void setShowService(ShowService showService) {
+		this.showService = showService;
 	}
 
-	@RequestMapping(value = "/show/{id}", method = RequestMethod.PUT, produces = "application/json", consumes="application/json")
-	public Show update(@PathVariable(value="id", required=true) Long id, @RequestBody Show show) throws Exception {
-		return showService.update(show);
+	/**
+	 * @return the episodeService
+	 */
+	public EpisodeService getEpisodeService() {
+		return episodeService;
 	}
 
-	@RequestMapping(value = "/show/{id}", method = RequestMethod.DELETE)
-	public void delete(@PathVariable(value="id", required=true) Long id) throws Exception {
-		showService.delete(id);
-	}
-
-	@RequestMapping(value = "/show", method = RequestMethod.POST, produces = "application/json", consumes="application/json")
-	public Show create(@RequestBody Show show) throws Exception {
-		showService.create(show);
-		return show;
-	}
-
-	@RequestMapping(value = "/show/{id}/episodes", method = RequestMethod.GET, produces = "application/json")
-	public List<Episode> getAllEpisodes(@PathVariable(value="id", required=true) Long id) throws Exception {
-		return episodeService.findByShow(showService.read(id))
-								.stream()
-								.map(p->{p.setShow(null); return p;})
-								.collect(Collectors.toList());
+	/**
+	 * @param episodeService the episodeService to set
+	 */
+	public void setEpisodeService(EpisodeService episodeService) {
+		this.episodeService = episodeService;
 	}
 	
+	@Override
+	public void init(){
+		LOGGER.trace("Entering init");
+
+		Spark.path("/api/show", () -> {
+			Spark.get("", (Request request, Response response)-> {
+				return showService.readAll();
+			}, JsonUtil::toJson);
+	
+			Spark.post("", (Request request, Response response)-> {
+				Show show = JsonUtil.fromJson(request.bodyAsBytes(), Show.class);
+				showService.create(show);
+				return show;
+			}, JsonUtil::toJson);
+			
+			Spark.get("/:id", (Request request, Response response) -> {
+				Long showId = Long.valueOf(request.params(":id"));
+				return showService.read(showId);
+			}, JsonUtil::toJson);
+	
+			Spark.put("/:id", (Request request, Response response) -> {
+				Show show = JsonUtil.fromJson(request.bodyAsBytes(), Show.class);
+				return showService.update(show);
+			}, JsonUtil::toJson);
+	
+			Spark.delete("/:id", (Request request, Response response) -> {
+				Long showId = Long.valueOf(request.params(":id"));
+				showService.delete(showId);
+				return "";
+			});
+	
+			Spark.get("/:id/episodes", (Request request, Response response) -> {
+				Long showId = Long.valueOf(request.params(":id"));
+				return episodeService.findByShow(showService.read(showId))
+						.stream()
+						.map(p->{p.setShow(null); return p;})
+						.collect(Collectors.toList());
+			}, JsonUtil::toJson);
+		
+		});
+		
+		Spark.exception(ShowConcurrencyException.class, (exception, request, response) -> {
+		    response.body("{\"message\":\"You are trying to update a resource that has been modified\"}");
+		    response.status(412);
+		    response.type(JSON_CONTENT_TYPE);
+		});
+		
+		Spark.exception(ShowNotFoundException.class, (exception, request, response) -> {
+		    response.body("{\"message\":\"Unable to find requested resource\"}");
+		    response.status(404);
+		    response.type(JSON_CONTENT_TYPE);
+		});
+		
+		LOGGER.trace("Leaving init");
+
+	}
 }

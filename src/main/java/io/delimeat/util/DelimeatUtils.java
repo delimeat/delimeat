@@ -40,17 +40,17 @@ public class DelimeatUtils {
         return sb.toString();
 	}
 	
-	public static String urlEscape(String value){
+	public static String urlEscape(String value, String encoding){
 		try{
-			return URLEncoder.encode(value, "UTF-8");
+			return URLEncoder.encode(value, encoding);
 		}catch(UnsupportedEncodingException ex){
 			throw new RuntimeException(ex);
 		}
 	}
 	
-	public static byte[] sha1Hash(byte[] bytes){
+	public static byte[] hashBytes(byte[] bytes, String algorithm){
 		try{
-			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			MessageDigest md = MessageDigest.getInstance(algorithm);
 	        md.update(bytes, 0, bytes.length);
 	        return  md.digest();
 		}catch(NoSuchAlgorithmException ex){

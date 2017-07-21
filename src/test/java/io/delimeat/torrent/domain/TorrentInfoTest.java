@@ -71,6 +71,6 @@ public class TorrentInfoTest {
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("TorrentInfo(files=[], infoHash=null, length=0, name=null)",torrentInfo.toString());
+     	Assert.assertEquals("TorrentInfo [files=[], length=0, ]",torrentInfo.toString());
    }
 }

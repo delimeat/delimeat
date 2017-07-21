@@ -21,7 +21,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -71,8 +70,7 @@ public class BitSnoopFeedDataSource_ImplTest {
 							.withHeader("Content-Type", "application/xml")
 							.withBody(responseBody)));
 
-		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
@@ -94,7 +92,7 @@ public class BitSnoopFeedDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/xml")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
 	}
@@ -110,7 +108,7 @@ public class BitSnoopFeedDataSource_ImplTest {
 							.withHeader("Content-Type","application/xml")
                      .withFixedDelay(2000)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
 	}

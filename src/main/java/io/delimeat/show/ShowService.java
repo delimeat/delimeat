@@ -21,6 +21,9 @@ import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowException;
+import io.delimeat.show.exception.ShowNotFoundException;
 
 public interface ShowService {
 
@@ -30,7 +33,7 @@ public interface ShowService {
 	 * @throws GuideException
 	 * @throws GuideException
 	 */
-	public void create(Show show) throws Exception;
+	public void create(Show show) throws ShowException;
 
 	/**
 	 * Read an show
@@ -39,7 +42,7 @@ public interface ShowService {
 	 * @throws GuideNotFoundException
 	 * @throws GuideException
 	 */
-	public Show read(Long id) throws Exception;
+	public Show read(Long id) throws ShowNotFoundException, ShowException;
 
 	/**
 	 * Update a show
@@ -49,7 +52,7 @@ public interface ShowService {
 	 * @throws GuideNotFoundException
 	 * @throws GuideException
 	 */
-	public Show update(Show show) throws Exception;
+	public Show update(Show show) throws ShowConcurrencyException, ShowException;
 
 	/**
 	 * Delete a show
@@ -57,14 +60,14 @@ public interface ShowService {
 	 * @throws GuideNotFoundException
 	 * @throws GuideException
 	 */
-	public void delete(Long id) throws Exception;
+	public void delete(Long id) throws ShowException;
 
 	/**
 	 * Read all shows
 	 * @return shows
 	 * @throws GuideException
 	 */
-	public List<Show> readAll() throws Exception;
+	public List<Show> readAll() throws ShowException;
 
 	/**
 	 * Read all episodes for a show
@@ -73,6 +76,6 @@ public interface ShowService {
 	 * @throws GuideNotFoundException
 	 * @throws GuideException
 	 */
-	public List<Episode> readAllEpisodes(Long id) throws Exception;
+	public List<Episode> readAllEpisodes(Long id) throws ShowNotFoundException, ShowException;
 
 }

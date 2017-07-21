@@ -79,12 +79,12 @@ public class TvdbEpisodesTest {
 		episodes.setPrevious(Integer.MAX_VALUE);
 		GuideEpisode episode = new GuideEpisode();
 		episodes.setEpisodes(Arrays.asList(episode)); 
-     	Assert.assertEquals(11908441,episodes.hashCode());
+     	Assert.assertEquals(-139285987,episodes.hashCode());
    }
   
   	@Test	
   	public void toStringTest(){
 		episodes.setEpisodes(Arrays.asList(new GuideEpisode())); 
-     	Assert.assertEquals("TvdbEpisodes(first=0, last=0, next=0, previous=0, episodes=[GuideEpisode(airDate=null, seasonNum=0, episodeNum=0, productionNum=0, title=null)])",episodes.toString());
+     	Assert.assertEquals("TvdbEpisodes [first=0, last=0, next=0, previous=0, episodes=[GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]]]",episodes.toString());
    }
 }

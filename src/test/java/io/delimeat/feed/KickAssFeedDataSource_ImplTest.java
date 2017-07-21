@@ -16,13 +16,11 @@
 package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
-
-import java.net.URI;
 import java.util.List;
 
 import org.junit.Assert;
@@ -68,8 +66,8 @@ public class KickAssFeedDataSource_ImplTest {
 							.withStatus(200)
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
-		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+
+		dataSource.setBaseUri("http://localhost:8089");
 				
 		List<FeedResult> results = dataSource.read("title");
      	Assert.assertNotNull(results);
@@ -92,7 +90,7 @@ public class KickAssFeedDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
 		Assert.fail();
@@ -109,8 +107,7 @@ public class KickAssFeedDataSource_ImplTest {
 							.withHeader("Content-Type","application/json")
                      .withFixedDelay(2000)));
 
-
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.read("title");
 		Assert.fail();

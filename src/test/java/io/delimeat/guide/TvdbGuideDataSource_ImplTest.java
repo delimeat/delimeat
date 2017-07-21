@@ -23,7 +23,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -62,9 +61,8 @@ public class TvdbGuideDataSource_ImplTest {
 	@Test
 	public void baseUriTest() throws URISyntaxException {
 		Assert.assertNull(dataSource.getBaseUri());
-		URI uri = new URI("http://test.com");
-		dataSource.setBaseUri(uri);
-		Assert.assertEquals(uri, dataSource.getBaseUri());
+		dataSource.setBaseUri("http://test.com");
+		Assert.assertEquals("http://test.com", dataSource.getBaseUri());
 	}
 
 	@Test
@@ -100,7 +98,7 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		TvdbToken token = dataSource.login("APIKEY");
 		Assert.assertNotNull(token);
@@ -121,15 +119,9 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
-		try {
-			dataSource.login("APIKEY");
-		} catch (GuideAuthorizationException ex) {
-			Assert.assertEquals("LOGIN_NOT_AUTH_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.login("APIKEY");
 	}
 	
 	@Test(expected=GuideNotFoundException.class)
@@ -146,15 +138,9 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
-		try {
-			dataSource.login("APIKEY");
-		} catch (GuideNotFoundException ex) {
-			Assert.assertEquals("LOGIN_NOT_FOUND_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.login("APIKEY");
 	}
 
 	@Test(expected=GuideException.class)
@@ -170,8 +156,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.login("APIKEY");
 	}
 
@@ -187,8 +173,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
@@ -209,18 +195,12 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 		
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-		
+		dataSource.setBaseUri("http://localhost:8089");
+				
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
-		try {
-			dataSource.refreshToken(oldToken);
-		} catch (GuideAuthorizationException ex) {
-			Assert.assertEquals("NOT_AUTH_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.refreshToken(oldToken);
 	}
 
 	@Test(expected=GuideException.class)
@@ -232,8 +212,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
@@ -264,7 +244,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));		 
+		dataSource.setBaseUri("http://localhost:8089");		
+		
 		dataSource.setApiKey("APIKEY");
 
 		TvdbToken token = dataSource.getToken();
@@ -284,8 +265,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 		dataSource.setToken(oldToken);
@@ -310,8 +291,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
@@ -339,8 +320,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
@@ -364,20 +345,14 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 
-		try {
-			dataSource.search("TITLE");
-		} catch (GuideAuthorizationException ex) {
-			Assert.assertEquals("NOT_AUTH_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.search("TITLE");
 	}
 
 	@Test(expected=GuideNotFoundException.class)
@@ -394,20 +369,15 @@ public class TvdbGuideDataSource_ImplTest {
 							.withBody(responseBody)));
 
 		 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 		
-		try {
-			dataSource.search("TITLE");
-		} catch (GuideNotFoundException ex) {
-			Assert.assertEquals("NOT_FOUND_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.search("TITLE");
 	}
 
 	@Test(expected=GuideException.class)
@@ -421,8 +391,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
@@ -447,8 +417,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseText)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
@@ -484,20 +454,14 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 
-		try {
-			dataSource.info("GUIDEID");
-		} catch (GuideAuthorizationException ex) {
-			Assert.assertEquals("NOT_AUTH_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.info("GUIDEID");
 	}
 
 	@Test(expected=GuideNotFoundException.class)
@@ -512,20 +476,14 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 
-		try {
-			dataSource.info("GUIDEID");
-		} catch (GuideNotFoundException ex) {
-			Assert.assertEquals("NOT_FOUND_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.info("GUIDEID");
 	}
 
 	@Test(expected=GuideException.class)
@@ -538,8 +496,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
-
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
@@ -563,7 +521,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
@@ -598,20 +557,15 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 
-		try {
-			dataSource.episodes("GUIDEID", 1);
-		} catch (GuideAuthorizationException ex) {
-			Assert.assertEquals("NOT_AUTH_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.episodes("GUIDEID", 1);
 	}
 
 	@Test(expected=GuideNotFoundException.class)
@@ -628,20 +582,15 @@ public class TvdbGuideDataSource_ImplTest {
 							.withBody(responseBody)));
 
 		 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
 		token.setValue("TOKEN");
 		dataSource.setToken(token);
 
-		try {
-			dataSource.episodes("GUIDEID", 1);
-		} catch (GuideNotFoundException ex) {
-			Assert.assertEquals("NOT_FOUND_ERROR", ex.getMessage());
-			throw ex;
-		}
-		Assert.fail();
+		dataSource.episodes("GUIDEID", 1);
 	}
 
 	@Test(expected=GuideException.class)
@@ -655,7 +604,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
@@ -682,7 +632,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withBody(responseBody)));
 
 		 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();
@@ -728,7 +679,8 @@ public class TvdbGuideDataSource_ImplTest {
 							.withHeader("Content-Type", "application/json")
 							.withBody(responseBody_two)));
 
-		dataSource.setBaseUri(new URI("http://localhost:8089"));
+		dataSource.setBaseUri("http://localhost:8089");
+		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		
 		TvdbToken token = new TvdbToken();

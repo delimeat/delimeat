@@ -15,56 +15,48 @@
  */
 package io.delimeat.config;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.delimeat.config.domain.Config;
+import spark.Spark;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@SpringBootTest()
 public class ConfigControllerTest {
-
-	private MockMvc mockMvc;
 	
-	@InjectMocks
-    private ConfigController configController;
+	private static Client client;
+	private static ConfigController controller;
 	
-	@Mock
-	private ConfigService configService;
-	
-	@Before
-	public void setUp(){
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders
-                .standaloneSetup(configController)
-                .build();
-	}
-	
-	@Test
-	public void readTest() throws Exception{
+	@BeforeClass
+    public static void setup() throws Exception {
+		
+		controller = new ConfigController();
+		controller.init();
+        
+        client = ClientBuilder.newClient();
+        
+        Spark.after((request,response)->{
+        	response.type("application/json");
+        });
+    }
+    
+	@AfterClass
+    public static void tearDown() {
+        Spark.stop();
+        client.close();
+    }
+    
+    @Test
+    public void getTest() throws Exception{
 		Config config = new Config();
 		config.setConfigId(99L);
 		config.setVersion(Long.MAX_VALUE);
@@ -76,32 +68,28 @@ public class ConfigControllerTest {
 		config.setExcludedKeywords(Arrays.asList("EXCLUDED"));
 		config.setIgnoredFileTypes(Arrays.asList("IGNORED"));
 		
-		Mockito.when(configService.read()).thenReturn(config);
+		ConfigService configService = Mockito.mock(ConfigService.class);
+		Mockito.when(configService.read()).thenReturn(config);	
+		controller.setConfigService(configService);
 		
-		mockMvc.perform(
-            get("/api/config")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.configId").doesNotExist())
-			.andExpect(jsonPath("$.version").value(Long.MAX_VALUE))
-			.andExpect(jsonPath("$.preferFiles").value(true))
-			.andExpect(jsonPath("$.ignoreFolders").value(false))
-			.andExpect(jsonPath("$.outputDirectory").value("OUT_DIR"))
-			.andExpect(jsonPath("$.searchDelay").value(Integer.MAX_VALUE))
-			.andExpect(jsonPath("$.searchInterval").value(99))
-			.andExpect(jsonPath("$.excludedKeywords.length()").value(1))
-			.andExpect(jsonPath("$.excludedKeywords[0]").value("EXCLUDED"))
-			.andExpect(jsonPath("$.ignoredFileTypes.length()").value(1))
-			.andExpect(jsonPath("$.ignoredFileTypes[0]").value("IGNORED"));
-								
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/config")
+    			.request()
+    			.accept("application/json")
+    			.get();
+    	
+    	System.out.println(response);
+    	
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
+    	Assert.assertEquals(config, response.readEntity(Config.class));
+
 		Mockito.verify(configService).read();
 		Mockito.verifyNoMoreInteractions(configService);
-	}
-	
-	@Test
-	public void updateTest() throws Exception{
+    }
+    
+    @Test
+    public void updateTest() throws Exception{
 		Config config = new Config();
 		config.setConfigId(99L);
 		config.setVersion(Long.MAX_VALUE);
@@ -113,33 +101,22 @@ public class ConfigControllerTest {
 		config.setExcludedKeywords(Arrays.asList("EXCLUDED"));
 		config.setIgnoredFileTypes(Arrays.asList("IGNORED"));
 		
-		Mockito.when(configService.update(Mockito.any())).thenReturn(config);
+		ConfigService configService = Mockito.mock(ConfigService.class);
+		Mockito.when(configService.update(config)).thenReturn(config);
+		controller.setConfigService(configService);
 		
-		mockMvc.perform(put("/api/config")
-                .content(json(config))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-    			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-    			.andExpect(jsonPath("$.configId").doesNotExist())
-    			.andExpect(jsonPath("$.version").value(Long.MAX_VALUE))
-    			.andExpect(jsonPath("$.preferFiles").value(true))
-    			.andExpect(jsonPath("$.ignoreFolders").value(false))
-    			.andExpect(jsonPath("$.outputDirectory").value("OUT_DIR"))
-    			.andExpect(jsonPath("$.searchDelay").value(Integer.MAX_VALUE))
-    			.andExpect(jsonPath("$.searchInterval").value(99))
-    			.andExpect(jsonPath("$.excludedKeywords.length()").value(1))
-    			.andExpect(jsonPath("$.excludedKeywords[0]").value("EXCLUDED"))
-    			.andExpect(jsonPath("$.ignoredFileTypes.length()").value(1))
-    			.andExpect(jsonPath("$.ignoredFileTypes[0]").value("IGNORED"));
-								
-		Mockito.verify(configService).update(Mockito.any());
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/config")
+    			.request()
+    			.accept("application/json")
+    			.post(Entity.entity(config, "application/json"));
+    	
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
+    	Assert.assertEquals(config, response.readEntity(Config.class));
+    	
+		Mockito.verify(configService).update(config);
 		Mockito.verifyNoMoreInteractions(configService);
-	}
-	
-	private String json(Object object) throws Exception{
-		return new ObjectMapper()
-				.registerModule(new JavaTimeModule())
-				.writeValueAsString(object);
-	}
+    }
 
 }

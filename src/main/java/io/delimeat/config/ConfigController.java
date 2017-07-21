@@ -15,32 +15,65 @@
  */
 package io.delimeat.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
-import io.delimeat.config.exception.ConfigException;
+import io.delimeat.util.JsonUtil;
+import io.delimeat.util.spark.SparkController;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
-@RestController
-@RequestMapping(path = "/api")
-public class ConfigController {
+@Component
+public class ConfigController implements SparkController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigController.class);
 
 	@Autowired
 	ConfigService configService;
 	
-	@RequestMapping(value = "/config", method = RequestMethod.GET, produces = "application/json")
-    public Config read() throws ConfigException{
-        return configService.read();
-    }
-	
-	
-	@RequestMapping(value = "/config", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-	public Config update(@RequestBody Config config) throws ConfigConcurrencyException, ConfigException{
-		return configService.update(config);
+	/**
+	 * @return the configService
+	 */
+	public ConfigService getConfigService() {
+		return configService;
 	}
+
+	/**
+	 * @param configService the configService to set
+	 */
+	public void setConfigService(ConfigService configService) {
+		this.configService = configService;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.util.spark.SparkController#init()
+	 */
+	@Override
+	public void init() throws Exception{
+		LOGGER.trace("Entering init");
+	
+		Spark.path("/api/config", () -> {
+			Spark.get("",(Request request, Response response) -> {
+				return configService.read();
+			}, JsonUtil::toJson);
+	
+			Spark.post("",(Request request, Response response) -> {
+				Config config = JsonUtil.fromJson(request.bodyAsBytes(), Config.class);
+				return configService.update(config);
+			}, JsonUtil::toJson);
+		});
 		
+		Spark.exception(ConfigConcurrencyException.class, (exception, request, response) -> {
+		    response.body("{\"message\":\"You are trying to update a resource that has been modified\"}");
+		    response.status(412);
+		});
+
+		LOGGER.trace("Leaving init");
+
+	}	
 }

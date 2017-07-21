@@ -15,55 +15,53 @@
  */
 package io.delimeat.guide;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Before;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import io.delimeat.guide.domain.AiringDay;
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
+import spark.Spark;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@SpringBootTest()
 public class GuideControllerTest {
+	
+	private static Client client;
+	private static GuideController controller;
+    
+	@BeforeClass
+    public static void setup() {
 
-	private MockMvc mockMvc;
-	
-	@InjectMocks
-    private GuideController guideController;
-	
-	@Mock
-	private GuideService guideService;
-	
-	@Before
-	public void setUp(){
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders
-                .standaloneSetup(guideController)
-                .build();
-	}
+		controller = new GuideController();
+		controller.init();
+        
+        Spark.awaitInitialization();
+        
+        client = ClientBuilder.newClient();
+        
+        Spark.after((request,response)->{
+        	response.type("application/json");
+        });
+    }
+    
+	@AfterClass
+    public static void tearDown() {
+        Spark.stop();
+        client.close();
+    }
 	
 	@Test
 	public void searchTest() throws Exception{
@@ -73,23 +71,22 @@ public class GuideControllerTest {
 		gsr.setFirstAired(LocalDate.ofEpochDay(0));
 		gsr.setGuideId("GUIDEID");
 		
-		Mockito.when(guideService.readLike("TITLE")).thenReturn(Arrays.asList(gsr));
+		GuideService guideService = Mockito.mock(GuideService.class);
+		Mockito.when(guideService.readLike("TITLE")).thenReturn(Arrays.asList(gsr));	
+		controller.setGuideService(guideService);
 		
-		mockMvc.perform(
-            get("/api/guide/search/TITLE")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.length()").value(1))
-			.andExpect(jsonPath("$[0].title").value("TITLE"))
-			.andExpect(jsonPath("$[0].description").value("DESCRIPTION"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].firstAired").exists())
-			//.andExpect(jsonPath("$[0].firstAired").value(LocalDate.ofEpochDay(0).toString()))
-			.andExpect(jsonPath("$[0].guideId").value("GUIDEID"));
-								
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/guide/search/TITLE")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	List<GuideSearchResult> results = response.readEntity(new GenericType<List<GuideSearchResult>>(){});
+    	Assert.assertEquals(1, results.size());
+    	Assert.assertEquals(gsr, results.get(0));
+    	
 		Mockito.verify(guideService).readLike("TITLE");
 		Mockito.verifyNoMoreInteractions(guideService);
 	}
@@ -109,37 +106,20 @@ public class GuideControllerTest {
 		info.setAiring(true);
 		info.setAirDays(Arrays.asList(AiringDay.FRIDAY,AiringDay.SATURDAY));
 		
+		GuideService guideService = Mockito.mock(GuideService.class);
 		Mockito.when(guideService.read("GUIDEID")).thenReturn(info);
+		controller.setGuideService(guideService);
 		
-		mockMvc.perform(
-            get("/api/guide/info/GUIDEID")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.title").value("TITLE"))
-			.andExpect(jsonPath("$.description").value("DESCRIPTION"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.firstAired").exists())
-			//.andExpect(jsonPath("$.firstAired").value(LocalDate.ofEpochDay(1).toString()))
-			.andExpect(jsonPath("$.guideId").value("GUIDEID"))
-			.andExpect(jsonPath("$.timezone").value("TIMEZONE"))
-			.andExpect(jsonPath("$.runningTime").value(99))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.lastUpdated").exists())
-			//.andExpect(jsonPath("$.lastUpdated").value(LocalDate.ofEpochDay(100).toString()))
-			.andExpect(jsonPath("$.genres.length()").value(1))
-			.andExpect(jsonPath("$.genres[0]").value("GENRE"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$.airTime").exists())
-			//.andExpect(jsonPath("$.airTime").value(LocalTime.parse("12:45").toString()))
-			.andExpect(jsonPath("$.airing").value(true))
-			.andExpect(jsonPath("$.airDays.length()").value(2))
-			.andExpect(jsonPath("$.airDays[0]").value("FRIDAY"))
-			.andExpect(jsonPath("$.airDays[1]").value("SATURDAY"))
-			;
-								
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/guide/info/GUIDEID")
+    			.request()
+    			.accept("application/json")
+    			.get();
+							
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals(info, response.readEntity(GuideInfo.class));
+
 		Mockito.verify(guideService).read("GUIDEID");
 		Mockito.verifyNoMoreInteractions(guideService);
 	}
@@ -153,24 +133,21 @@ public class GuideControllerTest {
 		ep.setEpisodeNum(400);
 		ep.setProductionNum(500);
 	
-		
+		GuideService guideService = Mockito.mock(GuideService.class);
 		Mockito.when(guideService.readEpisodes("GUIDEID")).thenReturn(Arrays.asList(ep));
+		controller.setGuideService(guideService);
 		
-		mockMvc.perform(
-            get("/api/guide/info/GUIDEID/episodes")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.length()").value(1))
-			.andExpect(jsonPath("$[0].title").value("TITLE"))
-			//TODO once object mapper problem solved
-			.andExpect(jsonPath("$[0].airDate").exists())
-			//.andExpect(jsonPath("$[0].airDate").value(LocalDate.ofEpochDay(99).toString()))
-			.andExpect(jsonPath("$[0].seasonNum").value(300))
-			.andExpect(jsonPath("$[0].episodeNum").value(400))
-			.andExpect(jsonPath("$[0].productionNum").value(500));
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/guide/info/GUIDEID/episodes")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	List<GuideEpisode> results = response.readEntity(new GenericType<List<GuideEpisode>>(){});
+    	Assert.assertEquals(1, results.size());
+    	Assert.assertEquals(ep, results.get(0));
 								
 		Mockito.verify(guideService).readEpisodes("GUIDEID");
 		Mockito.verifyNoMoreInteractions(guideService);

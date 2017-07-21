@@ -40,12 +40,12 @@ public class TvdbApiKeyTest {
   	@Test
   	public void hashCodeTest(){
      	apiKey.setValue("VALUE");
-     	Assert.assertEquals(81435020, apiKey.hashCode());
+     	Assert.assertEquals(81434992, apiKey.hashCode());
    }
    
   	@Test
   	public void toStringTest(){
      	apiKey.setValue("VALUE");
-     	Assert.assertEquals("TvdbApiKey(value=VALUE)", apiKey.toString());
+     	Assert.assertEquals("TvdbApiKey [value=VALUE]", apiKey.toString());
    }
 }

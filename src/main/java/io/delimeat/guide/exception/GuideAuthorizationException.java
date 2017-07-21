@@ -19,6 +19,8 @@ public class GuideAuthorizationException extends GuideException {
 
 	private static final long serialVersionUID = 1L;
 
+	public GuideAuthorizationException(){}
+	
 	public GuideAuthorizationException(String message, Throwable cause) {
 		super(message, cause);
 	}	
