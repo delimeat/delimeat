@@ -296,7 +296,7 @@ public class GuideItemProcessor_ImplTest {
 		processor.setShowService(showService);
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(show)).thenReturn(Arrays.asList(showEpToDelete, showEpToUpdate));
+		Mockito.when(episodeService.findByShow(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEpToDelete, showEpToUpdate));
 
 		processor.setEpisodeService(episodeService);
 
@@ -333,7 +333,7 @@ public class GuideItemProcessor_ImplTest {
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(episodeService).findByShow(show);
+		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
 		Mockito.verify(episodeService).delete(Long.MIN_VALUE);
 		Mockito.verify(episodeService, Mockito.times(2)).save(Mockito.any(Episode.class));
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -369,7 +369,7 @@ public class GuideItemProcessor_ImplTest {
 		processor.setShowService(showService);
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(show)).thenReturn(Arrays.asList(showEp));
+		Mockito.when(episodeService.findByShow(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEp));
 		processor.setEpisodeService(episodeService);
 
 		GuideInfo info = new GuideInfo();
@@ -403,7 +403,7 @@ public class GuideItemProcessor_ImplTest {
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(episodeService).findByShow(show);
+		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(episodeService);
 
 		Mockito.verify(guideService).read("GUIDEID");

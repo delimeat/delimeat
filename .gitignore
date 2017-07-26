@@ -1,9 +1,9 @@
 /.classpath
 /.project
-/.settings/
 node/
 node_modules/
 target/
 frontend/components/
 /derby.log
 /delimeat.log
+/.settings/

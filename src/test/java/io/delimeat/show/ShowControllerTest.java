@@ -262,11 +262,11 @@ public class ShowControllerTest {
 		controller.setShowService(showService);
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(show)).thenReturn(Arrays.asList(episode));
+		Mockito.when(episodeService.findByShow(99L)).thenReturn(Arrays.asList(episode));
 		controller.setEpisodeService(episodeService);
 		
     	Response response = client.target("http://localhost:4567")
-    			.path("/api/show/1/episodes")
+    			.path("/api/show/99/episodes")
     			.request()
     			.accept("application/json")
     			.get();
@@ -277,10 +277,7 @@ public class ShowControllerTest {
     	Assert.assertEquals(1, results.size());
     	Assert.assertEquals(episode, results.get(0));
 		
-		Mockito.verify(showService).read(1L);
-		Mockito.verifyNoMoreInteractions(showService);
-		
-		Mockito.verify(episodeService).findByShow(show);
+		Mockito.verify(episodeService).findByShow(99L);
 		Mockito.verifyNoMoreInteractions(episodeService);
 	}
 

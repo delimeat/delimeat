@@ -107,19 +107,20 @@ public class EpisodeService_ImplTest {
 	public void findByShowTest() throws Exception{
 		Episode ep = new Episode();
 		Show show = new Show();
+		show.setShowId(Long.MAX_VALUE);
 		ep.setShow(show);
 		
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
 		Mockito.doReturn(Arrays.asList(ep))
 			.when(repository)
-			.findByShow(show);
+			.findByShowShowId(Long.MAX_VALUE);
 		service.setEpisodeRepository(repository);	
 		
-		List<Episode> result = service.findByShow(show);
+		List<Episode> result = service.findByShow(Long.MAX_VALUE);
 		Assert.assertEquals("results size",1, result.size());
 		Assert.assertEquals("first result", ep, result.get(0));
 		
-		Mockito.verify(repository).findByShow(show);
+		Mockito.verify(repository).findByShowShowId(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(repository);		
 	}
 

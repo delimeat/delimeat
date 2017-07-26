@@ -131,7 +131,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 			final List<GuideEpisode> guideEps = guideService.readEpisodes(show.getGuideId());
 
 			// get the existing episodes
-			final List<Episode> showEps = episodeService.findByShow(show);
+			final List<Episode> showEps = episodeService.findByShow(show.getShowId());
 
 			// add new episodes that don't already exist
 			updated = updated | createEpisodes(guideEps, showEps, show);

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
-import io.delimeat.show.domain.Show;
 
 @Service
 public class EpisodeService_Impl implements EpisodeService {
@@ -78,11 +77,11 @@ public class EpisodeService_Impl implements EpisodeService {
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.show.EpisodeService#findByShow(io.delimeat.show.domain.Show)
+	 * @see io.delimeat.show.EpisodeService#findByShow(java.lang.Long)
 	 */
 	@Override
-	public List<Episode> findByShow(Show show) {
-		return episodeRepository.findByShow(show);
+	public List<Episode> findByShow(Long showId) {
+		return episodeRepository.findByShowShowId(showId);
 	}
 
 	/* (non-Javadoc)

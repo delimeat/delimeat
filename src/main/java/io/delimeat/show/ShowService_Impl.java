@@ -190,7 +190,7 @@ public class ShowService_Impl implements ShowService {
 	@Transactional
 	public List<Episode> readAllEpisodes(Long id) throws ShowNotFoundException, ShowException {
 		try{
-		return episodeService.findByShow(read(id));
+			return episodeService.findByShow(id);
 		} catch (DataAccessException e) {
 			throw new ShowException(e);
 		}

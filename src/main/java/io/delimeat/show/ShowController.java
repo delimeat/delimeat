@@ -15,8 +15,6 @@
  */
 package io.delimeat.show;
 
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,10 +101,7 @@ public class ShowController implements SparkController {
 	
 			Spark.get("/:id/episodes", (Request request, Response response) -> {
 				Long showId = Long.valueOf(request.params(":id"));
-				return episodeService.findByShow(showService.read(showId))
-						.stream()
-						.map(p->{p.setShow(null); return p;})
-						.collect(Collectors.toList());
+				return episodeService.findByShow(showId);
 			}, JsonUtil::toJson);
 		
 		});

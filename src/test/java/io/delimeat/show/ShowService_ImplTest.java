@@ -170,22 +170,19 @@ public class ShowService_ImplTest {
   		show.setShowId(1L);
      	Episode ep = new Episode();
 		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		Mockito.when(showRepository.findOne(Long.MAX_VALUE)).thenReturn(show);
+		Mockito.when(showRepository.findOne(1L)).thenReturn(show);
      	service.setShowRepository(showRepository);
      	
      	EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-     	Mockito.when(episodeService.findByShow(show)).thenReturn(Arrays.asList(ep));
+     	Mockito.when(episodeService.findByShow(1L)).thenReturn(Arrays.asList(ep));
      	service.setEpisodeService(episodeService);
      
-     	List<Episode> episodes = service.readAllEpisodes(Long.MAX_VALUE);
+     	List<Episode> episodes = service.readAllEpisodes(1L);
      	Assert.assertNotNull(episodes);
      	Assert.assertEquals(1, episodes.size());
      	Assert.assertEquals(ep, episodes.get(0));
      	
-     	Mockito.verify(showRepository).findOne(Long.MAX_VALUE);
-     	Mockito.verifyNoMoreInteractions(showRepository);
-     	
-     	Mockito.verify(episodeService).findByShow(show);
+     	Mockito.verify(episodeService).findByShow(1L);
      	Mockito.verifyNoMoreInteractions(episodeService);
    }
   	

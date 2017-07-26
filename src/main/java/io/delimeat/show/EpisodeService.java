@@ -18,7 +18,6 @@ package io.delimeat.show;
 import java.util.List;
 
 import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.Show;
 
 public interface EpisodeService {
 
@@ -30,7 +29,7 @@ public interface EpisodeService {
 	
 	public List<Episode> findAllPending();
 	
-	public List<Episode> findByShow(Show show);
+	public List<Episode> findByShow(Long showId);
 
 
 }

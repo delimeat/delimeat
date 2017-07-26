@@ -21,7 +21,6 @@ import org.springframework.data.repository.Repository;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
-import io.delimeat.show.domain.Show;
 
 public interface EpisodeRepository extends Repository<Episode, Long> {
 
@@ -33,5 +32,5 @@ public interface EpisodeRepository extends Repository<Episode, Long> {
 	
 	public List<Episode> findByStatusIn(List<EpisodeStatus> statuses);
 	
-	public List<Episode> findByShow(Show show);
+	public List<Episode> findByShowShowId(Long showId);
 }
