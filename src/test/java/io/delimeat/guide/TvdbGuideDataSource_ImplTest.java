@@ -436,7 +436,7 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals(LocalTime.parse("20:00"), info.getAirTime());
 		Assert.assertEquals(1, info.getGenres().size());
 		Assert.assertEquals("GENRE", info.getGenres().get(0));
-		Assert.assertEquals("US/Pacific", info.getTimezone());
+		Assert.assertEquals("America/Los_Angeles", info.getTimezone());
 		Assert.assertEquals(45, info.getRunningTime());
 		Assert.assertEquals(LocalDate.parse("2016-02-03"), info.getLastUpdated());
 	}

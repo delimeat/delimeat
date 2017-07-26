@@ -42,7 +42,7 @@ public class TvdbTimezoneAdapterTest {
 	
 	@Test
 	public void testNotExistsUnmarshal() throws Exception {
-		Assert.assertEquals("US/Pacific", adapter.unmarshal("RANDOM"));
+		Assert.assertEquals("America/Los_Angeles", adapter.unmarshal("RANDOM"));
 	}
 	
 	@Test

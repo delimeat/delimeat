@@ -2,9 +2,9 @@ angular
 	.module('delimeat.episodes')
 	.controller('EpisodesController', EpisodesController);
 
-EpisodesController.$inject = ['$filter', /*'EpisodeService',*/'episodes'];
+EpisodesController.$inject = ['episodes'];
 
-function EpisodesController($filter, /*EpisodeService,*/ episodes) {
+function EpisodesController(episodes) {
 	
 	var vm = this;
 	
@@ -15,7 +15,7 @@ function EpisodesController($filter, /*EpisodeService,*/ episodes) {
 	function _onLoad(){
 		if(angular.isArray(episodes)){
 			episodes.forEach(function(episode){
-				episode.airDateTime = new Date($filter('applytz')(episode.airDate + ' ' + episode.show.airTime, episode.show.timezone));
+				episode.airDateTime = moment.tz(episode.airDate + ' ' + episode.show.airTime, episode.show.timezone).format();
 			});
 		}
 		vm.episodes = episodes;

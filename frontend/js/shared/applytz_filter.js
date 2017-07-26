@@ -9,11 +9,11 @@ function ApplyTzFilter($log) {
 	vm = this;
   
 	vm.timezones = [
-	        	    {value:'EST', offset:'-0500'},
-	        	    {value:'CST', offset:'-0600'},
-	        	    {value:'PST', offset:'-0700'},
-	        	    {value:'JST', offset:'+0900'},
-	        	    {value:'AET', offset:'+1000'},    
+	        	    {value:'Etc/GMT-5', offset:'-0500'},
+	        	    {value:'America/Chicago', offset:'-0600'},
+	        	    {value:'America/Los_Angeles', offset:'-0700'},
+	        	    {value:'Asia/Tokyo', offset:'+0900'},
+	        	    {value:'Australia/Sydney', offset:'+1000'},    
 	        	    {value:'Etc/GMT+12', offset:'+1200'},
 	        	    {value:'Etc/GMT+11', offset:'+1100'},
 	        	    {value:'Etc/GMT+10', offset:'+1000'},
@@ -31,7 +31,7 @@ function ApplyTzFilter($log) {
 	        	    {value:'Etc/GMT-2', offset:'-0200'},
 	        	    {value:'Etc/GMT-3', offset:'-0300'},
 	        	    {value:'Etc/GMT-4', offset:'-0400'},
-	        	    {value:'Etc/GMT-5', text:'-0500'},
+	        	    {value:'Etc/GMT-5', offset:'-0500'},
 	        	    {value:'Etc/GMT-6', offset:'-0600'},
 	        	    {value:'Etc/GMT-7', offset:'-0700'},
 	        	    {value:'Etc/GMT-8', offset:'-0800'},

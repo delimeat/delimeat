@@ -291,31 +291,31 @@ public class TvdbTimezoneAdapter extends XmlAdapter<String, String> {
 	   	mapping.put("Star World","Etc/GMT+8");
 	   	mapping.put("STAR Sports Asia","Etc/GMT+8");
 	   	mapping.put("STAR Sports Hong Kong","Etc/GMT+8");
-	   	mapping.put("Animax","JST");
-	   	mapping.put("BS11","JST");
-	   	mapping.put("CBC","JST");
-	   	mapping.put("CTC","JST");
-	   	mapping.put("Fuji TV","JST");
-	   	mapping.put("MBS","JST");
-	   	mapping.put("NHK","JST");
-	   	mapping.put("NTV","JST");
-	   	mapping.put("TBS","JST");
-	   	mapping.put("Television Osaka","JST");
-	   	mapping.put("Tokyo MX","JST");
-	   	mapping.put("TV Asahi","JST");
-	   	mapping.put("TV Tokyo","JST");
-	   	mapping.put("TVA","JST");
-	   	mapping.put("WOWOW","JST");
+	   	mapping.put("Animax","Asia/Tokyo");
+	   	mapping.put("BS11","Asia/Tokyo");
+	   	mapping.put("CBC","Asia/Tokyo");
+	   	mapping.put("CTC","Asia/Tokyo");
+	   	mapping.put("Fuji TV","Asia/Tokyo");
+	   	mapping.put("MBS","Asia/Tokyo");
+	   	mapping.put("NHK","Asia/Tokyo");
+	   	mapping.put("NTV","Asia/Tokyo");
+	   	mapping.put("TBS","Asia/Tokyo");
+	   	mapping.put("Television Osaka","Asia/Tokyo");
+	   	mapping.put("Tokyo MX","Asia/Tokyo");
+	   	mapping.put("TV Asahi","Asia/Tokyo");
+	   	mapping.put("TV Tokyo","Asia/Tokyo");
+	   	mapping.put("TVA","Asia/Tokyo");
+	   	mapping.put("WOWOW","Asia/Tokyo");
 	   	mapping.put("ESPN Korea","Etc/GMT+9");
 	   	mapping.put("EBS","Etc/GMT+9");
 	   	mapping.put("KBS","Etc/GMT+9");
 	   	mapping.put("SBS","Etc/GMT+9");
 	   	mapping.put("Munhwa Broadcasting Corporation (MBC)","Etc/GMT+9");
-	   	mapping.put("TV1","AET");
-	   	mapping.put("Network Ten","AET");
-	   	mapping.put("Nine Network","AET");
-	   	mapping.put("Seven Network","AET");
-	   	mapping.put("TVS Sydney","AET");
+	   	mapping.put("TV1","Australia/Sydney");
+	   	mapping.put("Network Ten","Australia/Sydney");
+	   	mapping.put("Nine Network","Australia/Sydney");
+	   	mapping.put("Seven Network","Australia/Sydney");
+	   	mapping.put("TVS Sydney","Australia/Sydney");
 	   	mapping.put("TV One","Etc/GMT+12");
 	   	mapping.put("TVNZ","Etc/GMT+12");  
    }
@@ -336,7 +336,7 @@ public class TvdbTimezoneAdapter extends XmlAdapter<String, String> {
 		if(value == null || value.trim().length() == 0){
 			return null;
 		}
-		return mapping.getOrDefault(value, "US/Pacific");
+		return mapping.getOrDefault(value, "America/Los_Angeles");
 	}
 
 }
