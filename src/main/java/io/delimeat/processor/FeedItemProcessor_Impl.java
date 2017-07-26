@@ -192,7 +192,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
         
         
         episode.setLastFeedCheck(now);	   
-		episodeService.save(episode);
+		episodeService.update(episode);
 		
     	LOGGER.debug(String.format("ending feed item processor for %s", episode.getTitle()));	
 	}

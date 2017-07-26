@@ -116,7 +116,7 @@ public class ShowService_Impl implements ShowService {
 						episode.setStatus(EpisodeStatus.SKIPPED);
 					}
 					
-					episodeService.save(episode);
+					episodeService.update(episode);
 				}
 	
 			}

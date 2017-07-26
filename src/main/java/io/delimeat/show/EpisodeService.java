@@ -23,7 +23,7 @@ public interface EpisodeService {
 
 	public Episode read(Long episodeId);
 
-	public Episode save(Episode episode);
+	public Episode update(Episode episode);
 
 	public void delete(Long episodeId);
 	

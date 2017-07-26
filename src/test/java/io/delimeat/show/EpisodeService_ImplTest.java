@@ -51,7 +51,7 @@ public class EpisodeService_ImplTest {
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
 		service.setEpisodeRepository(repository);
 		
-		service.save(ep);
+		service.update(ep);
 		
 		Mockito.verify(repository).save(ep);
 		Mockito.verifyNoMoreInteractions(repository);

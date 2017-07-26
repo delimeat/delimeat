@@ -50,7 +50,7 @@ public class GuideController implements SparkController {
 	}
 
 	@Override
-	public void init(){
+	public void init() throws Exception{
 		LOGGER.trace("Entering init");
 		
 		Spark.path("/api/guide", () -> {

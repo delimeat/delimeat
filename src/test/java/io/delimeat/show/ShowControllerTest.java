@@ -46,7 +46,7 @@ public class ShowControllerTest {
 	private static ShowController controller;
     
 	@BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
 
 		controller = new ShowController();
 		controller.init();

@@ -379,7 +379,7 @@ public class FeedItemProcessor_ImplTest {
      	Assert.assertTrue(episode.getLastFeedUpdate().toEpochMilli()<=testEnd.toEpochMilli());
      	Assert.assertTrue(episode.getLastFeedCheck().equals(episode.getLastFeedUpdate()));
  
-     	Mockito.verify(service).save(episode);
+     	Mockito.verify(service).update(episode);
      	Mockito.verifyNoMoreInteractions(service);
      	
      	Mockito.verify(feedService).read("SHOW_TITLE");

@@ -43,7 +43,7 @@ public class GuideControllerTest {
 	private static GuideController controller;
     
 	@BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
 
 		controller = new GuideController();
 		controller.init();

@@ -56,7 +56,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#save(io.delimeat.show.domain.Episode)
 	 */
 	@Override
-	public Episode save(Episode episode) {
+	public Episode update(Episode episode) {
 		return episodeRepository.save(episode);
 	}
 

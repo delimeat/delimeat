@@ -95,9 +95,9 @@ public class ShowService_ImplTest {
 		Mockito.verify(showRepository).save(show);
 		Mockito.verifyNoMoreInteractions(showRepository);
 		
-		Mockito.verify(episodeService,Mockito.times(2)).save(Mockito.any());
+		Mockito.verify(episodeService,Mockito.times(2)).update(Mockito.any());
 		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
-		Mockito.verify(episodeService,Mockito.times(2)).save(argumentCaptor.capture());
+		Mockito.verify(episodeService,Mockito.times(2)).update(argumentCaptor.capture());
 		Assert.assertEquals(2,argumentCaptor.getAllValues().size());
 		Assert.assertEquals(EpisodeStatus.SKIPPED, argumentCaptor.getAllValues().get(0).getStatus());
 		Assert.assertEquals(EpisodeStatus.PENDING, argumentCaptor.getAllValues().get(1).getStatus());
