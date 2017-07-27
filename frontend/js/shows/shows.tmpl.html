@@ -5,7 +5,13 @@
   	<p class="list-group-item-text" translate="shows.no_shows_suggestion"/>
   </a>
   
-  <a ng-href="#/show/{{show.showId}}" class="list-group-item" ng-repeat="show in vm.shows | orderBy: ['title']">
+  <div class="list-group-item" ng-show="vm.shows.length>0">
+	<div class="input-group">
+	  <input type="text" class="form-control" placeholder="{{'shows.title_filter_placeholder' | translate}}" ng-model="vm.title_filter">
+	  <span class="input-group-addon"><span class="glyphicon glyphicon-filter"/></span>
+	</div>
+  </div>
+  <a ng-href="#/show/{{show.showId}}" class="list-group-item" ng-repeat="show in vm.shows | filter: {title: vm.title_filter} | orderBy: ['title'] ">
 	<h4 class="list-group-item-heading" ng-bind="show.title"/><span class="badge" ng-show="!show.enabled" translate="shows.disabled"/><span class="badge" ng-show="!show.airing" translate="shows.ended"/>
   </a>
   

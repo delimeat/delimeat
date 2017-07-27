@@ -14,20 +14,24 @@
 	"episodes":{
 		"page_title": "Home",
 		"no_episodes_title":"No Episodes awaiting download",
-		"no_episodes_suggestion":"Either your all up to date or you have not added any shows"
+		"no_episodes_suggestion":"Either your all up to date or you have not added any shows",
+		"title_filter_placeholder": "Filter by show"
 	},
     "episode":{
     	"season_format": "Season {{season}} Episode {{episode}}: '{{title}}'",
     	"mini_series_format": "Part {{episode}}: '{{title}}'",
     	"season":"Season",
-    	"no_title":"TBA"
+    	"no_title":"TBA",
+    	"skip": "Skip",
+    	"pending": "Pending"
 	},
 	"shows":{
 		"page_title": "Shows",
 		"no_shows_title":"No Shows Added",
 		"no_shows_suggestion":"Click here to add a show",
 		"disabled":"Disabled",
-		"ended":"Ended"
+		"ended":"Ended",
+		"title_filter_placeholder": "Filter by title"
 	},
 	"show":{
 		"title":"Title",

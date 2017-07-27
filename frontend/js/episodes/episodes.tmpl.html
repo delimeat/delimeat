@@ -5,11 +5,23 @@
   	<p class="list-group-item-text" translate="episodes.no_episodes_suggestion"/>
   </div>
   
-  <a ng-href="#/show/{{episode.show.showId}}" class="list-group-item" ng-repeat="episode in vm.episodes | orderBy: ['title']">
+
+  <div class="list-group-item" ng-show="vm.episodes.length>0">
+	<div class="input-group">
+	  <input type="text" class="form-control" placeholder="{{'episodes.title_filter_placeholder' | translate}}" ng-model="vm.title_filter">
+	  <span class="input-group-addon"><span class="glyphicon glyphicon-filter"/></span>
+	</div>
+  </div>
+  
+  <a ng-href="#/show/{{episode.show.showId}}" class="list-group-item" ng-repeat="episode in vm.episodes | filter: {show.title: vm.title_filter} | orderBy: ['airDateTime','title']">
 	<h4 class="list-group-item-heading" ng-bind="episode.show.title"/><span class="badge" ng-show="!episode.show.enabled" translate="shows.disabled"/><span class="badge" ng-show="!episode.show.airing" translate="shows.ended"/>
 	
 	<h4 ng-class="headingclass" translate="episode.season_format" translate-values="{ season: episode.seasonNum, episode: episode.episodeNum, title: episode.title || ('episode.no_title' | translate) }"/>
-	<p ng-class="textclass" ng-bind="episode.airDate + ' ' + episode.show.airtime | applytz : episode.show.timezone | date : 'yyyy-MM-dd h:mm a'"/>
+	<p ng-class="textclass" ng-bind="episode.airDateTime | date : 'yyyy-MM-dd h:mm a'"/>
+	
+	<button class="btn btn-default pull-right" ng-show="episode.status == 'PENDING'" ng-click="vm.skip(episode)"><span class="glyphicon glyphicon-remove"/> <span translate="episode.skip"/></button>
+	<button class="btn btn-default pull-right" ng-show="episode.status <> 'PENDING'" ng-click="vm.pending(episode)"><span class="glyphicon glyphicon-download"/> <span translate="episode.pending"/></button>
+	
   </a>
   
 </div>

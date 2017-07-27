@@ -10,5 +10,7 @@ function ShowsController(shows) {
 	
 	// data
 	vm.shows = shows;
+	
+	vm.title_filter = "";
 
 }
