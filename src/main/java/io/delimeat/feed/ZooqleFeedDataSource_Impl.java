@@ -30,7 +30,7 @@ public class ZooqleFeedDataSource_Impl extends AbstractJaxbFeedDataSource implem
 	private String baseUri;
 
 	public ZooqleFeedDataSource_Impl(){
-		super(FeedSource.ZOOQLE, "application/xml","oxm/feed-zooqle-oxm.xml");
+		super(FeedSource.ZOOQLE, "application/xml","oxm/feed-zooqle-oxm.xml", "application/rss+xml");
 	}
 
 	/**

@@ -30,7 +30,7 @@ public class SkyTorrentsFeedDataSource_Impl extends AbstractJaxbFeedDataSource {
 	private String baseUri;
 	
 	public SkyTorrentsFeedDataSource_Impl(){
-		super(FeedSource.SKYTORRENTS, "application/xml","oxm/feed-skytorrents-oxm.xml");
+		super(FeedSource.SKYTORRENTS, "application/xml","oxm/feed-skytorrents-oxm.xml", "text/xml");
 	}
 	
 	/**

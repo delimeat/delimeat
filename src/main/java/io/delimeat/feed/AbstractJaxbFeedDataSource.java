@@ -27,6 +27,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSearch;
@@ -34,12 +36,15 @@ import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 	
+  	private  final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  	
 	private final FeedSource feedSource;
 	private final Map<String,Object> properties;
 	private final Map<String,String> headers;
@@ -65,14 +70,14 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 		return headers;
 	}
 
-	public AbstractJaxbFeedDataSource(FeedSource feedSource, String mediaType, String metadata_source){
+	public AbstractJaxbFeedDataSource(FeedSource feedSource, String mediaType, String metadata_source, String contentType){
 		properties = new HashMap<String,Object>();
 		properties.put("eclipselink.oxm.metadata-source", metadata_source);
 		properties.put("eclipselink.media-type", mediaType);
 		properties.put("eclipselink.json.include-root", false);
 		
 		headers = new HashMap<String,String>();
-		headers.put("Accept", mediaType);
+		headers.put("Accept", contentType);
 		
 		this.feedSource = feedSource;
 	}
@@ -106,6 +111,13 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 
 			Response response = client.newCall(request).execute();
 			if (response.isSuccessful()) {
+				if(MediaType.parse(headers.get("Accept")).equals(response.body().contentType()) == false){
+					LOGGER.debug(response.body().contentType().toString());
+					LOGGER.debug(response.body().string());
+					throw new FeedException(String.format("Feed returned content type %s  for url: %s",response.body().contentType().toString(), response.request().url()));
+				}
+				
+				System.out.println(response.body().string());
 				StreamSource source = new StreamSource(response.body().byteStream());
 				return getContext().createUnmarshaller().unmarshal(source, FeedSearch.class).getValue().getResults();
 			} else {

@@ -30,7 +30,7 @@ public class TorrentDownloadsFeedDataSource_Impl extends AbstractJaxbFeedDataSou
 	private String baseUri;
 	
 	public TorrentDownloadsFeedDataSource_Impl() {
-		super(FeedSource.TORRENTDOWNLOADS, "application/xml","oxm/feed-torrentdownloads-oxm.xml");
+		super(FeedSource.TORRENTDOWNLOADS, "application/xml","oxm/feed-torrentdownloads-oxm.xml", "text/html");
 	}
 
 	/**

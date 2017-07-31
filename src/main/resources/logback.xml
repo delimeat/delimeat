@@ -8,11 +8,23 @@
 		</encoder>
 	</appender>
 	
+<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+	<file>delimeat.log</file>
+	<append>false</append>
+	<immediateFlush>true</immediateFlush>
+	<encoder>
+		<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+		</pattern>
+		<charset>utf8</charset>
+	</encoder>
+</appender>
+	
   <logger name="org.springframework" level="WARN"/>
   <logger name="io.delimeat" level="TRACE"/>
  
 	<root level="WARN">
 		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
 	</root>
 
 

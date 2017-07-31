@@ -30,7 +30,7 @@ public class LimeTorrentsFeedDataSource_Impl extends AbstractJaxbFeedDataSource 
 	private String baseUri;
 	
 	public LimeTorrentsFeedDataSource_Impl() {
-		super(FeedSource.LIMETORRENTS, "application/xml","oxm/feed-limetorrents-oxm.xml");
+		super(FeedSource.LIMETORRENTS, "application/xml","oxm/feed-limetorrents-oxm.xml", "text/html");
 	}
 
 	/**
