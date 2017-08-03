@@ -62,10 +62,10 @@ public class SkyTorrentsFeedDataSource_ImplTest {
      			+ "</item></channel></rss>";
      
 		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
+							.withHeader("Content-Type", "text/xml")
 							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
@@ -84,10 +84,10 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 	public void readWebAppExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","text/xml")));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -99,10 +99,10 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 	public void readProcessingExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","text/xml")
                      .withFixedDelay(2000)));
 
 		dataSource.setBaseUri("http://localhost:8089");

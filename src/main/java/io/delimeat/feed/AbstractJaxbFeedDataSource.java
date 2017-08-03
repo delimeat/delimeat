@@ -117,7 +117,6 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 					throw new FeedException(String.format("Feed returned content type %s  for url: %s",response.body().contentType().toString(), response.request().url()));
 				}
 				
-				System.out.println(response.body().string());
 				StreamSource source = new StreamSource(response.body().byteStream());
 				return getContext().createUnmarshaller().unmarshal(source, FeedSearch.class).getValue().getResults();
 			} else {

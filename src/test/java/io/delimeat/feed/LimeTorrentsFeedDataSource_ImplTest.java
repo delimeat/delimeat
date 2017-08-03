@@ -62,10 +62,10 @@ public class LimeTorrentsFeedDataSource_ImplTest {
      			+ "</item></channel></rss>";
      	
 		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/html"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
+							.withHeader("Content-Type", "text/html")
 							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
@@ -87,10 +87,10 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 	public void readWebAppExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/html"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","text/html")));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -102,10 +102,10 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 	public void readProcessingExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/searchrss/title/"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("text/html"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","text/html")
                      .withFixedDelay(2000)));
 
 		dataSource.setBaseUri("http://localhost:8089");

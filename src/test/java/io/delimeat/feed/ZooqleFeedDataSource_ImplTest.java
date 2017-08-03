@@ -63,10 +63,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
+							.withHeader("Content-Type", "application/rss+xml")
 							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
@@ -86,10 +86,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","application/rss+xml")));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -103,10 +103,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","application/rss+xml")
                      .withFixedDelay(2000)));
 
 		dataSource.setBaseUri("http://localhost:8089");

@@ -63,10 +63,10 @@ public class TorrentProjectFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/"))
 				.withQueryParam("s", equalTo("title"))
 				.withQueryParam("out", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/xml")
+							.withHeader("Content-Type", "application/rss+xml")
 							.withBody(responseBody)));
 
 
@@ -87,10 +87,10 @@ public class TorrentProjectFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/"))
 				.withQueryParam("s", equalTo("title"))
 				.withQueryParam("out", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/xml")));
+							.withHeader("Content-Type","application/rss+xml")));
 
 
 		dataSource.setBaseUri("http://localhost:8089");
@@ -105,10 +105,10 @@ public class TorrentProjectFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/"))
 				.withQueryParam("s", equalTo("title"))
 				.withQueryParam("out", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/xml"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/xml")
+							.withHeader("Content-Type","application/rss+xml")
                      .withFixedDelay(2000)));
 
 

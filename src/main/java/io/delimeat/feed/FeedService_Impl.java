@@ -61,7 +61,7 @@ public class FeedService_Impl implements FeedService {
 				LOGGER.debug(String.format("read %s results from %s", results.size(), dao.getFeedSource()));
 				readResults.addAll(results);
 			}catch(FeedException ex){
-				LOGGER.warn(String.format("Encountered an error reading from %s, continuing", dao.getFeedSource()), ex);
+				LOGGER.warn(String.format("Encountered an error reading from %s, continuing", dao.getFeedSource()));
 				//TODO add some logging of statistics of failure/success by source
 			}
 		}
