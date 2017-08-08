@@ -20,14 +20,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import io.delimeat.util.jaxb.InstantAdapter;
+
 public class HttpStatistics {
 
-	private final String host;
+	private String host;
+
 	private final Map<Integer, Integer> responseCounts = new HashMap<>();
 	
+	@XmlJavaTypeAdapter(InstantAdapter.class)
 	private Instant lastSuccess;
+	@XmlJavaTypeAdapter(InstantAdapter.class)
 	private Instant lastFailure;
 		
+	public HttpStatistics(){	
+	}
 	/**
 	 * @param host
 	 */
@@ -64,6 +73,12 @@ public class HttpStatistics {
 	 */
 	public String getHost() {
 		return host;
+	}
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
 	}
 	/**
 	 * @return the responseCounts

@@ -134,7 +134,7 @@ public class ShowService_Impl implements ShowService {
 		try{
 			Optional<Show> optional = Optional.ofNullable(showRepository.findOne(id));
 			if(optional.isPresent() == false){
-				throw new ShowNotFoundException();
+				throw new ShowNotFoundException(id);
 			}
 			return optional.get();
 		} catch (DataAccessException e) {

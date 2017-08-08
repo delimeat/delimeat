@@ -15,21 +15,16 @@
  */
 package io.delimeat.show.exception;
 
-public class ShowNotFoundException extends ShowException {
+import org.junit.Assert;
+import org.junit.Test;
 
-	private static final long serialVersionUID = 1L;
+import io.delimeat.show.exception.ShowNotFoundException;
 
-	private final Long showId;
-	
-	public ShowNotFoundException(Long showId){
-		this.showId = showId;
+public class ShowNotFoundExceptionTest {
+
+	@Test
+	public void constructorTest(){
+		ShowNotFoundException ex = new ShowNotFoundException(Long.MAX_VALUE);
+		Assert.assertEquals(Long.MAX_VALUE, ex.getShowId().longValue());
 	}
-
-	/**
-	 * @return the showId
-	 */
-	public Long getShowId() {
-		return showId;
-	}
-	
 }

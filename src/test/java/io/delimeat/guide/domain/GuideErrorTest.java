@@ -19,8 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.guide.domain.GuideError;
-
 public class GuideErrorTest {
   
 	private GuideError error;
@@ -42,4 +40,27 @@ public class GuideErrorTest {
 		error.setMessage("MESSAGE");
 		Assert.assertEquals("GuideError [message=MESSAGE]", error.toString());
 	}
+	
+	@Test
+	public void hashCodeTest() {
+		error.setMessage("MESSAGE");
+
+		Assert.assertEquals(1672907782, error.hashCode());
+	}
+	
+	@Test
+	public void equalsTest(){
+		Assert.assertTrue(error.equals(error));
+	}
+	
+	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(error.equals(null));
+	}
+	
+	@Test
+	public void equalsOtherClassTest(){
+		Assert.assertFalse(error.equals("STRING"));
+	}
+	
 }
