@@ -21,9 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.torrent.domain.Torrent;
-import io.delimeat.torrent.domain.TorrentInfo;
-
 public class TorrentTest {
 
 	private Torrent torrent;
@@ -44,8 +41,8 @@ public class TorrentTest {
 	public void trackersTest() {
 		Assert.assertEquals(0, torrent.getTrackers().size());
 
-		torrent.setTrackers(Arrays.asList("TRACKER_1","TRACKER_2"));
-		
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+
 		Assert.assertEquals(2, torrent.getTrackers().size());
 		Assert.assertEquals("TRACKER_1", torrent.getTrackers().get(0));
 		Assert.assertEquals("TRACKER_2", torrent.getTrackers().get(1));
@@ -54,10 +51,10 @@ public class TorrentTest {
 	@Test
 	public void infoTest() {
 		Assert.assertNull(torrent.getInfo());
-		
+
 		TorrentInfo info = new TorrentInfo();
 		torrent.setInfo(info);
-		
+
 		Assert.assertEquals(info, torrent.getInfo());
 	}
 
@@ -67,9 +64,18 @@ public class TorrentTest {
 		torrent.setBytes("BYTES".getBytes());
 		Assert.assertEquals("BYTES", new String(torrent.getBytes()));
 	}
-  
-  	@Test
-  	public void toStringTest(){
-     	Assert.assertEquals("Torrent [trackers=[], ]", torrent.toString());
-   }
+
+	@Test
+	public void toStringTest() {
+		Assert.assertEquals("Torrent [trackers=[], ]", torrent.toString());
+	}
+
+	@Test
+	public void hashCodeTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		torrent.setInfo(new TorrentInfo());
+		torrent.setBytes("BYTES".getBytes());
+		Assert.assertEquals(-453204695, torrent.hashCode());
+	}
 }

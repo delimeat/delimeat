@@ -48,4 +48,11 @@ public class TorrentFileTest {
 	public void toStringTest() {
 		Assert.assertEquals("TorrentFile [length=0, ]", torrentFile.toString());
 	}
+  	
+	@Test
+  	public void hashCodeTest(){
+		torrentFile.setName("NAME");
+		torrentFile.setLength(Long.MAX_VALUE);
+     	Assert.assertEquals(-2145094068, torrentFile.hashCode());
+   }
 }

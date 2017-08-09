@@ -55,4 +55,47 @@ public class GuideSearchTest {
      	Assert.assertEquals("GuideSearch [results=[GuideSearchResult []]]",search.toString());
    }
 
+  	
+	@Test
+	public void equalsTest(){
+		search.setResults(Arrays.asList(new GuideSearchResult()));
+		GuideSearch other = new GuideSearch();
+		other.setResults(Arrays.asList(new GuideSearchResult()));
+		Assert.assertTrue(search.equals(other));
+	}
+	
+	@Test
+	public void equalsSelfTest(){
+		Assert.assertTrue(search.equals(search));
+	}
+	
+	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(search.equals(null));
+	}
+	
+	@Test
+	public void equalsOtherClassTest(){
+		Assert.assertFalse(search.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsNullOtherNullTest(){
+		GuideSearch other = new GuideSearch();
+		Assert.assertTrue(search.equals(other));
+	}
+	
+	@Test
+	public void equalsNullOtherNotNullTest(){
+		GuideSearch other = new GuideSearch();
+		other.setResults(Arrays.asList(new GuideSearchResult()));
+		Assert.assertFalse(search.equals(other));
+	}
+	
+	@Test
+	public void equalsNotNullOtherNullTest(){
+		search.setResults(Arrays.asList(new GuideSearchResult()));
+		GuideSearch other = new GuideSearch();
+		Assert.assertFalse(search.equals(other));
+	}
 }

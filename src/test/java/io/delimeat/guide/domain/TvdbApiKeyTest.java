@@ -48,4 +48,47 @@ public class TvdbApiKeyTest {
      	apiKey.setValue("VALUE");
      	Assert.assertEquals("TvdbApiKey [value=VALUE]", apiKey.toString());
    }
+  	
+	@Test
+	public void equalsTest(){
+		apiKey.setValue("VALUE");
+		TvdbApiKey other = new TvdbApiKey();
+		other.setValue("VALUE");
+		Assert.assertTrue(apiKey.equals(other));
+	}
+	
+	@Test
+	public void equalsSelfTest(){
+		Assert.assertTrue(apiKey.equals(apiKey));
+	}
+	
+	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(apiKey.equals(null));
+	}
+	
+	@Test
+	public void equalsOtherClassTest(){
+		Assert.assertFalse(apiKey.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsNullMessageOtherNullMessageTest(){
+		TvdbApiKey other = new TvdbApiKey();
+		Assert.assertTrue(apiKey.equals(other));
+	}
+	
+	@Test
+	public void equalsNullMessageOtherNotNullMessageTest(){
+		TvdbApiKey other = new TvdbApiKey();
+		other.setValue("VALUE");
+		Assert.assertFalse(apiKey.equals(other));
+	}
+	
+	@Test
+	public void equalsNotNullMessageOtherNullMessageTest(){
+		apiKey.setValue("VALUE");
+		TvdbApiKey other = new TvdbApiKey();
+		Assert.assertFalse(apiKey.equals(other));
+	}
 }

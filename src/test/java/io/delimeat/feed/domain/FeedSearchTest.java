@@ -21,9 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.feed.domain.FeedSearch;
-
 public class FeedSearchTest {
 
 	private FeedSearch search;
@@ -54,5 +51,48 @@ public class FeedSearchTest {
 		search.getResults().add(new FeedResult());
      	Assert.assertEquals("FeedSearch [results=[FeedResult [contentLength=0, seeders=0, leechers=0, feedResultRejections=[], ]]]",search.toString());
    }
+  	
+	@Test
+	public void equalsTest(){
+		search.setResults(Arrays.asList(new FeedResult()));
+		FeedSearch other = new FeedSearch();
+		other.setResults(Arrays.asList(new FeedResult()));
+		Assert.assertTrue(search.equals(other));
+	}
+	
+	@Test
+	public void equalsSelfTest(){
+		Assert.assertTrue(search.equals(search));
+	}
+	
+	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(search.equals(null));
+	}
+	
+	@Test
+	public void equalsOtherClassTest(){
+		Assert.assertFalse(search.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsNullOtherNullTest(){
+		FeedSearch other = new FeedSearch();
+		Assert.assertTrue(search.equals(other));
+	}
+	
+	@Test
+	public void equalsNullOtherNotNullTest(){
+		FeedSearch other = new FeedSearch();
+		other.setResults(Arrays.asList(new FeedResult()));
+		Assert.assertFalse(search.equals(other));
+	}
+	
+	@Test
+	public void equalsNotNullOtherNullTest(){
+		search.setResults(Arrays.asList(new FeedResult()));
+		FeedSearch other = new FeedSearch();
+		Assert.assertFalse(search.equals(other));
+	}
 
 }

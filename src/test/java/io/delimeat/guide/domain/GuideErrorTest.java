@@ -50,6 +50,14 @@ public class GuideErrorTest {
 	
 	@Test
 	public void equalsTest(){
+		error.setMessage("MESSAGE");
+		GuideError other = new GuideError();
+		other.setMessage("MESSAGE");
+		Assert.assertTrue(error.equals(other));
+	}
+	
+	@Test
+	public void equalsSelfTest(){
 		Assert.assertTrue(error.equals(error));
 	}
 	
@@ -62,5 +70,26 @@ public class GuideErrorTest {
 	public void equalsOtherClassTest(){
 		Assert.assertFalse(error.equals("STRING"));
 	}
+	
+	@Test
+	public void equalsNullMessageOtherNullMessageTest(){
+		GuideError other = new GuideError();
+		Assert.assertTrue(error.equals(other));
+	}
+	
+	@Test
+	public void equalsNullMessageOtherNotNullMessageTest(){
+		GuideError other = new GuideError();
+		other.setMessage("NOT NULL");
+		Assert.assertFalse(error.equals(other));
+	}
+	
+	@Test
+	public void equalsNotNullMessageOtherNullMessageTest(){
+		error.setMessage("NOT NULL");
+		GuideError other = new GuideError();
+		Assert.assertFalse(error.equals(other));
+	}
+	
 	
 }
