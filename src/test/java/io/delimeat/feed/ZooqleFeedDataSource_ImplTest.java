@@ -51,7 +51,19 @@ public class ZooqleFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.ZOOQLE, dataSource.getFeedSource());
 	}
-  
+	
+	@Test
+	public void baseUriTest(){
+		Assert.assertNull(dataSource.getBaseUri());
+		dataSource.setBaseUri("http://localhost:8089");
+		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("ZooqleFeedDataSource_Impl [feedSource=ZOOQLE, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-zooqle-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=application/rss+xml}]", dataSource.toString());
+	}
+	
 	@Test
 	public void readTest() throws Exception{    	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"

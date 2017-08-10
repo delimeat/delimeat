@@ -52,7 +52,19 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.TORRENTDOWNLOADS, dataSource.getFeedSource());
 	}
-  
+	
+	@Test
+	public void baseUriTest(){
+		Assert.assertNull(dataSource.getBaseUri());
+		dataSource.setBaseUri("http://localhost:8089");
+		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("TorrentDownloadsFeedDataSource_Impl [feedSource=TORRENTDOWNLOADS, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-torrentdownloads-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=text/html}]", dataSource.toString());
+	}
+	
 	@Test
 	public void readTest() throws Exception{
     	

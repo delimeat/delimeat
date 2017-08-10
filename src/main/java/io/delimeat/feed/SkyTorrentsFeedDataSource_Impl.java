@@ -61,9 +61,9 @@ public class SkyTorrentsFeedDataSource_Impl extends AbstractJaxbFeedDataSource {
 	@Override
 	public String toString() {
 		return "SkyTorrentsFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
-				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
-				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
-				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
+				+ (getFeedSource() != null ? "feedSource=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "properties=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "headers" + getHeaders() : "") + "]";
 	}
 
 }

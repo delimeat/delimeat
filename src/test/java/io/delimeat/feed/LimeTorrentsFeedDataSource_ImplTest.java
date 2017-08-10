@@ -52,6 +52,18 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
 	}
+	
+	@Test
+	public void baseUriTest(){
+		Assert.assertNull(dataSource.getBaseUri());
+		dataSource.setBaseUri("http://localhost:8089");
+		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("LimeTorrentsFeedDataSource_Impl [feedSource=LIMETORRENTS, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-limetorrents-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=text/html}]", dataSource.toString());
+	}
   
 	@Test
 	public void readTest() throws Exception{
