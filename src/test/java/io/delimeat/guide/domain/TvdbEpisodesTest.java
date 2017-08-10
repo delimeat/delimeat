@@ -70,21 +70,224 @@ public class TvdbEpisodesTest {
 		Assert.assertEquals(1, episodes.getEpisodes().size());
 		Assert.assertEquals(episode, episodes.getEpisodes().get(0));
 	}
-  
-  	@Test	
-  	public void hashCodeTest(){
+
+	@Test
+	public void hashCodeTest() {
 		episodes.setFirst(Integer.MAX_VALUE);
 		episodes.setLast(Integer.MAX_VALUE);
 		episodes.setNext(Integer.MAX_VALUE);
 		episodes.setPrevious(Integer.MAX_VALUE);
 		GuideEpisode episode = new GuideEpisode();
-		episodes.setEpisodes(Arrays.asList(episode)); 
-     	Assert.assertEquals(-139285987,episodes.hashCode());
-   }
-  
-  	@Test	
-  	public void toStringTest(){
-		episodes.setEpisodes(Arrays.asList(new GuideEpisode())); 
-     	Assert.assertEquals("TvdbEpisodes [first=0, last=0, next=0, previous=0, episodes=[GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]]]",episodes.toString());
-   }
+		episodes.setEpisodes(Arrays.asList(episode));
+		Assert.assertEquals(-139285987, episodes.hashCode());
+	}
+
+	@Test
+	public void toStringTest() {
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertEquals("TvdbEpisodes [first=0, last=0, next=0, previous=0, episodes=[GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]]]",
+				episodes.toString());
+	}
+
+	@Test
+	public void equalsTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertTrue(episodes.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(episodes.equals(episodes));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(episodes.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(episodes.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsEpisodesNullTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(null);
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsFirstNullTest() {
+		episodes.setFirst(null);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsLastNullTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(null);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsNextNullTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(null);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsPreviousNullTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(null);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsEpisodesTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode(),new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsFirstTest() {
+		episodes.setFirst(Integer.MIN_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsLastTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MIN_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsNextTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MIN_VALUE);
+		episodes.setPrevious(Integer.MAX_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
+	
+	@Test
+	public void equalsPreviousTest() {
+		episodes.setFirst(Integer.MAX_VALUE);
+		episodes.setLast(Integer.MAX_VALUE);
+		episodes.setNext(Integer.MAX_VALUE);
+		episodes.setPrevious(Integer.MIN_VALUE);
+		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
+		TvdbEpisodes other = new TvdbEpisodes();
+		other.setFirst(Integer.MAX_VALUE);
+		other.setLast(Integer.MAX_VALUE);
+		other.setNext(Integer.MAX_VALUE);
+		other.setPrevious(Integer.MAX_VALUE);
+
+		other.setEpisodes(Arrays.asList(new GuideEpisode()));
+		Assert.assertFalse(episodes.equals(other));
+	}
 }
