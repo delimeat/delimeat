@@ -78,4 +78,112 @@ public class TorrentTest {
 		torrent.setBytes("BYTES".getBytes());
 		Assert.assertEquals(-453204695, torrent.hashCode());
 	}
+	
+	@Test
+	public void equalsTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		torrent.setInfo(new TorrentInfo());
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertTrue(torrent.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(torrent.equals(torrent));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(torrent.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(torrent.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsInfoNullTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		torrent.setInfo(null);
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
+	
+	@Test
+	public void equalsTrackerNullTest() {
+		torrent.setTracker(null);
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		torrent.setInfo(new TorrentInfo());
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
+	
+	@Test
+	public void equalsTrackersNullTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(null);
+		torrent.setInfo(new TorrentInfo());
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		TorrentInfo info = new TorrentInfo();
+		info.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrent.setInfo(info);
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
+	
+	@Test
+	public void equalsTrackerTest() {
+		torrent.setTracker(null);
+		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		torrent.setInfo(new TorrentInfo());
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
+	
+	@Test
+	public void equalsTrackersTest() {
+		torrent.setTracker("TRACKER");
+		torrent.setTrackers(Arrays.asList("TRACKER_1"));
+		torrent.setInfo(new TorrentInfo());
+		Torrent other = new Torrent();
+		other.setTracker("TRACKER");
+		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
+		other.setInfo(new TorrentInfo());
+
+		Assert.assertFalse(torrent.equals(other));
+	}
 }

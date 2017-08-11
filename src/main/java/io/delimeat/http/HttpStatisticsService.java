@@ -15,7 +15,6 @@
  */
 package io.delimeat.http;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -23,13 +22,6 @@ import io.delimeat.http.domain.HttpStatistics;;
 
 public interface HttpStatisticsService {
 
-	/**
-	 * Add a response
-	 * @param uri
-	 * @param status
-	 */
-	public void addResponse(URI uri, int statusCode);
-	
 	/**
 	 * Add a response
 	 * @param url

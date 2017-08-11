@@ -15,9 +15,6 @@
  */
 package io.delimeat.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -55,21 +52,6 @@ public class DelimeatUtils {
 	        return  md.digest();
 		}catch(NoSuchAlgorithmException ex){
 			throw new RuntimeException(ex);
-		}
-	}
-
-	
-	public static byte[] inputStreamToBytes(InputStream input) throws IOException{
-		try(ByteArrayOutputStream buffer = new ByteArrayOutputStream()){
-			int nRead;
-			byte[] data = new byte[1024];
-	
-			while ((nRead = input.read(data, 0, data.length)) != -1) {
-			  buffer.write(data, 0, nRead);
-			}
-	
-			buffer.flush();
-			return buffer.toByteArray();
 		}
 	}
 	

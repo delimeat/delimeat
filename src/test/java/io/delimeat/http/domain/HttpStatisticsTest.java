@@ -21,8 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.http.domain.HttpStatistics;
-
 public class HttpStatisticsTest {
 
 	private HttpStatistics stats;
@@ -68,6 +66,127 @@ public class HttpStatisticsTest {
 	@Test
 	public void toStringTest(){
 		Assert.assertEquals("HttpStatistics [host=host, responseCounts={}, ]", new HttpStatistics("host").toString());
+	}
+	
+  	@Test
+  	public void hashCodeTest(){
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(Instant.EPOCH);
+
+		Assert.assertEquals(-1211457529,stats.hashCode());
+   }
+  	
+	@Test
+	public void equalsTest() {
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(Instant.EPOCH);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertTrue(stats.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(stats.equals(stats));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(stats.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(stats.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsLastSuccessNullTest() {
+		stats.setLastSuccess(null);
+		stats.setLastFailure(Instant.EPOCH);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
+	}
+	
+	@Test
+	public void equalsLastFailureNullTest() {
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(null);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
+	}
+	
+	@Test
+	public void equalsHostNullTest() {
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(Instant.EPOCH);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost(null);
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
+	}
+	
+	@Test
+	public void equalsLastSuccessTest() {
+		stats.setLastSuccess(Instant.now());
+		stats.setLastFailure(Instant.EPOCH);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
+	}
+	
+	@Test
+	public void equalsLastFailureTest() {
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(Instant.now());
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
+	}
+	
+	@Test
+	public void equalsHostTest() {
+		stats.setLastSuccess(Instant.EPOCH);
+		stats.setLastFailure(Instant.EPOCH);
+		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
+		HttpStatistics other = new HttpStatistics();
+		other.setHost("other host");
+		other.setLastSuccess(Instant.EPOCH);
+		other.setLastFailure(Instant.EPOCH);
+		other.getResponseCounts().put(201, Integer.MAX_VALUE);
+
+		Assert.assertFalse(stats.equals(other));
 	}
 	
 }
