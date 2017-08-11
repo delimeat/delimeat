@@ -86,7 +86,9 @@ public class GuideSearchTest {
 	}
 	
 	@Test
-	public void equalsNullOtherNotNullTest(){
+	public void equalsResultsNullTest(){
+		search.setResults(null);
+		
 		GuideSearch other = new GuideSearch();
 		other.setResults(Arrays.asList(new GuideSearchResult()));
 		Assert.assertFalse(search.equals(other));
@@ -95,7 +97,9 @@ public class GuideSearchTest {
 	@Test
 	public void equalsNotNullOtherNullTest(){
 		search.setResults(Arrays.asList(new GuideSearchResult()));
+		
 		GuideSearch other = new GuideSearch();
+		other.setResults(null);
 		Assert.assertFalse(search.equals(other));
 	}
 }

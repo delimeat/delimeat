@@ -82,8 +82,8 @@ public class TvdbTokenTest {
      	token.setValue(null);
      	token.setTime(1455858100917L);
      	TvdbToken other = new TvdbToken();
-     	token.setValue("VALUE");
-     	token.setTime(1455858100917L);
+     	other.setValue("VALUE");
+     	other.setTime(1455858100917L);
 
 		Assert.assertFalse(token.equals(other));
 	}
@@ -93,8 +93,8 @@ public class TvdbTokenTest {
      	token.setValue("VALUE");
      	token.setTime(1455858100917L);
      	TvdbToken other = new TvdbToken();
-     	token.setValue("VALUE_OTHER");
-     	token.setTime(1455858100917L);
+     	other.setValue("VALUE_OTHER");
+     	other.setTime(1455858100917L);
 
 		Assert.assertFalse(token.equals(other));
 	}
@@ -104,8 +104,8 @@ public class TvdbTokenTest {
      	token.setValue("VALUE");
      	token.setTime(1455858100917L);
      	TvdbToken other = new TvdbToken();
-     	token.setValue("VALUE");
-     	token.setTime(Long.MIN_VALUE);
+     	other.setValue("VALUE");
+     	other.setTime(Long.MIN_VALUE);
 
 		Assert.assertFalse(token.equals(other));
 	}

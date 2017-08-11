@@ -45,6 +45,10 @@ public class EpisodeService_ImplTest {
 	}
 	
 	@Test
+	public void toStringTest(){
+		Assert.assertEquals("EpisodeService_Impl []", service.toString());
+	}
+	@Test
 	public void saveTest() throws Exception{
 		Episode ep = new Episode();
 		

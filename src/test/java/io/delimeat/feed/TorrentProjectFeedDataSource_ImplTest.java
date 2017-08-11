@@ -94,7 +94,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readWebAppExceptionTest() throws Exception {
+	public void readExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/"))
 				.withQueryParam("s", equalTo("title"))
@@ -104,6 +104,29 @@ public class TorrentProjectFeedDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","application/rss+xml")));
 
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
+	@Test(expected=FeedException.class)
+	public void readContentTypeExceptionTest() throws Exception {
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
+     			+ "</item></channel></rss>";
+     
+		stubFor(get(urlPathEqualTo("/"))
+				.withQueryParam("s", equalTo("title"))
+				.withQueryParam("out", equalTo("rss"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		

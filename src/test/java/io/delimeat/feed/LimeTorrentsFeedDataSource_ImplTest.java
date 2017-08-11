@@ -96,13 +96,34 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readWebAppExceptionTest() throws Exception {
+	public void readExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/searchrss/title/"))
 				.withHeader("Accept", equalTo("text/html"))
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","text/html")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
+	@Test(expected=FeedException.class)
+	public void readContentTypeExceptionTest() throws Exception {
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
+     			+ "<size>9223372036854775807</size>"
+     			+ "</item></channel></rss>";
+     	
+		stubFor(get(urlPathEqualTo("/searchrss/title/"))
+				.withHeader("Accept", equalTo("text/html"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		

@@ -49,6 +49,10 @@ public class GuideService_ImplTest {
 	}
 
 	@Test
+	public void toStringTest(){
+		Assert.assertEquals("GuideService_Impl []", service.toString());
+	}
+	@Test
 	public void readLikeTest() throws IOException, Exception {
 		GuideDataSource mockedDataSource = Mockito.mock(GuideDataSource.class);
 		List<GuideSearchResult> results = new ArrayList<GuideSearchResult>();
