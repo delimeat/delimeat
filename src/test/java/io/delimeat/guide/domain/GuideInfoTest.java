@@ -509,7 +509,7 @@ public class GuideInfoTest {
   
   	@Test	
   	public void equalsTitleNullTest() throws Exception{
-     	info.setTitle("TITLE");
+     	info.setTitle(null);
      	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		info.setDescription("DESCRIPTION");
 		info.setGuideId("GUIDEID");
@@ -522,7 +522,7 @@ public class GuideInfoTest {
      	info.setLastUpdated(LocalDate.parse("2016-02-19"));
      
     	GuideInfo other = new GuideInfo();
-     	other.setTitle(null);
+     	other.setTitle("TITLE");
      	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
@@ -540,7 +540,7 @@ public class GuideInfoTest {
   	@Test	
   	public void equalsAirDaysNullTest() throws Exception{
      	info.setTitle("TITLE");
-     	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
+     	info.setAirDays(null);
 		info.setDescription("DESCRIPTION");
 		info.setGuideId("GUIDEID");
 		info.setTimezone("TIMEZONE");
@@ -553,7 +553,7 @@ public class GuideInfoTest {
      
     	GuideInfo other = new GuideInfo();
      	other.setTitle("TITLE");
-     	other.setAirDays(null);
+     	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setTimezone("TIMEZONE");
@@ -571,7 +571,7 @@ public class GuideInfoTest {
   	public void equalsDescriptionNullTest() throws Exception{
      	info.setTitle("TITLE");
      	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
-		info.setDescription("DESCRIPTION");
+		info.setDescription(null);
 		info.setGuideId("GUIDEID");
 		info.setTimezone("TIMEZONE");
 		info.setRunningTime(60);
@@ -584,7 +584,7 @@ public class GuideInfoTest {
     	GuideInfo other = new GuideInfo();
      	other.setTitle("TITLE");
      	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
-		other.setDescription(null);
+		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setTimezone("TIMEZONE");
 		other.setRunningTime(60);
@@ -602,7 +602,7 @@ public class GuideInfoTest {
      	info.setTitle("TITLE");
      	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		info.setDescription("DESCRIPTION");
-		info.setGuideId("GUIDEID");
+		info.setGuideId(null);
 		info.setTimezone("TIMEZONE");
 		info.setRunningTime(60);
 		info.setGenres(Arrays.asList("GENRE1"));
@@ -615,7 +615,7 @@ public class GuideInfoTest {
      	other.setTitle("TITLE");
      	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		other.setDescription("DESCRIPTION");
-		other.setGuideId(null);
+		other.setGuideId("GUIDEID");
 		other.setTimezone("TIMEZONE");
 		other.setRunningTime(60);
 		other.setGenres(Arrays.asList("GENRE1"));
@@ -633,7 +633,7 @@ public class GuideInfoTest {
      	info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		info.setDescription("DESCRIPTION");
 		info.setGuideId("GUIDEID");
-		info.setTimezone("TIMEZONE");
+		info.setTimezone(null);
 		info.setRunningTime(60);
 		info.setGenres(Arrays.asList("GENRE1"));
 		info.setAiring(false);
@@ -646,7 +646,7 @@ public class GuideInfoTest {
      	other.setAirDays(Arrays.asList(AiringDay.FRIDAY));
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
-		other.setTimezone(null);
+		other.setTimezone("TIMEZONE");
 		other.setRunningTime(60);
 		other.setGenres(Arrays.asList("GENRE1"));
 		other.setAiring(false);
@@ -665,7 +665,7 @@ public class GuideInfoTest {
 		info.setGuideId("GUIDEID");
 		info.setTimezone("TIMEZONE");
 		info.setRunningTime(60);
-		info.setGenres(Arrays.asList("GENRE1"));
+		info.setGenres(null);
 		info.setAiring(false);
 		info.setAirTime(LocalTime.NOON);
 		info.setFirstAired(LocalDate.parse("2005-04-03"));
@@ -678,7 +678,7 @@ public class GuideInfoTest {
 		other.setGuideId("GUIDEID");
 		other.setTimezone("TIMEZONE");
 		other.setRunningTime(60);
-		other.setGenres(null);
+		other.setGenres(Arrays.asList("GENRE1"));
 		other.setAiring(false);
 		other.setAirTime(LocalTime.NOON);
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
@@ -698,7 +698,7 @@ public class GuideInfoTest {
 		info.setGenres(Arrays.asList("GENRE1"));
 		info.setAiring(false);
 		info.setAirTime(LocalTime.NOON);
-		info.setFirstAired(LocalDate.parse("2005-04-03"));
+		info.setFirstAired(null);
      	info.setLastUpdated(LocalDate.parse("2016-02-19"));
      
     	GuideInfo other = new GuideInfo();
@@ -711,7 +711,7 @@ public class GuideInfoTest {
 		other.setGenres(Arrays.asList("GENRE1"));
 		other.setAiring(false);
 		other.setAirTime(LocalTime.NOON);
-		other.setFirstAired(null);
+		other.setFirstAired(LocalDate.parse("2005-04-03"));
      	other.setLastUpdated(LocalDate.parse("2016-02-19"));
      
      	Assert.assertFalse(info.equals(other));
@@ -728,7 +728,7 @@ public class GuideInfoTest {
 		info.setAiring(false);
 		info.setAirTime(LocalTime.NOON);
 		info.setFirstAired(LocalDate.parse("2005-04-03"));
-     	info.setLastUpdated(LocalDate.parse("2016-02-19"));
+     	info.setLastUpdated(null);
      
     	GuideInfo other = new GuideInfo();
      	other.setTitle("TITLE");
@@ -741,7 +741,7 @@ public class GuideInfoTest {
 		other.setAiring(false);
 		other.setAirTime(LocalTime.NOON);
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
-     	other.setLastUpdated(null);
+     	other.setLastUpdated(LocalDate.parse("2016-02-19"));
      
      	Assert.assertFalse(info.equals(other));
    }
