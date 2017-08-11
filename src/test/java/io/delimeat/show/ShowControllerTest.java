@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,6 +38,8 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowNotFoundException;
 import spark.Spark;
 
 
@@ -59,12 +62,39 @@ public class ShowControllerTest {
         	response.type("application/json");
         });
     }
+	
+	@Before
+	public void setUp(){
+		controller.setEpisodeService(null);
+		controller.setShowService(null);
+	}
     
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
         client.close();
     }
+	
+	
+	@Test
+	public void showServiceTest(){
+		Assert.assertNull(controller.getShowService());
+
+		ShowService showService = Mockito.mock(ShowService.class);
+		controller.setShowService(showService);	
+		
+		Assert.assertEquals(showService, controller.getShowService());
+	}
+	
+	@Test
+	public void episodeServiceTest(){
+		Assert.assertNull(controller.getEpisodeService());
+
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		controller.setEpisodeService(episodeService);	
+		
+		Assert.assertEquals(episodeService, controller.getEpisodeService());
+	}
 	
 	@Test
 	public void getAllTest() throws Exception{
@@ -133,6 +163,48 @@ public class ShowControllerTest {
     	Assert.assertEquals(200, response.getStatus());
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	Assert.assertEquals(show, response.readEntity(Show.class));
+								
+		Mockito.verify(showService).read(1L);
+		Mockito.verifyNoMoreInteractions(showService);
+	}
+	
+	@Test
+	public void getConcurrencyExceptionTest() throws Exception{
+	
+		ShowService showService = Mockito.mock(ShowService.class);
+		Mockito.when(showService.read(1L)).thenThrow(ShowConcurrencyException.class);
+		controller.setShowService(showService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(412, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
+								
+		Mockito.verify(showService).read(1L);
+		Mockito.verifyNoMoreInteractions(showService);
+	}
+	
+	@Test
+	public void getNotFoundExceptionTest() throws Exception{
+	
+		ShowService showService = Mockito.mock(ShowService.class);
+		Mockito.when(showService.read(1L)).thenThrow(ShowNotFoundException.class);
+		controller.setShowService(showService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/show/1")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(404, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals("{\"message\":\"Unable to find requested resource\"}",  response.readEntity(String.class));
 								
 		Mockito.verify(showService).read(1L);
 		Mockito.verifyNoMoreInteractions(showService);

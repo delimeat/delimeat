@@ -39,6 +39,7 @@ public class HttpStatisticsService_ImplTest {
 	@Test
 	public void addResponseTest() throws Exception{
 		Instant start = Instant.now();
+		Thread.sleep(1000);
 		service.addResponse(new URL("https://test.com"), 200);
 		service.addResponse(new URL("http://test.com"), 200);
 
