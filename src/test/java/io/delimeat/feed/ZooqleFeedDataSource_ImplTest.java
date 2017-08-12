@@ -61,7 +61,7 @@ public class ZooqleFeedDataSource_ImplTest {
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("ZooqleFeedDataSource_Impl [feedSource=ZOOQLE, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-zooqle-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=application/rss+xml}]", dataSource.toString());
+		Assert.assertEquals("ZooqleFeedDataSource_Impl [feedSource=ZOOQLE, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-zooqle-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=applicaton/rss+xml}]", dataSource.toString());
 	}
 	
 	@Test
@@ -75,10 +75,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type", "application/rss+xml")
+							.withHeader("Content-Type", "applicaton/rss+xml")
 							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
@@ -98,10 +98,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
-							.withHeader("Content-Type","application/rss+xml")));
+							.withHeader("Content-Type","applicaton/rss+xml")));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -120,7 +120,7 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type", "application/json")
@@ -138,10 +138,10 @@ public class ZooqleFeedDataSource_ImplTest {
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","application/rss+xml")
+							.withHeader("Content-Type","applicaton/rss+xml")
                      .withFixedDelay(2000)));
 
 		dataSource.setBaseUri("http://localhost:8089");

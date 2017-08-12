@@ -32,6 +32,8 @@ import javax.transaction.Transactional.TxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.domain.GuideEpisode;
@@ -44,6 +46,8 @@ import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.util.DelimeatUtils;
 
+@Component
+@Scope("prototype")
 public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(GuideItemProcessor_Impl.class);
