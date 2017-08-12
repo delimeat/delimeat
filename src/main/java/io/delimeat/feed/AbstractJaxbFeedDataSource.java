@@ -15,8 +15,10 @@
  */
 package io.delimeat.feed;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,6 @@ import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -103,28 +104,53 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 	@Override
 	public List<FeedResult> read(String title) throws FeedException {
 		try {
+			URL url = generateUrl(DelimeatUtils.urlEscape(title, "UTF-8"));
+			LOGGER.info("Opening {}",url);
+			
 			OkHttpClient client = new OkHttpClient();
 			Request request = new Request.Builder()
-									.url(generateUrl(DelimeatUtils.urlEscape(title, "UTF-8")))
+									.url(url)
 									.headers(Headers.of(headers))
 									.build();
 
-			Response response = client.newCall(request).execute();
-			if (response.isSuccessful()) {
-				if(MediaType.parse(headers.get("Accept")).equals(response.body().contentType()) == false){
-					LOGGER.debug(response.body().contentType().toString());
-					LOGGER.debug(response.body().string());
-					throw new FeedException(String.format("Feed returned content type %s  for url: %s",response.body().contentType().toString(), response.request().url()));
-				}
+			Response response = null;
+			try{
+				response = client.newCall(request).execute();
+			} catch(SocketTimeoutException ex){
+				String msg = String.format("Timeout for %s", url);
+				throw new FeedException(msg);
+			}
+			
+			if (response.isSuccessful() == false) {
+				String msg = String.format("Feed returned code %s with message \"%s\" for url: %s",response.code(), response.message(), url);
+				throw new FeedException(msg);
+			}
+			
+			String contentType = response.body().contentType().toString().toLowerCase();
+			String acceptHeader = headers.get("Accept").toLowerCase();
+			byte[] responseBytes = response.body().bytes();
+			if(contentType.contains(acceptHeader) == false){
+				LOGGER.debug(new String(responseBytes));
+				String msg = String.format("Feed returned content type %s expected %s for url: %s",contentType, acceptHeader, url);
+				throw new FeedException(msg);
+			}
+			
+			responseBytes = new String(responseBytes).replace("&tr", "&amp;tr").getBytes();
+		
+			try{
+				StreamSource source = new StreamSource(new ByteArrayInputStream(responseBytes));
+				return getContext()
+						.createUnmarshaller()
+						.unmarshal(source, FeedSearch.class)
+						.getValue()
+						.getResults();
 				
-				StreamSource source = new StreamSource(response.body().byteStream());
-				return getContext().createUnmarshaller().unmarshal(source, FeedSearch.class).getValue().getResults();
-			} else {
-				throw new FeedException(String.format("Feed returned code %s with message \"%s\" for url: %s",
-						response.code(), response.message(), response.request().url()));
+			} catch(JAXBException ex){
+				LOGGER.error(new String(responseBytes));
+				throw new FeedException(ex);
 			}
 
-		} catch (IOException | JAXBException ex) {
+		} catch (IOException ex) {
 			throw new FeedException(ex);
 		}
 	}

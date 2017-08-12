@@ -16,6 +16,7 @@
 package io.delimeat.torrent;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,8 @@ public class TorrentDao_Impl implements TorrentDao {
 				}
 			}
 
+		}  catch(SocketTimeoutException ex){
+			throw new TorrentException(String.format("Timeout for scraping %s", uri));
 		} catch (BencodeException | IOException e) {
 			throw new TorrentException(e);
 		}

@@ -57,12 +57,11 @@ public class TorrentProjectFeedDataSource_ImplTest {
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
-     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
+//     			+ "<enclosure url='magnet:?xt=urn:btih:infohash&amp;tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
+     			+ "<enclosure url='magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
      			+ "</item></channel></rss>";
      
-		stubFor(get(urlPathEqualTo("/"))
-				.withQueryParam("s", equalTo("title"))
-				.withQueryParam("out", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
@@ -76,7 +75,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
+     	Assert.assertEquals("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
 
 	}
@@ -84,9 +83,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readWebAppExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/"))
-				.withQueryParam("s", equalTo("title"))
-				.withQueryParam("out", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(500)
@@ -102,9 +99,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/"))
-				.withQueryParam("s", equalTo("title"))
-				.withQueryParam("out", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)

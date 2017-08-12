@@ -16,6 +16,7 @@
 package io.delimeat.torrent;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -62,7 +63,12 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
  									.url(scrapeURL)
  									.build();
 
- 			Response response = client.newCall(request).execute();
+ 			Response response;
+ 			try{
+ 			    response = client.newCall(request).execute();
+ 			} catch(SocketTimeoutException ex){
+ 	           throw new TorrentException(String.format("Timed out fetching torrent from %s", scrapeURL)); 
+ 	        } 
  			if (response.isSuccessful()) {
  				BDictionary dictionary = BencodeUtils.decode(response.body().byteStream());
  				return umarshalScrapeResult(dictionary,infoHash);
@@ -71,7 +77,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 						response.code(), response.message(), response.request().url()));
  			}
 
-         }catch(BencodeException | IOException e){
+         } catch(BencodeException | IOException e){
         	 throw new TorrentException(e);
          }
 	}

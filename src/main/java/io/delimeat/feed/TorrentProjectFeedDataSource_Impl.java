@@ -54,7 +54,7 @@ public class TorrentProjectFeedDataSource_Impl extends AbstractJaxbFeedDataSourc
 	 */
 	@Override
 	public URL generateUrl(String title) throws MalformedURLException {
-		return new URL(String.format("%s/?s=%s&out=rss", baseUri, title));
+		return new URL(String.format("%s/rss/%s/", baseUri, title));
 	}
 
 	/* (non-Javadoc)
