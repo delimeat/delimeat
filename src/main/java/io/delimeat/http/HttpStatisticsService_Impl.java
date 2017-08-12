@@ -15,8 +15,6 @@
  */
 package io.delimeat.http;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,20 +31,6 @@ public class HttpStatisticsService_Impl implements HttpStatisticsService {
 
 	private final Map<String,HttpStatistics> stats = new HashMap<>();
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.statistics.FeedStatisticsService#addResponse(java.net.URI, javax.ws.rs.core.Response.StatusType)
-	 */
-	@Override
-	public void addResponse(URI uri, int statusCode) {
-		HttpStatistics hostStats = stats.compute(uri.getHost(), (host,stats)->(stats==null)? new HttpStatistics(host): stats);
-		hostStats.getResponseCounts().compute(statusCode, (key,value)-> (value != null) ? value + 1 : 1 );
-		if(statusCode/100 == 2){
-			hostStats.setLastSuccess(Instant.now());
-		}else{
-			hostStats.setLastFailure(Instant.now());
-		}
-	}
-	
 	public List<HttpStatistics> getStatistics(){
 		return new ArrayList<>(stats.values());
 	}
@@ -56,10 +40,12 @@ public class HttpStatisticsService_Impl implements HttpStatisticsService {
 	 */
 	@Override
 	public void addResponse(URL url, int statusCode) {
-		try{
-			addResponse(url.toURI(),statusCode);
-		}catch(URISyntaxException ex){
-			//TODO add some logging of the exception?
+		HttpStatistics hostStats = stats.compute(url.getHost(), (host,stats)->(stats==null)? new HttpStatistics(host): stats);
+		hostStats.getResponseCounts().compute(statusCode, (key,value)-> (value != null) ? value + 1 : 1 );
+		if(statusCode/100 == 2){
+			hostStats.setLastSuccess(Instant.now());
+		}else{
+			hostStats.setLastFailure(Instant.now());
 		}
 		
 	}

@@ -51,7 +51,19 @@ public class ZooqleFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.ZOOQLE, dataSource.getFeedSource());
 	}
-  
+	
+	@Test
+	public void baseUriTest(){
+		Assert.assertNull(dataSource.getBaseUri());
+		dataSource.setBaseUri("http://localhost:8089");
+		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("ZooqleFeedDataSource_Impl [feedSource=ZOOQLE, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-zooqle-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=application/rss+xml}]", dataSource.toString());
+	}
+	
 	@Test
 	public void readTest() throws Exception{    	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -81,7 +93,7 @@ public class ZooqleFeedDataSource_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readWebAppExceptionTest() throws Exception {
+	public void readExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
@@ -90,6 +102,29 @@ public class ZooqleFeedDataSource_ImplTest {
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","applicaton/rss+xml")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
+	@Test(expected=FeedException.class)
+	public void readContentTypeExceptionTest() throws Exception {
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
+     			+ "</item></channel></rss>";
+     
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		

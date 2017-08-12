@@ -19,8 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.guide.domain.TvdbToken;
-
 public class TvdbTokenTest {
 
 	private TvdbToken token;
@@ -52,4 +50,63 @@ public class TvdbTokenTest {
      	token.setTime(1455858100917L);
      	Assert.assertEquals("TvdbToken [time=1455858100917, value=VALUE]", token.toString());
    }
+  	
+	@Test
+	public void equalsTest() {
+     	token.setValue("VALUE");
+     	token.setTime(1455858100917L);
+     	TvdbToken other = new TvdbToken();
+     	other.setValue("VALUE");
+     	other.setTime(1455858100917L);
+
+		Assert.assertTrue(token.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(token.equals(token));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(token.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(token.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsValueNullTest() {
+     	token.setValue(null);
+     	token.setTime(1455858100917L);
+     	TvdbToken other = new TvdbToken();
+     	other.setValue("VALUE");
+     	other.setTime(1455858100917L);
+
+		Assert.assertFalse(token.equals(other));
+	}
+	
+	@Test
+	public void equalsValueTest() {
+     	token.setValue("VALUE");
+     	token.setTime(1455858100917L);
+     	TvdbToken other = new TvdbToken();
+     	other.setValue("VALUE_OTHER");
+     	other.setTime(1455858100917L);
+
+		Assert.assertFalse(token.equals(other));
+	}
+	
+	@Test
+	public void equalsTimeTest() {
+     	token.setValue("VALUE");
+     	token.setTime(1455858100917L);
+     	TvdbToken other = new TvdbToken();
+     	other.setValue("VALUE");
+     	other.setTime(Long.MIN_VALUE);
+
+		Assert.assertFalse(token.equals(other));
+	}
 }

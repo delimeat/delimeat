@@ -170,13 +170,13 @@ public class GuideSearchResultTest {
 
   	@Test
   	public void equalsTitleNullTest(){
-     	result.setTitle("TITLE");
+     	result.setTitle(null);
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
      
      	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle(null);
+     	other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
@@ -187,13 +187,13 @@ public class GuideSearchResultTest {
   	@Test
   	public void equalsDescriptionNullTest(){
      	result.setTitle("TITLE");
-		result.setDescription("DESCRIPTION");
+		result.setDescription(null);
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
      
      	GuideSearchResult other = new GuideSearchResult();
      	other.setTitle("TITLE");
-		other.setDescription(null);
+		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
      
@@ -204,13 +204,13 @@ public class GuideSearchResultTest {
   	public void equalsGuideIdNullTest(){
      	result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
-		result.setGuideId("GUIDEID");
+		result.setGuideId(null);
 		result.setFirstAired(LocalDate.ofEpochDay(0));
      
      	GuideSearchResult other = new GuideSearchResult();
      	other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
-		other.setGuideId(null);
+		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
      
      	Assert.assertFalse(result.equals(other));
@@ -221,13 +221,13 @@ public class GuideSearchResultTest {
      	result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
-		result.setFirstAired(LocalDate.ofEpochDay(0));
+		result.setFirstAired(null);
      
      	GuideSearchResult other = new GuideSearchResult();
      	other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
-		other.setFirstAired(null);
+		other.setFirstAired(LocalDate.ofEpochDay(0));
      
      	Assert.assertFalse(result.equals(other));
    }

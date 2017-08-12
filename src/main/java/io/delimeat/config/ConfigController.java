@@ -71,6 +71,7 @@ public class ConfigController implements SparkController {
 		Spark.exception(ConfigConcurrencyException.class, (exception, request, response) -> {
 		    response.body("{\"message\":\"You are trying to update a resource that has been modified\"}");
 		    response.status(412);
+		    response.type(JSON_CONTENT_TYPE);
 		});
 
 		LOGGER.trace("Leaving init");

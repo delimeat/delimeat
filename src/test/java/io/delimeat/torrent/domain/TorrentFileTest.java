@@ -19,8 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.torrent.domain.TorrentFile;
-
 public class TorrentFileTest {
 
 	private TorrentFile torrentFile;
@@ -55,4 +53,64 @@ public class TorrentFileTest {
 		torrentFile.setLength(Long.MAX_VALUE);
      	Assert.assertEquals(-2145094068, torrentFile.hashCode());
    }
+	
+	@Test
+	public void equalsTest() {
+		torrentFile.setLength(Long.MAX_VALUE);
+		torrentFile.setName("NAME");
+		TorrentFile other = new TorrentFile();
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+
+		Assert.assertTrue(torrentFile.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(torrentFile.equals(torrentFile));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(torrentFile.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(torrentFile.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsNameNullTest() {
+		torrentFile.setLength(Long.MAX_VALUE);
+		torrentFile.setName(null);
+		TorrentFile other = new TorrentFile();
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+
+		Assert.assertFalse(torrentFile.equals(other));
+	}
+	
+	@Test
+	public void equalsLengthTest() {
+		torrentFile.setLength(Long.MAX_VALUE);
+		torrentFile.setName("NAME");
+		TorrentFile other = new TorrentFile();
+		other.setLength(Long.MIN_VALUE);
+		other.setName("NAME");
+
+		Assert.assertFalse(torrentFile.equals(other));
+	}
+	
+	@Test
+	public void equalsNameTest() {
+		torrentFile.setLength(Long.MAX_VALUE);
+		torrentFile.setName("NAME_OTHER");
+		TorrentFile other = new TorrentFile();
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+
+		Assert.assertFalse(torrentFile.equals(other));
+	}
+	
 }

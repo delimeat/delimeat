@@ -52,7 +52,19 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.TORRENTDOWNLOADS, dataSource.getFeedSource());
 	}
-  
+	
+	@Test
+	public void baseUriTest(){
+		Assert.assertNull(dataSource.getBaseUri());
+		dataSource.setBaseUri("http://localhost:8089");
+		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("TorrentDownloadsFeedDataSource_Impl [feedSource=TORRENTDOWNLOADS, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-torrentdownloads-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=text/html}]", dataSource.toString());
+	}
+	
 	@Test
 	public void readTest() throws Exception{
     	
@@ -89,7 +101,7 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 	}
   
 	@Test(expected=FeedException.class)
-	public void readWebAppExceptionTest() throws Exception {
+	public void readExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss.xml"))
 				.withQueryParam("type", equalTo("search"))
@@ -99,6 +111,32 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 							.withStatus(500)
 							.withHeader("Content-Type","text/html")));
 
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
+	@Test(expected=FeedException.class)
+	public void readContentTypeExceptionTest() throws Exception {
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<info_hash>INFO_HASH</info_hash>"
+     			+ "<size>9223372036854775807</size>"
+     			+ "<seeders>1</seeders>"
+     			+ "<leechers>1000</leechers>"
+     			+ "</item></channel></rss>";
+     	
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
+				.withHeader("Accept", equalTo("text/html"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		

@@ -21,10 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.torrent.domain.InfoHash;
-import io.delimeat.torrent.domain.TorrentFile;
-import io.delimeat.torrent.domain.TorrentInfo;
-
 public class TorrentInfoTest {
 
 	private TorrentInfo torrentInfo;
@@ -54,8 +50,8 @@ public class TorrentInfoTest {
 
 		TorrentFile file1 = new TorrentFile();
 		TorrentFile file2 = new TorrentFile();
-		torrentInfo.setFiles(Arrays.asList(file1,file2));
-		
+		torrentInfo.setFiles(Arrays.asList(file1, file2));
+
 		Assert.assertEquals(2, torrentInfo.getFiles().size());
 		Assert.assertEquals(file1, torrentInfo.getFiles().get(0));
 		Assert.assertEquals(file2, torrentInfo.getFiles().get(1));
@@ -64,13 +60,148 @@ public class TorrentInfoTest {
 	@Test
 	public void infoHashTest() {
 		Assert.assertNull(torrentInfo.getInfoHash());
-     	InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		torrentInfo.setInfoHash(infoHash);
 		Assert.assertEquals(infoHash, torrentInfo.getInfoHash());
 	}
-  
-  	@Test
-  	public void toStringTest(){
-     	Assert.assertEquals("TorrentInfo [files=[], length=0, ]",torrentInfo.toString());
-   }
+
+	@Test
+	public void toStringTest() {
+		Assert.assertEquals("TorrentInfo [files=[], length=0, ]", torrentInfo.toString());
+	}
+
+	@Test
+	public void equalsTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertTrue(torrentInfo.equals(other));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assert.assertTrue(torrentInfo.equals(torrentInfo));
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(torrentInfo.equals(null));
+	}
+
+	@Test
+	public void equalsOtherClassTest() {
+		Assert.assertFalse(torrentInfo.equals("STRING"));
+	}
+	
+	@Test
+	public void equalsInfoHashNullTest() {
+		torrentInfo.setInfoHash(null);
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsFilesNullTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(null);
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsNameNullTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName(null);
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO_OTHER".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsLengthTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MIN_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsNameTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME_OTHER");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
+	
+	@Test
+	public void equalsFilesTest() {
+		torrentInfo.setInfoHash(new InfoHash("INFO".getBytes()));
+		torrentInfo.setLength(Long.MAX_VALUE);
+		torrentInfo.setName("NAME");
+		torrentInfo.setFiles(Arrays.asList(new TorrentFile()));
+		TorrentInfo other = new TorrentInfo();
+		other.setInfoHash(new InfoHash("INFO".getBytes()));
+		other.setLength(Long.MAX_VALUE);
+		other.setName("NAME");
+		other.setFiles(Arrays.asList(new TorrentFile(),new TorrentFile()));
+
+		Assert.assertFalse(torrentInfo.equals(other));
+	}
 }

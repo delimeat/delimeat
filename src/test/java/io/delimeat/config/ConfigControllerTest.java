@@ -24,11 +24,13 @@ import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.config.domain.Config;
+import io.delimeat.config.exception.ConfigConcurrencyException;
 import spark.Spark;
 
 public class ConfigControllerTest {
@@ -48,12 +50,26 @@ public class ConfigControllerTest {
         	response.type("application/json");
         });
     }
+	
+	@Before
+	public void setUp(){
+		controller.setConfigService(null);
+	}
     
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
         client.close();
     }
+	
+	@Test
+	public void configServiceTest(){
+		Assert.assertNull(controller.getConfigService());
+		ConfigService configService = Mockito.mock(ConfigService.class);
+		controller.setConfigService(configService);
+		Assert.assertEquals(configService, controller.getConfigService());
+
+	}
     
     @Test
     public void getTest() throws Exception{
@@ -115,6 +131,37 @@ public class ConfigControllerTest {
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
     	Assert.assertEquals(config, response.readEntity(Config.class));
     	
+		Mockito.verify(configService).update(config);
+		Mockito.verifyNoMoreInteractions(configService);
+    }
+    
+    @Test
+    public void updateConcurrencyExceptionTest() throws Exception{
+		Config config = new Config();
+		config.setConfigId(99L);
+		config.setVersion(Long.MAX_VALUE);
+		config.setPreferFiles(true);
+		config.setIgnoreFolders(false);
+		config.setOutputDirectory("OUT_DIR");
+		config.setSearchDelay(Integer.MAX_VALUE);
+		config.setSearchInterval(99);
+		config.setExcludedKeywords(Arrays.asList("EXCLUDED"));
+		config.setIgnoredFileTypes(Arrays.asList("IGNORED"));
+		
+		ConfigService configService = Mockito.mock(ConfigService.class);
+		Mockito.when(configService.update(config)).thenThrow(ConfigConcurrencyException.class);
+		controller.setConfigService(configService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/config")
+    			.request()
+    			.accept("application/json")
+    			.post(Entity.entity(config, "application/json"));
+    	
+    	Assert.assertEquals(412, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
+							  	
 		Mockito.verify(configService).update(config);
 		Mockito.verifyNoMoreInteractions(configService);
     }

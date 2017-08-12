@@ -76,13 +76,16 @@ public class FeedSearchTest {
 	}
 	
 	@Test
-	public void equalsNullOtherNullTest(){
+	public void equalsResultsNullTest(){
+		search.setResults(null);
 		FeedSearch other = new FeedSearch();
+		other.setResults(null);
 		Assert.assertTrue(search.equals(other));
 	}
 	
 	@Test
 	public void equalsNullOtherNotNullTest(){
+		search.setResults(null);
 		FeedSearch other = new FeedSearch();
 		other.setResults(Arrays.asList(new FeedResult()));
 		Assert.assertFalse(search.equals(other));
@@ -92,6 +95,8 @@ public class FeedSearchTest {
 	public void equalsNotNullOtherNullTest(){
 		search.setResults(Arrays.asList(new FeedResult()));
 		FeedSearch other = new FeedSearch();
+		other.setResults(null);
+
 		Assert.assertFalse(search.equals(other));
 	}
 

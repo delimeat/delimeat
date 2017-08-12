@@ -63,8 +63,8 @@ public class TorrentProjectFeedDataSource_Impl extends AbstractJaxbFeedDataSourc
 	@Override
 	public String toString() {
 		return "TorrentProjectFeedDataSource_Impl [" + (baseUri != null ? "baseUri=" + baseUri + ", " : "")
-				+ (getFeedSource() != null ? "getFeedSource()=" + getFeedSource() + ", " : "")
-				+ (getProperties() != null ? "getProperties()=" + getProperties() + ", " : "")
-				+ (getHeaders() != null ? "getHeaders()=" + getHeaders() : "") + "]";
+				+ (getFeedSource() != null ? "feedSource=" + getFeedSource() + ", " : "")
+				+ (getProperties() != null ? "properties=" + getProperties() + ", " : "")
+				+ (getHeaders() != null ? "headers" + getHeaders() : "") + "]";
 	}
 }

@@ -41,6 +41,11 @@ public class ProcessorService_ImplTest {
 		
 		Assert.assertEquals(context, service.getApplicationContext());
 	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("ProcessorService_Impl []", service.toString());
+	}
 
 	@Test
 	public void processAllGuideUpdatesTest() throws Exception {
@@ -94,6 +99,22 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(context).getBean(FeedItemReader_Impl.class);
 		Mockito.verify(context).getBean(FeedItemProcessor_Impl.class);
 		Mockito.verifyNoMoreInteractions(context);
+	}
+	
+	@Test
+	public void processorExceptionTest() throws Exception{
+		@SuppressWarnings("unchecked") 
+		ItemReader<Object> reader =  Mockito.mock(ItemReader.class);
+		Mockito.when(reader.read()).thenReturn(new Object()).thenReturn(null);
+		@SuppressWarnings("unchecked") 
+		ItemProcessor<Object> processor = Mockito.mock(ItemProcessor.class);
+		Mockito.doThrow(Exception.class).when(processor).process(Mockito.any());
+		
+		service.run(reader, processor);
+		
+		Mockito.verify(reader,Mockito.times(2)).read();
+		Mockito.verify(processor).process(Mockito.any());
+		Mockito.verifyNoMoreInteractions(reader,processor);
 		
 	}
 

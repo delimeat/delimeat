@@ -55,42 +55,57 @@ import io.delimeat.util.spark.SparkController;
 @EnableScheduling
 @Configuration
 @ComponentScan
-@PropertySource({"classpath:delimeat.properties"})
+@PropertySource({ "classpath:delimeat.properties" })
 @EnableJpaRepositories("io.delimeat")
 @EnableTransactionManagement
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class Application {
-    
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	@Autowired
 	private Environment env;
-	
+
+	/**
+	 * @return the env
+	 */
+	public Environment getEnv() {
+		return env;
+	}
+
+	/**
+	 * @param env the env to set
+	 */
+	public void setEnv(Environment env) {
+		this.env = env;
+	}
+
 	public static void main(String[] args) throws Exception {
 		Long appStart = System.currentTimeMillis();
 		LOGGER.info("Delimeat starting");
-		
+
 		@SuppressWarnings("resource")
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-		ctx.registerShutdownHook();	
-		
+		ctx.registerShutdownHook();
+
 		Map<String, SparkController> controllers = ctx.getBeansOfType(SparkController.class);
-		for(String controllerName: controllers.keySet()){
+		for (String controllerName : controllers.keySet()) {
 			controllers.get(controllerName).init();
 		}
-		
-		LOGGER.info("Delimeat started in {} ms",System.currentTimeMillis()-appStart);		
-	}
-	
-	@Bean
-    public DataSource dataSource() {
-			HikariDataSource ds = new HikariDataSource();
-			ds.setJdbcUrl(env.getProperty("io.delimeat.show.jdbcUrl"));
-			return ds;
-    }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+		LOGGER.info("Delimeat started in {} ms", System.currentTimeMillis() - appStart);
+	}
+
+	@Bean
+	public DataSource dataSource() {
+		HikariDataSource ds = new HikariDataSource();
+		ds.setJdbcUrl(env.getProperty("io.delimeat.show.jdbcUrl"));
+		return ds;
+	}
+
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+			JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		factory.setDataSource(dataSource);
 		factory.setJpaVendorAdapter(jpaVendorAdapter);
@@ -98,35 +113,36 @@ public class Application {
 		jpaProperties.put("eclipselink.weaving", "false");
 		jpaProperties.put("eclipselink.logging.level", "OFF");
 		jpaProperties.put("eclipselink.ddl-generation", "create-or-extend-tables");
-		jpaProperties.put("eclipselink.ddl-generation.output-mode","database");
+		jpaProperties.put("eclipselink.ddl-generation.output-mode", "database");
 		factory.setJpaProperties(jpaProperties);
 		factory.setPackagesToScan("io.delimeat.**.domain");
 		return factory;
-    }
-
-    @Bean
-    public JpaVendorAdapter jpaVendorAdapter() {
-        return new EclipseLinkJpaVendorAdapter();
-    }
-    
-    @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf){
-       JpaTransactionManager transactionManager = new JpaTransactionManager();
-       transactionManager.setEntityManagerFactory(emf);
-  
-       return transactionManager;
-    }
+	}
 
 	@Bean
-	public InetAddress udpScrapeBindAddress() throws UnknownHostException{
+	public JpaVendorAdapter jpaVendorAdapter() {
+		return new EclipseLinkJpaVendorAdapter();
+	}
+
+	@Bean
+	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(emf);
+		return transactionManager;
+	}
+
+	@Bean
+	public InetAddress udpScrapeAddress() throws UnknownHostException {
 		return InetAddress.getByName(env.getProperty("io.delimeat.torrent.udp.address"));
 	}
-	
+
 	@Bean
-	public DatagramSocket updScrapeDatagramSocket() throws NumberFormatException, SocketException, UnknownHostException{
-		return new DatagramSocket(Integer.valueOf(env.getProperty("io.delimeat.torrent.udp.port")), udpScrapeBindAddress());
+	public DatagramSocket updScrapeDatagramSocket()
+			throws NumberFormatException, SocketException, UnknownHostException {
+		return new DatagramSocket(Integer.valueOf(env.getProperty("io.delimeat.torrent.udp.port")),
+				udpScrapeAddress());
 	}
-	
+
 	@Bean
 	public CustomizableTraceInterceptor customizableTraceInterceptor() {
 		CustomizableTraceInterceptor cti = new CustomizableTraceInterceptor();
@@ -142,7 +158,7 @@ public class Application {
 	public Advisor traceInteceptorAdvisor() {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression("within(io.delimeat..*)");
-	    //pointcut.setExpression("execution(public * io.delimeat..*.*(..))");
+		// pointcut.setExpression("execution(public * io.delimeat..*.*(..))");
 		return new DefaultPointcutAdvisor(pointcut, customizableTraceInterceptor());
 	}
 
