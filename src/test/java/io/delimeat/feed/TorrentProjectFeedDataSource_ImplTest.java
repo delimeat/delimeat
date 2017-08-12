@@ -116,9 +116,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
      			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
      			+ "</item></channel></rss>";
      
-		stubFor(get(urlPathEqualTo("/"))
-				.withQueryParam("s", equalTo("title"))
-				.withQueryParam("out", equalTo("rss"))
+		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
