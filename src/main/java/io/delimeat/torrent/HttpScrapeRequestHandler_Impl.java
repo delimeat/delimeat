@@ -93,15 +93,9 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s", uri.toString()));
 		}
 
-		//TODO fix encoding of infoHash
 		final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
-		//final String infoHashQuery = "info_hash=" + URLEncoder.encode(infoHashString, "ISO-8859-1");
 		final String infoHashQuery = "info_hash=" + DelimeatUtils.urlEscape(infoHashString, "ISO-8859-1");
 
-
-		//final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");
-		//final String infoHashQuery = "info_hash=" + DelimeatUtils.urlEscape(infoHashString, "UTF-8");
-		
 		final String query;
 		if (uri.getRawQuery() == null) {
 			query = infoHashQuery;
