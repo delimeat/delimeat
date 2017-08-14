@@ -15,18 +15,22 @@
  */
 package io.delimeat.guide;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -45,6 +49,9 @@ import io.delimeat.guide.domain.TvdbToken;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
+import io.delimeat.guide.exception.GuideResponseBodyException;
+import io.delimeat.guide.exception.GuideResponseException;
+import io.delimeat.guide.exception.GuideTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -175,7 +182,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 				properties);
 	}
 
-	public TvdbToken login(String apiKey) throws GuideException {
+	public TvdbToken login(String apiKey) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		TvdbApiKey key = new TvdbApiKey();
 		key.setValue(apiKey);
 		URL url = buildUrl(String.format("%s/login", baseUri));
@@ -185,7 +192,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return post(url, key, TvdbToken.class, putHeaders);
 	}
 
-	public TvdbToken refreshToken(TvdbToken token) throws GuideException {
+	public TvdbToken refreshToken(TvdbToken token) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		URL url = buildUrl(String.format("%s/refresh_token", baseUri));
 		Map<String, String> reqHeaders = new HashMap<>();
 		reqHeaders.putAll(headers);
@@ -198,7 +205,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 * @throws IOException
 	 * @throws JAXBException
 	 */
-	public TvdbToken getToken() throws GuideException {
+	public TvdbToken getToken() throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		long now = System.currentTimeMillis();
 		if (token == null || now >= token.getTime() + validPeriodInMs) {
 			token = login(apiKey);
@@ -208,7 +215,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return token;
 	}
 
-	public Map<String, String> getHeaders() throws GuideException {
+	public Map<String, String> getHeaders() throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		Map<String, String> reqHeaders = headers;
 		reqHeaders.put("Authorization", String.format("Bearer %s", getToken().getValue()));
 		return reqHeaders;
@@ -220,7 +227,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 * @see io.delimeat.guide.GuideDataSource#info(java.lang.String)
 	 */
 	@Override
-	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		URL url = buildUrl(String.format("%s/series/%s", baseUri, DelimeatUtils.urlEscape(guideId, "UTF-8")));
 		return get(url, GuideInfo.class, getHeaders());
 	}
@@ -232,7 +239,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 */
 	@Override
 	public List<GuideEpisode> episodes(String guideId)
-			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+			throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		String encodedGuideId = DelimeatUtils.urlEscape(guideId, "UTF-8");
 		List<GuideEpisode> episodes = new ArrayList<GuideEpisode>();
 		Integer page = 1;
@@ -254,7 +261,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 * @throws GuideException
 	 */
 	public TvdbEpisodes episodes(String guideId, int page)
-			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+			throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		URL url = buildUrl(String.format("%s/series/%s/episodes?page=%s", baseUri, guideId, page));
 		return get(url, TvdbEpisodes.class, getHeaders());
 	}
@@ -266,26 +273,28 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	 */
 	@Override
 	public List<GuideSearchResult> search(String title)
-			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+			throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		URL url = buildUrl(String.format("%s/search/series?name=%s", baseUri, DelimeatUtils.urlEscape(title, "UTF-8")));
-		return get(url, GuideSearch.class, getHeaders()).getResults().stream()
-				.filter(result -> !result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter
-																							// out
-																							// invalid
-																							// series
+		return get(url, GuideSearch.class, getHeaders())
+				.getResults()
+				.stream()
+				.filter(result -> !result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter out invalid series
 				.collect(Collectors.toList());
 	}
 
-	private <T> T get(URL url, Class<T> returnType, Map<String, String> headers) throws GuideException {
+	private <T> T get(URL url, Class<T> returnType, Map<String, String> headers) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		try {
-			OkHttpClient client = new OkHttpClient();
+			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
 			Request request = new Request.Builder().url(url).headers(Headers.of(headers)).build();
 
-			Response response = client.newCall(request).execute();
-			if (response.isSuccessful()) {
-				StreamSource source = new StreamSource(response.body().byteStream());
-				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
-			} else {
+			Response response = null;
+			try{
+				response = client.newCall(request).execute();
+			}catch(SocketTimeoutException ex){
+				throw new GuideTimeoutException(url);
+			}
+			
+			if (response.isSuccessful() == false) {
 				switch (response.code()) {
 				case 404:
 					throw new GuideNotFoundException();
@@ -293,28 +302,39 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 				case 403:
 					throw new GuideAuthorizationException();
 				default:
-					throw new GuideException(String.format("Guide returned code %s with message \"%s\" for url: %s",
-							response.code(), response.message(), response.request().url()));
+					throw new GuideResponseException(response.code(), response.message(), url);
 				}
 			}
+			
+			byte[] responseBytes = response.body().bytes();
+			try{
+				StreamSource source = new StreamSource(new ByteArrayInputStream(responseBytes));
+				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
+			}catch(UnmarshalException ex){
+				throw new GuideResponseBodyException(url, new String(responseBytes), ex);
+			}
+			
 		} catch (IOException | JAXBException ex) {
 			throw new GuideException(ex);
 		}
 	}
 
-	private <T, S> T post(URL url, S entity, Class<T> returnType, Map<String, String> headers) throws GuideException {
+	private <T, S> T post(URL url, S entity, Class<T> returnType, Map<String, String> headers) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
 		try {
-			OkHttpClient client = new OkHttpClient();
+			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			getContext().createMarshaller().marshal(entity, output);
 			Request request = new Request.Builder().url(url).headers(Headers.of(headers))
 					.post(RequestBody.create(MediaType.parse("application/json"), output.toByteArray())).build();
 
-			Response response = client.newCall(request).execute();
-			if (response.isSuccessful()) {
-				StreamSource source = new StreamSource(response.body().byteStream());
-				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
-			} else {
+			Response response = null;
+			try{
+				response = client.newCall(request).execute();
+			}catch(SocketTimeoutException ex){
+				throw new GuideTimeoutException(url);
+			}
+			
+			if (response.isSuccessful() == false) {
 				switch (response.code()) {
 				case 404:
 					throw new GuideNotFoundException();
@@ -322,10 +342,18 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 				case 403:
 					throw new GuideAuthorizationException();
 				default:
-					throw new GuideException(String.format("Guide returned code %s with message \"%s\" for url: %s",
-							response.code(), response.message(), response.request().url()));
+					throw new GuideResponseException(response.code(), response.message(), url);
 				}
 			}
+			
+			byte[] responseBytes = response.body().bytes();
+			try{
+				StreamSource source = new StreamSource(new ByteArrayInputStream(responseBytes));
+				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
+			}catch(UnmarshalException ex){
+				throw new GuideResponseBodyException(url, new String(responseBytes), ex);
+			}
+			
 		} catch (IOException | JAXBException ex) {
 			throw new GuideException(ex);
 		}

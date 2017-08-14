@@ -47,7 +47,7 @@ public class InfoHash {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(bytes);
+		return Objects.hash(getHex());
 	}
 
 	/* (non-Javadoc)

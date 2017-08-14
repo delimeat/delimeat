@@ -26,6 +26,9 @@ import io.delimeat.guide.domain.GuideSource;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
+import io.delimeat.guide.exception.GuideResponseBodyException;
+import io.delimeat.guide.exception.GuideResponseException;
+import io.delimeat.guide.exception.GuideTimeoutException;
 
 public interface GuideDataSource {
 
@@ -44,7 +47,7 @@ public interface GuideDataSource {
 	 * @throws GuideException
 	 */
 	@Cacheable("guide-info")
-	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
+	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 	/**
 	 * Fetch all episodes for a show
@@ -56,7 +59,7 @@ public interface GuideDataSource {
 	 * @throws GuideException
 	 */
 	@Cacheable("guide-episodes")
-	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
+	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 	/**
 	 * Search for shows
@@ -68,6 +71,6 @@ public interface GuideDataSource {
 	 * @throws GuideException
 	 */
 	@Cacheable("guide-search")
-	public List<GuideSearchResult> search(String title) throws GuideNotFoundException, GuideAuthorizationException, GuideException;
+	public List<GuideSearchResult> search(String title) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 }
