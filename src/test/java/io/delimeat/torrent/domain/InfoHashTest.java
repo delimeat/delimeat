@@ -75,6 +75,10 @@ public class InfoHashTest {
 	}
 
 	@Test
+	public void hashCodeTest(){
+		Assert.assertEquals(380894397, new InfoHash("INFO_HASH".getBytes()).hashCode());
+	}
+	@Test
 	public void toStringTest() {
 		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);

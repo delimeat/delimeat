@@ -49,6 +49,11 @@ public class FeedService_ImplTest {
 		Assert.assertEquals(1, service.getFeedDataSources().size());
 		Assert.assertEquals(dao, service.getFeedDataSources().get(0));
 	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("FeedService_Impl []", service.toString());
+	}
 
 
 	@Test

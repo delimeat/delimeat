@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -55,12 +56,26 @@ public class EpisodeControllerTest {
         	response.type("application/json");
         });
     }
+	
+	@Before
+	public void setUp(){
+		controller.setEpisodeService(null);
+	}
     
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
         client.close();
     }
+	
+	@Test
+	public void episodeServiceTest(){
+		Assert.assertNull(controller.getEpisodeService());
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		controller.setEpisodeService(episodeService);
+		Assert.assertEquals(episodeService, controller.getEpisodeService());
+
+	}
 	
 	@Test
 	public void getAllTest() throws Exception{

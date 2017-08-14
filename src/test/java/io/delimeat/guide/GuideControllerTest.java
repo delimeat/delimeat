@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -56,12 +57,25 @@ public class GuideControllerTest {
         	response.type("application/json");
         });
     }
+	
+	@Before
+	public void setUp(){
+		controller.setGuideService(null);
+	}
     
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
         client.close();
     }
+	
+	@Test
+	public void guideServiceTest(){
+		Assert.assertNull(controller.getGuideService());
+		GuideService guideService = Mockito.mock(GuideService.class);
+		controller.setGuideService(guideService);
+		Assert.assertEquals(guideService, controller.getGuideService());
+	}
 	
 	@Test
 	public void searchTest() throws Exception{

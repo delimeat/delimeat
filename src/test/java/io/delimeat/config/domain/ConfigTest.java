@@ -24,7 +24,7 @@ import io.delimeat.config.domain.Config;
 import java.util.Arrays;
 
 public class ConfigTest {
-	
+
 	private Config config;
 
 	@Before
@@ -33,19 +33,20 @@ public class ConfigTest {
 	}
 
 	@Test
-	public void configIdTest(){
+	public void configIdTest() {
 		Assert.assertNull(config.getConfigId());
 		config.setConfigId(1L);
 		Assert.assertEquals(1, config.getConfigId().longValue());
-		
+
 	}
+
 	@Test
 	public void searchIntervalTest() {
 		Assert.assertEquals(0, config.getSearchInterval());
 		config.setSearchInterval(100);
 		Assert.assertEquals(100, config.getSearchInterval());
 	}
-	
+
 	@Test
 	public void searchDelayTest() {
 		Assert.assertEquals(0, config.getSearchDelay());
@@ -70,22 +71,22 @@ public class ConfigTest {
 	@Test
 	public void ignoredFileTypesTest() {
 		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
-     	config.setIgnoredFileTypes(Arrays.asList("AVI","MKV"));
+		config.setIgnoredFileTypes(Arrays.asList("AVI", "MKV"));
 		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
 		Assert.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
 		Assert.assertEquals("MKV", config.getIgnoredFileTypes().get(1));
 	}
-  
-  	@Test
-  	public void excludedKeywordsTest(){
-     	Assert.assertNotNull(config.getExcludedKeywords());
-     	Assert.assertEquals(0, config.getExcludedKeywords().size());
-     	config.setExcludedKeywords(Arrays.asList("265","XVR"));
-     	Assert.assertEquals(2, config.getExcludedKeywords().size());
-     	Assert.assertEquals("265", config.getExcludedKeywords().get(0));
-     	Assert.assertEquals("XVR", config.getExcludedKeywords().get(1));
-     
-   }
+
+	@Test
+	public void excludedKeywordsTest() {
+		Assert.assertNotNull(config.getExcludedKeywords());
+		Assert.assertEquals(0, config.getExcludedKeywords().size());
+		config.setExcludedKeywords(Arrays.asList("265", "XVR"));
+		Assert.assertEquals(2, config.getExcludedKeywords().size());
+		Assert.assertEquals("265", config.getExcludedKeywords().get(0));
+		Assert.assertEquals("XVR", config.getExcludedKeywords().get(1));
+
+	}
 
 	@Test
 	public void outputDirectoryTest() {
@@ -93,38 +94,83 @@ public class ConfigTest {
 		config.setOutputDirectory("OUTPUTDIR");
 		Assert.assertEquals("OUTPUTDIR", config.getOutputDirectory());
 	}
-  
-  	@Test
-  	public void hashCodeTest(){
-  		config.setConfigId(1L);
-  		config.setVersion(99L);
+
+	@Test
+	public void hashCodeTest() {
+		config.setConfigId(1L);
+		config.setVersion(99L);
 		Assert.assertEquals(1091, config.hashCode());
-  	}
-  
-  	@Test
-  	public void toStringTest(){
-  		Assert.assertEquals("Config [searchInterval=0, searchDelay=0, preferFiles=false, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[], ]"
-  				,config.toString());
-  	}
-  
-  	@Test
-  	public void equalsNullTest(){
-     	Assert.assertFalse(config.equals(null));
-   }
-  
-  	@Test
-  	public void equalsThisTest(){
-     	Assert.assertTrue(config.equals(config));
-   }
-  
-  	@Test
-  	public void equalsOtherObjectTest(){
-     	Assert.assertFalse(config.equals(new Object()));
-   }
-  
-  	@Test
-  	public void equalsTest(){
-     	Config other = new Config();
-     	Assert.assertTrue(config.equals(other));
-   }
+	}
+
+	@Test
+	public void toStringTest() {
+		Assert.assertEquals(
+				"Config [searchInterval=0, searchDelay=0, preferFiles=false, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[], ]",
+				config.toString());
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assert.assertFalse(config.equals(null));
+	}
+
+	@Test
+	public void equalsThisTest() {
+		Assert.assertTrue(config.equals(config));
+	}
+
+	@Test
+	public void equalsOtherObjectTest() {
+		Assert.assertFalse(config.equals(new Object()));
+	}
+
+	@Test
+	public void equalsTest() {
+		config.setConfigId(1L);
+		config.setVersion(99L);
+		Config other = new Config();
+		other.setConfigId(1L);
+		other.setVersion(99L);
+		Assert.assertTrue(config.equals(other));
+	}
+
+	@Test
+	public void equalsConfigIdNullTest() {
+		config.setConfigId(null);
+		config.setVersion(99L);
+		Config other = new Config();
+		other.setConfigId(1L);
+		other.setVersion(99L);
+		Assert.assertFalse(config.equals(other));
+	}
+
+	@Test
+	public void equalsVersionNullTest() {
+		config.setConfigId(1L);
+		config.setVersion(null);
+		Config other = new Config();
+		other.setConfigId(1L);
+		other.setVersion(99L);
+		Assert.assertFalse(config.equals(other));
+	}
+	
+	@Test
+	public void equalsConfigIdTest() {
+		config.setConfigId(2L);
+		config.setVersion(99L);
+		Config other = new Config();
+		other.setConfigId(1L);
+		other.setVersion(99L);
+		Assert.assertFalse(config.equals(other));
+	}
+
+	@Test
+	public void equalsVersionTest() {
+		config.setConfigId(1L);
+		config.setVersion(100L);
+		Config other = new Config();
+		other.setConfigId(1L);
+		other.setVersion(99L);
+		Assert.assertFalse(config.equals(other));
+	}
 }

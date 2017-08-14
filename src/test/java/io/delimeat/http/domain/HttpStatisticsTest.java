@@ -135,11 +135,12 @@ public class HttpStatisticsTest {
 	
 	@Test
 	public void equalsHostNullTest() {
+		stats.setHost(null);
 		stats.setLastSuccess(Instant.EPOCH);
 		stats.setLastFailure(Instant.EPOCH);
 		stats.getResponseCounts().put(201, Integer.MAX_VALUE);
 		HttpStatistics other = new HttpStatistics();
-		other.setHost(null);
+		other.setHost("host");
 		other.setLastSuccess(Instant.EPOCH);
 		other.setLastFailure(Instant.EPOCH);
 		other.getResponseCounts().put(201, Integer.MAX_VALUE);

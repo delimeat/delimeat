@@ -43,6 +43,11 @@ public class GuideItemReader_ImplTest {
 	}
 	
 	@Test
+	public void toStringTest(){
+		Assert.assertEquals("GuideItemReader_Impl []", reader.toString());
+	}
+	
+	@Test
 	public void readTest() throws Exception{
 		ShowService showService = Mockito.mock(ShowService.class);
 		Show show1 = new Show();

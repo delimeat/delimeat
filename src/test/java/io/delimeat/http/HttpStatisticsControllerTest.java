@@ -57,6 +57,14 @@ public class HttpStatisticsControllerTest {
         client.close();
     }
 	
+	@Test
+	public void httpStatsServiceTest(){
+		Assert.assertNull(controller.getHttpStatsService());
+		HttpStatisticsService statsService = Mockito.mock(HttpStatisticsService.class);
+		controller.setHttpStatsService(statsService);
+		Assert.assertEquals(statsService, controller.getHttpStatsService());
+	}
+	
     @Test
     public void getTest() throws Exception{
     	HttpStatistics stats = new HttpStatistics("http://test.com");
@@ -84,4 +92,5 @@ public class HttpStatisticsControllerTest {
 		Mockito.verify(statsService).getStatistics();
 		Mockito.verifyNoMoreInteractions(statsService);
     }
+    
 }
