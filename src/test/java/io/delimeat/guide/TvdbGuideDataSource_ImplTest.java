@@ -69,6 +69,19 @@ public class TvdbGuideDataSource_ImplTest {
 	public void guideSourceTest() {
 		Assert.assertEquals(GuideSource.TVDB, dataSource.getGuideSource());
 	}
+		
+	@Test
+	public void propertiesTest(){
+		Assert.assertEquals(3,dataSource.getProperties().size());
+		Assert.assertEquals("oxm/guide-tvdb-oxm.xml", dataSource.getProperties().get("eclipselink.oxm.metadata-source"));
+		Assert.assertEquals("application/json", dataSource.getProperties().get("eclipselink.media-type"));
+		Assert.assertEquals("false",dataSource.getProperties().get("eclipselink.json.include-root").toString());
+	}
+	
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("TvdbGuideDataSource_Impl [properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/guide-tvdb-oxm.xml, eclipselink.media-type=application/json}, headers={Accept=application/json}, validPeriodInMs=0, ]", dataSource.toString());
+	}
 
 	@Test
 	public void apikeyTest() {
@@ -82,6 +95,11 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals(0, dataSource.getValidPeriodInMs());
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
 		Assert.assertEquals(Integer.MAX_VALUE, dataSource.getValidPeriodInMs());
+	}
+	
+	@Test(expected=GuideException.class)
+	public void buildUrlExceptionTest() throws GuideException{
+		dataSource.buildUrl("JIBBERISH");
 	}
 
 	@Test
@@ -160,6 +178,23 @@ public class TvdbGuideDataSource_ImplTest {
 		
 		dataSource.login("APIKEY");
 	}
+	
+	@Test(expected=GuideException.class)
+	public void loginTimeoutTest() throws Exception {
+		String requestBody = "{\"apikey\": \"APIKEY\"}";
+		
+		stubFor(post(urlPathEqualTo("/login"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Content-Type", equalTo("application/json"))
+				.withRequestBody(equalToJson(requestBody))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2000)));
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.login("APIKEY");
+	}
 
 	@Test
 	public void refreshTokenTest() throws Exception {
@@ -218,6 +253,25 @@ public class TvdbGuideDataSource_ImplTest {
 		oldToken.setValue("OLD_TOKEN");
 
 		dataSource.refreshToken(oldToken);
+	}
+	
+	@Test(expected=GuideException.class)
+	public void refreshTokenTimeoutTest() throws Exception {	
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Authorization", equalTo("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2000)));
+		
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.refreshToken(oldToken);
+
 	}
 
 	@Test
@@ -401,6 +455,29 @@ public class TvdbGuideDataSource_ImplTest {
 
 		dataSource.search("TITLE");
 	}
+	
+	@Test(expected=GuideException.class)
+	public void searchTimeoutTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/search/series"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Authorization", equalTo("Bearer TOKEN"))
+				.withQueryParam("name", equalTo("TITLE"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dataSource.setToken(token);
+
+		dataSource.search("TITLE");
+
+	}
 
 	@Test
 	public void infoTest() throws Exception {
@@ -495,6 +572,27 @@ public class TvdbGuideDataSource_ImplTest {
 				.willReturn(aResponse()
 							.withStatus(500)
 							.withHeader("Content-Type","application/json")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dataSource.setToken(token);
+
+		dataSource.info("GUIDEID");
+	}
+	
+	@Test(expected=GuideException.class)
+	public void infoTimeoutTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Authorization", equalTo("Bearer TOKEN"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2000)));
 
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -613,6 +711,30 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		dataSource.episodes("GUIDEID", 1);
+	}
+	
+	@Test(expected=GuideException.class)
+	public void episodesTimeoutTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
+				.withHeader("Accept", equalTo("application/json"))
+				.withHeader("Authorization", equalTo("Bearer TOKEN"))
+				.withQueryParam("page", equalTo("1"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
+		
+		TvdbToken token = new TvdbToken();
+		token.setValue("TOKEN");
+		dataSource.setToken(token);
+
+		dataSource.episodes("GUIDEID", 1);
+
 	}
 
 	@Test

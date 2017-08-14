@@ -21,7 +21,11 @@ import org.springframework.cache.annotation.Cacheable;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 
 public interface FeedDataSource {
 
@@ -33,9 +37,13 @@ public interface FeedDataSource {
 	/**
 	 * @param title
 	 * @return list of Feed Results
+	 * @throws FeedTimeoutException
+	 * @throws FeedContentTypeException
+	 * @throws FeedResponseException
+	 * @throws FeedResponseBodyException
 	 * @throws FeedException
 	 */
 	@Cacheable("feed")
-	public List<FeedResult> read(String title) throws FeedException;
+	public List<FeedResult> read(String title) throws FeedTimeoutException,FeedContentTypeException,FeedResponseException,FeedResponseBodyException, FeedException;
 	
 }

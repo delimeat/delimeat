@@ -55,32 +55,32 @@ import okhttp3.Response;
 
 @Component
 public class TvdbGuideDataSource_Impl implements GuideDataSource {
-	
-	private final Map<String,Object> properties;
-	private final Map<String,String> headers;
-	
+
+	private final Map<String, Object> properties;
+	private final Map<String, String> headers;
+
 	@Value("${io.delimeat.guide.tvdb.baseUri}")
 	private String baseUri;
-	
+
 	@Value("${io.delimeat.guide.tvdb.validPeriod}")
-    private int validPeriodInMs = 0;
-	
+	private int validPeriodInMs = 0;
+
 	@Value("${io.delimeat.guide.tvdb.apikey}")
 	private String apiKey;
-	
-    private TvdbToken token;
-	
+
+	private TvdbToken token;
+
 	public TvdbGuideDataSource_Impl() {
-		properties = new HashMap<String,Object>();
+		properties = new HashMap<String, Object>();
 		properties.put("eclipselink.oxm.metadata-source", "oxm/guide-tvdb-oxm.xml");
 		properties.put("eclipselink.media-type", "application/json");
 		properties.put("eclipselink.json.include-root", false);
-		
-		headers = new HashMap<String,String>();
+
+		headers = new HashMap<String, String>();
 		headers.put("Accept", "application/json");
 
 	}
-	
+
 	/**
 	 * @return the baseUri
 	 */
@@ -88,16 +88,13 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return baseUri;
 	}
 
-
-
 	/**
-	 * @param baseUri the baseUri to set
+	 * @param baseUri
+	 *            the baseUri to set
 	 */
 	public void setBaseUri(String baseUri) {
 		this.baseUri = baseUri;
 	}
-
-
 
 	/**
 	 * @return the validPeriodInMs
@@ -106,16 +103,13 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return validPeriodInMs;
 	}
 
-
-
 	/**
-	 * @param validPeriodInMs the validPeriodInMs to set
+	 * @param validPeriodInMs
+	 *            the validPeriodInMs to set
 	 */
 	public void setValidPeriodInMs(int validPeriodInMs) {
 		this.validPeriodInMs = validPeriodInMs;
 	}
-
-
 
 	/**
 	 * @return the apiKey
@@ -125,7 +119,8 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	}
 
 	/**
-	 * @param apiKey the apiKey to set
+	 * @param apiKey
+	 *            the apiKey to set
 	 */
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
@@ -139,86 +134,89 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 	}
 
 	/**
-	 * @param token the token to set
+	 * @param token
+	 *            the token to set
 	 */
 	public void setToken(TvdbToken token) {
 		this.token = token;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.delimeat.guide.GuideDataSource#getGuideSource()
 	 */
 	@Override
 	public GuideSource getGuideSource() {
 		return GuideSource.TVDB;
 	}
-	
+
 	/**
 	 * @param url
 	 * @return
 	 * @throws GuideException
 	 */
-	private URL buildUrl(String url) throws GuideException{
-		try{
+	public URL buildUrl(String url) throws GuideException {
+		try {
 			return new URL(url);
-		}catch(MalformedURLException ex){
+		} catch (MalformedURLException ex) {
 			throw new GuideException(ex);
 		}
 	}
-	
+
 	/**
 	 * @return
 	 * @throws JAXBException
 	 */
-	private JAXBContext getContext() throws JAXBException{
-		return JAXBContextFactory.createContext(new Class[]{GuideSearchResult.class,GuideSearch.class,GuideEpisode.class,GuideInfo.class,TvdbApiKey.class,GuideError.class,TvdbToken.class,TvdbEpisodes.class}, properties);		
+	private JAXBContext getContext() throws JAXBException {
+		return JAXBContextFactory.createContext(
+				new Class[] { GuideSearchResult.class, GuideSearch.class, GuideEpisode.class, GuideInfo.class,
+						TvdbApiKey.class, GuideError.class, TvdbToken.class, TvdbEpisodes.class },
+				properties);
 	}
-	
-    public TvdbToken login(String apiKey) throws GuideException {
-    	TvdbApiKey key = new TvdbApiKey();
-	    key.setValue(apiKey);
-	    URL url = buildUrl(String.format("%s/login", baseUri));
-	    Map<String,String> putHeaders = new HashMap<>();
-    	putHeaders.putAll(headers);
-    	putHeaders.put("Content-Type", "application/json");
-	    return post(url, key, TvdbToken.class, putHeaders );
-   }
-    
 
-    public TvdbToken refreshToken(TvdbToken token) throws GuideException {
-    	URL url = buildUrl(String.format("%s/refresh_token", baseUri));
-	    Map<String,String> reqHeaders = new HashMap<>();
-	    reqHeaders.putAll(headers);
-	    reqHeaders.put("Authorization", String.format("Bearer %s", token.getValue()));
-    	return get(url,TvdbToken.class, reqHeaders);
-    }
-    
-    /**
-     * @return the token
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public TvdbToken getToken() throws GuideException {
-        long now = System.currentTimeMillis();
-        if (token == null || now >= token.getTime() + validPeriodInMs) {
-            token = login(apiKey);
-        } else if (now >= token.getTime() + validPeriodInMs - 10 * 60 * 1000) {
-            token = refreshToken(token);
-        }
-        return token;
-    }
-    
-    public Map<String,String> getHeaders(){
-    	Map<String,String> reqHeaders = headers;
-    	try{
-    		reqHeaders.put("Authorization", String.format("Bearer %s", getToken().getValue()));
-    	}catch(GuideException ex){
-    		//do nothing
-    	}
-    	return reqHeaders;
-    }
+	public TvdbToken login(String apiKey) throws GuideException {
+		TvdbApiKey key = new TvdbApiKey();
+		key.setValue(apiKey);
+		URL url = buildUrl(String.format("%s/login", baseUri));
+		Map<String, String> putHeaders = new HashMap<>();
+		putHeaders.putAll(headers);
+		putHeaders.put("Content-Type", "application/json");
+		return post(url, key, TvdbToken.class, putHeaders);
+	}
 
-	/* (non-Javadoc)
+	public TvdbToken refreshToken(TvdbToken token) throws GuideException {
+		URL url = buildUrl(String.format("%s/refresh_token", baseUri));
+		Map<String, String> reqHeaders = new HashMap<>();
+		reqHeaders.putAll(headers);
+		reqHeaders.put("Authorization", String.format("Bearer %s", token.getValue()));
+		return get(url, TvdbToken.class, reqHeaders);
+	}
+
+	/**
+	 * @return the token
+	 * @throws IOException
+	 * @throws JAXBException
+	 */
+	public TvdbToken getToken() throws GuideException {
+		long now = System.currentTimeMillis();
+		if (token == null || now >= token.getTime() + validPeriodInMs) {
+			token = login(apiKey);
+		} else if (now >= token.getTime() + validPeriodInMs - 10 * 60 * 1000) {
+			token = refreshToken(token);
+		}
+		return token;
+	}
+
+	public Map<String, String> getHeaders() throws GuideException {
+		Map<String, String> reqHeaders = headers;
+		reqHeaders.put("Authorization", String.format("Bearer %s", getToken().getValue()));
+		return reqHeaders;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.delimeat.guide.GuideDataSource#info(java.lang.String)
 	 */
 	@Override
@@ -227,65 +225,68 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return get(url, GuideInfo.class, getHeaders());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.delimeat.guide.GuideDataSource#episodes(java.lang.String)
 	 */
 	@Override
 	public List<GuideEpisode> episodes(String guideId)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-        String encodedGuideId = DelimeatUtils.urlEscape(guideId, "UTF-8");
+		String encodedGuideId = DelimeatUtils.urlEscape(guideId, "UTF-8");
 		List<GuideEpisode> episodes = new ArrayList<GuideEpisode>();
-        Integer page = 1;
-        do {
-            TvdbEpisodes result = episodes(encodedGuideId, page);
-            episodes.addAll(result.getEpisodes());
-            page = result.getNext();
-        } while (page != null && page > 0);
+		Integer page = 1;
+		do {
+			TvdbEpisodes result = episodes(encodedGuideId, page);
+			episodes.addAll(result.getEpisodes());
+			page = result.getNext();
+		} while (page != null && page > 0);
 
-        return episodes;
+		return episodes;
 	}
-	
-    /**
-     * @param guideId
-     * @param page
-     * @return
-     * @throws GuideNotFoundException
-     * @throws GuideAuthorizationException
-     * @throws GuideException
-     */
-    public TvdbEpisodes episodes(String guideId, int page) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
-    	URL url = buildUrl(String.format("%s/series/%s/episodes?page=%s", baseUri, guideId,page));
-    	return get(url, TvdbEpisodes.class, getHeaders());
-    }
 
-	/* (non-Javadoc)
+	/**
+	 * @param guideId
+	 * @param page
+	 * @return
+	 * @throws GuideNotFoundException
+	 * @throws GuideAuthorizationException
+	 * @throws GuideException
+	 */
+	public TvdbEpisodes episodes(String guideId, int page)
+			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+		URL url = buildUrl(String.format("%s/series/%s/episodes?page=%s", baseUri, guideId, page));
+		return get(url, TvdbEpisodes.class, getHeaders());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.delimeat.guide.GuideDataSource#search(java.lang.String)
 	 */
 	@Override
 	public List<GuideSearchResult> search(String title)
 			throws GuideNotFoundException, GuideAuthorizationException, GuideException {
 		URL url = buildUrl(String.format("%s/search/series?name=%s", baseUri, DelimeatUtils.urlEscape(title, "UTF-8")));
-		return get(url, GuideSearch.class, getHeaders())
-					.getResults()
-					.stream()
-					.filter(result->!result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter out invalid series
-					.collect(Collectors.toList());
+		return get(url, GuideSearch.class, getHeaders()).getResults().stream()
+				.filter(result -> !result.getTitle().matches("^\\*\\*[\\s\\S]*\\*\\*$")) // filter
+																							// out
+																							// invalid
+																							// series
+				.collect(Collectors.toList());
 	}
-	
-	private <T> T get(URL url, Class<T> returnType, Map<String,String> headers) throws GuideException{
-		try{
+
+	private <T> T get(URL url, Class<T> returnType, Map<String, String> headers) throws GuideException {
+		try {
 			OkHttpClient client = new OkHttpClient();
-			Request request = new Request.Builder()
-									.url(url)
-									.headers(Headers.of(headers))
-									.build();
+			Request request = new Request.Builder().url(url).headers(Headers.of(headers)).build();
 
 			Response response = client.newCall(request).execute();
 			if (response.isSuccessful()) {
 				StreamSource source = new StreamSource(response.body().byteStream());
 				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
-			}else{
-				switch(response.code()){
+			} else {
+				switch (response.code()) {
 				case 404:
 					throw new GuideNotFoundException();
 				case 401:
@@ -296,28 +297,25 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 							response.code(), response.message(), response.request().url()));
 				}
 			}
-		}catch(IOException | JAXBException ex){
+		} catch (IOException | JAXBException ex) {
 			throw new GuideException(ex);
 		}
 	}
-	
-	private <T,S> T post(URL url, S entity, Class<T> returnType, Map<String,String> headers) throws GuideException{
-		try{
+
+	private <T, S> T post(URL url, S entity, Class<T> returnType, Map<String, String> headers) throws GuideException {
+		try {
 			OkHttpClient client = new OkHttpClient();
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			getContext().createMarshaller().marshal(entity, output);
-			Request request = new Request.Builder()
-									.url(url)
-									.headers(Headers.of(headers))
-									.post(RequestBody.create(MediaType.parse("application/json"), output.toByteArray()))
-									.build();
+			Request request = new Request.Builder().url(url).headers(Headers.of(headers))
+					.post(RequestBody.create(MediaType.parse("application/json"), output.toByteArray())).build();
 
 			Response response = client.newCall(request).execute();
 			if (response.isSuccessful()) {
 				StreamSource source = new StreamSource(response.body().byteStream());
 				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();
-			}else{
-				switch(response.code()){
+			} else {
+				switch (response.code()) {
 				case 404:
 					throw new GuideNotFoundException();
 				case 401:
@@ -328,12 +326,14 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 							response.code(), response.message(), response.request().url()));
 				}
 			}
-		}catch(IOException | JAXBException ex){
+		} catch (IOException | JAXBException ex) {
 			throw new GuideException(ex);
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -341,8 +341,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return "TvdbGuideDataSource_Impl [" + (properties != null ? "properties=" + properties + ", " : "")
 				+ (headers != null ? "headers=" + headers + ", " : "")
 				+ (baseUri != null ? "baseUri=" + baseUri + ", " : "") + "validPeriodInMs=" + validPeriodInMs + ", "
-				+ (apiKey != null ? "apiKey=" + apiKey + ", " : "")
-				+ (token != null ? "token=" + token : "") + "]";
+				+ (apiKey != null ? "apiKey=" + apiKey + ", " : "") + (token != null ? "token=" + token : "") + "]";
 	}
-    
+
 }

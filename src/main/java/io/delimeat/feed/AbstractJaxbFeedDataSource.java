@@ -23,9 +23,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -35,7 +37,11 @@ import org.slf4j.LoggerFactory;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSearch;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -102,37 +108,31 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 	 * @see io.delimeat.feed.FeedDataSource#read(java.lang.String)
 	 */
 	@Override
-	public List<FeedResult> read(String title) throws FeedException {
+	public List<FeedResult> read(String title) throws FeedTimeoutException,FeedContentTypeException,FeedResponseException,FeedResponseBodyException, FeedException {
 		try {
 			URL url = generateUrl(DelimeatUtils.urlEscape(title, "UTF-8"));
 			LOGGER.info("Opening {}",url);
 			
-			OkHttpClient client = new OkHttpClient();
-			Request request = new Request.Builder()
-									.url(url)
-									.headers(Headers.of(headers))
-									.build();
+			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
+			Request request = new Request.Builder().url(url).headers(Headers.of(headers)).build();
 
 			Response response = null;
 			try{
 				response = client.newCall(request).execute();
 			} catch(SocketTimeoutException ex){
-				String msg = String.format("Timeout for %s", url);
-				throw new FeedException(msg);
+				throw new FeedTimeoutException(url);
 			}
 			
 			if (response.isSuccessful() == false) {
-				String msg = String.format("Feed returned code %s with message \"%s\" for url: %s",response.code(), response.message(), url);
-				throw new FeedException(msg);
+				throw new FeedResponseException(response.code(), response.message(), url);
 			}
 			
-			String contentType = response.body().contentType().toString().toLowerCase();
-			String acceptHeader = headers.get("Accept").toLowerCase();
+			String contentType = response.body().contentType().toString().toLowerCase();		
+			String acceptHeader = response.request().headers().get("Accept").toLowerCase();
 			byte[] responseBytes = response.body().bytes();
 			if(contentType.contains(acceptHeader) == false){
 				LOGGER.debug(new String(responseBytes));
-				String msg = String.format("Feed returned content type %s expected %s for url: %s",contentType, acceptHeader, url);
-				throw new FeedException(msg);
+				throw new FeedContentTypeException(acceptHeader, contentType,new String(responseBytes), url);
 			}
 			
 			responseBytes = new String(responseBytes).replace("&tr", "&amp;tr").getBytes();
@@ -145,12 +145,11 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 						.getValue()
 						.getResults();
 				
-			} catch(JAXBException ex){
-				LOGGER.error(new String(responseBytes));
-				throw new FeedException(ex);
+			} catch( UnmarshalException ex){
+				throw new FeedResponseBodyException(url,new String(responseBytes), ex);
 			}
 
-		} catch (IOException ex) {
+		} catch (IOException | JAXBException ex) {
 			throw new FeedException(ex);
 		}
 	}
