@@ -29,11 +29,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 
 public class ZooqleFeedDataSource_ImplTest {
 
@@ -91,48 +96,84 @@ public class ZooqleFeedDataSource_ImplTest {
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
 
 	}
-  
-	@Test(expected=FeedException.class)
-	public void readExceptionTest() throws Exception {
+
+	@Test(expected = FeedResponseException.class)
+	public void readResponseExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","applicaton/rss+xml")));
+						.withStatus(500)
+						.withHeader("Content-Type", "applicaton/rss+xml")));
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		dataSource.read("title");
 		Assert.fail();
 	}
-	
-	@Test(expected=FeedException.class)
+
+	@Test(expected = FeedContentTypeException.class)
 	public void readContentTypeExceptionTest() throws Exception {
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title>"
-     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
-     			+ "</item></channel></rss>";
-     
+		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
+				+ "<title><![CDATA[title]]></title>" 
+				+ "<info_hash>INFO_HASH</info_hash>"
+				+ "<size>9223372036854775807</size>" 
+				+ "<seeders>1</seeders>" 
+				+ "<leechers>1000</leechers>"
+				+ "</item></channel></rss>";
+
 		stubFor(get(urlPathEqualTo("/search"))
 				.withQueryParam("q", equalTo("title after:60 category:TV"))
 				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
+						.withStatus(200)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		dataSource.read("title");
 		Assert.fail();
 	}
-  
-	@Test(expected=FeedException.class)
+
+	@Test(expected = FeedTimeoutException.class)
+	public void readTimeoutExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
+				.willReturn(aResponse()
+						.withStatus(200)
+						.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+
+		dataSource.read("title");
+		Assert.fail();
+	}
+
+	@Test(expected = FeedResponseBodyException.class)
+	public void readResponseBodyExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/search"))
+				.withQueryParam("q", equalTo("title after:60 category:TV"))
+				.withQueryParam("fmt", equalTo("rss"))
+				.withHeader("Accept", equalTo("applicaton/rss+xml"))
+				.willReturn(aResponse()
+						.withStatus(200)
+						.withHeader("Content-Type", "applicaton/rss+xml")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+
+		dataSource.read("title");
+		Assert.fail();
+	}
+
+	@Test(expected = FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/search"))
@@ -140,12 +181,12 @@ public class ZooqleFeedDataSource_ImplTest {
 				.withQueryParam("fmt", equalTo("rss"))
 				.withHeader("Accept", equalTo("applicaton/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type","applicaton/rss+xml")
-                     .withFixedDelay(2000)));
+						.withStatus(200)
+						.withHeader("Content-Type", "applicaton/rss+xml")
+						.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
 
-		dataSource.setBaseUri("http://localhost:8089");
-		
+		dataSource.setBaseUri("JIBBERISH");
+
 		dataSource.read("title");
 		Assert.fail();
 	}

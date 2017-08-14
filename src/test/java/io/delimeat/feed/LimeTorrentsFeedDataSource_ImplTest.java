@@ -177,7 +177,7 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 							.withHeader("Content-Type","text/html")
 							.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
 
-		dataSource.setBaseUri("http://localhost:8089");
+		dataSource.setBaseUri("JIBBERISH");
 		
 		dataSource.read("title");
 		Assert.fail();

@@ -29,11 +29,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 
 public class SkyTorrentsFeedDataSource_ImplTest {
 
@@ -92,8 +97,8 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 
 	}
   
-	@Test(expected=FeedException.class)
-	public void readExceptionTest() throws Exception {
+	@Test(expected=FeedResponseException.class)
+	public void readResponseExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
 				.withHeader("Accept", equalTo("text/xml"))
@@ -107,7 +112,7 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 		Assert.fail();
 	}
 	
-	@Test(expected=FeedException.class)
+	@Test(expected=FeedContentTypeException.class)
 	public void readContentTypeExceptionTest() throws Exception {
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
@@ -128,7 +133,37 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 		dataSource.read("title");
 		Assert.fail();
 	}
+	
+	@Test(expected=FeedTimeoutException.class)
+	public void readTimeoutExceptionTest() throws Exception {
+     	
+		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
+				.withHeader("Accept", equalTo("text/xml"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
   
+	@Test(expected=FeedResponseBodyException.class)
+	public void readResponseBodyExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/rss/all/ad/1/title"))
+				.withHeader("Accept", equalTo("text/xml"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type","text/xml")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
@@ -136,10 +171,10 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 				.withHeader("Accept", equalTo("text/xml"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							.withHeader("Content-Type","text/xml")
-                     .withFixedDelay(2000)));
+							.withHeader("Content-Type","text/html")
+							.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
 
-		dataSource.setBaseUri("http://localhost:8089");
+		dataSource.setBaseUri("JIBBERISH");
 		
 		dataSource.read("title");
 		Assert.fail();

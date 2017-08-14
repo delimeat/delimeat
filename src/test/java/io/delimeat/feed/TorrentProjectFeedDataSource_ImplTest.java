@@ -29,19 +29,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 
 public class TorrentProjectFeedDataSource_ImplTest {
 
 	@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8089);
-  
+
 	private TorrentProjectFeedDataSource_Impl dataSource;
-  
+
 	@Before
 	public void setUp() throws URISyntaxException {
 		dataSource = new TorrentProjectFeedDataSource_Impl();
@@ -51,97 +56,122 @@ public class TorrentProjectFeedDataSource_ImplTest {
 	public void feedSourceTest() throws Exception {
 		Assert.assertEquals(FeedSource.TORRENTPROJECT, dataSource.getFeedSource());
 	}
-	
+
 	@Test
-	public void baseUriTest(){
+	public void baseUriTest() {
 		Assert.assertNull(dataSource.getBaseUri());
 		dataSource.setBaseUri("http://localhost:8089");
 		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
 	}
-	
-	@Test
-	public void toStringTest(){
-		Assert.assertEquals("TorrentProjectFeedDataSource_Impl [feedSource=TORRENTPROJECT, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-torrentproject-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=application/rss+xml}]", dataSource.toString());
-	}
-	  
-	@Test
-	public void readTest() throws Exception{  	
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title>"
-//     			+ "<enclosure url='magnet:?xt=urn:btih:infohash&amp;tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
-     			+ "<enclosure url='magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
-     			+ "</item></channel></rss>";
-     
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/rss+xml")
-							.withBody(responseBody)));
 
+	@Test
+	public void toStringTest() {
+		Assert.assertEquals(
+				"TorrentProjectFeedDataSource_Impl [feedSource=TORRENTPROJECT, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-torrentproject-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=application/rss+xml}]",
+				dataSource.toString());
+	}
+
+	@Test
+	public void readTest() throws Exception {
+		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
+				+ "<title><![CDATA[title]]></title>"
+				+ "<enclosure url='magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
+				+ "</item></channel></rss>";
+
+		stubFor(get(urlPathEqualTo("/rss/title/")).withHeader("Accept", equalTo("application/rss+xml")).willReturn(
+				aResponse().withStatus(200).withHeader("Content-Type", "application/rss+xml").withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		List<FeedResult> results = dataSource.read("title");
-     	Assert.assertNotNull(results);
-     	Assert.assertEquals(1, results.size());
-     	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce",results.get(0).getTorrentURL());
-     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals("title", results.get(0).getTitle());
+		Assert.assertEquals("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce",results.get(0).getTorrentURL());
+		Assert.assertEquals(Long.MAX_VALUE, results.get(0).getContentLength());
 
 	}
-  
-	@Test(expected=FeedException.class)
-	public void readExceptionTest() throws Exception {
+
+	@Test(expected = FeedResponseException.class)
+	public void readResponseExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","application/rss+xml")));
-
+						.withStatus(500)
+						.withHeader("Content-Type", "text/html")));
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		dataSource.read("title");
 		Assert.fail();
 	}
-	
-	@Test(expected=FeedException.class)
+
+	@Test(expected = FeedContentTypeException.class)
 	public void readContentTypeExceptionTest() throws Exception {
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title>"
-     			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
-     			+ "</item></channel></rss>";
-     
+		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
+				+ "<title><![CDATA[title]]></title>" 
+				+ "<info_hash>INFO_HASH</info_hash>"
+				+ "<size>9223372036854775807</size>" 
+				+ "<seeders>1</seeders>" 
+				+ "<leechers>1000</leechers>"
+				+ "</item></channel></rss>";
+
 		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
+						.withStatus(200)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		dataSource.read("title");
 		Assert.fail();
 	}
-  
-	@Test(expected=FeedException.class)
+
+	@Test(expected = FeedTimeoutException.class)
+	public void readTimeoutExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/rss/title/"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
+				.willReturn(aResponse()
+						.withStatus(200)
+						.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+
+		dataSource.read("title");
+		Assert.fail();
+	}
+
+	@Test(expected = FeedResponseBodyException.class)
+	public void readResponseBodyExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/rss/title/"))
+				.withHeader("Accept", equalTo("application/rss+xml"))
+				.willReturn(aResponse()
+						.withStatus(200)
+						.withHeader("Content-Type", "application/rss+xml")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+
+		dataSource.read("title");
+		Assert.fail();
+	}
+
+	@Test(expected = FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss/title/"))
 				.withHeader("Accept", equalTo("application/rss+xml"))
 				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type","application/rss+xml")
-                     .withFixedDelay(2000)));
+						.withStatus(200)
+						.withHeader("Content-Type", "text/html")
+						.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
 
+		dataSource.setBaseUri("JIBBERISH");
 
-		dataSource.setBaseUri("http://localhost:8089");
-		
 		dataSource.read("title");
 		Assert.fail();
 	}

@@ -29,11 +29,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
+import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
+import io.delimeat.feed.exception.FeedResponseException;
+import io.delimeat.feed.exception.FeedTimeoutException;
 
 
 public class TorrentDownloadsFeedDataSource_ImplTest {
@@ -100,8 +105,8 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 
 	}
   
-	@Test(expected=FeedException.class)
-	public void readExceptionTest() throws Exception {
+	@Test(expected=FeedResponseException.class)
+	public void readResponseExceptionTest() throws Exception {
 
 		stubFor(get(urlPathEqualTo("/rss.xml"))
 				.withQueryParam("type", equalTo("search"))
@@ -118,7 +123,7 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 		Assert.fail();
 	}
 	
-	@Test(expected=FeedException.class)
+	@Test(expected=FeedContentTypeException.class)
 	public void readContentTypeExceptionTest() throws Exception {
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
@@ -144,6 +149,40 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 		Assert.fail();
 	}
   
+	@Test(expected=FeedTimeoutException.class)
+	public void readTimeoutExceptionTest() throws Exception {
+     	
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
+				.withHeader("Accept", equalTo("text/html"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withFixedDelay(2000)));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+  
+	@Test(expected=FeedResponseBodyException.class)
+	public void readResponseBodyExceptionTest() throws Exception {
+
+		stubFor(get(urlPathEqualTo("/rss.xml"))
+				.withQueryParam("type", equalTo("search"))
+				.withQueryParam("search", equalTo("title"))
+				.withHeader("Accept", equalTo("text/html"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type","text/html")));
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		dataSource.read("title");
+		Assert.fail();
+	}
+	
 	@Test(expected=FeedException.class)
 	public void readProcessingExceptionTest() throws Exception {
 
@@ -154,10 +193,9 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type","text/html")
-                     .withFixedDelay(2000)));
+							.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
 
-
-		dataSource.setBaseUri("http://localhost:8089");
+		dataSource.setBaseUri("JIBBERISH");
 		
 		dataSource.read("title");
 		Assert.fail();
