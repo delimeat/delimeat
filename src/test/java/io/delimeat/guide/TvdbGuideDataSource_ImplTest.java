@@ -24,9 +24,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,11 +43,18 @@ import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
 import io.delimeat.guide.domain.GuideSource;
+import io.delimeat.guide.domain.TvdbApiKey;
 import io.delimeat.guide.domain.TvdbEpisodes;
 import io.delimeat.guide.domain.TvdbToken;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
+import io.delimeat.guide.exception.GuideResponseBodyException;
+import io.delimeat.guide.exception.GuideResponseException;
+import io.delimeat.guide.exception.GuideTimeoutException;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okio.Buffer;
 
 public class TvdbGuideDataSource_ImplTest {
 
@@ -101,6 +111,225 @@ public class TvdbGuideDataSource_ImplTest {
 	public void buildUrlExceptionTest() throws GuideException{
 		dataSource.buildUrl("JIBBERISH");
 	}
+	
+	@Test
+	public void buildRequestHeadersTest() throws Exception{
+		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("TOKEN");
+
+		dataSource.setToken(oldToken);
+		
+		Map<String, String> headers = dataSource.buildRequestHeaders();
+		Assert.assertEquals(2, headers.size());
+		Assert.assertEquals("application/json", headers.get("Accept"));
+		Assert.assertEquals("Bearer TOKEN", headers.get("Authorization"));
+	}
+
+	@Test
+	public void buildGetTest() throws Exception{
+		URL url = new URL("http://test.com");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("HEADER", "VALUE");
+		Request request = dataSource.buildGet(url,headers);
+		Assert.assertEquals("http://test.com/", request.url().toString());
+		Assert.assertEquals(1,request.headers().size());
+		Assert.assertEquals("VALUE", request.header("HEADER"));
+		Assert.assertEquals("GET", request.method());
+		Assert.assertNull(request.body());
+	}
+	
+	@Test
+	public void buildPostTest() throws Exception{
+		URL url = new URL("http://test.com");
+		TvdbApiKey key = new TvdbApiKey();
+		key.setValue("VALUE");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Content-Type", "application/xml");
+		Request request = dataSource.buildPost(url,key,headers);
+		Assert.assertEquals("http://test.com/", request.url().url().toString());
+		Assert.assertEquals(1,request.headers().size());
+		Assert.assertEquals("application/xml", request.header("Content-Type"));
+		Assert.assertEquals("POST", request.method());
+		Assert.assertEquals(MediaType.parse("application/xml"),request.body().contentType());
+		Assert.assertEquals(18, request.body().contentLength());
+		Buffer buffer = new Buffer();
+		request.body().writeTo(buffer);
+		Assert.assertEquals("[text={\"apikey\":\"VALUE\"}]", buffer.readByteString().toString());
+	}
+	
+	@Test
+	public void buildPostNoContentTypeTest() throws Exception{
+		URL url = new URL("http://test.com");
+		TvdbApiKey key = new TvdbApiKey();
+		key.setValue("VALUE");
+		Map<String, String> headers = new HashMap<String,String>();
+		Request request = dataSource.buildPost(url,key,headers);
+		Assert.assertEquals("http://test.com/", request.url().url().toString());
+		Assert.assertEquals(1,request.headers().size());
+		Assert.assertEquals("application/json", request.header("Content-Type"));
+		Assert.assertEquals("POST", request.method());
+		Assert.assertEquals(MediaType.parse("application/json"),request.body().contentType());
+		Assert.assertEquals(18, request.body().contentLength());
+		Buffer buffer = new Buffer();
+		request.body().writeTo(buffer);
+		Assert.assertEquals("[text={\"apikey\":\"VALUE\"}]", buffer.readByteString().toString());
+	}
+	
+	@Test(expected=GuideException.class)
+	public void buildPostBodyExceptionTest() throws Exception{
+		URL url = new URL("http://test.com");
+		Map<String, String> headers = new HashMap<String,String>();
+		dataSource.buildPost(url,new Object(),headers);
+	}
+	
+	@Test
+	public void executeRequestTest() throws Exception{
+		String responseBody = "{\"token\": \"NEW_TOKEN\"}";
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withBody(responseBody)));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		TvdbToken token = dataSource.executeRequest(request, TvdbToken.class);
+		Assert.assertEquals("NEW_TOKEN", token.getValue());
+	}
+	
+	@Test(expected=GuideTimeoutException.class)
+	public void executeRequestTimeoutExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")
+							.withFixedDelay(2500)));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	@Test(expected=GuideNotFoundException.class)
+	public void executeRequestNotFoundExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(404)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	@Test(expected=GuideAuthorizationException.class)
+	public void executeRequestUnauthorisedExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(401)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	@Test(expected=GuideAuthorizationException.class)
+	public void executeRequestForbiddenExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(403)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	
+	@Test(expected=GuideResponseException.class)
+	public void executeRequestResponseExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(500)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	@Test(expected=GuideResponseBodyException.class)
+	public void executeRequestResponseBodyExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost:8089/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
+	
+	@Test(expected=GuideException.class)
+	public void executeRequestExceptionTest() throws Exception{
+		
+		stubFor(get(urlPathEqualTo("/refresh_token"))
+				.withHeader("Accept", equalTo("application/json"))
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/json")));
+		
+		URL url = new URL("http://localhost/refresh_token");
+		Map<String, String> headers = new HashMap<String,String>();
+		headers.put("Accept", "application/json");
+		Request request = dataSource.buildGet(url, headers);
+		
+		dataSource.executeRequest(request, TvdbToken.class);
+		Assert.fail();
+	}
 
 	@Test
 	public void loginTest() throws Exception {
@@ -123,79 +352,6 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals("TOKEN", token.getValue());
 	}
 
-	@Test(expected=GuideAuthorizationException.class)
-	public void loginNotAuthorisedTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		String responseBody = "{\"Error\": \"LOGIN_NOT_AUTH_ERROR\"}";
-		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-		
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.login("APIKEY");
-	}
-	
-	@Test(expected=GuideNotFoundException.class)
-	public void loginNotFoundTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		String responseBody = "{\"Error\": \"LOGIN_NOT_FOUND_ERROR\"}";
-		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-		
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.login("APIKEY");
-	}
-
-	@Test(expected=GuideException.class)
-	public void loginExceptionTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type", "application/json")
-							));
-		
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.login("APIKEY");
-	}
-	
-	@Test(expected=GuideException.class)
-	public void loginTimeoutTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2000)));
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.login("APIKEY");
-	}
-
 	@Test
 	public void refreshTokenTest() throws Exception {
 		String responseBody = "{\"token\": \"NEW_TOKEN\"}";
@@ -213,65 +369,11 @@ public class TvdbGuideDataSource_ImplTest {
 		TvdbToken oldToken = new TvdbToken();
 		oldToken.setValue("OLD_TOKEN");
 
-		TvdbToken newToken = dataSource.refreshToken(oldToken);
+		dataSource.setToken(oldToken);
+
+		TvdbToken newToken = dataSource.refreshToken();
 		Assert.assertNotNull(newToken);
 		Assert.assertEquals("NEW_TOKEN", newToken.getValue());
-	}
-
-	@Test(expected=GuideAuthorizationException.class)
-	public void refreshTokenNotAuthorisedTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_AUTH_ERROR\"}";
-		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer OLD_TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-		
-		dataSource.setBaseUri("http://localhost:8089");
-				
-		TvdbToken oldToken = new TvdbToken();
-		oldToken.setValue("OLD_TOKEN");
-
-		dataSource.refreshToken(oldToken);
-	}
-
-	@Test(expected=GuideException.class)
-	public void refreshTokenExceptionTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Authorization",equalTo("Bearer OLD_TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","application/json")));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		TvdbToken oldToken = new TvdbToken();
-		oldToken.setValue("OLD_TOKEN");
-
-		dataSource.refreshToken(oldToken);
-	}
-	
-	@Test(expected=GuideException.class)
-	public void refreshTokenTimeoutTest() throws Exception {	
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer OLD_TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2000)));
-		
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		TvdbToken oldToken = new TvdbToken();
-		oldToken.setValue("OLD_TOKEN");
-
-		dataSource.refreshToken(oldToken);
-
 	}
 
 	@Test
@@ -386,99 +488,6 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals(0, results.size());
 	}
 
-	@Test(expected=GuideAuthorizationException.class)
-	public void searchNotAuthorisedTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_AUTH_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.search("TITLE");
-	}
-
-	@Test(expected=GuideNotFoundException.class)
-	public void searchNotFoundTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_FOUND_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		 
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-		
-		dataSource.search("TITLE");
-	}
-
-	@Test(expected=GuideException.class)
-	public void searchExceptionTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","application/json")));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-
-		dataSource.search("TITLE");
-	}
-	
-	@Test(expected=GuideException.class)
-	public void searchTimeoutTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2000)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.search("TITLE");
-
-	}
-
 	@Test
 	public void infoTest() throws Exception {
 		String responseText = "{\"data\": {\"overview\":\"DESCRIPTION\",\"id\":\"GUIDEID\",\"seriesName\":\"TITLE\","
@@ -518,92 +527,6 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals(LocalDate.parse("2016-02-03"), info.getLastUpdated());
 	}
 
-	@Test(expected=GuideAuthorizationException.class)
-	public void infoNotAuthorisedTest() throws Exception {
-		
-		String responseBody = "{\"Error\": \"NOT_AUTH_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.info("GUIDEID");
-	}
-
-	@Test(expected=GuideNotFoundException.class)
-	public void infoNotFoundTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_FOUND_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization",equalTo("Bearer TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.info("GUIDEID");
-	}
-
-	@Test(expected=GuideException.class)
-	public void infoExceptionTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization",equalTo("Bearer TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","application/json")));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.info("GUIDEID");
-	}
-	
-	@Test(expected=GuideException.class)
-	public void infoTimeoutTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2000)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.info("GUIDEID");
-	}
-
 	@Test
 	public void episodesTest() throws Exception {
 		String responseBody = "{\"links\": {\"first\": null,\"last\": 0,\"next\": 0,\"prev\": 0},"
@@ -641,102 +564,7 @@ public class TvdbGuideDataSource_ImplTest {
 		Assert.assertEquals("TITLE", result.getEpisodes().get(0).getTitle());
 		Assert.assertEquals(LocalDate.parse("2015-09-29"),result.getEpisodes().get(0).getAirDate());
 	}
-
-	@Test(expected=GuideAuthorizationException.class)
-	public void episodesNotAuthorisedTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_AUTH_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.episodes("GUIDEID", 1);
-	}
-
-	@Test(expected=GuideNotFoundException.class)
-	public void episodesNotFoundTest() throws Exception {
-		String responseBody = "{\"Error\": \"NOT_FOUND_ERROR\"}";
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		 
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.episodes("GUIDEID", 1);
-	}
-
-	@Test(expected=GuideException.class)
-	public void episodesExceptionTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type","application/json")));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.episodes("GUIDEID", 1);
-	}
 	
-	@Test(expected=GuideException.class)
-	public void episodesTimeoutTest() throws Exception {
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2000)));
-
-		dataSource.setBaseUri("http://localhost:8089");
-		
-		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
-		
-		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
-		dataSource.setToken(token);
-
-		dataSource.episodes("GUIDEID", 1);
-
-	}
-
 	@Test
 	public void episodeListNoNextTest() throws Exception {
 		String responseBody = "{\"links\": {\"first\": 1,\"last\": 1,\"next\": 0,\"prev\": 0},"
