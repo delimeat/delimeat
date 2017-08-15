@@ -36,6 +36,7 @@ import io.delimeat.torrent.UDPScrapeRequestHandler_Impl;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.torrent.exception.TorrentTimeoutException;
 
 public class UDPScrapeRequestHandler_ImpTest {
 
@@ -224,7 +225,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 		Assert.assertEquals("RECIVEDPACKET", new String(result));
 	}
 
-	@Test(expected = SocketTimeoutException.class)
+	@Test(expected = TorrentTimeoutException.class)
 	public void sendRequestTimeoutTest() throws Exception {
 		DatagramSocket mockedSocket = Mockito.mock(DatagramSocket.class);
 

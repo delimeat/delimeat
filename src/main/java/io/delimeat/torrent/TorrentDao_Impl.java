@@ -18,8 +18,10 @@ package io.delimeat.torrent;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,9 @@ import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
+import io.delimeat.torrent.exception.TorrentResponseBodyException;
+import io.delimeat.torrent.exception.TorrentResponseException;
+import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -54,37 +59,45 @@ public class TorrentDao_Impl implements TorrentDao {
 	private final static BString PATH_KEY = new BString("path");
 
 	@Override
-	public Torrent read(URI uri) throws TorrentNotFoundException, TorrentException, IOException {
-		OkHttpClient client = new OkHttpClient();
-		Request request = new Request.Builder()
-									.addHeader("Referer", uri.toASCIIString())
-									.addHeader("Accept", "application/x-bittorrent")
-									.url(uri.toURL())
-									.build();
+	public Torrent read(URI uri) throws TorrentNotFoundException,TorrentResponseException, TorrentResponseBodyException, TorrentException, IOException {
 		try {
+			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
+			URL url = uri.toURL();
+			Request request = new Request.Builder()
+										.addHeader("Referer", uri.toASCIIString())
+										.addHeader("Accept", "application/x-bittorrent")
+										.url(uri.toURL())
+										.build();
 
-			Response response = client.newCall(request).execute();
-			if (response.isSuccessful()) {
-				final byte[] bytes = response.body().bytes();
-				BDictionary dictionary = BencodeUtils.decode(bytes);
-				Torrent torrent = parseRootDictionary(dictionary);
-				torrent.setBytes(bytes);
-				return torrent;
-			} else {
+			Response response;
+			try{
+				response = client.newCall(request).execute();
+			}catch(SocketTimeoutException ex){
+				throw new TorrentTimeoutException(uri.toURL());
+			}
+			
+			if (response.isSuccessful() == false) {
 				switch (response.code()) {
 				case 404:
-					throw new TorrentNotFoundException(
-							String.format("Scrape returned code %s with message \"%s\" for url: %s", response.code(),
-									response.message(), response.request().url()));
+					throw new TorrentNotFoundException(response.code(), response.message(), url);
 				default:
-					throw new TorrentException(String.format("Scrape returned code %s with message \"%s\" for url: %s",
-							response.code(), response.message(), response.request().url()));
+					throw new TorrentResponseException(response.code(), response.message(), url);
 				}
 			}
+			
+			final byte[] responseBytes = response.body().bytes();
+			BDictionary dictionary;
+			Torrent torrent;
+			try{
+				dictionary = BencodeUtils.decode(responseBytes);
+				torrent = parseRootDictionary(dictionary);
+				torrent.setBytes(responseBytes);
+			}catch(BencodeException ex){
+				throw new TorrentResponseBodyException(url, new String(responseBytes),ex);
+			}
+			return torrent;
 
-		}  catch(SocketTimeoutException ex){
-			throw new TorrentException(String.format("Timeout for scraping %s", uri));
-		} catch (BencodeException | IOException e) {
+		}catch (IOException e) {
 			throw new TorrentException(e);
 		}
 

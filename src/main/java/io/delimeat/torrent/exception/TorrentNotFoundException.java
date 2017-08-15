@@ -15,20 +15,20 @@
  */
 package io.delimeat.torrent.exception;
 
-public class TorrentNotFoundException extends TorrentException {
+import java.net.URL;
+
+public class TorrentNotFoundException extends TorrentResponseException {
 
 	static final long serialVersionUID = 1L;
-
-	public TorrentNotFoundException(String message) {
-		super(message);
+	
+	/**
+	 * @param code
+	 * @param message
+	 * @param url
+	 */
+	public TorrentNotFoundException(int code, String message, URL url) {
+		super(code, message, url);
 	}
 
-	public TorrentNotFoundException(Throwable cause) {
-		super(cause);
-	}
-
-	public TorrentNotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
 }

@@ -17,6 +17,7 @@ package io.delimeat.torrent;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
@@ -37,6 +38,10 @@ import com.google.common.hash.Hashing;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.torrent.exception.TorrentNotFoundException;
+import io.delimeat.torrent.exception.TorrentResponseBodyException;
+import io.delimeat.torrent.exception.TorrentResponseException;
+import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 public class HttpScrapeRequestHandler_ImplTest {
@@ -112,12 +117,10 @@ public class HttpScrapeRequestHandler_ImplTest {
 		byte[] scrapeResult = baos.toByteArray();
      
 		stubFor(get(urlPathEqualTo("/scrape"))
-				//.withHeader("Accept", equalTo("application/x-bittorrent"))
-				//.withQueryParam("test", equalTo("true"))
+				.withQueryParam("test", equalTo("true"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							//.withHeader("Content-Type", "application/x-bittorrent")
 							.withBody(scrapeResult)
 							));
 
@@ -126,41 +129,31 @@ public class HttpScrapeRequestHandler_ImplTest {
 		Assert.assertEquals(5, result.getSeeders());
 		Assert.assertEquals(10, result.getLeechers());
 	}
+	
+	@Test(expected=TorrentTimeoutException.class)
+	public void scrapeTimeoutExceptionTest() throws URISyntaxException, Exception{
 
-	@Test(expected=TorrentException.class)
-	public void scrapeBencodeExceptionTest() throws URISyntaxException, Exception{
 		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 
-		byte[] scrapeResult = "x".getBytes();
-
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		baos.write("d5:filesd20:".getBytes());
+		baos.write(infoHash.getBytes());
+		baos.write("d8:completei5e10:downloadedi50e10:incompletei10eeee".getBytes());
+     
 		stubFor(get(urlPathEqualTo("/scrape"))
-				//.withQueryParam("test", equalTo("true"))
+				.withQueryParam("test", equalTo("true"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(200)
-							//.withHeader("Content-Type", "application/x-bittorent")
-							.withBody(scrapeResult)
+							.withFixedDelay(2000)
 							));
 
 		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		Assert.fail();
 	}
-
-	@Test(expected=TorrentException.class)
-	public void scrapeIOExceptionTest() throws URISyntaxException, Exception{
-		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-
-		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
-	}
-
-	@Test(expected=TorrentException.class)
-	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.doScrape(new URI("udp://test.com/announce"), infoHash);
-	}
-
-	@Test(expected=TorrentException.class)
+	
+	@Test(expected=TorrentNotFoundException.class)
 	public void scrapeNotFoundTest() throws Exception{
 
 		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
@@ -173,8 +166,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		byte[] scrapeResult = baos.toByteArray();
      
 		stubFor(get(urlPathEqualTo("/scrape"))
-				//.withHeader("Accept", equalTo("application/x-bittorent"))
-				//.withQueryParam("test", equalTo("true"))
+				.withQueryParam("test", equalTo("true"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(404)
@@ -182,5 +174,55 @@ public class HttpScrapeRequestHandler_ImplTest {
 							));
 
 		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+	}
+	
+	@Test(expected=TorrentResponseException.class)
+	public void scrapeResponseExceptionTest() throws URISyntaxException, Exception{
+
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		baos.write("d5:filesd20:".getBytes());
+		baos.write(infoHash.getBytes());
+		baos.write("d8:completei5e10:downloadedi50e10:incompletei10eeee".getBytes());
+     
+		stubFor(get(urlPathEqualTo("/scrape"))
+				.withQueryParam("test", equalTo("true"))
+				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
+				.willReturn(aResponse()
+							.withStatus(500)));
+
+		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		Assert.fail();
+	}
+
+	@Test(expected=TorrentResponseBodyException.class)
+	public void scrapeResponseBodyExceptionTest() throws URISyntaxException, Exception{
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		byte[] scrapeResult = "x".getBytes();
+
+		stubFor(get(urlPathEqualTo("/scrape"))
+					.willReturn(aResponse()
+						.withStatus(200)
+						.withBody(scrapeResult)));
+
+		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+	}
+
+	@Test(expected=TorrentException.class)
+	public void scrapeExceptionTest() throws URISyntaxException, Exception{
+		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+	}
+
+	@Test(expected=TorrentException.class)
+	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		scraper.doScrape(new URI("udp://test.com/announce"), infoHash);
 	}
 }

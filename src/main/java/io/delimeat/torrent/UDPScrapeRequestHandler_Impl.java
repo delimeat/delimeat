@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 @Component
@@ -66,7 +67,7 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	}
 	
 	@Override
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException, IOException {
+	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException,TorrentTimeoutException, TorrentException, IOException {
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);
@@ -147,7 +148,7 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		}
 	}
 	
-	public synchronized byte[] sendRequest(byte[] sendData, InetSocketAddress address) throws IOException{
+	public synchronized byte[] sendRequest(byte[] sendData, InetSocketAddress address) throws IOException, TorrentTimeoutException{
 		DatagramSocket clientSocket = getSocket();
 		byte[] receiveData = new byte[1024];
 		byte[] response = null;
@@ -162,7 +163,7 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 				clientSocket.receive(receivePacket);
 			}catch(SocketTimeoutException ex){
 				if(sendTry==MAX_SEND_RETRYS){
-					throw ex;
+					throw new TorrentTimeoutException(address);
 				}else{
 					continue;
 				}

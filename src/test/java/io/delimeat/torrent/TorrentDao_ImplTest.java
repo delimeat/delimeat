@@ -22,7 +22,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -44,6 +43,9 @@ import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
+import io.delimeat.torrent.exception.TorrentResponseBodyException;
+import io.delimeat.torrent.exception.TorrentResponseException;
+import io.delimeat.torrent.exception.TorrentTimeoutException;
 
 public class TorrentDao_ImplTest {
 
@@ -220,19 +222,63 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
 		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));
 	}
-  
-	@Test(expected=TorrentException.class)
-	public void readNoContentTypeTest() throws Exception {
+	
+	@Test(expected=TorrentTimeoutException.class)
+	public void readTimeoutExceptionTest() throws Exception {	
 		stubFor(get(urlPathEqualTo("/"))
 				.withHeader("Accept", equalTo("application/x-bittorrent"))
 				.withHeader("Referer", equalTo("http://localhost:8089"))			
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withHeader("Content-Type", "application/x-bittorrent")
+							.withFixedDelay(2000)
 							));
 	
 		dao.read(new URI("http://localhost:8089"));
-
+		Assert.fail();
+	}
+	
+  	@Test(expected=TorrentNotFoundException.class)
+	public void readNotFoundExceptionTest() throws Exception {
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(404)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							));
+	
+		dao.read(new URI("http://localhost:8089"));
+		Assert.fail();
+	}
+  	
+  	@Test(expected=TorrentResponseException.class)
+	public void readResponseExceptionTest() throws Exception {
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(500)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							));
+	
+		dao.read(new URI("http://localhost:8089"));
+		Assert.fail();
+	}
+  
+	@Test(expected=TorrentResponseBodyException.class)
+	public void readResponseBodyTest() throws Exception {
+		stubFor(get(urlPathEqualTo("/"))
+				.withHeader("Accept", equalTo("application/x-bittorrent"))
+				.withHeader("Referer", equalTo("http://localhost:8089"))			
+				.willReturn(aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "application/x-bittorrent")
+							.withBody("X")
+							));
+	
+		dao.read(new URI("http://localhost:8089"));
+		Assert.fail();
 	}
   
 	//TODO re-enable after content type validation is enabled
@@ -253,49 +299,9 @@ public class TorrentDao_ImplTest {
 		dao.read(new URI("http://localhost:8089"));
 	}
   
-  	@Test(expected=MalformedURLException.class)
+  	@Test(expected=TorrentException.class)
   	public void readUnsupportedProtocalTest() throws Exception{
    	dao.read(new URI("udp://read.com:8080"));  	
-   }
-  
-  	@Test(expected=TorrentNotFoundException.class)
-	public void readNotFoundTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
-	}
-  
-  	@Test(expected=TorrentException.class)
-	public void readNotOkTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
-	}
-  
-  	@Test(expected=TorrentException.class)
-  	public void readBencodeExceptionTest() throws Exception{
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							.withBody("X")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
    }
 
 }
