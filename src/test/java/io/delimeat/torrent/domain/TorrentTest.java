@@ -163,7 +163,7 @@ public class TorrentTest {
 	
 	@Test
 	public void equalsTrackerTest() {
-		torrent.setTracker(null);
+		torrent.setTracker("OTHER_TRACKER");
 		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		torrent.setInfo(new TorrentInfo());
 		Torrent other = new Torrent();
@@ -186,4 +186,5 @@ public class TorrentTest {
 
 		Assert.assertFalse(torrent.equals(other));
 	}
+
 }

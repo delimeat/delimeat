@@ -47,6 +47,11 @@ public class GuideItemProcessor_ImplTest {
 	}
 
 	@Test
+	public void toStringTest(){
+		Assert.assertEquals("GuideItemProcessor_Impl []", processor.toString());
+	}
+	
+	@Test
 	public void showServiceTest() {
 		Assert.assertNull(processor.getShowService());
 		ShowService showService = Mockito.mock(ShowService.class);

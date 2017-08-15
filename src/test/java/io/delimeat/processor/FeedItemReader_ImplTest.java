@@ -40,6 +40,11 @@ public class FeedItemReader_ImplTest {
 	}
 	
 	@Test
+	public void toStringTest(){
+		Assert.assertEquals("FeedItemReader_Impl []", reader.toString());
+	}
+	
+	@Test
 	public void configServiceTest() {
 		Assert.assertNull(reader.getConfigService());
 		ConfigService configService = Mockito.mock(ConfigService.class);

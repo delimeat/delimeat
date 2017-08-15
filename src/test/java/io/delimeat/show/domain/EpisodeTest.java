@@ -23,11 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.delimeat.guide.domain.GuideEpisode;
-import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.EpisodeStatus;
-import io.delimeat.show.domain.Show;
-
 public class EpisodeTest {
 	
     private Episode episode;
@@ -159,6 +154,18 @@ public class EpisodeTest {
     }
 
     @Test
+    public void equalsTest(){
+		Episode episode = new Episode();
+		episode.setEpisodeId(1L);
+		episode.setVersion(Integer.MAX_VALUE);
+		
+		Episode other = new Episode();
+		other.setEpisodeId(1L);
+		other.setVersion(Integer.MAX_VALUE);
+		
+		Assert.assertTrue(episode.equals(other));
+    }
+    @Test
     public void equalsNullTest() {
         Assert.assertFalse(episode.equals(null));
     }
@@ -172,49 +179,46 @@ public class EpisodeTest {
     public void equalsSelfTest() {
         Assert.assertTrue(episode.equals(episode));
     }
-
+    
     @Test
-    public void equalsGuideEpisodeSeasonNumTest() throws ParseException {
-        GuideEpisode otherEp = new GuideEpisode();
-        otherEp.setTitle("OTHER");
-        otherEp.setAirDate(LocalDate.now());
-        otherEp.setSeasonNum(2);
-        otherEp.setEpisodeNum(2);
-
-		Episode ep = new Episode();
-		ep.setSeasonNum(2);
-		ep.setEpisodeNum(3);
+    public void equalsIdNullTest(){
+		Episode episode = new Episode();
+		episode.setEpisodeId(null);
+		episode.setVersion(Integer.MAX_VALUE);
 		
-        Assert.assertFalse(episode.equals(otherEp));
-    }
-
-    @Test
-    public void equalsGuideEpisodeEpisodeNumTest() throws ParseException {
-        GuideEpisode otherEp = new GuideEpisode();
-        otherEp.setTitle("OTHER");
-        otherEp.setAirDate(LocalDate.now());
-        otherEp.setSeasonNum(1);
-        otherEp.setEpisodeNum(1);
-
-		Episode ep = new Episode();
-		ep.setSeasonNum(2);
-		ep.setEpisodeNum(3);
+		Episode other = new Episode();
+		other.setEpisodeId(1L);
+		other.setVersion(Integer.MAX_VALUE);
 		
-        Assert.assertFalse(episode.equals(otherEp));
+		Assert.assertFalse(episode.equals(other));
     }
-
+    
     @Test
-    public void equalsEpisodeVersionTest() throws ParseException {
-		Episode otherEp = new Episode();
-		otherEp.setEpisodeId(1L);
-		otherEp.setVersion(Integer.MIN_VALUE);
-        
+    public void equalsIdTest(){
+		Episode episode = new Episode();
+		episode.setEpisodeId(2L);
+		episode.setVersion(Integer.MAX_VALUE);
+		
+		Episode other = new Episode();
+		other.setEpisodeId(1L);
+		other.setVersion(Integer.MAX_VALUE);
+		
+		Assert.assertFalse(episode.equals(other));
+    }
+    
+    @Test
+    public void equalsVersionTest(){
 		Episode episode = new Episode();
 		episode.setEpisodeId(1L);
 		episode.setVersion(Integer.MAX_VALUE);
 		
-        Assert.assertFalse(episode.equals(otherEp));
+		Episode other = new Episode();
+		other.setEpisodeId(1L);
+		other.setVersion(Integer.MIN_VALUE);
+		
+		Assert.assertFalse(episode.equals(other));
     }
+
 
     @Test
     public void hashTest() {

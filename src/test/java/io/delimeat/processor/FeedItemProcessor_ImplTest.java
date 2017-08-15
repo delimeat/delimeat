@@ -56,7 +56,11 @@ public class FeedItemProcessor_ImplTest {
 	public void setUp(){
 		processor = new FeedItemProcessor_Impl();
 	}
-	
+
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("FeedItemProcessor_Impl [feedResultValidators=[], torrentValidators=[], ]", processor.toString());
+	}
 	@Test
 	public void configServiceTest() {
 		Assert.assertNull(processor.getConfigService());

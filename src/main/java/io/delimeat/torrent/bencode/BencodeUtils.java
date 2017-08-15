@@ -31,10 +31,6 @@ public final class BencodeUtils {
 	private static final char END = 'e';
 	private static final char NEGATIVE = '-';
 	private static final char COLON = ':';
-  
-  	private BencodeUtils(){
-     //do nothing
-   }
 
 	public static BDictionary decode(InputStream input)
 			throws IOException, BencodeException {

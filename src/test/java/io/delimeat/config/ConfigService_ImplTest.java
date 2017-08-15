@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataAccessException;
@@ -39,6 +40,10 @@ public class ConfigService_ImplTest {
 		service = new ConfigService_Impl();
 	}
 
+	@Test
+	public void toStringTest(){
+		Assert.assertEquals("ConfigService_Impl []", service.toString());
+	}
 
 	@Test
 	public void configDaoTest() {
@@ -71,22 +76,31 @@ public class ConfigService_ImplTest {
 	
 	@Test
 	public void readEnityNotFoundExceptionTest() throws Exception {
+		Config config = new Config();
+		config.setConfigId(1L);
+		config.setOutputDirectory("DEFAULT_OUTPUT_DIR");
+		config.setSearchInterval(4* 60 * 60 * 1000);
+		config.setSearchDelay(60 * 60 * 1000);
+		config.setPreferFiles(true);
+		config.setIgnoreFolders(false);
 		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
 		Mockito.when(repository.findOne(1L)).thenReturn(null);
-		Mockito.when(repository.save(Mockito.any(Config.class))).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
 
 		service.setConfigRepository(repository);
 		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
 		
 		Config result = service.read();
 
-		//TODO add mock to return save
 		Assert.assertEquals("DEFAULT_OUTPUT_DIR", result.getOutputDirectory());
 		Assert.assertEquals(60 * 60 * 1000, result.getSearchDelay());
 		Assert.assertEquals(4* 60 * 60 * 1000, result.getSearchInterval());
 		Assert.assertTrue(result.isPreferFiles());
 		Assert.assertFalse(result.isIgnoreFolders());
 		
+		ArgumentCaptor<Config> captor = ArgumentCaptor.forClass(Config.class);
+		Mockito.verify(repository).save(captor.capture());
+		Assert.assertEquals(config, captor.getValue());
 		Mockito.verify(repository).findOne(1L);
 		Mockito.verify(repository).save(result);
 		Mockito.verifyNoMoreInteractions(repository);
@@ -103,8 +117,6 @@ public class ConfigService_ImplTest {
 		
 		service.read();
 	}
-	
-	
 
 	@Test
 	public void updateTest() throws Exception {
@@ -112,7 +124,7 @@ public class ConfigService_ImplTest {
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(false);
 		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		Mockito.when(repository.save(Mockito.any(Config.class))).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
 		service.setConfigRepository(repository);
 
 
@@ -121,7 +133,9 @@ public class ConfigService_ImplTest {
 		Assert.assertTrue(config.isIgnoreFolders());
 		Assert.assertTrue(config.isPreferFiles());
 		
-
+		ArgumentCaptor<Config> captor = ArgumentCaptor.forClass(Config.class);
+		Mockito.verify(repository).save(captor.capture());
+		Assert.assertEquals(config, captor.getValue());
 		Mockito.verify(repository).save(config);
 		Mockito.verifyNoMoreInteractions(repository);
 		
