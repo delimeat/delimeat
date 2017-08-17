@@ -6,3 +6,5 @@ target/
 frontend/components/
 /delimeat.log
 /.settings/
+/.springBeans
+/package-lock.json
