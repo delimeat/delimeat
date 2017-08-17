@@ -70,4 +70,10 @@ public class TorrentFileWriter_ImplTest {
 		Assert.assertEquals("TEST", new String(baos.toByteArray()));
 	}
 	
+	@Test(expected=TorrentException.class)
+	public void writeTest() throws TorrentException{
+		writer.write("","JIBBERISH".getBytes(), new Config());
+		Assert.fail();
+	}
+	
 }

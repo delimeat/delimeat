@@ -35,6 +35,7 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 
 		try{
 			final URL url = buildUrl(fileName,config);
+			System.out.println(url);
 			File file = buildFile(url);
 			writeToStream(new FileOutputStream(file), bytes);
 
