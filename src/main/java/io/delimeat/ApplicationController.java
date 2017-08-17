@@ -68,6 +68,7 @@ public class ApplicationController implements SparkController {
 		
 		Spark.notFound((request, response) -> {
 			response.type(JSON_CONTENT_TYPE);
+			response.header("Content-Encoding", "gzip");
 		    return "{\"message\":\"resource not found\"}";
 		});
 		
@@ -101,9 +102,6 @@ public class ApplicationController implements SparkController {
 		
 		Spark.after("/api/*",(Request request, Response response) -> {
 			response.type(JSON_CONTENT_TYPE);
-		});
-		
-		Spark.after((request, response) -> {
 			response.header("Content-Encoding", "gzip");
 		});
 		

@@ -53,14 +53,13 @@ public class ShowControllerTest {
 
 		controller = new ShowController();
 		controller.init();
-        
-        Spark.awaitInitialization();
-        
+                
         client = ClientBuilder.newClient();
         
         Spark.after((request,response)->{
         	response.type("application/json");
         });
+        
     }
 	
 	@Before

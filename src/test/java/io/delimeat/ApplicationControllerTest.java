@@ -52,8 +52,7 @@ public class ApplicationControllerTest {
 		Assert.assertEquals(4567,Spark.port());
 		Assert.assertEquals(4567, controller.getPort());
 		controller.setPort(9090);
-		Assert.assertEquals(9090, controller.getPort());
-		
+		Assert.assertEquals(9090, controller.getPort());		
 	}
 	
 	@Test
@@ -104,5 +103,23 @@ public class ApplicationControllerTest {
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
     	Assert.assertEquals("{\"message\":\"invalid request format\"}",  response.readEntity(String.class));
+	}
+	
+	@Test
+	public void apiContentTypeTest(){
+		Spark.get("/api/contenttype",(spark.Request request, spark.Response response) -> {
+			return "{\"message\":\"this is json\"}";
+		});
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/contenttype")
+    			.request()
+    			.accept("application/json")
+    			.get();
+    	
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assert.assertEquals("{\"message\":\"this is json\"}",  response.readEntity(String.class));
 	}
 }

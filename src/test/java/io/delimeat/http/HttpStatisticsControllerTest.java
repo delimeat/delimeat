@@ -49,6 +49,7 @@ public class HttpStatisticsControllerTest {
         Spark.after((request,response)->{
         	response.type("application/json");
         });
+        
     }
     
 	@AfterClass
