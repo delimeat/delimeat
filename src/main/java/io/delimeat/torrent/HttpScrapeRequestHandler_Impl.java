@@ -65,7 +65,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			final URL scrapeURL = generateScrapeURL(uri, infoHash);
 
 			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
-			Request request = new Request.Builder().url(scrapeURL).build();
+			Request request = new Request.Builder().url(scrapeURL).addHeader("Accept", "text/plain").build();
 
 			Response response;
 			try {

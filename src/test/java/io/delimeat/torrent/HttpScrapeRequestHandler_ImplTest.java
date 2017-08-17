@@ -118,10 +118,12 @@ public class HttpScrapeRequestHandler_ImplTest {
      
 		stubFor(get(urlPathEqualTo("/scrape"))
 				.withQueryParam("test", equalTo("true"))
+				.withHeader("Accept", equalTo("text/plain"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(200)
 							.withBody(scrapeResult)
+							.withHeader("Content-Type", "plain/text")
 							));
 
 		ScrapeResult result = scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
@@ -143,6 +145,7 @@ public class HttpScrapeRequestHandler_ImplTest {
      
 		stubFor(get(urlPathEqualTo("/scrape"))
 				.withQueryParam("test", equalTo("true"))
+				.withHeader("Accept", equalTo("text/plain"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(200)
@@ -167,6 +170,7 @@ public class HttpScrapeRequestHandler_ImplTest {
      
 		stubFor(get(urlPathEqualTo("/scrape"))
 				.withQueryParam("test", equalTo("true"))
+				.withHeader("Accept", equalTo("text/plain"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(404)
@@ -189,6 +193,7 @@ public class HttpScrapeRequestHandler_ImplTest {
      
 		stubFor(get(urlPathEqualTo("/scrape"))
 				.withQueryParam("test", equalTo("true"))
+				.withHeader("Accept", equalTo("text/plain"))
 				//.withQueryParam("info_hash", equalTo("%60%14%C2%92%C3%A0T%C3%B9T%0E%C2%B0%12%C2%9C5%C3%9E%C2%B3%C2%85%C2%BA%C2%A2%C3%BA%C3%B0%C3%BE"))
 				.willReturn(aResponse()
 							.withStatus(500)));
@@ -205,9 +210,10 @@ public class HttpScrapeRequestHandler_ImplTest {
 		byte[] scrapeResult = "x".getBytes();
 
 		stubFor(get(urlPathEqualTo("/scrape"))
-					.willReturn(aResponse()
-						.withStatus(200)
-						.withBody(scrapeResult)));
+				.withHeader("Accept", equalTo("text/plain"))
+				.willReturn(aResponse()
+					.withStatus(200)
+					.withBody(scrapeResult)));
 
 		scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 	}
