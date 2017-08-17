@@ -34,12 +34,12 @@ public class LocalTimeAdapterTest {
 
 	@Test
 	public void marshalPMTest() throws Exception {
-		Assert.assertEquals("12:45 PM", adapter.marshal(LocalTime.parse("12:45:00")));
+		Assert.assertEquals("12:45", adapter.marshal(LocalTime.parse("12:45:00")));
 	}
 	
 	@Test
 	public void marshalAMTest() throws Exception {
-		Assert.assertEquals("08:45 AM", adapter.marshal(LocalTime.parse("08:45:00")));
+		Assert.assertEquals("08:45", adapter.marshal(LocalTime.parse("08:45:00")));
 	}
   
 	@Test

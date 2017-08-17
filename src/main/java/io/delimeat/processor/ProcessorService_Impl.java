@@ -73,7 +73,7 @@ public class ProcessorService_Impl implements ProcessorService  {
 			try{
 				itemProcessor.process(inputItem);
 			}catch(Exception ex){
-				LOGGER.error(String.format("encountered an error processing %s for item %s", itemProcessor, inputItem), ex);
+				LOGGER.error(String.format("encountered an error processing %s for item %s", itemProcessor.getClass().getName(), inputItem), ex);
 			}
 		}
 	}

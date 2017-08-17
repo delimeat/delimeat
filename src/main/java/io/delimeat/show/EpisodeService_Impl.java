@@ -43,7 +43,15 @@ public class EpisodeService_Impl implements EpisodeService {
 	public void setEpisodeRepository(EpisodeRepository episodeRepository) {
 		this.episodeRepository = episodeRepository;
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.show.EpisodeService#create(io.delimeat.show.domain.Episode)
+	 */
+	@Override
+	public Episode create(Episode episode) {
+		return episodeRepository.save(episode);
+	}
+	
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#read(java.lang.Long)
 	 */

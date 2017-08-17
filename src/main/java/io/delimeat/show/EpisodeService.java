@@ -21,6 +21,8 @@ import io.delimeat.show.domain.Episode;
 
 public interface EpisodeService {
 
+	public Episode create(Episode episode);
+	
 	public Episode read(Long episodeId);
 
 	public Episode update(Episode episode);

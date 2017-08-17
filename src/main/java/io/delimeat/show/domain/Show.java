@@ -32,6 +32,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import io.delimeat.util.jaxb.InstantAdapter;
+import io.delimeat.util.jaxb.LocalTimeAdapter;
 
 @Entity
 @Table(name="SHOW")
@@ -49,6 +53,7 @@ public class Show {
 	
 	@Column(name="AIR_TIME", nullable=false)
 	@Basic(optional=false)
+	@XmlJavaTypeAdapter(LocalTimeAdapter.class)
 	private LocalTime airTime;
 	
 	@Column(name="TIMEZONE", length=64, nullable=false)
@@ -61,8 +66,7 @@ public class Show {
 	
 	@Column(name="TITLE", length=255, nullable=false, unique=true)
 	@Basic(optional=false)	
-	private String title;
-	
+	private String title;	
 
 	@Column(name="AIRING", nullable=false)
 	@Basic(optional=false)
@@ -75,12 +79,12 @@ public class Show {
 	
 	@Column(name="LAST_GUIDE_UPDATE", nullable=true)
 	@Basic(optional=true)
-	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
+	@XmlJavaTypeAdapter(InstantAdapter.class)
 	private Instant lastGuideUpdate;
 	
 	@Column(name="LAST_GUIDE_CHECK", nullable=true)
 	@Basic(optional=true)
-	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
+	@XmlJavaTypeAdapter(InstantAdapter.class)
 	private Instant lastGuideCheck;
 	
 	@Column(name="ENABLED", nullable=false)
