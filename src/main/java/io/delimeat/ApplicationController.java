@@ -33,6 +33,20 @@ public class ApplicationController implements SparkController {
 	@Value("${io.delimeat.port}")
 	private int port = 8080;
 	
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.util.spark.SparkController#init()
 	 */
@@ -60,13 +74,15 @@ public class ApplicationController implements SparkController {
 		
 		Spark.internalServerError((request, response) -> {
 			response.type(JSON_CONTENT_TYPE);
-		    return "{\"message\":\"internal server error\"}";
+			response.header("Content-Encoding", "gzip");
+		    return "{\"message\":\"internal server error\"}";		    
 		});
 		
 		Spark.exception(NumberFormatException.class, (exception, request, response) -> {
 			response.type(JSON_CONTENT_TYPE);
-		    response.body("{\"message\":\"invalid request format \"}");
+		    response.body("{\"message\":\"invalid request format\"}");
 		    response.status(400);
+		    response.header("Content-Encoding", "gzip");
 		});
 		
 		Spark.before((request, response) -> {
@@ -83,7 +99,7 @@ public class ApplicationController implements SparkController {
 		    LOGGER.trace(sb.toString());
 		});
 		
-		Spark.after("api/*",(Request request, Response response) -> {
+		Spark.after("/api/*",(Request request, Response response) -> {
 			response.type(JSON_CONTENT_TYPE);
 		});
 		
@@ -100,7 +116,7 @@ public class ApplicationController implements SparkController {
 		    sb.append("\n");		    
 		    sb.append(request.url());
 		    sb.append(" " + request.ip());
-		    sb.append("\n");
+		    sb.append("\n");		    
 		    sb.append("Body: " + (response.body() == null || response.body().isEmpty() ? "empty" : response.body()));
 		    LOGGER.trace(sb.toString());
 		});
