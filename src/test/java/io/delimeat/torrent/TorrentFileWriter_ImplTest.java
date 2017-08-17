@@ -15,6 +15,7 @@
  */
 package io.delimeat.torrent;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -35,30 +36,45 @@ public class TorrentFileWriter_ImplTest {
 	}
 	
 	@Test
-	public void getFileUrlDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlDirectoryTest() throws IOException, TorrentException{
 		Config config = new Config();
 		config.setOutputDirectory("OUTPUT");
 		
-		Assert.assertEquals(new URL("file:OUTPUT/FILENAME"), writer.getFileUrl("FILENAME", config));
+		Assert.assertEquals(new URL("file:OUTPUT/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
 	
 	@Test
-	public void getFileUrlNullDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlNullDirectoryTest() throws IOException, TorrentException{
 		Config config = new Config();
 		config.setOutputDirectory(null);
 		
 		String dir = System.getProperty("user.home");
 		
-		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.getFileUrl("FILENAME", config));
+		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
+	
 	@Test
-	public void getFileUrlEmptyDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlEmptyDirectoryTest() throws IOException, TorrentException{
 		Config config = new Config();
 		config.setOutputDirectory("");
 		
 		String dir = System.getProperty("user.home");
 		
-		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.getFileUrl("FILENAME", config));
+		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
+	
+	@Test
+	public void writeToStreamTest() throws Exception{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		writer.writeToStream(baos, "TEST".getBytes());
+		Assert.assertEquals("TEST", new String(baos.toByteArray()));
+	}
+	
+	@Test(expected=TorrentException.class)
+	public void writeTest() throws TorrentException{
+		writer.write("","JIBBERISH".getBytes(), new Config());
+		Assert.fail();
+	}
+	
 	
 }

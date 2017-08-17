@@ -49,6 +49,7 @@ public class ConfigControllerTest {
         Spark.after((request,response)->{
         	response.type("application/json");
         });
+        
     }
 	
 	@Before

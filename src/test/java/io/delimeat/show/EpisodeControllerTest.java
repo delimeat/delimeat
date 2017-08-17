@@ -47,14 +47,13 @@ public class EpisodeControllerTest {
 
 		controller = new EpisodeController();
 		controller.init();
-        
-        Spark.awaitInitialization();
-        
+                
         client = ClientBuilder.newClient();
         
         Spark.after((request,response)->{
         	response.type("application/json");
         });
+        
     }
 	
 	@Before

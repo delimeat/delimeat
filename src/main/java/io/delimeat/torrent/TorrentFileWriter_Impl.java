@@ -34,26 +34,17 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 	public void write(String fileName, byte[] bytes, Config config) throws TorrentException {
 
 		try{
-			final URL url = getFileUrl(fileName,config);
-			File file = new File(url.getFile());
-			if (file.exists() == false) {
-				if (file.getParent() != null) {
-					file.getParentFile().mkdirs();
-				}
-				file.createNewFile();
-			}
-
-			try(OutputStream output = new FileOutputStream(file)){
-				output.write(bytes);   
-				output.flush();
-			}
+			final URL url = buildUrl(fileName,config);
+			System.out.println(url);
+			File file = buildFile(url);
+			writeToStream(new FileOutputStream(file), bytes);
 
 		}catch(IOException ex){
 			throw new TorrentException("Unnable to write " + fileName ,ex);
 		}
 	}
 	
-	public URL getFileUrl(String fileName, Config config) throws MalformedURLException{
+	public URL buildUrl(String fileName, Config config) throws MalformedURLException{
 		final String outputDirectory;
 		if( config.getOutputDirectory() != null && config.getOutputDirectory().length() > 0 ){
 			outputDirectory = config.getOutputDirectory();
@@ -62,6 +53,26 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 		}	
 		String outputUrl = "file:" + outputDirectory + "/" + fileName;
 		return new URL(outputUrl);
+	}
+	
+	public File buildFile(URL url) throws IOException{
+		File file = new File(url.getFile());
+		if (file.exists() == false) {
+			if (file.getParent() != null) {
+				file.getParentFile().mkdirs();
+			}
+			file.createNewFile();
+		}
+		return file;
+	}
+	
+	public void writeToStream(OutputStream output, byte[] bytes) throws IOException{
+		try{
+			output.write(bytes);
+			output.flush();
+		} finally{
+			output.close();
+		}
 	}
 
 

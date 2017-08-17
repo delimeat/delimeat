@@ -49,6 +49,14 @@ public class ApplicationTest {
 	}
 	
 	@Test
+	public void environmentTest(){
+		Assert.assertNull(application.getEnv());
+		Environment env = Mockito.mock(Environment.class);
+		application.setEnv(env);	
+		Assert.assertEquals(env, application.getEnv());
+	}
+	
+	@Test
 	public void datasourceTest(){
 		Environment env = Mockito.mock(Environment.class);
 		Mockito.when(env.getProperty("io.delimeat.show.jdbcUrl")).thenReturn("url");

@@ -12,7 +12,7 @@
   <logger name="spark" level="TRACE"/>
   <logger name="io.delimeat" level="TRACE"/>
  
-	<root level="WARN">
+	<root level="ERROR">
 		<appender-ref ref="CONSOLE" />
 	</root>
 </configuration>
