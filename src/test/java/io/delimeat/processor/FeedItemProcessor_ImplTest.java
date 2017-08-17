@@ -40,6 +40,7 @@ import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
 import io.delimeat.show.EpisodeService;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
@@ -382,6 +383,7 @@ public class FeedItemProcessor_ImplTest {
      	Assert.assertTrue(episode.getLastFeedUpdate().toEpochMilli()>= testStart.toEpochMilli());
      	Assert.assertTrue(episode.getLastFeedUpdate().toEpochMilli()<=testEnd.toEpochMilli());
      	Assert.assertTrue(episode.getLastFeedCheck().equals(episode.getLastFeedUpdate()));
+     	Assert.assertEquals(EpisodeStatus.FOUND, episode.getStatus());
  
      	Mockito.verify(service).update(episode);
      	Mockito.verifyNoMoreInteractions(service);

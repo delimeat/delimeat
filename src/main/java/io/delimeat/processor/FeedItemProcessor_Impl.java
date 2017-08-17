@@ -48,6 +48,7 @@ import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
 import io.delimeat.show.EpisodeService;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
@@ -188,6 +189,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 			torrentService.write(generateTorrentFileName(episode), torrent, getConfig());
 
 			episode.setLastFeedUpdate(now);
+			episode.setStatus(EpisodeStatus.FOUND);
 		}
         
         
