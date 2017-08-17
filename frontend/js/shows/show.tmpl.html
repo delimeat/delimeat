@@ -61,7 +61,7 @@
 	<div class="col-xs-12 col-md-6">
 		<div class="form-group" ng-class="{ 'has-error': vm.form.airtime.$invalid && vm.form.airtime.$dirty }">
 			<label for="airtime" translate="show.air_time"/>
-			<input type="text" pattern="^(0?[1-9]|1[012])(:[0-5]\d) [APap][mM]$" class="form-control" name="airtime" id="airtime" placeholder="{{'show.air_time_placeholder' | translate}}" ng-model="vm.show.airTime" required/>
+			<input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" class="form-control" name="airtime" id="airtime" placeholder="{{'show.air_time_placeholder' | translate}}" ng-model="vm.show.airTime" required/>
 		</div>
 	</div>
 	
@@ -87,12 +87,12 @@
 	</div>
 
 	<div class="text-center col-xs-12 col-md-12">
-		<button class="btn btn-danger" ng-click="vm.remove(vm.show.showId)"><span class="glyphicon glyphicon-trash"/> <span translate="common.delete"/></button>
+		<button class="btn btn-danger" ng-click="vm.remove()"><span class="glyphicon glyphicon-trash"/> <span translate="common.delete"/></button>
 	</div>
 		
 	<div class="text-center col-xs-12 col-md-12 bottom-btn-group">
 		<hr>
-		<button class="btn btn-default" ng-class="{'btn-primary':vm.form.$valid && vm.form.$dirty}" ng-disabled="vm.form.$invalid || !vm.form.$dirty" ng-click="vm.update(vm.show)"><span class="glyphicon glyphicon-floppy-disk"/> <span translate="common.save"/></button>
+		<button class="btn btn-default" ng-class="{'btn-primary':vm.form.$valid && vm.form.$dirty}" ng-disabled="vm.form.$invalid || !vm.form.$dirty" ng-click="vm.update()"><span class="glyphicon glyphicon-floppy-disk"/> <span translate="common.save"/></button>
 		<dm-back-btn/>
 	</div>
 	

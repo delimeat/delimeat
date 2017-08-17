@@ -28,7 +28,7 @@ public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 	 */
 	@Override
 	public String marshal(LocalTime time) throws Exception {
-		return time == null ? null: DateTimeFormatter.ofPattern("hh:mm a").format(time);
+		return time == null ? null: DateTimeFormatter.ofPattern("HH:mm").format(time);
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +45,7 @@ public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 		if (upperValue.matches("(([0-1][0-2]|[1-9])\\s?(AM|PM))")) {
 			format = "ha";
 		} else if (upperValue.matches("[0-2]?[0-9]:[0-5][0-9]")) {
-			format = "HH:m";
+			format = "HH:mm";
 		} else {
 			format = "h:ma";
 		}

@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,8 +33,6 @@ import io.delimeat.show.domain.Episode;
 @Component
 @Scope("prototype")
 public class FeedItemReader_Impl implements ItemReader<Episode> {
-
-  	private static final Logger LOGGER = LoggerFactory.getLogger(FeedItemReader_Impl.class);
 
 	@Autowired
 	private EpisodeService episodeService;
@@ -78,34 +74,26 @@ public class FeedItemReader_Impl implements ItemReader<Episode> {
 	 * @see io.delimeat.processor.ItemReader#read()
 	 */
 	@Override
-	public Episode read() throws Exception {	
-		LOGGER.trace("Entering {}.{}()", this.getClass().getName(), "read");
-		
+	public Episode read() throws Exception {			
 		if(episodes == null){
 			episodes = getEpisodes();		
 		}
 		
-		Episode episode;
 		try{
-			episode = episodes.remove(0);
-			return episode;
+			return episodes.remove(0);
 		}catch(IndexOutOfBoundsException ex){
-			episode = null;
+			return null;
 		}
-		
-		LOGGER.trace("Leaving {}.{}(): {}", this.getClass().getName(), "read", episode);
-		return episode;
 	}
 	
 	private List<Episode> getEpisodes() throws Exception{
-		LOGGER.trace("Entering {}.{}()", this.getClass().getName(), "getEpisodes");
 		final Instant now = Instant.now();
 		final Config config = configService.read();		
 		final long searchInterval = config.getSearchInterval();
 		final long searchDelay = config.getSearchDelay();
 		final Instant searchWindow = now.minusMillis(searchInterval);
 		
-		List<Episode> episodes = episodeService.findAllPending()
+		return episodeService.findAllPending()
 										.stream()
 										.filter(ep->ep.getShow().isEnabled())
 										.filter(ep->Optional.ofNullable(ep.getLastFeedCheck())
@@ -113,8 +101,6 @@ public class FeedItemReader_Impl implements ItemReader<Episode> {
 										.filter(ep->ShowUtils.determineAirTime(ep.getAirDate(), ep.getShow().getAirTime(), ep.getShow().getTimezone())
 														.plusMillis(searchDelay).isBefore(now))
 										.collect(Collectors.toList());
-		LOGGER.trace("Leaving {}.{}(): {}", this.getClass().getName(), "getEpisodes", episodes);
-		return episodes;
 	}
 
 	/* (non-Javadoc)

@@ -99,7 +99,7 @@ public class GuideItemProcessor_ImplTest {
 		
 		Assert.assertTrue(processor.createEpisodes(guideEps, showEps,show));
 		
-		Mockito.verify(episodeService).update(Mockito.any());
+		Mockito.verify(episodeService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
 	}
 	
@@ -340,7 +340,8 @@ public class GuideItemProcessor_ImplTest {
 		
 		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
 		Mockito.verify(episodeService).delete(Long.MIN_VALUE);
-		Mockito.verify(episodeService, Mockito.times(2)).update(Mockito.any(Episode.class));
+		Mockito.verify(episodeService).create(Mockito.any(Episode.class));
+		Mockito.verify(episodeService).update(Mockito.any(Episode.class));
 		Mockito.verifyNoMoreInteractions(episodeService);
 
 		Mockito.verify(guideService).read("GUIDEID");

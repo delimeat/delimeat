@@ -169,7 +169,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 											.collect(Collectors.toList());
 
 		for (Episode ep : episodesToCreate) {
-			episodeService.update(ep);
+			episodeService.create(ep);
 		}
 
 		return !episodesToCreate.isEmpty();

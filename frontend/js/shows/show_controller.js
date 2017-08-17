@@ -48,11 +48,11 @@ function ShowController($log, $location, $window, $translate, show) {
 
 	
 	vm.timezones = [
-	    {value:'Etc/GMT-5', offset:'-0500'},
-	    {value:'America/Chicago', offset:'-0600'},
-	    {value:'America/Los_Angeles', offset:'-0700'},
-	    {value:'Asia/Tokyo', offset:'+0900'},
-	    {value:'Australia/Sydney', offset:'+1000'},     
+	    {value:'Etc/GMT-5', i18n:'show.timezones.EST'},
+	    {value:'America/Chicago', i18n:'show.timezones.CST'},
+	    {value:'America/Los_Angeles', i18n:'show.timezones.PST'},
+	    {value:'Asia/Tokyo', i18n:'show.timezones.JST'},
+	    {value:'Australia/Sydney', i18n:'show.timezones.AET'},     
 	    {value:'Etc/GMT+12', i18n:'show.timezones.GMT+12'},
 	    {value:'Etc/GMT+11', i18n:'show.timezones.GMT+11'},
 	    {value:'Etc/GMT+10', i18n:'show.timezones.GMT+10'},
