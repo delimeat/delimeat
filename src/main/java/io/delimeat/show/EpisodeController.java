@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.show.domain.Episode;
-import io.delimeat.util.JsonUtil;
+import io.delimeat.util.JsonUtils;
 import io.delimeat.util.spark.SparkController;
 import spark.Request;
 import spark.Response;
@@ -59,13 +59,13 @@ public class EpisodeController implements SparkController {
 		Spark.path("/api/episode", () -> {
 			Spark.get("", (Request request, Response response)-> {
 				return episodeService.findAllPending();
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 			
 			Spark.put("/:id", (Request request, Response response)-> {
-				Episode episode = JsonUtil.fromJson(request.bodyAsBytes(), Episode.class);
+				Episode episode = JsonUtils.fromJson(request.bodyAsBytes(), Episode.class);
 				episodeService.update(episode);
 				return episode;
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 			
 		});
 		

@@ -20,22 +20,22 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class JsonUtilTest {
+public class JsonUtilsTest {
 
 	@Test
 	public void toJsonNullTest() throws JAXBException{
-		Assert.assertNull(JsonUtil.toJson(null));
+		Assert.assertNull(JsonUtils.toJson(null));
 	}
 	
 	@Test
 	public void toJsonTest() throws JAXBException{
 		ApiError apiError = new ApiError("test",500);
-		Assert.assertEquals("{\"error\":\"test\",\"status\":500}", JsonUtil.toJson(apiError));
+		Assert.assertEquals("{\"error\":\"test\",\"status\":500}", JsonUtils.toJson(apiError));
 	}
 	
 	@Test
 	public void fromJsonTest() throws JAXBException{
 		ApiError apiError = new ApiError("test",500);
-		Assert.assertEquals(apiError, JsonUtil.fromJson("{\"error\":\"test\",\"status\":500}".getBytes(), ApiError.class));
+		Assert.assertEquals(apiError, JsonUtils.fromJson("{\"error\":\"test\",\"status\":500}".getBytes(), ApiError.class));
 	}
 }

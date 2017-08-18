@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
-import io.delimeat.util.JsonUtil;
+import io.delimeat.util.JsonUtils;
 import io.delimeat.util.spark.SparkController;
 import spark.Request;
 import spark.Response;
@@ -60,12 +60,12 @@ public class ConfigController implements SparkController {
 		Spark.path("/api/config", () -> {
 			Spark.get("",(Request request, Response response) -> {
 				return configService.read();
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 	
 			Spark.post("",(Request request, Response response) -> {
-				Config config = JsonUtil.fromJson(request.bodyAsBytes(), Config.class);
+				Config config = JsonUtils.fromJson(request.bodyAsBytes(), Config.class);
 				return configService.update(config);
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 		});
 		
 		Spark.exception(ConfigConcurrencyException.class, (exception, request, response) -> {

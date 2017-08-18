@@ -29,7 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-public class JsonUtil {
+public class JsonUtils {
 
 	public static String toJson(Object object) throws JAXBException {
 		if(object == null){ 

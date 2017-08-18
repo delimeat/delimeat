@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.delimeat.util.JsonUtil;
+import io.delimeat.util.JsonUtils;
 import io.delimeat.util.spark.SparkController;
 import spark.Request;
 import spark.Response;
@@ -56,7 +56,7 @@ public class HttpStatisticsController  implements SparkController  {
 		Spark.path("/api/stats", () -> {
 			Spark.get("",(Request request, Response response) -> {
 				return httpStatsService.getStatistics();
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 
 		});
 

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.show.ShowController;
-import io.delimeat.util.JsonUtil;
+import io.delimeat.util.JsonUtils;
 import io.delimeat.util.spark.SparkController;
 import spark.Request;
 import spark.Response;
@@ -57,15 +57,15 @@ public class GuideController implements SparkController {
 	
 			Spark.get("/search/:title", (Request request, Response response)-> {
 				return guideService.readLike(request.params(":title"));
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 
 			Spark.get("/info/:id", (Request request, Response response) -> {
 				return guideService.read(request.params(":id"));
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 			
 			Spark.get("/info/:id/episodes", (Request request, Response response) -> {
 				return guideService.readEpisodes(request.params(":id"));
-			}, JsonUtil::toJson);
+			}, JsonUtils::toJson);
 		});
 			
 		LOGGER.trace("Leaving init");
