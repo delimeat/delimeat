@@ -334,6 +334,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 			}
 			
 			byte[] responseBytes = response.body().bytes();
+			response.body().close();
 			try{
 				StreamSource source = new StreamSource(new ByteArrayInputStream(responseBytes));
 				return getContext().createUnmarshaller().unmarshal(source, returnType).getValue();

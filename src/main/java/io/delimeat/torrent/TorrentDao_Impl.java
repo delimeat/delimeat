@@ -86,6 +86,7 @@ public class TorrentDao_Impl implements TorrentDao {
 			}
 			
 			final byte[] responseBytes = response.body().bytes();
+			response.body().close();
 			BDictionary dictionary;
 			Torrent torrent;
 			try{

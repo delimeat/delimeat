@@ -85,6 +85,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			
 			BDictionary dictionary; 
 			byte[] responseBytes = response.body().bytes();
+			response.body().close();
 			try{
 				 dictionary = BencodeUtils.decode(new ByteArrayInputStream(responseBytes));
 			}catch(BencodeException ex){

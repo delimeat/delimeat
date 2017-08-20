@@ -130,6 +130,7 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 			String contentType = response.body().contentType().toString().toLowerCase();		
 			String acceptHeader = response.request().headers().get("Accept").toLowerCase();
 			byte[] responseBytes = response.body().bytes();
+			response.body().close();
 			if(contentType.contains(acceptHeader) == false){
 				LOGGER.debug(new String(responseBytes));
 				throw new FeedContentTypeException(acceptHeader, contentType,new String(responseBytes), url);
