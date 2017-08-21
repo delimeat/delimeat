@@ -40,7 +40,7 @@ public class ConfigControllerTest {
 	
 	@BeforeClass
     public static void setup() throws Exception {
-		
+		Thread.sleep(1000);
 		controller = new ConfigController();
 		controller.init();
         
@@ -60,7 +60,9 @@ public class ConfigControllerTest {
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
-        client.close();
+		if(client!=null){
+			client.close();
+		}
     }
 	
 	@Test

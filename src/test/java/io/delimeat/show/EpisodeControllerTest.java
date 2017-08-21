@@ -38,13 +38,13 @@ import io.delimeat.show.domain.EpisodeStatus;
 import spark.Spark;
 
 public class EpisodeControllerTest {
-
+	
 	private static Client client;
 	private static EpisodeController controller;
     
 	@BeforeClass
     public static void setup() throws Exception {
-
+		Thread.sleep(1000);
 		controller = new EpisodeController();
 		controller.init();
                 
@@ -64,7 +64,9 @@ public class EpisodeControllerTest {
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
-        client.close();
+		if(client!=null){
+			client.close();
+		}
     }
 	
 	@Test

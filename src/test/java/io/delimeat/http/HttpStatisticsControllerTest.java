@@ -34,13 +34,13 @@ import io.delimeat.http.domain.HttpStatistics;
 import spark.Spark;
 
 public class HttpStatisticsControllerTest {
-
+	
 	private static Client client;
 	private static HttpStatisticsController controller;
 	
 	@BeforeClass
     public static void setup() throws Exception {
-		
+		Thread.sleep(1000);
 		controller = new HttpStatisticsController();
 		controller.init();
         
@@ -55,8 +55,10 @@ public class HttpStatisticsControllerTest {
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
-        client.close();
-    }
+		if(client!=null){
+			client.close();
+		}
+	}
 	
 	@Test
 	public void httpStatsServiceTest(){

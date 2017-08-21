@@ -45,7 +45,7 @@ public class GuideControllerTest {
     
 	@BeforeClass
     public static void setup() throws Exception {
-
+		Thread.sleep(1000);
 		controller = new GuideController();
 		controller.init();
         
@@ -66,7 +66,9 @@ public class GuideControllerTest {
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
-        client.close();
+		if(client!=null){
+			client.close();
+		}
     }
 	
 	@Test

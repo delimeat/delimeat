@@ -33,7 +33,7 @@ public class ApplicationControllerTest {
 	
 	@BeforeClass
     public static void setup() throws Exception {
-		
+		Thread.sleep(1000);
 		controller = new ApplicationController();
 		controller.setPort(4567);
 		controller.init();
@@ -44,7 +44,9 @@ public class ApplicationControllerTest {
 	@AfterClass
     public static void tearDown() {
         Spark.stop();
-        client.close();
+		if(client!=null){
+			client.close();
+		}
     }
 	
 	@Test
