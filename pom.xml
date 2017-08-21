@@ -164,7 +164,7 @@
 		<com.zaxxer.hikari.version>2.5.1</com.zaxxer.hikari.version>
 		<org.eclipse.persistence.version>2.6.4</org.eclipse.persistence.version>
 		
-		<com.sparkjava.version>2.5.5</com.sparkjava.version>
+		<com.sparkjava.version>2.6.0</com.sparkjava.version>
 		<com.squareup.okhttp3.version>3.8.1</com.squareup.okhttp3.version>
 		
 		<org.slf4j.version>1.7.22</org.slf4j.version>

@@ -55,13 +55,10 @@ public class ApplicationController implements SparkController {
 		LOGGER.trace("Entering init");
 		Spark.port(port);
 
-		//TODO enable after moving to v2.6.0 of spark (conflict with wiremock)
-		/*
 		Spark.initExceptionHandler((e)->{
-			LOGGER.error("ignite failed", e);
+			LOGGER.error("failed to ignite", e);
 		    System.exit(100);
 		});
-		*/
 		
 		Spark.staticFiles.location("/static");
 
