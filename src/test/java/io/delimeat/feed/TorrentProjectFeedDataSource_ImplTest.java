@@ -15,22 +15,15 @@
  */
 package io.delimeat.feed;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
@@ -39,14 +32,28 @@ import io.delimeat.feed.exception.FeedException;
 import io.delimeat.feed.exception.FeedResponseBodyException;
 import io.delimeat.feed.exception.FeedResponseException;
 import io.delimeat.feed.exception.FeedTimeoutException;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
 
 public class TorrentProjectFeedDataSource_ImplTest {
 
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(8089);
+	private static final int PORT = 8089;
+	private static MockWebServer mockedServer = new MockWebServer();
 
 	private TorrentProjectFeedDataSource_Impl dataSource;
 
+	@BeforeClass
+	public static void beforeClass() throws IOException{
+		mockedServer.start(PORT);
+	}
+	
+	@AfterClass
+	public static void tearDown() throws IOException{
+		mockedServer.shutdown();
+	}
+	
 	@Before
 	public void setUp() throws URISyntaxException {
 		dataSource = new TorrentProjectFeedDataSource_Impl();
@@ -78,12 +85,20 @@ public class TorrentProjectFeedDataSource_ImplTest {
 				+ "<enclosure url='magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce' length='9223372036854775807' type='application/x-bittorrent' />"
 				+ "</item></channel></rss>";
 
-		stubFor(get(urlPathEqualTo("/rss/title/")).withHeader("Accept", equalTo("application/rss+xml")).willReturn(
-				aResponse().withStatus(200).withHeader("Content-Type", "application/rss+xml").withBody(responseBody)));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/rss+xml")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-
+		
 		List<FeedResult> results = dataSource.read("title");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/rss/title/", request.getPath());
+		Assert.assertEquals("application/rss+xml", request.getHeader("Accept"));
+		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals("title", results.get(0).getTitle());
@@ -92,22 +107,28 @@ public class TorrentProjectFeedDataSource_ImplTest {
 
 	}
 
-	@Test(expected = FeedResponseException.class)
+	@Test
 	public void readResponseExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-						.withStatus(500)
-						.withHeader("Content-Type", "text/html")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(500);
+		
+		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-
-		dataSource.read("title");
+		
+		try{
+			dataSource.read("title");
+		} catch(FeedResponseException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/rss/title/", request.getPath());
+			Assert.assertEquals("application/rss+xml", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 
-	@Test(expected = FeedContentTypeException.class)
+	@Test
 	public void readContentTypeExceptionTest() throws Exception {
 		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
 				+ "<title><![CDATA[title]]></title>" 
@@ -116,63 +137,82 @@ public class TorrentProjectFeedDataSource_ImplTest {
 				+ "<seeders>1</seeders>" 
 				+ "<leechers>1000</leechers>"
 				+ "</item></channel></rss>";
-
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withHeader("Content-Type", "application/json")
-						.withBody(responseBody)));
+     	
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-
-		dataSource.read("title");
+		
+		try{
+			dataSource.read("title");
+		} catch(FeedContentTypeException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/rss/title/", request.getPath());
+			Assert.assertEquals("application/rss+xml", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 
-	@Test(expected = FeedTimeoutException.class)
+	@Test
 	public void readTimeoutExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withFixedDelay(2000)));
+     	
+		MockResponse mockResponse = new MockResponse()
+			    .setSocketPolicy(SocketPolicy.NO_RESPONSE);
+		
+		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-
-		dataSource.read("title");
+		
+		try{
+			dataSource.read("title");
+		}catch(FeedTimeoutException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/rss/title/", request.getPath());
+			Assert.assertEquals("application/rss+xml", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 
-	@Test(expected = FeedResponseBodyException.class)
+	@Test
 	public void readResponseBodyExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withHeader("Content-Type", "application/rss+xml")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/rss+xml")
+			    .setBody("X");
+		
+		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-
-		dataSource.read("title");
+		
+		try{
+			dataSource.read("title");
+		} catch(FeedResponseBodyException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/rss/title/", request.getPath());
+			Assert.assertEquals("application/rss+xml", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 
-	@Test(expected = FeedException.class)
+	@Test
 	public void readProcessingExceptionTest() throws Exception {
 
-		stubFor(get(urlPathEqualTo("/rss/title/"))
-				.withHeader("Accept", equalTo("application/rss+xml"))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withHeader("Content-Type", "text/html")
-						.withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
-
 		dataSource.setBaseUri("JIBBERISH");
-
-		dataSource.read("title");
+		
+		try{
+			dataSource.read("title");
+		}catch(FeedException ex){
+			return;
+		}
 		Assert.fail();
 	}
 

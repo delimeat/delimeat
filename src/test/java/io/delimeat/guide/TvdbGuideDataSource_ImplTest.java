@@ -15,14 +15,7 @@
  */
 package io.delimeat.guide;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -31,12 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.guide.domain.AiringDay;
 import io.delimeat.guide.domain.GuideEpisode;
@@ -54,15 +46,29 @@ import io.delimeat.guide.exception.GuideResponseException;
 import io.delimeat.guide.exception.GuideTimeoutException;
 import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
 import okio.Buffer;
 
 public class TvdbGuideDataSource_ImplTest {
 
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(8089);
+	private static final int PORT = 8089;
+	private static MockWebServer mockedServer = new MockWebServer();
 
 	private TvdbGuideDataSource_Impl dataSource;
 
+	@BeforeClass
+	public static void beforeClass() throws IOException{
+		mockedServer.start(PORT);
+	}
+	
+	@AfterClass
+	public static void tearDown() throws IOException{
+		mockedServer.shutdown();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		dataSource = new TvdbGuideDataSource_Impl();
@@ -187,182 +193,225 @@ public class TvdbGuideDataSource_ImplTest {
 	public void executeRequestTest() throws Exception{
 		String responseBody = "{\"token\": \"NEW_TOKEN\"}";
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		TvdbToken token = dataSource.executeRequest(request, TvdbToken.class);
+		TvdbToken token = dataSource.executeRequest(getRequest, TvdbToken.class);
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/refresh_token", request.getPath());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		
 		Assert.assertEquals("NEW_TOKEN", token.getValue());
 	}
 	
-	@Test(expected=GuideTimeoutException.class)
+	@Test
 	public void executeRequestTimeoutExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withFixedDelay(2500)));
+		MockResponse mockResponse = new MockResponse()
+			    .setSocketPolicy(SocketPolicy.NO_RESPONSE);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideTimeoutException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 	
-	@Test(expected=GuideNotFoundException.class)
+	@Test
 	public void executeRequestNotFoundExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/json")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(404);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideNotFoundException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 	
-	@Test(expected=GuideAuthorizationException.class)
+	@Test
 	public void executeRequestUnauthorisedExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(401)
-							.withHeader("Content-Type", "application/json")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(401);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideAuthorizationException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 	
-	@Test(expected=GuideAuthorizationException.class)
+	@Test
 	public void executeRequestForbiddenExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(403)
-							.withHeader("Content-Type", "application/json")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(403);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideAuthorizationException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 	
-	
-	@Test(expected=GuideResponseException.class)
+	@Test
 	public void executeRequestResponseExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type", "application/json")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(500);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideResponseException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
 	
-	@Test(expected=GuideResponseBodyException.class)
+	@Test
 	public void executeRequestResponseBodyExceptionTest() throws Exception{
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+				.setHeader("Content-Type", "application/json");
+		
+		mockedServer.enqueue(mockResponse);
 		
 		URL url = new URL("http://localhost:8089/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideResponseBodyException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/refresh_token", request.getPath());
+			Assert.assertEquals("application/json", request.getHeader("Accept"));
+			return;
+		}
 		Assert.fail();
 	}
+
 	
-	@Test(expected=GuideException.class)
-	public void executeRequestExceptionTest() throws Exception{
+	@Test
+	public void executeRequestExceptionTest() throws Exception{		
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")));
-		
-		URL url = new URL("http://localhost/refresh_token");
+		URL url = new URL("http://localhost:9090/refresh_token");
 		Map<String, String> headers = new HashMap<String,String>();
 		headers.put("Accept", "application/json");
-		Request request = dataSource.buildGet(url, headers);
+		Request getRequest = dataSource.buildGet(url, headers);
 		
-		dataSource.executeRequest(request, TvdbToken.class);
+		try{
+			dataSource.executeRequest(getRequest, TvdbToken.class);
+		}catch(GuideException ex){
+			return;
+		}
 		Assert.fail();
 	}
 
 	@Test
 	public void loginTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		String responseBody = "{\"token\": \"TOKEN\"}";
+		String requestBody = "{\"apikey\":\"APIKEY\"}";
+		String responseBody = "{\"token\":\"TOKEN\"}";
 		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		TvdbToken token = dataSource.login("APIKEY");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/login", request.getPath());
+		Assert.assertEquals("POST", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals(requestBody, request.getBody().readUtf8());
+		
+		
 		Assert.assertNotNull(token);
 		Assert.assertEquals("TOKEN", token.getValue());
 	}
 
 	@Test
 	public void refreshTokenTest() throws Exception {
-		String responseBody = "{\"token\": \"NEW_TOKEN\"}";
 		
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer OLD_TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
+		String responseBody = "{\"token\":\"NEW_TOKEN\"}";
+		
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
 		
 		dataSource.setBaseUri("http://localhost:8089");
 		
@@ -372,6 +421,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(oldToken);
 
 		TvdbToken newToken = dataSource.refreshToken();
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/refresh_token", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer OLD_TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(newToken);
 		Assert.assertEquals("NEW_TOKEN", newToken.getValue());
 	}
@@ -388,23 +443,27 @@ public class TvdbGuideDataSource_ImplTest {
 
 	@Test
 	public void getTokenLoginTest() throws Exception {
-		String requestBody = "{\"apikey\": \"APIKEY\"}";
-		String responseBody = "{\"token\": \"TOKEN\"}";		
+		String requestBody = "{\"apikey\":\"APIKEY\"}";
+		String responseBody = "{\"token\":\"TOKEN\"}";
 		
-		stubFor(post(urlPathEqualTo("/login"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(equalToJson(requestBody))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		dataSource.setBaseUri("http://localhost:8089");		
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
+		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setApiKey("APIKEY");
 
 		TvdbToken token = dataSource.getToken();
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/login", request.getPath());
+		Assert.assertEquals("POST", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals(requestBody, request.getBody().readUtf8());
+		
 		Assert.assertNotNull(token);
 		Assert.assertEquals("TOKEN", token.getValue());
 	}
@@ -412,15 +471,14 @@ public class TvdbGuideDataSource_ImplTest {
 	@Test
 	public void getTokenRefreshTest() throws Exception {
 		String responseBody = "{\"token\": \"NEW_TOKEN\"}";	
-
-		stubFor(get(urlPathEqualTo("/refresh_token"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization",equalTo("Bearer OLD_TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
+		
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		TvdbToken oldToken = new TvdbToken();
@@ -430,6 +488,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setValidPeriodInMs(100000);
 
 		TvdbToken newToken = dataSource.getToken();
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/refresh_token", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer OLD_TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(newToken);
 		Assert.assertEquals("NEW_TOKEN", newToken.getValue());
 	}
@@ -438,15 +502,13 @@ public class TvdbGuideDataSource_ImplTest {
 	public void searchTest() throws Exception {
 		String responseBody = "{\"data\": [{\"overview\":\"DESCRIPTION\",\"id\":\"GUIDEID\",\"seriesName\":\"TITLE\",\"firstAired\":\"2005-03-11\"}]}";	
 
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -455,6 +517,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		List<GuideSearchResult> results = dataSource.search("TITLE");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/search/series?name=TITLE", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals("GUIDEID", results.get(0).getGuideId());
@@ -467,15 +535,13 @@ public class TvdbGuideDataSource_ImplTest {
 	public void searchInvalidSeriesTest() throws Exception {
 		String responseBody = "{\"data\": [{\"overview\":\"DESCRIPTION\",\"id\":\"GUIDEID\",\"seriesName\":\"** Invalid Series **\",\"firstAired\":\"2005-03-11\"}]}";		
 
-		stubFor(get(urlPathEqualTo("/search/series"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("name", equalTo("TITLE"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -484,25 +550,30 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		List<GuideSearchResult> results = dataSource.search("TITLE");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/search/series?name=TITLE", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.size());
 	}
 
 	@Test
 	public void infoTest() throws Exception {
-		String responseText = "{\"data\": {\"overview\":\"DESCRIPTION\",\"id\":\"GUIDEID\",\"seriesName\":\"TITLE\","
+		String responseBody = "{\"data\": {\"overview\":\"DESCRIPTION\",\"id\":\"GUIDEID\",\"seriesName\":\"TITLE\","
 				+ "\"firstAired\":\"2015-12-28\",\"status\":\"Ended\",\"network\":\"CBS\",\"runtime\":\"45\","
 				+ "\"airsDayOfWeek\":\"Monday\",\"airsTime\":\"8:00pm\",\"imdbId\":\"IMDB\",\"genre\":[\"GENRE\"],"
 				+ "\"lastUpdated\":1454486401}}";
 
-		stubFor(get(urlPathEqualTo("/series/GUIDEID"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseText)));
-
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -511,6 +582,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		GuideInfo info = dataSource.info("GUIDEID");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/series/GUIDEID", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(info);
 		Assert.assertEquals("GUIDEID", info.getGuideId());
 		Assert.assertEquals("DESCRIPTION", info.getDescription());
@@ -533,15 +610,13 @@ public class TvdbGuideDataSource_ImplTest {
 				+ "\"data\": [{\"absoluteNumber\":0,\"airedEpisodeNumber\":-2147483648,"
 				+ "\"airedSeason\":\"2147483647\",\"episodeName\":\"TITLE\",\"firstAired\":\"2015-09-29\"}]};";
 
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -551,6 +626,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		TvdbEpisodes result = dataSource.episodes("GUIDEID", 1);
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/series/GUIDEID/episodes?page=1", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(result);
 		Assert.assertNull(result.getFirst());
 		Assert.assertEquals(0, result.getLast().intValue());
@@ -570,18 +651,14 @@ public class TvdbGuideDataSource_ImplTest {
 		String responseBody = "{\"links\": {\"first\": 1,\"last\": 1,\"next\": 0,\"prev\": 0},"
 				+ "\"data\": [{\"absoluteNumber\":0,\"airedEpisodeNumber\":-2147483648,"
 				+ "\"airedSeason\":\"2147483647\",\"episodeName\":\"TITLE\",\"firstAired\":\"2015-09-29\"}]};";
-	
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody)));
-
-		 
+		
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -591,6 +668,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		List<GuideEpisode> episodes = dataSource.episodes("GUIDEID");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/series/GUIDEID/episodes?page=1", request.getPath());
+		Assert.assertEquals("GET", request.getMethod());
+		Assert.assertEquals("application/json", request.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request.getHeader("Authorization"));
+		
 		Assert.assertNotNull(episodes);
 		Assert.assertEquals(1, episodes.size());
 		Assert.assertEquals(0, episodes.get(0).getProductionNum().intValue());
@@ -610,25 +693,20 @@ public class TvdbGuideDataSource_ImplTest {
 				+ "\"data\": [{\"absoluteNumber\":0,\"airedEpisodeNumber\":-2147483648,"
 				+ "\"airedSeason\":\"2147483647\",\"episodeName\":\"TITLE_TWO\",\"firstAired\":\"2005-09-29\"}]};";
 
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("1"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody_one)));
-
-		stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Authorization", equalTo("Bearer TOKEN"))
-				.withQueryParam("page", equalTo("2"))
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/json")
-							.withBody(responseBody_two)));
-
+		MockResponse mockResponse_one = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody_one);
+		
+		mockedServer.enqueue(mockResponse_one);
+		
+		MockResponse mockResponse_two = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/json")
+			    .setBody(responseBody_two);
+		
+		mockedServer.enqueue(mockResponse_two);
+		
 		dataSource.setBaseUri("http://localhost:8089");
 		
 		dataSource.setValidPeriodInMs(Integer.MAX_VALUE);
@@ -638,6 +716,18 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setToken(token);
 
 		List<GuideEpisode> episodes = dataSource.episodes("GUIDEID");
+		RecordedRequest request_one = mockedServer.takeRequest();
+		Assert.assertEquals("/series/GUIDEID/episodes?page=1", request_one.getPath());
+		Assert.assertEquals("GET", request_one.getMethod());
+		Assert.assertEquals("application/json", request_one.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request_one.getHeader("Authorization"));
+		
+		RecordedRequest request_two = mockedServer.takeRequest();
+		Assert.assertEquals("/series/GUIDEID/episodes?page=2", request_two.getPath());
+		Assert.assertEquals("GET", request_two.getMethod());
+		Assert.assertEquals("application/json", request_two.getHeader("Accept"));
+		Assert.assertEquals("Bearer TOKEN", request_two.getHeader("Authorization"));
+		
 		Assert.assertNotNull(episodes);
 		Assert.assertEquals(2, episodes.size());
 		Assert.assertEquals(0, episodes.get(0).getProductionNum().intValue());

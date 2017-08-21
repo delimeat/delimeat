@@ -15,24 +15,16 @@
  */
 package io.delimeat.torrent;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-
 import java.io.IOException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BList;
@@ -46,15 +38,30 @@ import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.torrent.exception.TorrentResponseBodyException;
 import io.delimeat.torrent.exception.TorrentResponseException;
 import io.delimeat.torrent.exception.TorrentTimeoutException;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
+import okio.Buffer;
 
 public class TorrentDao_ImplTest {
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(8089);
+	
+	private static final int PORT = 8089;
+	private static MockWebServer mockedServer = new MockWebServer();
 	
 	private String sep = System.getProperty("file.separator");
 	private TorrentDao_Impl dao;
 
+	@BeforeClass
+	public static void beforeClass() throws IOException{
+		mockedServer.start(PORT);
+	}
+	
+	@AfterClass
+	public static void tearDown() throws IOException{
+		mockedServer.shutdown();
+	}
+	
 	@Before
 	public void setUp() {
 		dao = new TorrentDao_Impl();
@@ -191,21 +198,29 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
 		Assert.assertNull(torrent.getBytes());
 	}
-
+	
 	@Test
-	public void readTest() throws Exception {
+	public void readOkHttpTest() throws Exception {
 		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
 		
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							.withBody(bytesVal)
-							));
+		Buffer buffer = new Buffer();
+		buffer.write(bytesVal.getBytes());
+		
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/x-bittorrent")
+			    .setBody(buffer);
+		
+		mockedServer.enqueue(mockResponse);
+		
 	
 		Torrent torrent = dao.read(new URI("http://localhost:8089"));
+		
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/", request.getPath());
+		Assert.assertEquals("application/x-bittorrent", request.getHeader("Accept"));
+		Assert.assertEquals("http://localhost:8089", request.getHeader("Referer"));
+		
 		Assert.assertEquals("TRACKER_1", torrent.getTracker());
 		Assert.assertEquals(4, torrent.getTrackers().size());
 		Assert.assertEquals("1_tracker_1", torrent.getTrackers().get(0));
@@ -220,88 +235,93 @@ public class TorrentDao_ImplTest {
 		Assert.assertEquals("2_part_1" + sep + "2_file_name", torrent.getInfo().getFiles().get(1).getName());
 		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1).getLength());
 		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
-		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));
+		Assert.assertEquals(bytesVal, new String(torrent.getBytes()));	
 	}
-	
-	@Test(expected=TorrentTimeoutException.class)
-	public void readTimeoutExceptionTest() throws Exception {	
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							.withFixedDelay(2000)
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
+
+	@Test
+	public void readTimeoutExceptionOkHttpTest() throws Exception {	
+		
+		MockResponse mockResponse = new MockResponse()
+				.setSocketPolicy(SocketPolicy.NO_RESPONSE);
+		
+		mockedServer.enqueue(mockResponse);
+
+		try{
+			dao.read(new URI("http://localhost:8089"));
+		}catch(TorrentTimeoutException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/", request.getPath());
+			Assert.assertEquals("application/x-bittorrent", request.getHeader("Accept"));
+			Assert.assertEquals("http://localhost:8089", request.getHeader("Referer"));
+			return;
+		}
 		Assert.fail();
 	}
-	
-  	@Test(expected=TorrentNotFoundException.class)
-	public void readNotFoundExceptionTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(404)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
+
+  	@Test
+	public void readNotFoundExceptionOkHttpTest() throws Exception {
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(404)
+			    .addHeader("Content-Type", "application/x-bittorrent");
+		
+		mockedServer.enqueue(mockResponse);
+		
+		try{
+			dao.read(new URI("http://localhost:8089"));
+		}catch(TorrentNotFoundException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/", request.getPath());
+			Assert.assertEquals("application/x-bittorrent", request.getHeader("Accept"));
+			Assert.assertEquals("http://localhost:8089", request.getHeader("Referer"));
+			return;
+		}
 		Assert.fail();
 	}
   	
-  	@Test(expected=TorrentResponseException.class)
-	public void readResponseExceptionTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(500)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
-		Assert.fail();
-	}
-  
-	@Test(expected=TorrentResponseBodyException.class)
-	public void readResponseBodyTest() throws Exception {
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "application/x-bittorrent")
-							.withBody("X")
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
-		Assert.fail();
-	}
-  
-	//TODO re-enable after content type validation is enabled
-	@Ignore
-	@Test(expected=TorrentException.class)
-	public void readInvalidContentTypeTest() throws Exception {
-		String bytesVal = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee";
+  	@Test
+	public void readResponseExceptionOkHttpTest() throws Exception {
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(500)
+			    .addHeader("Content-Type", "application/x-bittorrent");
 		
-		stubFor(get(urlPathEqualTo("/"))
-				.withHeader("Accept", equalTo("application/x-bittorrent"))
-				.withHeader("Referer", equalTo("http://localhost:8089"))			
-				.willReturn(aResponse()
-							.withStatus(200)
-							.withHeader("Content-Type", "text/html")
-							.withBody(bytesVal)
-							));
-	
-		dao.read(new URI("http://localhost:8089"));
+		mockedServer.enqueue(mockResponse);
+		
+		try{
+			dao.read(new URI("http://localhost:8089"));
+		}catch(TorrentResponseException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/", request.getPath());
+			Assert.assertEquals("application/x-bittorrent", request.getHeader("Accept"));
+			Assert.assertEquals("http://localhost:8089", request.getHeader("Referer"));
+			return;
+		}
+		Assert.fail();
+	}
+
+  	@Test
+	public void readResponseBodyExceptionOkHttpTest() throws Exception {
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "application/x-bittorrent")
+			    .setBody("X");
+		
+		mockedServer.enqueue(mockResponse);
+		
+		try{
+			dao.read(new URI("http://localhost:8089"));
+		}catch(TorrentResponseBodyException ex){
+			RecordedRequest request = mockedServer.takeRequest();
+			Assert.assertEquals("/", request.getPath());
+			Assert.assertEquals("application/x-bittorrent", request.getHeader("Accept"));
+			Assert.assertEquals("http://localhost:8089", request.getHeader("Referer"));
+			return;
+		}
+		Assert.fail();
 	}
   
-  	@Test(expected=TorrentException.class)
-  	public void readUnsupportedProtocalTest() throws Exception{
-   	dao.read(new URI("udp://read.com:8080"));  	
-   }
+	@Test(expected = TorrentException.class)
+	public void readUnsupportedProtocalTest() throws Exception {
+		dao.read(new URI("udp://read.com:8080"));
+	}
 
 }

@@ -30,13 +30,12 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.google.common.hash.Hashing;
-
 import io.delimeat.torrent.UDPScrapeRequestHandler_Impl;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentTimeoutException;
+import io.delimeat.util.DelimeatUtils;
 
 public class UDPScrapeRequestHandler_ImpTest {
 
@@ -73,7 +72,7 @@ public class UDPScrapeRequestHandler_ImpTest {
 
 	@Test
 	public void createScrapeRequestTest() {
-		byte[] sha1Bytes = Hashing.sha1().hashBytes("INFO_HASH".getBytes()).asBytes();
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		byte[] req = scraper.createScrapeRequest(Long.MAX_VALUE,Integer.MIN_VALUE, infoHash);
 		Assert.assertEquals(36, req.length);

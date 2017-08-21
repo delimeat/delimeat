@@ -152,7 +152,6 @@
 		<!-- Test versions ! -->
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.8.47</org.mockito.version>
-     	<com.github.tomakehurst.wiremock.version>2.6.0</com.github.tomakehurst.wiremock.version>
 		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
 
 		<!-- API versions -->
@@ -188,32 +187,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock</artifactId>
-			<version>${com.github.tomakehurst.wiremock.version}</version>
-			<scope>test</scope>
-			<!-- 
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-webapp</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-server</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-servlet</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-servlets</artifactId>
-				</exclusion>
-			</exclusions>
-			!-->
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${org.glassfish.jersey.version}</version>
@@ -224,6 +197,12 @@
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>${org.glassfish.jersey.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>mockwebserver</artifactId>
+		  <version>${com.squareup.okhttp3.version}</version>
+		  <scope>test</scope>
 		</dependency>
 		
 		<!-- APIs -->
