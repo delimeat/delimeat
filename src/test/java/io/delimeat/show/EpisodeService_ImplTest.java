@@ -48,8 +48,22 @@ public class EpisodeService_ImplTest {
 	public void toStringTest(){
 		Assert.assertEquals("EpisodeService_Impl []", service.toString());
 	}
+	
 	@Test
-	public void saveTest() throws Exception{
+	public void createTest() throws Exception{
+		Episode ep = new Episode();
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		service.setEpisodeRepository(repository);
+		
+		service.create(ep);
+		
+		Mockito.verify(repository).save(ep);
+		Mockito.verifyNoMoreInteractions(repository);
+	}
+	
+	@Test
+	public void updateTest() throws Exception{
 		Episode ep = new Episode();
 		
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
