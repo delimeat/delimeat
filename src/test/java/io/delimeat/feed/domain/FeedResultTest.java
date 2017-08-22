@@ -102,6 +102,424 @@ public class FeedResultTest {
 		result.setTorrent(torrent);
 		Assert.assertEquals(torrent, result.getTorrent());
 	}
+	
+	@Test
+	public void equalsTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertTrue(result.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashHexNullTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex(null);
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsMagnetUriNullTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri(null);
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsTitleNullTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle(null);
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsTorrentNullTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		result.setTorrent(null);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsTorrentURLNullTest(){
+		result.setTorrentURL(null);
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsContentLengthTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MIN_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashHexTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH_OTHER");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsLeechersTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MIN_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+
+	public void equalsMagnetUriTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET_OTHER");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsSeedersTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MAX_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsTitleTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME_OTHER");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	@Test
+	public void equalsTorrentTest(){
+		result.setTorrentURL("TORRENT_LOCATION");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("OTHER_TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
+	
+	
+	@Test
+	public void equalsTorrentURLTest(){
+		result.setTorrentURL("TORRENT_LOCATION_OTHER");
+		result.setTitle("FILE_NAME");
+		result.setContentLength(Long.MAX_VALUE);
+		result.setSeeders(Long.MIN_VALUE);
+		result.setLeechers(Long.MAX_VALUE);
+		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+		Torrent resultTorrent = new Torrent();
+		resultTorrent.setTracker("TRACKER");
+		result.setTorrent(resultTorrent);
+		
+		FeedResult other = new FeedResult();
+		other.setTorrentURL("TORRENT_LOCATION");
+		other.setTitle("FILE_NAME");
+		other.setContentLength(Long.MAX_VALUE);
+		other.setSeeders(Long.MIN_VALUE);
+		other.setLeechers(Long.MAX_VALUE);
+		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
+		other.setInfoHashHex("INFO_HASH");
+		other.setMagnetUri("MAGNET");
+		Torrent otherTorrent = new Torrent();
+		otherTorrent.setTracker("TRACKER");
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(result.equals(other));
+	}
   
   	@Test
   	public void hashCodeTest(){
