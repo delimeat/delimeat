@@ -34,6 +34,7 @@ import javax.transaction.Transactional.TxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +44,7 @@ import io.delimeat.config.exception.ConfigException;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnit;
 import io.delimeat.processor.validation.FeedResultValidator;
 import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
@@ -52,8 +54,10 @@ import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
+import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.util.DelimeatUtils;
 
 @Component
 @Scope("prototype")
@@ -74,6 +78,12 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
   	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
   	
+  	@Value("${io.delimeat.processor.feed.magnetUri}")
+  	private String magnetUriTemplate;
+  	
+  	@Value("${io.delimeat.processor.feed.downloadUri}")
+  	private String downloadUriTemplate;
+  	  	
   	private Config config;
       	
 	/**
@@ -160,6 +170,34 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		this.torrentValidators = torrentValidators;
 	}
 
+	/**
+	 * @return the magnetUriTemplate
+	 */
+	public String getMagnetUriTemplate() {
+		return magnetUriTemplate;
+	}
+
+	/**
+	 * @param magnetUriTemplate the magnetUriTemplate to set
+	 */
+	public void setMagnetUriTemplate(String magnetUriTemplate) {
+		this.magnetUriTemplate = magnetUriTemplate;
+	}
+
+	/**
+	 * @return the downloadUriTemplate
+	 */
+	public String getDownloadUriTemplate() {
+		return downloadUriTemplate;
+	}
+
+	/**
+	 * @param downloadUriTemplate the downloadUriTemplate to set
+	 */
+	public void setDownloadUriTemplate(String downloadUriTemplate) {
+		this.downloadUriTemplate = downloadUriTemplate;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.processor.ItemProcessor#process(java.lang.Object)
 	 */
@@ -199,6 +237,56 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	LOGGER.debug(String.format("ending feed item processor for %s", episode.getTitle()));	
 	}
 
+    public List<FeedProcessUnit> convertFeedResults(List<FeedResult> feedResults){
+    	List<FeedProcessUnit> processUnits = new ArrayList<FeedProcessUnit>();
+    	for(FeedResult feedResult: feedResults){
+    		FeedProcessUnit processUnit = new FeedProcessUnit();
+    		processUnit.setContentLength(feedResult.getContentLength());
+    		processUnit.setTitle(feedResult.getTitle());
+    		processUnit.setSeeders(feedResult.getSeeders());
+    		processUnit.setLeechers(feedResult.getLeechers());
+    		
+    		if(feedResult.getTorrentURL() != null && feedResult.getTorrentURL().length() > 0){
+	    		try{
+	    			processUnit.setDownloadUri(new URI(feedResult.getTorrentURL()));
+	    		}catch(URISyntaxException ex){
+	    			LOGGER.debug("Unable to parse uri {} for result {}", feedResult.getTorrentURL(), feedResult);
+	    		}
+    		}
+    		
+    		if(feedResult.getMagnetUri() != null && feedResult.getMagnetUri().length() > 0){
+	    		try{
+	    			processUnit.setMagnetUri(new URI(feedResult.getMagnetUri()));
+	    		}catch(URISyntaxException ex){
+	    			LOGGER.debug("Unable to parse uri {} for result {}", feedResult.getMagnetUri(), feedResult);
+	    		}
+    		}  
+    		
+    		if(feedResult.getInfoHashHex() != null && feedResult.getInfoHashHex().length() > 0){
+    			byte[] infoHashBytes = DelimeatUtils.hexToBytes(feedResult.getInfoHashHex());
+    			InfoHash infoHash = new InfoHash(infoHashBytes);
+    			processUnit.setInfoHash(infoHash);
+    		}
+    		
+    		if (processUnit.getMagnetUri() != null && processUnit.getInfoHash() == null){
+    			InfoHash infoHash = buildInfoHashFromMagnet(processUnit.getMagnetUri());
+    			processUnit.setInfoHash(infoHash);
+     		} else if(processUnit.getInfoHash() != null && processUnit.getMagnetUri() == null){
+     			URI uri = buildMagnetUri(processUnit.getInfoHash());
+     			processUnit.setMagnetUri(uri);
+    		} 
+    		
+    		if(processUnit.getInfoHash() != null && processUnit.getDownloadUri() == null){
+    			URI uri = buildDownloadUri(processUnit.getInfoHash());
+    			processUnit.setDownloadUri(uri);
+    		}
+    		
+    		processUnits.add(processUnit);
+    		
+    	}
+    	
+    	return processUnits;
+    }
     /**
      * @param results
      * @param episode
@@ -325,6 +413,36 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	}else{
     		return String.format("%s_%sx%s_%s.torrent", show.getTitle(), episode.getSeasonNum(), episode.getEpisodeNum(), episode.getTitle());
     	}
+    	
+    }
+    
+    public URI buildMagnetUri(InfoHash infoHash){
+		URI uri = null;
+    	String magnetUri = String.format(magnetUriTemplate, infoHash.getHex());
+		try{
+			uri = new URI(magnetUri);
+		}catch(URISyntaxException ex){
+			LOGGER.debug("Unable to parse magnet uri {} for infoHash {}", magnetUri, infoHash.getHex());
+		}
+		return uri;
+    }
+    
+    public URI buildDownloadUri(InfoHash infoHash){
+		URI uri = null;
+    	String downloadUri = String.format(downloadUriTemplate,infoHash.getHex());
+		try{
+			uri = new URI(downloadUri);
+		}catch(URISyntaxException ex){
+			LOGGER.debug("Unable to parse download uri {} for infoHash {}", downloadUri, infoHash.getHex());
+		}
+		return uri;
+    }
+    
+    public InfoHash buildInfoHashFromMagnet(URI magnetUri){
+    	//TODO extract info hash from magnetUri
+    	String infoHashHex = "";
+    	byte[] infoHashBytes = DelimeatUtils.hexToBytes(infoHashHex);
+    	return new InfoHash(infoHashBytes);
     	
     }
     
