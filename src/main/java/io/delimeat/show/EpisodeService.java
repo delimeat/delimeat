@@ -18,20 +18,23 @@ package io.delimeat.show;
 import java.util.List;
 
 import io.delimeat.show.domain.Episode;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowException;
+import io.delimeat.show.exception.ShowNotFoundException;
 
 public interface EpisodeService {
 
-	public Episode create(Episode episode);
+	public Episode create(Episode episode) throws ShowException;
 	
-	public Episode read(Long episodeId);
+	public Episode read(Long episodeId) throws ShowNotFoundException, ShowException;
 
-	public Episode update(Episode episode);
+	public Episode update(Episode episode)  throws ShowConcurrencyException, ShowException;
 
-	public void delete(Long episodeId);
+	public void delete(Long episodeId) throws ShowException;
 	
-	public List<Episode> findAllPending();
+	public List<Episode> findAllPending() throws ShowException;
 	
-	public List<Episode> findByShow(Long showId);
+	public List<Episode> findByShow(Long showId) throws ShowException;
 
 
 }

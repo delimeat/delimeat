@@ -22,10 +22,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowException;
+import io.delimeat.show.exception.ShowNotFoundException;
 
 public class EpisodeService_ImplTest {
 
@@ -61,6 +66,52 @@ public class EpisodeService_ImplTest {
 		Mockito.verify(repository).save(ep);
 		Mockito.verifyNoMoreInteractions(repository);
 	}
+
+	@Test(expected=ShowException.class)
+	public void createExceptionTest() throws Exception{
+		Episode ep = new Episode();
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.when(repository.save(ep)).thenThrow(new DataSourceLookupFailureException("EX"));
+		service.setEpisodeRepository(repository);
+		
+		service.create(ep);
+	}
+	
+	@Test
+	public void readTest() throws Exception{
+		Episode ep = new Episode();
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doReturn(ep).when(repository).findOne(1L);
+		service.setEpisodeRepository(repository);
+		
+		Episode resultEp = service.read(1L);
+		Assert.assertEquals("read episode",ep, resultEp);
+		
+		Mockito.verify(repository).findOne(1L);
+		Mockito.verifyNoMoreInteractions(repository);				
+	}
+
+	@Test(expected=ShowNotFoundException.class)
+	public void readNotFoundExceptionTest() throws Exception{
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doReturn(null).when(repository).findOne(1L);
+		
+		service.setEpisodeRepository(repository);
+		
+		service.read(1L);				
+	}
+	
+	@Test(expected=ShowException.class)
+	public void readExceptionTest() throws Exception{
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doThrow(new DataSourceLookupFailureException("EX")).when(repository).findOne(1L);
+		
+		service.setEpisodeRepository(repository);
+		
+		service.read(1L);				
+	}
 	
 	@Test
 	public void updateTest() throws Exception{
@@ -74,22 +125,29 @@ public class EpisodeService_ImplTest {
 		Mockito.verify(repository).save(ep);
 		Mockito.verifyNoMoreInteractions(repository);
 	}
-	
-	@Test
-	public void readTest() throws Exception{
+		
+	@Test(expected = ShowConcurrencyException.class)
+	public void updateConcurrencyExceptionTest() throws Exception{
 		Episode ep = new Episode();
 		
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
-		Mockito.doReturn(ep)
-			.when(repository)
-			.findOne(1L);
+		Mockito.when(repository.save(ep)).thenThrow(new ConcurrencyFailureException("EX"));
+
 		service.setEpisodeRepository(repository);
 		
-		Episode resultEp = service.read(1L);
-		Assert.assertEquals("read episode",ep, resultEp);
+		service.update(ep);
+	}
+	
+	@Test(expected = ShowException.class)
+	public void updateExceptionTest() throws Exception{
+		Episode ep = new Episode();
 		
-		Mockito.verify(repository).findOne(1L);
-		Mockito.verifyNoMoreInteractions(repository);				
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.when(repository.save(ep)).thenThrow(new DataSourceLookupFailureException("EX"));
+
+		service.setEpisodeRepository(repository);
+		
+		service.update(ep);
 	}
 	
 	@Test
@@ -101,6 +159,16 @@ public class EpisodeService_ImplTest {
 		
 		Mockito.verify(repository).delete(1L);
 		Mockito.verifyNoMoreInteractions(repository);				
+	}
+	
+	@Test(expected = ShowException.class)
+	public void deleteExceptionTest() throws Exception{
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doThrow(new DataSourceLookupFailureException("EX")).when(repository).delete(1L);
+
+		service.setEpisodeRepository(repository);
+		
+		service.delete(1L);			
 	}
 	
 	@Test
@@ -119,6 +187,18 @@ public class EpisodeService_ImplTest {
 		
 		Mockito.verify(repository).findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
 		Mockito.verifyNoMoreInteractions(repository);
+	}
+	
+	@Test(expected = ShowException.class)
+	public void findAllPendingExceptionTest() throws Exception{
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doThrow(new DataSourceLookupFailureException("EX"))
+			.when(repository)
+			.findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
+		service.setEpisodeRepository(repository);	
+		
+		service.findAllPending();
 	}
 	
 	@Test
@@ -140,6 +220,19 @@ public class EpisodeService_ImplTest {
 		
 		Mockito.verify(repository).findByShowShowId(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(repository);		
+	}
+	
+	@Test(expected = ShowException.class)
+	public void findByShowExceptionTest() throws Exception{
+		
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doThrow(new DataSourceLookupFailureException("EX"))
+			.when(repository)
+			.findByShowShowId(Long.MAX_VALUE);
+		service.setEpisodeRepository(repository);	
+		
+		service.findByShow(Long.MAX_VALUE);
+		
 	}
 
 }

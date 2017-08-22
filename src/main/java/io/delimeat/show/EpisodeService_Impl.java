@@ -17,12 +17,18 @@ package io.delimeat.show;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowException;
+import io.delimeat.show.exception.ShowNotFoundException;
 
 @Service
 public class EpisodeService_Impl implements EpisodeService {
@@ -48,48 +54,79 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#create(io.delimeat.show.domain.Episode)
 	 */
 	@Override
-	public Episode create(Episode episode) {
-		return episodeRepository.save(episode);
+	public Episode create(Episode episode) throws ShowException {
+		try{
+			return episodeRepository.save(episode);
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
 	}
 	
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#read(java.lang.Long)
 	 */
 	@Override
-	public Episode read(Long episodeId) {
-		return episodeRepository.findOne(episodeId);
+	public Episode read(Long episodeId) throws ShowNotFoundException, ShowException{
+		try{
+			Optional<Episode> optional = Optional.ofNullable(episodeRepository.findOne(episodeId));
+			if(optional.isPresent() == false){
+				throw new ShowNotFoundException(episodeId);
+			}
+			return optional.get();
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#save(io.delimeat.show.domain.Episode)
 	 */
 	@Override
-	public Episode update(Episode episode) {
-		return episodeRepository.save(episode);
+	public Episode update(Episode episode) throws ShowConcurrencyException, ShowException {
+		try{
+			return episodeRepository.save(episode);
+		} catch (ConcurrencyFailureException e) {
+			throw new ShowConcurrencyException(e);
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
+		
 	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#delete(java.lang.Long)
 	 */
 	@Override
-	public void delete(Long episodeId) {
-		episodeRepository.delete(episodeId);	
+	public void delete(Long episodeId) throws ShowException {
+		try{
+			episodeRepository.delete(episodeId);
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}		
 	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#findAllPending()
 	 */
 	@Override
-	public List<Episode> findAllPending() {
-		return episodeRepository.findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
+	public List<Episode> findAllPending() throws ShowException {
+		try{
+			return episodeRepository.findByStatusIn(Arrays.asList(EpisodeStatus.PENDING));
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.show.EpisodeService#findByShow(java.lang.Long)
 	 */
 	@Override
-	public List<Episode> findByShow(Long showId) {
-		return episodeRepository.findByShowShowId(showId);
+	public List<Episode> findByShow(Long showId) throws ShowException {
+		try{
+			return episodeRepository.findByShowShowId(showId);
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
 	}
 
 	/* (non-Javadoc)

@@ -44,6 +44,8 @@ import io.delimeat.show.ShowUtils;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
+import io.delimeat.show.exception.ShowConcurrencyException;
+import io.delimeat.show.exception.ShowException;
 import io.delimeat.util.DelimeatUtils;
 
 @Component
@@ -158,7 +160,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
     	LOGGER.debug(String.format("ending guide item processor for %s", show.getTitle()));	
 	}
 
-	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) {
+	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) throws ShowException {
 		List<Episode> episodesToCreate = guideEps.stream()
 											.filter(guideEp -> showEps.stream().noneMatch(ep->DelimeatUtils.equals(guideEp, ep)))
 											.map(ShowUtils::fromGuideEpisode)
@@ -176,7 +178,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 
 	}
 
-	public boolean deleteEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) {
+	public boolean deleteEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) throws ShowException {
 		List<Long> episodesToDelete = showEps.stream()
 											.filter(ep -> EpisodeStatus.PENDING.equals(ep.getStatus()))
 											.filter(ep-> guideEps.stream().noneMatch(guideEp->DelimeatUtils.equals(guideEp, ep)))
@@ -196,8 +198,10 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 	 * @param guideEps
 	 * @param showEps
 	 * @return if there were any updates
+	 * @throws ShowException 
+	 * @throws ShowConcurrencyException 
 	 */
-	public boolean updateEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) {
+	public boolean updateEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) throws ShowConcurrencyException, ShowException {
 		List<Episode> pendingShowEps = showEps.stream()
 												.filter(ep->EpisodeStatus.PENDING.equals(ep.getStatus()))
 												.collect(Collectors.toList());

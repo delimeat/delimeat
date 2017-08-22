@@ -15,7 +15,6 @@
  */
 package io.delimeat.processor;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -76,7 +75,7 @@ public class GuideItemProcessor_ImplTest {
 	}
 	
 	@Test
-	public void createEpisodesTest(){
+	public void createEpisodesTest() throws Exception {
 		Episode existingEp = new Episode();
 		existingEp.setSeasonNum(1);
 		existingEp.setEpisodeNum(1);
@@ -104,13 +103,13 @@ public class GuideItemProcessor_ImplTest {
 	}
 	
 	@Test
-	public void createEpisodesNoEpisodesTest(){
+	public void createEpisodesNoEpisodesTest() throws Exception {
 		
 		Assert.assertFalse(processor.createEpisodes(Collections.emptyList(), Collections.emptyList(), null));
 	}
 	
 	@Test
-	public void deleteEpisodeTest(){
+	public void deleteEpisodeTest() throws Exception {
 		// not deleted because it is in the guide and found
 		Episode existingFoundEp = new Episode();
 		existingFoundEp.setSeasonNum(1);
@@ -148,13 +147,13 @@ public class GuideItemProcessor_ImplTest {
 	}
 
 	@Test
-	public void deleteEpisodesNoEpisodesTest(){
+	public void deleteEpisodesNoEpisodesTest() throws Exception {
 		
 		Assert.assertFalse(processor.deleteEpisodes(Collections.emptyList(), Collections.emptyList()));
 	}
 	
 	@Test
-	public void updateEpisodesTest() throws ParseException{
+	public void updateEpisodesTest() throws Exception{
 		Episode existingNotPendingEp = new Episode();
 		existingNotPendingEp.setSeasonNum(2);
 		existingNotPendingEp.setEpisodeNum(3);
@@ -228,7 +227,7 @@ public class GuideItemProcessor_ImplTest {
 	}
 
 	@Test
-	public void updateEpisodesNoEpisodesTest(){
+	public void updateEpisodesNoEpisodesTest() throws Exception {
 		
 		Assert.assertFalse(processor.updateEpisodes(Collections.emptyList(), Collections.emptyList()));
 	}
