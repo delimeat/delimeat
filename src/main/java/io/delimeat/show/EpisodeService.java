@@ -24,16 +24,52 @@ import io.delimeat.show.exception.ShowNotFoundException;
 
 public interface EpisodeService {
 
+	/**
+	 * Create an episode
+	 * @param episode
+	 * @return
+	 * @throws ShowException
+	 */
 	public Episode create(Episode episode) throws ShowException;
 	
+	/**
+	 * Read an episode
+	 * @param episodeId
+	 * @return
+	 * @throws ShowNotFoundException
+	 * @throws ShowException
+	 */
 	public Episode read(Long episodeId) throws ShowNotFoundException, ShowException;
 
+	/**
+	 * Update an episode
+	 * @param episode
+	 * @return
+	 * @throws ShowConcurrencyException
+	 * @throws ShowException
+	 */
 	public Episode update(Episode episode)  throws ShowConcurrencyException, ShowException;
 
+	/**
+	 * Delete an episode
+	 * @param episodeId
+	 * @throws ShowException
+	 */
 	public void delete(Long episodeId) throws ShowException;
 	
+	/**
+	 * Find all pending episodes
+	 * @return
+	 * @throws ShowException
+	 */
 	public List<Episode> findAllPending() throws ShowException;
 	
+	/**
+	 * Find episodes by show
+	 * @param showId
+	 * @return
+	 * @throws ShowException
+	 */
 	public List<Episode> findByShow(Long showId) throws ShowException;
 
 

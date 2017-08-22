@@ -36,6 +36,11 @@ public class DelimeatUtilsTest {
 	public void toHexTest() {
 		Assert.assertEquals("6279746573", DelimeatUtils.toHex("bytes".getBytes()));
 	}
+	
+	@Test
+	public void hexToBytesTest() {
+		Assert.assertEquals("bytes", new String(DelimeatUtils.hexToBytes("6279746573")));
+	}
 
 	@Test
 	public void sha1HashTest() {

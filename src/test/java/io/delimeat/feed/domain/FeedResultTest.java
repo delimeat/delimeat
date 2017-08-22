@@ -70,6 +70,20 @@ public class FeedResultTest {
 	}
 	
 	@Test
+	public void infoHasHexTest(){
+		Assert.assertNull(result.getInfoHashHex());
+		result.setInfoHashHex("INFO_HASH");
+		Assert.assertEquals("INFO_HASH", result.getInfoHashHex());	
+	}
+	
+	@Test
+	public void magnetUriTest(){
+		Assert.assertNull(result.getMagnetUri());
+		result.setMagnetUri("MAGNET");
+		Assert.assertEquals("MAGNET", result.getMagnetUri());	
+	}
+	
+	@Test
 	public void feedResultRejectionsTest(){
 		Assert.assertNotNull(result.getFeedResultRejections());
 		Assert.assertEquals(0, result.getFeedResultRejections().size());
@@ -97,7 +111,9 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-     	Assert.assertEquals(-29520557,result.hashCode());
+		result.setInfoHashHex("INFO_HASH");
+		result.setMagnetUri("MAGNET");
+     	Assert.assertEquals(-1299828632,result.hashCode());
    }
   
   	@Test

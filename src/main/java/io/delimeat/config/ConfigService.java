@@ -22,6 +22,8 @@ import io.delimeat.config.exception.ConfigException;
 public interface ConfigService {
 
     /**
+     * Read configuration 
+     * 
      * @return the config instance
      */
     public Config read() throws ConfigException;

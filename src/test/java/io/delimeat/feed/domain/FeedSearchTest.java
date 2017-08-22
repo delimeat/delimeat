@@ -43,7 +43,7 @@ public class FeedSearchTest {
   	@Test
   	public void hashCodeTest(){
    	search.getResults().add(new FeedResult());
-		Assert.assertEquals(887503743,search.hashCode());
+		Assert.assertEquals(-1807454401,search.hashCode());
    }
   
   	@Test

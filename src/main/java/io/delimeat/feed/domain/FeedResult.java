@@ -27,7 +27,9 @@ public class FeedResult {
 	private String title;
 	private long contentLength;
 	private long seeders;
-	private long leechers;	
+	private long leechers;
+	private String infoHashHex;
+	private String magnetUri;
 	private List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
 	private Torrent torrent;
 	/**
@@ -91,6 +93,30 @@ public class FeedResult {
 		this.leechers = leechers;
 	}
 	/**
+	 * @return the infoHashHex
+	 */
+	public String getInfoHashHex() {
+		return infoHashHex;
+	}
+	/**
+	 * @param infoHashHex the infoHashHex to set
+	 */
+	public void setInfoHashHex(String infoHashHex) {
+		this.infoHashHex = infoHashHex;
+	}
+	/**
+	 * @return the magnetUri
+	 */
+	public String getMagnetUri() {
+		return magnetUri;
+	}
+	/**
+	 * @param magnetUri the magnetUri to set
+	 */
+	public void setMagnetUri(String magnetUri) {
+		this.magnetUri = magnetUri;
+	}
+	/**
 	 * @return the feedResultRejections
 	 */
 	public List<FeedResultRejection> getFeedResultRejections() {
@@ -114,12 +140,13 @@ public class FeedResult {
 	public void setTorrent(Torrent torrent) {
 		this.torrent = torrent;
 	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(contentLength,leechers,seeders,title,torrent,torrentURL);
+		return Objects.hash(contentLength,leechers,seeders,title,torrent,torrentURL,magnetUri,infoHashHex);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -135,7 +162,17 @@ public class FeedResult {
 		FeedResult other = (FeedResult) obj;
 		if (contentLength != other.contentLength)
 			return false;
+		if (infoHashHex == null) {
+			if (other.infoHashHex != null)
+				return false;
+		} else if (!infoHashHex.equals(other.infoHashHex))
+			return false;
 		if (leechers != other.leechers)
+			return false;
+		if (magnetUri == null) {
+			if (other.magnetUri != null)
+				return false;
+		} else if (!magnetUri.equals(other.magnetUri))
 			return false;
 		if (seeders != other.seeders)
 			return false;
@@ -164,9 +201,12 @@ public class FeedResult {
 		return "FeedResult [" + (torrentURL != null ? "torrentURL=" + torrentURL + ", " : "")
 				+ (title != null ? "title=" + title + ", " : "") + "contentLength=" + contentLength + ", seeders="
 				+ seeders + ", leechers=" + leechers + ", "
+				+ (infoHashHex != null ? "infoHashHex=" + infoHashHex + ", " : "")
+				+ (magnetUri != null ? "magnetUri=" + magnetUri + ", " : "")
 				+ (feedResultRejections != null ? "feedResultRejections=" + feedResultRejections + ", " : "")
 				+ (torrent != null ? "torrent=" + torrent : "") + "]";
 	}
+
 	
 	
 
