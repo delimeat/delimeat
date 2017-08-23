@@ -134,6 +134,16 @@ public class FeedResultTest {
 	}
 	
 	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(result.equals(null));
+	}
+	
+	@Test
+	public void equalsObjectTest(){
+		Assert.assertFalse(result.equals(new Object()));
+	}
+	
+	@Test
 	public void equalsInfoHashHexNullTest(){
 		result.setTorrentURL("TORRENT_LOCATION");
 		result.setTitle("FILE_NAME");
