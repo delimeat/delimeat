@@ -142,4 +142,343 @@ public class FeedProcessUnitTest {
 		
 		Assert.assertTrue(processUnit.equals(other));
 	}
+	
+	@Test
+	public void equalsContentLengthTest() throws Exception{
+		processUnit.setContentLength(Long.MIN_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+
+	@Test
+	public void equalsDownloadUriTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("http://different.io"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("other".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsLeechersTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MIN_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+
+	@Test
+	public void equalsMagnetUriTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("http://different.io"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsSeedersTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MIN_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsTitleTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("OTHER");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+
+	@Test
+	public void equalsTorrentTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		torrent.setTracker("TRACKER");
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsDownloadUriNullTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(null);
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashNullTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(null);
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsMagnetUriNullTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(null);
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	
+	@Test
+	public void equalsTitleNullTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle(null);
+		Torrent torrent = new Torrent();
+		processUnit.setTorrent(torrent);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
+	
+	@Test
+	public void equalsTorrentNullTest() throws Exception{
+		processUnit.setContentLength(Long.MAX_VALUE);
+		processUnit.setDownloadUri(new URI("udp:test.com"));
+		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
+		processUnit.setLeechers(Long.MAX_VALUE);
+		processUnit.setMagnetUri(new URI("udp:test.com"));
+		processUnit.setSeeders(Long.MAX_VALUE);
+		processUnit.setTitle("TITLE");
+		processUnit.setTorrent(null);
+		
+		FeedProcessUnit other = new FeedProcessUnit();
+		other.setContentLength(Long.MAX_VALUE);
+		other.setDownloadUri(new URI("udp:test.com"));
+		other.setInfoHash(new InfoHash("bytes".getBytes()));
+		other.setLeechers(Long.MAX_VALUE);
+		other.setMagnetUri(new URI("udp:test.com"));
+		other.setSeeders(Long.MAX_VALUE);
+		other.setTitle("TITLE");
+		Torrent otherTorrent = new Torrent();
+		other.setTorrent(otherTorrent);
+		
+		Assert.assertFalse(processUnit.equals(other));
+	}
 }
