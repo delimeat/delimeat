@@ -35,6 +35,7 @@ import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnit;
 import io.delimeat.processor.validation.FeedResultValidator;
 import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
@@ -44,6 +45,7 @@ import io.delimeat.show.domain.EpisodeStatus;
 import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
+import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
@@ -118,6 +120,20 @@ public class FeedItemProcessor_ImplTest {
 		Assert.assertFalse(processor.getTorrentValidators().isEmpty());
 		Assert.assertEquals(1, processor.getTorrentValidators().size());
 		Assert.assertEquals(mockedValidator, processor.getTorrentValidators().get(0));
+	}
+	
+	@Test
+	public void magenetUriTemplateTest(){
+		Assert.assertNull(processor.getMagnetUriTemplate());
+		processor.setMagnetUriTemplate("TEMPLATE");
+		Assert.assertEquals("TEMPLATE", processor.getMagnetUriTemplate());
+	}
+	
+	@Test
+	public void downloadUriTemplateTest(){
+		Assert.assertNull(processor.getDownloadUriTemplate());
+		processor.setDownloadUriTemplate("TEMPLATE");
+		Assert.assertEquals("TEMPLATE", processor.getDownloadUriTemplate());
 	}
 	
 	@Test
@@ -430,7 +446,130 @@ public class FeedItemProcessor_ImplTest {
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("SHOW_TITLE_100x99_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));
+  		Assert.assertEquals("SHOW_TITLE_100x99_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));	
+  	}
+  	
+  	@Test
+  	public void buildMagnetUriTest() throws Exception{
+  		processor.setMagnetUriTemplate("magnet:%s");
+  		URI uri = processor.buildMagnetUri(new InfoHash("INFO_HASH".getBytes()));
+  		Assert.assertEquals(new URI("magnet:494e464f5f48415348"), uri);		
+  	}
+  	
+  	@Test
+  	public void buildMagnetUriExceptionTest() throws Exception{
+  		processor.setMagnetUriTemplate("JIBBERISH %s");
+  		Assert.assertNull(processor.buildMagnetUri(new InfoHash("INFO_HASH".getBytes())));		
+  	}
+  	
+  	@Test
+  	public void buildDownloadUriTest() throws Exception{
+  		processor.setDownloadUriTemplate("http:%s");
+  		URI uri = processor.buildDownloadUri(new InfoHash("INFO_HASH".getBytes()));
+  		Assert.assertEquals(new URI("http:494E464F5F48415348"), uri);		
+  	}
+  	
+  	@Test
+  	public void buildDownloadUriExceptionTest() throws Exception{
+  		processor.setDownloadUriTemplate("JIBBERISH %s");
+  		Assert.assertNull(processor.buildDownloadUri(new InfoHash("INFO_HASH".getBytes())));		
+  	}
+  	
+  	@Test
+  	public void buildInfoHashFromMagnetTest() throws Exception{
+  		InfoHash infoHash = processor.buildInfoHashFromMagnet(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", infoHash.getHex());
+  	}
+  	
+  	@Test
+  	public void convertFeedResultsTest() throws Exception{
+  		FeedResult feedResult = new FeedResult();
+  		feedResult.setContentLength(1);
+  		feedResult.setTitle("TITLE_1");
+  		feedResult.setSeeders(99);
+  		feedResult.setLeechers(100);
+  		feedResult.setTorrentURL("http://download_1.url");
+  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
+  		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
   		
+  		List<FeedProcessUnit> processUnits = processor.convertFeedResults(Arrays.asList(feedResult));
+  		Assert.assertEquals(1, processUnits.size());
+  		Assert.assertEquals(1, processUnits.get(0).getContentLength());
+  		Assert.assertEquals("TITLE_1", processUnits.get(0).getTitle());
+  		Assert.assertEquals(99, processUnits.get(0).getSeeders());
+  		Assert.assertEquals(100, processUnits.get(0).getLeechers());
+  		Assert.assertEquals(new URI("http://download_1.url"), processUnits.get(0).getDownloadUri());
+  		Assert.assertEquals(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"), processUnits.get(0).getMagnetUri());
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnits.get(0).getInfoHash().getHex());	
+  	}
+  	
+  	@Test
+  	public void convertFeedResultsNoMagnetUriTest() throws Exception{
+  		FeedResult feedResult = new FeedResult();
+  		feedResult.setContentLength(1);
+  		feedResult.setTitle("TITLE_1");
+  		feedResult.setSeeders(99);
+  		feedResult.setLeechers(100);
+  		feedResult.setTorrentURL("http://download_1.url");
+  		feedResult.setMagnetUri(null);
+  		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
+  		
+  		processor.setMagnetUriTemplate("magnet:?xt=urn:btih:%s&tr=udp://tracker.coppersurfer.tk:6969/announce");
+  		
+  		List<FeedProcessUnit> processUnits = processor.convertFeedResults(Arrays.asList(feedResult));
+  		Assert.assertEquals(1, processUnits.size());
+  		Assert.assertEquals(1, processUnits.get(0).getContentLength());
+  		Assert.assertEquals("TITLE_1", processUnits.get(0).getTitle());
+  		Assert.assertEquals(99, processUnits.get(0).getSeeders());
+  		Assert.assertEquals(100, processUnits.get(0).getLeechers());
+  		Assert.assertEquals(new URI("http://download_1.url"), processUnits.get(0).getDownloadUri());
+  		Assert.assertEquals(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"), processUnits.get(0).getMagnetUri());
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnits.get(0).getInfoHash().getHex());
+  	}
+  	
+  	@Test
+  	public void convertFeedResultsNoDownloadUriTest() throws Exception{
+  		FeedResult feedResult = new FeedResult();
+  		feedResult.setContentLength(1);
+  		feedResult.setTitle("TITLE_1");
+  		feedResult.setSeeders(99);
+  		feedResult.setLeechers(100);
+  		feedResult.setTorrentURL(null);
+  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
+  		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
+  		
+  		processor.setDownloadUriTemplate("https://itorrents.org/torrent/%s.torrent");
+  		  		
+  		List<FeedProcessUnit> processUnits = processor.convertFeedResults(Arrays.asList(feedResult));
+  		Assert.assertEquals(1, processUnits.size());
+  		Assert.assertEquals(1, processUnits.get(0).getContentLength());
+  		Assert.assertEquals("TITLE_1", processUnits.get(0).getTitle());
+  		Assert.assertEquals(99, processUnits.get(0).getSeeders());
+  		Assert.assertEquals(100, processUnits.get(0).getLeechers());
+  		Assert.assertEquals(new URI("https://itorrents.org/torrent/DF706CF16F45E8C0FD226223509C7E97B4FFEC13.torrent"), processUnits.get(0).getDownloadUri());
+  		Assert.assertEquals(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"), processUnits.get(0).getMagnetUri());
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnits.get(0).getInfoHash().getHex());
+  	}
+  	
+  	@Test
+  	public void convertFeedResultsNoInfoHashTest() throws Exception{
+  		FeedResult feedResult = new FeedResult();
+  		feedResult.setContentLength(1);
+  		feedResult.setTitle("TITLE_1");
+  		feedResult.setSeeders(99);
+  		feedResult.setLeechers(100);
+  		feedResult.setTorrentURL("http://download_1.url");
+  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
+  		feedResult.setInfoHashHex(null);
+  		
+  		List<FeedProcessUnit> processUnits = processor.convertFeedResults(Arrays.asList(feedResult));
+  		Assert.assertEquals(1, processUnits.size());
+  		Assert.assertEquals(1, processUnits.get(0).getContentLength());
+  		Assert.assertEquals("TITLE_1", processUnits.get(0).getTitle());
+  		Assert.assertEquals(99, processUnits.get(0).getSeeders());
+  		Assert.assertEquals(100, processUnits.get(0).getLeechers());
+  		Assert.assertEquals(new URI("http://download_1.url"), processUnits.get(0).getDownloadUri());
+  		Assert.assertEquals(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"), processUnits.get(0).getMagnetUri());
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnits.get(0).getInfoHash().getHex());
   	}
 }

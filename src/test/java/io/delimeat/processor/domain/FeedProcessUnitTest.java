@@ -144,6 +144,21 @@ public class FeedProcessUnitTest {
 	}
 	
 	@Test
+	public void equalsSelfTest(){
+		Assert.assertTrue(processUnit.equals(processUnit));
+	}
+	
+	@Test
+	public void equalsNullTest(){
+		Assert.assertFalse(processUnit.equals(null));
+	}
+	
+	@Test
+	public void equalsObjectTest(){
+		Assert.assertFalse(processUnit.equals(new Object()));
+	}
+	
+	@Test
 	public void equalsContentLengthTest() throws Exception{
 		processUnit.setContentLength(Long.MIN_VALUE);
 		processUnit.setDownloadUri(new URI("udp:test.com"));

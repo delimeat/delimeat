@@ -135,7 +135,8 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 	public void readContentTypeExceptionTest() throws Exception {
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<enclosure url='torrentUrl' type='application/x-bittorrent' />"
      			+ "<size>9223372036854775807</size>"
      			+ "</item></channel></rss>";
      	

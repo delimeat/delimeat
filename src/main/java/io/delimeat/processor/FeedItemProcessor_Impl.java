@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -429,7 +431,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     
     public URI buildDownloadUri(InfoHash infoHash){
 		URI uri = null;
-    	String downloadUri = String.format(downloadUriTemplate,infoHash.getHex());
+    	String downloadUri = String.format(downloadUriTemplate,infoHash.getHex().toUpperCase());
 		try{
 			uri = new URI(downloadUri);
 		}catch(URISyntaxException ex){
@@ -439,11 +441,13 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     }
     
     public InfoHash buildInfoHashFromMagnet(URI magnetUri){
-    	//TODO extract info hash from magnetUri
-    	String infoHashHex = "";
+    	Matcher m = Pattern.compile("([A-Z]|[a-z]|\\d){40}").matcher(magnetUri.toASCIIString());
+    	if(m.find() == false){
+    		return null;
+    	}
+    	String infoHashHex = m.group();
     	byte[] infoHashBytes = DelimeatUtils.hexToBytes(infoHashHex);
     	return new InfoHash(infoHashBytes);
-    	
     }
     
   	/**
