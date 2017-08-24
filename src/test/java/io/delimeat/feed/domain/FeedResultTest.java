@@ -175,30 +175,10 @@ public class FeedResultTest {
 	
 	@Test
 	public void equalsMagnetUriNullTest(){
-		result.setTorrentURL("TORRENT_LOCATION");
-		result.setTitle("FILE_NAME");
-		result.setContentLength(Long.MAX_VALUE);
-		result.setSeeders(Long.MIN_VALUE);
-		result.setLeechers(Long.MAX_VALUE);
-		result.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-		result.setInfoHashHex("INFO_HASH");
 		result.setMagnetUri(null);
-		Torrent resultTorrent = new Torrent();
-		resultTorrent.setTracker("TRACKER");
-		result.setTorrent(resultTorrent);
 		
 		FeedResult other = new FeedResult();
-		other.setTorrentURL("TORRENT_LOCATION");
-		other.setTitle("FILE_NAME");
-		other.setContentLength(Long.MAX_VALUE);
-		other.setSeeders(Long.MIN_VALUE);
-		other.setLeechers(Long.MAX_VALUE);
-		other.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-		other.setInfoHashHex("INFO_HASH");
 		other.setMagnetUri("MAGNET");
-		Torrent otherTorrent = new Torrent();
-		otherTorrent.setTracker("TRACKER");
-		other.setTorrent(otherTorrent);
 		
 		Assert.assertFalse(result.equals(other));
 	}
