@@ -36,7 +36,6 @@ import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.processor.domain.FeedProcessUnit;
-import io.delimeat.processor.validation.FeedResultValidator;
 import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
 import io.delimeat.show.EpisodeService;
@@ -62,7 +61,7 @@ public class FeedItemProcessor_ImplTest {
 
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedItemProcessor_Impl [feedResultValidators=[], torrentValidators=[], ]", processor.toString());
+		Assert.assertEquals("FeedItemProcessor_Impl [torrentValidators=[], ]", processor.toString());
 	}
 	@Test
 	public void configServiceTest() {
@@ -95,20 +94,6 @@ public class FeedItemProcessor_ImplTest {
 		processor.setTorrentService(torrentService);
 		Assert.assertEquals(torrentService, processor.getTorrentService());
 	}
-	
-	@Test
-	public void feedResultValidatorsTest() {
-		Assert.assertNotNull(processor.getFeedResultValidators());
-		Assert.assertTrue(processor.getFeedResultValidators().isEmpty());
-		FeedResultValidator mockedValidator = Mockito
-				.mock(FeedResultValidator.class);
-		processor.setFeedResultValidators(Arrays.asList(mockedValidator));
-		Assert.assertNotNull(processor.getFeedResultValidators());
-		Assert.assertFalse(processor.getFeedResultValidators().isEmpty());
-		Assert.assertEquals(1, processor.getFeedResultValidators().size());
-		Assert.assertEquals(mockedValidator, processor
-				.getFeedResultValidators().get(0));
-	}
 
 	@Test
 	public void torrentValidatorsTest() {
@@ -134,24 +119,6 @@ public class FeedItemProcessor_ImplTest {
 		Assert.assertNull(processor.getDownloadUriTemplate());
 		processor.setDownloadUriTemplate("TEMPLATE");
 		Assert.assertEquals("TEMPLATE", processor.getDownloadUriTemplate());
-	}
-	
-	@Test
-	public void validateFeedResultsTest() throws Exception {
-		FeedResultValidator validator = Mockito.mock(FeedResultValidator.class);
-		processor.setFeedResultValidators(Arrays.asList(validator));
-     
-		Episode episode = new Episode();
-
-		FeedResult result1 = new FeedResult();
-		result1.getFeedResultRejections().add(FeedResultRejection.CONTAINS_COMPRESSED);
-		FeedResult result2 = new FeedResult();
-
-		List<FeedResult> outResults = processor.validateFeedResults(Arrays.asList(result1, result2), episode, new Config());
-		Assert.assertEquals(1, outResults.size());
-		Assert.assertEquals(result2, outResults.get(0));
-		
-		Mockito.verify(validator).validate(Arrays.asList(result1, result2), episode, new Config());
 	}
 
 	@Test(expected = MalformedURLException.class)
@@ -370,11 +337,8 @@ public class FeedItemProcessor_ImplTest {
      	FeedService feedService = Mockito.mock(FeedService.class);
      	FeedResult feedResult = new FeedResult();
      	feedResult.setTorrentURL("http://test.com");
-     	Mockito.when(feedService.read("SHOW_TITLE")).thenReturn(Arrays.asList(feedResult));
+     	Mockito.when(feedService.read(episode,config)).thenReturn(Arrays.asList(feedResult));
      	processor.setFeedService(feedService);
-     	
-     	FeedResultValidator feedResultValidator = Mockito.mock(FeedResultValidator.class);
-     	processor.setFeedResultValidators(Arrays.asList(feedResultValidator));
      
 		TorrentService torrentService = Mockito.mock(TorrentService.class);
      	Torrent torrent = new Torrent();
@@ -404,11 +368,8 @@ public class FeedItemProcessor_ImplTest {
      	Mockito.verify(service).update(episode);
      	Mockito.verifyNoMoreInteractions(service);
      	
-     	Mockito.verify(feedService).read("SHOW_TITLE");
+     	Mockito.verify(feedService).read(episode,config);
      	Mockito.verifyNoMoreInteractions(feedService);
-
-     	Mockito.verify(feedResultValidator).validate(Arrays.asList(feedResult), episode, config);
-     	Mockito.verifyNoMoreInteractions(feedResultValidator);
 
     	Mockito.verify(torrentValidator).validate(torrent, show, config);
      	Mockito.verifyNoMoreInteractions(torrentValidator);

@@ -47,7 +47,6 @@ import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.processor.domain.FeedProcessUnit;
-import io.delimeat.processor.validation.FeedResultValidator;
 import io.delimeat.processor.validation.TorrentValidator;
 import io.delimeat.processor.validation.ValidationException;
 import io.delimeat.show.EpisodeService;
@@ -75,8 +74,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     private FeedService feedService;
   	@Autowired
     private TorrentService torrentService;
-  	@Autowired
-    private List<FeedResultValidator> feedResultValidators = new ArrayList<FeedResultValidator>(); 
   	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
   	
@@ -145,20 +142,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 	}
 
 	/**
-	 * @return the feedResultValidators
-	 */
-	public List<FeedResultValidator> getFeedResultValidators() {
-		return feedResultValidators;
-	}
-
-	/**
-	 * @param feedResultValidators the feedResultValidators to set
-	 */
-	public void setFeedResultValidators(List<FeedResultValidator> feedResultValidators) {
-		this.feedResultValidators = feedResultValidators;
-	}
-
-	/**
 	 * @return the torrentValidators
 	 */
 	public List<TorrentValidator> getTorrentValidators() {
@@ -209,15 +192,11 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	LOGGER.debug(String.format("starting feed item processor for %s", episode.getTitle()));
 		
 		// read feed results
-		final List<FeedResult> readResults = feedService.read(episode.getShow().getTitle());
+		final List<FeedResult> readResults = feedService.read(episode, getConfig());
 		LOGGER.debug(String.format("read %s results, %s", readResults.size(), readResults));
 		
-		// validate the read results
-		final List<FeedResult> foundResults = validateFeedResults(readResults, episode, getConfig());
-		LOGGER.debug(String.format("found %s results, %s", foundResults.size(), foundResults));
-		
 		// select all the valid results based on the torrent files
-		final List<FeedResult> validResults = validateResultTorrents(foundResults, episode.getShow(), getConfig());
+		final List<FeedResult> validResults = validateResultTorrents(readResults, episode.getShow(), getConfig());
 		LOGGER.debug(String.format("validated %s results, %s", validResults.size(), validResults));
  		
 		Instant now = Instant.now();
@@ -288,26 +267,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	}
     	
     	return processUnits;
-    }
-    /**
-     * @param results
-     * @param episode
-     * @param config
-     * @return
-     * @throws ValidationException
-     * @throws ProcessorInteruptedException
-     */
-    public List<FeedResult> validateFeedResults(List<FeedResult> results, Episode episode, Config config) throws ValidationException {
-    	
-    	for(FeedResultValidator validator: feedResultValidators){
-    		    		
-    		validator.validate(results, episode, config);
-    		
-    	}
-    	
-        return results.stream()
-        		.filter(p->p.getFeedResultRejections().isEmpty())
-        		.collect(Collectors.toList());
     }
 
     /**
@@ -471,7 +430,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 				+ (episodeService != null ? "episodeService=" + episodeService + ", " : "")
 				+ (feedService != null ? "feedService=" + feedService + ", " : "")
 				+ (torrentService != null ? "torrentService=" + torrentService + ", " : "")
-				+ (feedResultValidators != null ? "feedResultValidators=" + feedResultValidators + ", " : "")
 				+ (torrentValidators != null ? "torrentValidators=" + torrentValidators + ", " : "")
 				+ (config != null ? "config=" + config : "") + "]";
 	}

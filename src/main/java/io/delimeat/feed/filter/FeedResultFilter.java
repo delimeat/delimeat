@@ -13,37 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.processor.validation;
+package io.delimeat.feed.filter;
 
+import java.util.List;
+
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.show.domain.Episode;
 
-public abstract class AbstractFeedResultValidator implements FeedResultValidator {
+public interface FeedResultFilter {
 
-	protected final FeedResultRejection rejection;
-	
 	/**
-	 * Constructor
-	 * @param rejection
+	 * Filter out feed results for an episode
+	 * @param results
+	 * @param episode
+	 * @param config
 	 */
-	AbstractFeedResultValidator(FeedResultRejection rejection){
-		this.rejection = rejection;
-	}
+	public void filter(List<FeedResult> results, Episode episode, Config config);
 	
-	/**
-	 * @return rejection
-	 */
-	public FeedResultRejection getRejection(){
-		return rejection;
-	}
-	
-	/**
-	 * Add rejection to a result
-	 * 
-	 * @param result
-	 */
-	public void addRejection(FeedResult result){
-		result.getFeedResultRejections().add(rejection);
-	}
-
 }

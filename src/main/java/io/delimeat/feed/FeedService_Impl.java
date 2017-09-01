@@ -23,8 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.filter.FeedResultFilter;
+import io.delimeat.show.domain.Episode;
 
 @Service
 public class FeedService_Impl implements FeedService {
@@ -33,6 +36,9 @@ public class FeedService_Impl implements FeedService {
 	
 	@Autowired
 	private List<FeedDataSource> feedDataSources;
+	
+	@Autowired
+	private List<FeedResultFilter> feedResultFilters;
     
 	/**
 	 * @return the feedDataSources
@@ -46,6 +52,20 @@ public class FeedService_Impl implements FeedService {
 	 */
 	public void setFeedDataSources(List<FeedDataSource> feedDataSources) {
 		this.feedDataSources = feedDataSources;
+	}
+
+	/**
+	 * @return the feedResultFilter
+	 */
+	public List<FeedResultFilter> getFeedResultFilters() {
+		return feedResultFilters;
+	}
+
+	/**
+	 * @param feedResultFilter the feedResultFilter to set
+	 */
+	public void setFeedResultFilters(List<FeedResultFilter> feedResultFilters) {
+		this.feedResultFilters = feedResultFilters;
 	}
 
 	/* (non-Javadoc)
@@ -68,13 +88,26 @@ public class FeedService_Impl implements FeedService {
 		return readResults;
 	}
 
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.feed.FeedService#read(io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 */
+	@Override
+	public List<FeedResult> read(Episode episode, Config config) throws FeedException {
+		List<FeedResult> readResults = read(episode.getShow().getTitle());
+		feedResultFilters.forEach(p->p.filter(readResults, episode, config));
+		return readResults;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources : "") + "]";
+		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources + ", " : "")
+				+ (feedResultFilters != null ? "feedResultFilters=" + feedResultFilters : "") + "]";
 	}
+
 	
 	
 

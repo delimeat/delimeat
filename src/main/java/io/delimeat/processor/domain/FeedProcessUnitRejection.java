@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed;
+package io.delimeat.processor.domain;
 
-import java.util.List;
-
-import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResult;
-import io.delimeat.feed.exception.FeedException;
-import io.delimeat.show.domain.Episode;
-
-public interface FeedService {
-
-	/**
-	 * @param title
-	 * @return list of Feed Results
-	 * @throws FeedException
-	 */
-	public List<FeedResult> read(String title) throws FeedException;
+public enum FeedProcessUnitRejection {
 	
-	/**
-	 * @param episode
-	 * @param config
-	 * @return
-	 * @throws FeedException
-	 */
-	public List<FeedResult> read(Episode episode, Config config) throws FeedException;
-	
+	CONTAINS_FOLDERS(1),
+	CONTAINS_COMPRESSED(2),
+	CONTAINS_EXCLUDED_FILE_TYPES(3),
+	FILE_SIZE_INCORRECT(4),
+	INSUFFICENT_SEEDERS(5),
+	UNNABLE_TO_GET_TORRENT(6);
+  
+  	private final int value;
+  
+  	private FeedProcessUnitRejection(int value){
+     this.value = value;
+   }
+  
+  	public int getValue(){
+     	return value;
+   }
 }

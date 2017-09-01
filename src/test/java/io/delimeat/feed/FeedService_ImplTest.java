@@ -23,10 +23,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedDataSource;
 import io.delimeat.feed.FeedService_Impl;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.filter.FeedResultFilter;
+import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
 
 public class FeedService_ImplTest {
@@ -40,7 +43,7 @@ public class FeedService_ImplTest {
 	}
 	
 	@Test
-	public void setFeedDaos(){
+	public void feedDataSourcesTest(){
 		Assert.assertNull(service.getFeedDataSources());
 		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		service.setFeedDataSources(Arrays.asList(dao));
@@ -51,22 +54,30 @@ public class FeedService_ImplTest {
 	}
 	
 	@Test
+	public void feedResultFiltersTest(){
+		Assert.assertNull(service.getFeedResultFilters());
+		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
+		service.setFeedResultFilters(Arrays.asList(filter));
+		
+		Assert.assertNotNull(service.getFeedResultFilters());
+		Assert.assertEquals(1, service.getFeedResultFilters().size());
+		Assert.assertEquals(filter, service.getFeedResultFilters().get(0));
+	}
+	
+	@Test
 	public void toStringTest(){
 		Assert.assertEquals("FeedService_Impl []", service.toString());
 	}
 
 
 	@Test
-	public void fetchResultsSuccessTest() throws Exception {
+	public void readSuccessTest() throws Exception {
 		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
 		Mockito.when(dao.read("TITLE")).thenReturn(Arrays.asList(feedResult));
 
 		service.setFeedDataSources(Arrays.asList(dao));
-
-		Show show = new Show();
-		show.setTitle("TITLE");
 
 		List<FeedResult> results = service.read("TITLE");
 		Assert.assertEquals(1, results.size());
@@ -78,7 +89,7 @@ public class FeedService_ImplTest {
 	}
 
 	@Test
-	public void fetchResultsOneErrorTest() throws Exception {
+	public void readOneErrorTest() throws Exception {
 		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
@@ -88,9 +99,6 @@ public class FeedService_ImplTest {
 
 		service.setFeedDataSources(Arrays.asList(dao,dao));
 
-		Show show = new Show();
-		show.setTitle("TITLE");
-
 		List<FeedResult> results = service.read("TITLE");
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(feedResult, results.get(0));
@@ -98,5 +106,37 @@ public class FeedService_ImplTest {
 		Mockito.verify(dao, Mockito.times(2)).read("TITLE");
 		Mockito.verify(dao, Mockito.times(4)).getFeedSource();
 		Mockito.verifyNoMoreInteractions(dao);
+	}
+	
+	@Test
+	public void readEpisodeTest() throws Exception {
+		Episode episode = new Episode();
+		Show show = new Show();
+		show.setTitle("TITLE");
+		episode.setShow(show);
+		
+		Config config = new Config();
+		
+		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
+		FeedResult feedResult = new FeedResult();
+		feedResult.setTitle("TITLE");
+		Mockito.when(dao.read("TITLE")).thenReturn(Arrays.asList(feedResult));
+
+		service.setFeedDataSources(Arrays.asList(dao));
+		
+		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
+		service.setFeedResultFilters(Arrays.asList(filter));
+
+		List<FeedResult> results = service.read(episode,config);
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(feedResult, results.get(0));
+		
+		Mockito.verify(dao).read("TITLE");
+		Mockito.verify(dao, Mockito.times(2)).getFeedSource();
+		Mockito.verifyNoMoreInteractions(dao);
+		
+		Mockito.verify(filter).filter(Mockito.any(),Mockito.any(),Mockito.any());
+		Mockito.verifyNoMoreInteractions(filter);
+
 	}
 }
