@@ -28,7 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.InfoHash;
@@ -54,8 +54,16 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
 		this.torrentService = torrentService;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 */
 	@Override
-    public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config) throws ValidationException {
+	public FeedProcessUnitRejection getRejection() {
+		return FeedProcessUnitRejection.INSUFFICENT_SEEDERS;
+	}
+	
+	@Override
+    public boolean validate(Torrent torrent, Show show, Config config) {
 
         final InfoHash infoHash = torrent.getInfo().getInfoHash();
         
@@ -75,10 +83,10 @@ public class TorrentSeederValidator_Impl implements TorrentValidator {
         }
      
         if(scrape == null || scrape.getSeeders() < MINSEEDERS){
-        	return Optional.of(FeedResultRejection.INSUFFICENT_SEEDERS);
+        	return false;
         }
         
-        return Optional.empty();
+        return true;
     }
 
     public ScrapeResult scrape(String tracker, InfoHash infohash) {

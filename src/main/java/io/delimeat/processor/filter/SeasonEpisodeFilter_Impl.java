@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed.filter;
+package io.delimeat.processor.filter;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,39 +29,48 @@ import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.ShowType;
 
 @Component
-@Order(5)
-public class MiniSeriesEpisodeFilter_Impl implements FeedResultFilter {
+@Order(3)
+public class SeasonEpisodeFilter_Impl implements FeedResultFilter {
 
-	private static final String MINI_SERIES_REGEX = "\\d{2}(?=[Oo][Ff]\\d{2})";
-
+	private static final String SEASON_REGEX = "(?<=[Ss]?)\\d{1,2}(?=[xXeE]\\d{1,2})";
+	private static final String EPISODE_REGEX = "(?<=[Ss]?\\d{1,2}[eExX])\\d{1,2}";
+	
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
 	public void filter(List<FeedResult> results, Episode episode, Config config) {
-		// if its not a mini series don't bother 
-		if(ShowType.MINI_SERIES.equals(episode.getShow().getShowType()) != true){
+		// if its not a season episode do nothing
+		if(ShowType.SEASON.equals(episode.getShow().getShowType()) != true){
 			return;
 		}
 		
+		
+		final int seasonNum = episode.getSeasonNum();
 		final int episodeNum = episode.getEpisodeNum();
 
-		final Pattern pattern = Pattern.compile(MINI_SERIES_REGEX);
-		Matcher matcher;
+		final Pattern seasonSelectPattern = Pattern.compile(SEASON_REGEX);
+		final Pattern episodeSelectPattern = Pattern.compile(EPISODE_REGEX);
+		Matcher seasonMatcher;
+		Matcher episodeMatcher;
 		String title;
 		Iterator<FeedResult> iterator = results.iterator();
 		while(iterator.hasNext()){
 			FeedResult result = iterator.next();
 			title = result.getTitle();
-			if (title != null && episodeNum > 0) {
-				matcher = pattern.matcher(title);
-				if (matcher.find()) {
-					int resultEpisodeNum = Integer.parseInt(matcher.group());
-					if (resultEpisodeNum == episodeNum) {
+			if (title != null && seasonNum > 0 && episodeNum > 0) {
+				seasonMatcher = seasonSelectPattern.matcher(title);
+				episodeMatcher = episodeSelectPattern.matcher(title);
+
+				if (seasonMatcher.find() && episodeMatcher.find()) {
+					int resultSeasonNum = Integer.parseInt(seasonMatcher.group().trim());
+					int resultEpisodeNum = Integer.parseInt(episodeMatcher.group().trim());
+					if (resultSeasonNum == seasonNum && resultEpisodeNum == episodeNum) {
 						continue;
 					}
 				}
 			}
+			
 			iterator.remove();
 		}
 

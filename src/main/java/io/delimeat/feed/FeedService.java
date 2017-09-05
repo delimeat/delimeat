@@ -17,10 +17,8 @@ package io.delimeat.feed;
 
 import java.util.List;
 
-import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.show.domain.Episode;
 
 public interface FeedService {
 
@@ -30,13 +28,5 @@ public interface FeedService {
 	 * @throws FeedException
 	 */
 	public List<FeedResult> read(String title) throws FeedException;
-	
-	/**
-	 * @param episode
-	 * @param config
-	 * @return
-	 * @throws FeedException
-	 */
-	public List<FeedResult> read(Episode episode, Config config) throws FeedException;
 	
 }

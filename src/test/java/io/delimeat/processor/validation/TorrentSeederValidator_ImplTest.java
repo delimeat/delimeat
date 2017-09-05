@@ -15,25 +15,23 @@
  */
 package io.delimeat.processor.validation;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
-import io.delimeat.processor.validation.TorrentSeederValidator_Impl;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
-
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TorrentSeederValidator_ImplTest {
 
@@ -48,6 +46,12 @@ public class TorrentSeederValidator_ImplTest {
 		show = new Show();
 		config = new Config();
 		torrent = new Torrent();
+	}
+	
+	
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, validator.getRejection());
 	}
 
 	@Test
@@ -71,7 +75,7 @@ public class TorrentSeederValidator_ImplTest {
 		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue(validator.validate(torrent, show, config));
 
 		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 
@@ -90,7 +94,7 @@ public class TorrentSeederValidator_ImplTest {
 		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.INSUFFICENT_SEEDERS), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 
 		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 
@@ -111,7 +115,7 @@ public class TorrentSeederValidator_ImplTest {
 				.thenReturn(scrape);
 		validator.setTorrentService(dao);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue(validator.validate(torrent, show, config));
 
 		Mockito.verify(dao, Mockito.times(2)).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}
@@ -130,7 +134,7 @@ public class TorrentSeederValidator_ImplTest {
 		Mockito.when(dao.doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class))).thenReturn(scrape);
 		validator.setTorrentService(dao);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.INSUFFICENT_SEEDERS), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 
 		Mockito.verify(dao).doScrape(Mockito.any(URI.class), Mockito.any(InfoHash.class));
 	}

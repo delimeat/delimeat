@@ -23,11 +23,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.feed.filter.FeedResultFilter;
-import io.delimeat.show.domain.Episode;
+import io.delimeat.processor.filter.FeedResultFilter;
 
 @Service
 public class FeedService_Impl implements FeedService {
@@ -85,17 +83,6 @@ public class FeedService_Impl implements FeedService {
 				//TODO add some logging of statistics of failure/success by source
 			}
 		}
-		return readResults;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.feed.FeedService#read(io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
-	 */
-	@Override
-	public List<FeedResult> read(Episode episode, Config config) throws FeedException {
-		List<FeedResult> readResults = read(episode.getShow().getTitle());
-		feedResultFilters.forEach(p->p.filter(readResults, episode, config));
 		return readResults;
 	}
 

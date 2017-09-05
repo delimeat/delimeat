@@ -15,24 +15,26 @@
  */
 package io.delimeat.processor.validation;
 
-import java.util.Optional;
-
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 
 public interface TorrentValidator {
 
 	/**
-	 * Validate a torrent
-	 * 
+	 * Get Rejection Reason for Validator
+	 * @return rejection reason
+	 */
+	public FeedProcessUnitRejection getRejection();
+	
+	/**
+	 * Validate a torrent 
 	 * @param torrent
 	 * @param show
 	 * @param config
-	 * @return optional feed result rejection
-	 * @throws ValidationException
+	 * @return if the result is valid or not
 	 */
-	public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config) throws ValidationException;
+	public boolean validate(Torrent torrent, Show show, Config config);
 
 }

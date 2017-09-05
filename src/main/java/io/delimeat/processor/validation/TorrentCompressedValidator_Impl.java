@@ -25,7 +25,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
@@ -35,11 +35,19 @@ import io.delimeat.torrent.domain.TorrentInfo;
 public class TorrentCompressedValidator_Impl implements TorrentValidator {
 
 	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 */
+	@Override
+	public FeedProcessUnitRejection getRejection() {
+		return FeedProcessUnitRejection.CONTAINS_COMPRESSED;
+	}
+	
+		
+	/* (non-Javadoc)
 	 * @see io.delimeat.server.processor.validation.TorrentValidator#validate(io.delimeat.server.torrent.model.Torrent, io.delimeat.common.show.model.Show, io.delimeat.common.config.model.Config)
 	 */
 	@Override
-	public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config)
-			throws ValidationException {
+	public boolean validate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 
 		final List<String> files = Optional.ofNullable(info.getFiles())
@@ -54,10 +62,10 @@ public class TorrentCompressedValidator_Impl implements TorrentValidator {
 		final Pattern pattern = Pattern.compile("(zip|rar|tar)$");
 		for (final String file : files) {
 			if (pattern.matcher(file.toLowerCase()).find()) {
-				return Optional.of(FeedResultRejection.CONTAINS_COMPRESSED);
+				return false;
 			}
 		}
 
-		return Optional.empty();
+		return true;
 	}
 }

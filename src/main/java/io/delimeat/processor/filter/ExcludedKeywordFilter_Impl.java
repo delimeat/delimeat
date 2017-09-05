@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed.filter;
+package io.delimeat.processor.filter;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -26,26 +29,34 @@ import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.show.domain.Episode;
 
 @Component
-@Order(1)
-public class TitleFilter_Impl implements FeedResultFilter {
+@Order(2)
+public class ExcludedKeywordFilter_Impl implements FeedResultFilter {
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config)  {
-		final String showTitle = episode.getShow().getTitle().toLowerCase().replace(".", " ");
-
+	public void filter(List<FeedResult> results, Episode episode, Config config) {
+		if (config.getExcludedKeywords() == null || config.getExcludedKeywords().isEmpty()) {
+			return;
+		}
+		
+		String regex = config.getExcludedKeywords()
+				.stream()
+				.collect(Collectors.joining("|", "(", ")"));
+		
+		final Pattern pattern = Pattern.compile(regex.toLowerCase());
 		String title;
 		Iterator<FeedResult> iterator = results.iterator();
 		while(iterator.hasNext()){
 			FeedResult result = iterator.next();
-			title = result.getTitle();
-			
-			if(title == null || title.toLowerCase().replace(".", " ").contains(showTitle) == false){
+			title = Optional.ofNullable(result.getTitle())
+					.map(i->i.toLowerCase())
+					.orElse("");
+
+			if (pattern.matcher(title).find()) {
 				iterator.remove();
 			}
-
 		}
 
 	}

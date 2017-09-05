@@ -23,14 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.delimeat.config.domain.Config;
-import io.delimeat.feed.FeedDataSource;
-import io.delimeat.feed.FeedService_Impl;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.feed.filter.FeedResultFilter;
-import io.delimeat.show.domain.Episode;
-import io.delimeat.show.domain.Show;
+import io.delimeat.processor.filter.FeedResultFilter;
 
 public class FeedService_ImplTest {
 	
@@ -108,35 +103,4 @@ public class FeedService_ImplTest {
 		Mockito.verifyNoMoreInteractions(dao);
 	}
 	
-	@Test
-	public void readEpisodeTest() throws Exception {
-		Episode episode = new Episode();
-		Show show = new Show();
-		show.setTitle("TITLE");
-		episode.setShow(show);
-		
-		Config config = new Config();
-		
-		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
-		FeedResult feedResult = new FeedResult();
-		feedResult.setTitle("TITLE");
-		Mockito.when(dao.read("TITLE")).thenReturn(Arrays.asList(feedResult));
-
-		service.setFeedDataSources(Arrays.asList(dao));
-		
-		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
-		service.setFeedResultFilters(Arrays.asList(filter));
-
-		List<FeedResult> results = service.read(episode,config);
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(feedResult, results.get(0));
-		
-		Mockito.verify(dao).read("TITLE");
-		Mockito.verify(dao, Mockito.times(2)).getFeedSource();
-		Mockito.verifyNoMoreInteractions(dao);
-		
-		Mockito.verify(filter).filter(Mockito.any(),Mockito.any(),Mockito.any());
-		Mockito.verifyNoMoreInteractions(filter);
-
-	}
 }

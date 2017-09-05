@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.delimeat.feed.domain.FeedResultRejection;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.Torrent;
 
@@ -28,10 +27,9 @@ public class FeedProcessUnit {
 
 	private long contentLength;
 	private URI downloadUri;
-	private List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
+	private List<FeedProcessUnitRejection> rejections = new ArrayList<FeedProcessUnitRejection>();
 	private InfoHash infoHash;
 	private long leechers;
-	private URI magnetUri;
 	private long seeders;
 	private String title;
 	private Torrent torrent;
@@ -53,8 +51,8 @@ public class FeedProcessUnit {
 	/**
 	 * @return the feedResultRejections
 	 */
-	public List<FeedResultRejection> getFeedResultRejections() {
-		return feedResultRejections;
+	public List<FeedProcessUnitRejection> getRejections() {
+		return rejections;
 	}
 
 	/**
@@ -69,13 +67,6 @@ public class FeedProcessUnit {
 	 */
 	public long getLeechers() {
 		return leechers;
-	}
-
-	/**
-	 * @return the magnetUri
-	 */
-	public URI getMagnetUri() {
-		return magnetUri;
 	}
 
 	/**
@@ -128,13 +119,6 @@ public class FeedProcessUnit {
 	}
 
 	/**
-	 * @param magnetUri the magnetUri to set
-	 */
-	public void setMagnetUri(URI magnetUri) {
-		this.magnetUri = magnetUri;
-	}
-
-	/**
 	 * @param seeders the seeders to set
 	 */
 	public void setSeeders(long seeders) {
@@ -160,7 +144,7 @@ public class FeedProcessUnit {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(contentLength,downloadUri,infoHash,leechers,magnetUri,seeders,title,torrent);
+		return Objects.hash(contentLength,downloadUri,infoHash,leechers,seeders,title,torrent);
 	}
 
 	/* (non-Javadoc)
@@ -189,11 +173,6 @@ public class FeedProcessUnit {
 			return false;
 		if (leechers != other.leechers)
 			return false;
-		if (magnetUri == null) {
-			if (other.magnetUri != null)
-				return false;
-		} else if (!magnetUri.equals(other.magnetUri))
-			return false;
 		if (seeders != other.seeders)
 			return false;
 		if (title == null) {
@@ -216,9 +195,9 @@ public class FeedProcessUnit {
 	public String toString() {
 		return "FeedProcessUnit [contentLength=" + contentLength + ", "
 				+ (downloadUri != null ? "downloadUri=" + downloadUri + ", " : "")
-				+ (feedResultRejections != null ? "feedResultRejections=" + feedResultRejections + ", " : "")
+				+ (rejections != null ? "rejections=" + rejections + ", " : "")
 				+ (infoHash != null ? "infoHash=" + infoHash + ", " : "") + "leechers=" + leechers + ", "
-				+ (magnetUri != null ? "magnetUri=" + magnetUri + ", " : "") + "seeders=" + seeders + ", "
+				+ "seeders=" + seeders + ", "
 				+ (title != null ? "title=" + title + ", " : "") + (torrent != null ? "torrent=" + torrent : "") + "]";
 	}
 	

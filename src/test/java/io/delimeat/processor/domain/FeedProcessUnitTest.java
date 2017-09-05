@@ -50,8 +50,8 @@ public class FeedProcessUnitTest {
 	
 	@Test
 	public void feedResultRejectionsTest(){
-		Assert.assertNotNull(processUnit.getFeedResultRejections());
-		Assert.assertEquals(0, processUnit.getFeedResultRejections().size());
+		Assert.assertNotNull(processUnit.getRejections());
+		Assert.assertEquals(0, processUnit.getRejections().size());
 	}
 	
 	@Test
@@ -67,14 +67,6 @@ public class FeedProcessUnitTest {
 		Assert.assertEquals(0, processUnit.getLeechers());
 		processUnit.setLeechers(Long.MAX_VALUE);
 		Assert.assertEquals(Long.MAX_VALUE, processUnit.getLeechers());
-	}
-	
-	@Test
-	public void magnetUriTest() throws Exception{
-		Assert.assertNull(processUnit.getMagnetUri());
-		URI uri = new URI("udp://test.com");
-		processUnit.setMagnetUri(uri);
-		Assert.assertEquals(uri, processUnit.getMagnetUri());
 	}
 	
 	@Test
@@ -105,16 +97,15 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		processUnit.setTorrent(new Torrent());
-		Assert.assertEquals(1003938132, processUnit.hashCode());
+		Assert.assertEquals(545030552, processUnit.hashCode());
 	}
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedProcessUnit [contentLength=0, feedResultRejections=[], leechers=0, seeders=0, ]", processUnit.toString());
+		Assert.assertEquals("FeedProcessUnit [contentLength=0, rejections=[], leechers=0, seeders=0, ]", processUnit.toString());
 	}
 	
 	@Test
@@ -123,7 +114,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -134,7 +124,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -164,7 +153,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -175,7 +163,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -190,7 +177,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("http://different.io"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -201,7 +187,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -216,7 +201,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("other".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -227,7 +211,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -242,7 +225,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MIN_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -253,33 +235,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
-		other.setSeeders(Long.MAX_VALUE);
-		other.setTitle("TITLE");
-		Torrent otherTorrent = new Torrent();
-		other.setTorrent(otherTorrent);
-		
-		Assert.assertFalse(processUnit.equals(other));
-	}
-
-	@Test
-	public void equalsMagnetUriTest() throws Exception{
-		processUnit.setContentLength(Long.MAX_VALUE);
-		processUnit.setDownloadUri(new URI("udp:test.com"));
-		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("http://different.io"));
-		processUnit.setSeeders(Long.MAX_VALUE);
-		processUnit.setTitle("TITLE");
-		Torrent torrent = new Torrent();
-		processUnit.setTorrent(torrent);
-		
-		FeedProcessUnit other = new FeedProcessUnit();
-		other.setContentLength(Long.MAX_VALUE);
-		other.setDownloadUri(new URI("udp:test.com"));
-		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -294,7 +249,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MIN_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -305,7 +259,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -320,7 +273,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("OTHER");
 		Torrent torrent = new Torrent();
@@ -331,7 +283,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -346,7 +297,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -358,7 +308,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -373,7 +322,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(null);
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -384,7 +332,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -399,7 +346,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(null);
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
@@ -410,41 +356,13 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
 		Assert.assertFalse(processUnit.equals(other));
-	}
-	
-	@Test
-	public void equalsMagnetUriNullTest() throws Exception{
-		processUnit.setContentLength(Long.MAX_VALUE);
-		processUnit.setDownloadUri(new URI("udp:test.com"));
-		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(null);
-		processUnit.setSeeders(Long.MAX_VALUE);
-		processUnit.setTitle("TITLE");
-		Torrent torrent = new Torrent();
-		processUnit.setTorrent(torrent);
-		
-		FeedProcessUnit other = new FeedProcessUnit();
-		other.setContentLength(Long.MAX_VALUE);
-		other.setDownloadUri(new URI("udp:test.com"));
-		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
-		other.setSeeders(Long.MAX_VALUE);
-		other.setTitle("TITLE");
-		Torrent otherTorrent = new Torrent();
-		other.setTorrent(otherTorrent);
-		
-		Assert.assertFalse(processUnit.equals(other));
-	}
-	
+	}	
 	
 	@Test
 	public void equalsTitleNullTest() throws Exception{
@@ -452,7 +370,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle(null);
 		Torrent torrent = new Torrent();
@@ -463,7 +380,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
@@ -478,7 +394,6 @@ public class FeedProcessUnitTest {
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
 		processUnit.setLeechers(Long.MAX_VALUE);
-		processUnit.setMagnetUri(new URI("udp:test.com"));
 		processUnit.setSeeders(Long.MAX_VALUE);
 		processUnit.setTitle("TITLE");
 		processUnit.setTorrent(null);
@@ -488,7 +403,6 @@ public class FeedProcessUnitTest {
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
 		other.setLeechers(Long.MAX_VALUE);
-		other.setMagnetUri(new URI("udp:test.com"));
 		other.setSeeders(Long.MAX_VALUE);
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed.filter;
+package io.delimeat.processor.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.processor.filter.ExcludedKeywordFilter_Impl;
 
 public class ExcludedKeywordFilter_ImplTest {
 

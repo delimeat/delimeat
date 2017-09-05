@@ -15,13 +15,11 @@
  */
 package io.delimeat.processor.validation;
 
-import java.util.Optional;
-
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
@@ -31,19 +29,27 @@ import io.delimeat.torrent.domain.TorrentInfo;
 public class TorrentFolderValidator_Impl implements TorrentValidator{
 
 	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 */
+	@Override
+	public FeedProcessUnitRejection getRejection() {
+		return FeedProcessUnitRejection.CONTAINS_FOLDERS;
+	}
+	
+	/* (non-Javadoc)
 	 * @see io.delimeat.server.processor.validation.TorrentValidator#validate(io.delimeat.server.torrent.model.Torrent, io.delimeat.common.show.model.Show, io.delimeat.common.config.model.Config)
 	 */
 	@Override
-	public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config) throws ValidationException {
+	public boolean validate(Torrent torrent, Show show, Config config) {
 		
 		if(config.isIgnoreFolders() == true){
 			final TorrentInfo info = torrent.getInfo();
 			
 			if(info.getFiles() != null && info.getFiles().isEmpty() == false){
-				return Optional.of(FeedResultRejection.CONTAINS_FOLDERS);
+				return false;
 			}
 		}
-		return Optional.empty();
+		return true;
 
 	}
 

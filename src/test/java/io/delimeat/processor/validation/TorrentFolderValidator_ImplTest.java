@@ -15,19 +15,16 @@
  */
 package io.delimeat.processor.validation;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
-import io.delimeat.processor.validation.TorrentFolderValidator_Impl;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
-
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class TorrentFolderValidator_ImplTest {
 
@@ -45,10 +42,15 @@ public class TorrentFolderValidator_ImplTest {
 	}
 
 	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_FOLDERS, validator.getRejection());
+	}
+	
+	@Test
 	public void singleFileTest() throws Exception {
 		TorrentInfo info = new TorrentInfo();
 		torrent.setInfo(info);
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue(validator.validate(torrent, show, config));
 
 	}
 
@@ -65,6 +67,6 @@ public class TorrentFolderValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.CONTAINS_FOLDERS), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 	}
 }

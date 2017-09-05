@@ -15,15 +15,12 @@
  */
 package io.delimeat.processor.validation;
 
-import java.util.Optional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
-import io.delimeat.processor.validation.TorrentCompressedValidator_Impl;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentFile;
@@ -43,6 +40,11 @@ public class TorrentCompressedValidator_ImplTest {
 		config = new Config();
 		torrent = new Torrent();
 	}
+	
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, validator.getRejection());
+	}
 
 	@Test
 	public void singleFileValidTest() throws Exception {
@@ -51,7 +53,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.setFiles(null);
 
 		torrent.setInfo(info);
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -60,7 +62,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.setName("VALIDFILE_TYPE.ZIP");
 
 		torrent.setInfo(info);
-		Assert.assertEquals(Optional.of(FeedResultRejection.CONTAINS_COMPRESSED), validator.validate(torrent, show, config));
+		Assert.assertFalse( validator.validate(torrent, show, config));
 
 	}
 
@@ -75,7 +77,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.getFiles().add(file2);
 
 		torrent.setInfo(info);
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 
 	}
 
@@ -90,7 +92,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.getFiles().add(file2);
 
 		torrent.setInfo(info);
-		Assert.assertEquals(Optional.of(FeedResultRejection.CONTAINS_COMPRESSED), validator.validate(torrent, show, config));
+		Assert.assertFalse( validator.validate(torrent, show, config));
 
 	}
 }

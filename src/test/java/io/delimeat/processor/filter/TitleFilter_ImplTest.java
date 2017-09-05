@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.feed.filter;
+package io.delimeat.processor.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.processor.filter.TitleFilter_Impl;
 import io.delimeat.show.domain.Episode;
 import io.delimeat.show.domain.Show;
 

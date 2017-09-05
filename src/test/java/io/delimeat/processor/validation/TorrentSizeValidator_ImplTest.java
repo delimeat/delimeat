@@ -15,19 +15,16 @@
  */
 package io.delimeat.processor.validation;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
-import io.delimeat.processor.validation.TorrentSizeValidator_Impl;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentFile;
 import io.delimeat.torrent.domain.TorrentInfo;
-
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class TorrentSizeValidator_ImplTest {
 
@@ -43,6 +40,11 @@ public class TorrentSizeValidator_ImplTest {
 		config = new Config();
 		torrent = new Torrent();
 	}
+	
+	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedProcessUnitRejection.FILE_SIZE_INCORRECT, validator.getRejection());
+	}
 
 	@Test
 	public void singleFileBelowMinSizeTest() throws Exception {
@@ -54,7 +56,7 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(91);
 		show.setMaxSize(Integer.MAX_VALUE);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.FILE_SIZE_INCORRECT), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -67,7 +69,7 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(Integer.MIN_VALUE);
 		show.setMaxSize(89);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.FILE_SIZE_INCORRECT), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -80,7 +82,7 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(89);
 		show.setMaxSize(91);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue(validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -98,7 +100,7 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(89);
 		show.setMaxSize(91);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.FILE_SIZE_INCORRECT), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -116,7 +118,7 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(89);
 		show.setMaxSize(91);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.FILE_SIZE_INCORRECT), validator.validate(torrent, show, config));
+		Assert.assertFalse(validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -134,6 +136,6 @@ public class TorrentSizeValidator_ImplTest {
 		show.setMinSize(89);
 		show.setMaxSize(91);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue(validator.validate(torrent, show, config));
 	}
 }

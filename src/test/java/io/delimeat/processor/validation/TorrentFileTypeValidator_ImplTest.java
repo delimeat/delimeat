@@ -15,20 +15,18 @@
  */
 package io.delimeat.processor.validation;
 
-import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
-import io.delimeat.processor.validation.TorrentFileTypeValidator_Impl;
-import io.delimeat.show.domain.Show;
-import io.delimeat.torrent.domain.Torrent;
-import io.delimeat.torrent.domain.TorrentFile;
-import io.delimeat.torrent.domain.TorrentInfo;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Optional;
+import io.delimeat.config.domain.Config;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
+import io.delimeat.show.domain.Show;
+import io.delimeat.torrent.domain.Torrent;
+import io.delimeat.torrent.domain.TorrentFile;
+import io.delimeat.torrent.domain.TorrentInfo;
 
 public class TorrentFileTypeValidator_ImplTest {
 
@@ -46,15 +44,20 @@ public class TorrentFileTypeValidator_ImplTest {
 	}
 
 	@Test
+	public void rejectionTest(){
+		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES, validator.getRejection());
+	}
+	
+	@Test
 	public void nullFileTypesTest() throws Exception {
 		config.setIgnoredFileTypes(null);
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
 	public void emptyFileTypesTest() throws Exception {
 		config.setIgnoredFileTypes(Collections.<String>emptyList());
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -67,7 +70,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -80,7 +83,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.CONTAINS_EXCLUDED_FILE_TYPES), validator.validate(torrent, show, config));
+		Assert.assertFalse( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -98,7 +101,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertEquals(Optional.empty(), validator.validate(torrent, show, config));
+		Assert.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -116,7 +119,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertEquals(Optional.of(FeedResultRejection.CONTAINS_EXCLUDED_FILE_TYPES), validator.validate(torrent, show, config));
+		Assert.assertFalse( validator.validate(torrent, show, config));
 	}
 
 }

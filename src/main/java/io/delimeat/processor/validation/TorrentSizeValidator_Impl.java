@@ -21,7 +21,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
@@ -30,9 +30,20 @@ import io.delimeat.torrent.domain.TorrentInfo;
 @Order(1)
 public class TorrentSizeValidator_Impl implements TorrentValidator {
 
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 */
 	@Override
-	public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config)
-			throws ValidationException {
+	public FeedProcessUnitRejection getRejection() {
+		return FeedProcessUnitRejection.FILE_SIZE_INCORRECT;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#validate(io.delimeat.torrent.domain.Torrent, io.delimeat.show.domain.Show, io.delimeat.config.domain.Config)
+	 */
+	@Override
+	public boolean validate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 		
 		long torrentSize = Optional.ofNullable(info.getFiles())
@@ -46,10 +57,10 @@ public class TorrentSizeValidator_Impl implements TorrentValidator {
 		int torrentSizeInMB = ((int)(torrentSize/1024)/1024);
 		
 		if (torrentSizeInMB < show.getMinSize() || torrentSizeInMB > show.getMaxSize()){
-			return Optional.of(FeedResultRejection.FILE_SIZE_INCORRECT);
+			return false;
 		}
 		
-		return Optional.empty();
+		return true;
 	}
 
 }

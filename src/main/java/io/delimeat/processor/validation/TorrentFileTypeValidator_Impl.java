@@ -25,7 +25,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.domain.Config;
-import io.delimeat.feed.domain.FeedResultRejection;
+import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.show.domain.Show;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
@@ -35,14 +35,22 @@ import io.delimeat.torrent.domain.TorrentInfo;
 public class TorrentFileTypeValidator_Impl implements TorrentValidator {
 
 	/* (non-Javadoc)
+	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 */
+	@Override
+	public FeedProcessUnitRejection getRejection() {
+		return FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES;
+	}
+	
+	/* (non-Javadoc)
 	 * @see io.delimeat.server.processor.validation.TorrentValidator#validate(io.delimeat.server.torrent.model.Torrent, io.delimeat.common.show.model.Show, io.delimeat.common.config.model.Config)
 	 */
 	@Override
-	public Optional<FeedResultRejection> validate(Torrent torrent, Show show, Config config) throws ValidationException {
+	public boolean validate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 		
 		if(config.getIgnoredFileTypes() == null || config.getIgnoredFileTypes().isEmpty() == true){
-			return Optional.empty();
+			return true;
 		}
 		
 		String regex = config.getIgnoredFileTypes()
@@ -62,11 +70,11 @@ public class TorrentFileTypeValidator_Impl implements TorrentValidator {
 		
 		for (String file : files) {
 			if(pattern.matcher(file.toLowerCase()).find()){
-				return Optional.of(FeedResultRejection.CONTAINS_EXCLUDED_FILE_TYPES);
+				return false;
 			}
 		}
 		
-		return Optional.empty();
+		return true;
 	}
 
 }
