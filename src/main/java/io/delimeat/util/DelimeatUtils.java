@@ -70,4 +70,5 @@ public class DelimeatUtils {
 		return Objects.equals(guideEp.getSeasonNum(), episode.getSeasonNum())
 			&& Objects.equals(guideEp.getEpisodeNum(), episode.getEpisodeNum());
 	}
+	
 }

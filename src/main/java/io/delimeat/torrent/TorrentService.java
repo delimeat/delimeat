@@ -29,12 +29,24 @@ import io.delimeat.torrent.exception.UnhandledScrapeException;
 public interface TorrentService {
 
 	/**
-	 * Read a torrent 
+	 * Read a torrent using a URI 
 	 * @param uri
-	 * @return
+	 * @return torrent file
+	 * @throws IOException
+	 * @throws TorrentNotFoundException
 	 * @throws TorrentException
 	 */
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException;
+	
+	/**
+	 * Read a torrent using an Info Hash
+	 * @param infoHash
+	 * @return torrent file
+	 * @throws IOException
+	 * @throws TorrentNotFoundException
+	 * @throws TorrentException
+	 */
+	public Torrent read(InfoHash infoHash) throws IOException, TorrentNotFoundException, TorrentException; 
 	
 	/**
 	 * Perform a scrape
@@ -46,6 +58,12 @@ public interface TorrentService {
 	 */
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException;
 
+	/**
+	 * Perform a scrape
+	 * @param torrent
+	 * @return scrape result
+	 */
+	public ScrapeResult scrape(Torrent torrent);
 	
 	/**
 	 * @param fileName

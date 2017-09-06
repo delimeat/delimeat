@@ -9,7 +9,7 @@
 		<java-type name="FeedResult">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="torrentURL" name="link" />
+				<xml-element java-attribute="torrentURL" name="link"/>
 				<xml-element java-attribute="title" name="title"/>
 				<!-- need to add adapter to get the size, seeders & leechers from the description
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>

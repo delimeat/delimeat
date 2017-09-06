@@ -15,12 +15,9 @@
  */
 package io.delimeat.processor;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -43,10 +40,10 @@ import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.InfoHash;
+import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.domain.TorrentInfo;
 import io.delimeat.torrent.exception.TorrentException;
-import io.delimeat.torrent.exception.TorrentNotFoundException;
 
 public class FeedItemProcessor_ImplTest {
 
@@ -116,60 +113,12 @@ public class FeedItemProcessor_ImplTest {
 		Assert.assertEquals(1, processor.getFeedResultFilters().size());
 		Assert.assertEquals(filter, processor.getFeedResultFilters().get(0));
 	}
-	
-	@Test
-	public void downloadUriTemplateTest(){
-		Assert.assertNull(processor.getDownloadUriTemplate());
-		processor.setDownloadUriTemplate("TEMPLATE");
-		Assert.assertEquals("TEMPLATE", processor.getDownloadUriTemplate());
-	}
-	
-	@Test
-	public void readEpisodeTest() throws Exception {
-		Episode episode = new Episode();
-		
-		Config config = new Config();
-
-		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
-		processor.setFeedResultFilters(Arrays.asList(filter));
-		
-		processor.filterFeedResults(new ArrayList<FeedResult>(), episode, config);
-		
-		Mockito.verify(filter).filter(Mockito.any(),Mockito.any(),Mockito.any());
-		Mockito.verifyNoMoreInteractions(filter);
-
-	}
 
 	@Test
-	public void fetchTorrentMalformedURLTest() throws Exception {
+	public void fetchTorrentUriTest() throws Exception {
 		FeedProcessUnit result = new FeedProcessUnit();
-		result.setDownloadUri(new URI("test:BLAH"));
-
-		processor.fetchTorrent(result);
-		
-		Assert.assertNull(result.getTorrent());
-		Assert.assertEquals(1, result.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
-		
-	}
-
-	@Test
-	public void fetchTorrentURISyntaxTest() throws Exception {
-		FeedProcessUnit result = new FeedProcessUnit();
-		result.setDownloadUri(new URI("http:BLAH"));
-
-		processor.fetchTorrent(result);
-		
-		Assert.assertNull(result.getTorrent());
-		Assert.assertEquals(1, result.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
-	}
-
-	@Test
-	public void fetchTorrentTest() throws Exception {
-		FeedProcessUnit result = new FeedProcessUnit();
-		result.setDownloadUri(new URI("http://test.com?removed=true"));
-
+		result.setDownloadUri(new URI("http://test.com"));
+		result.setInfoHash(null);
 
 		TorrentService torrentService = Mockito.mock(TorrentService.class);
 		Torrent torrent = new Torrent();
@@ -189,11 +138,12 @@ public class FeedItemProcessor_ImplTest {
 		Mockito.verify(torrentService).read(new URI("http://test.com"));
 		Mockito.verifyNoMoreInteractions(torrentService);
 	}
-
+	
 	@Test
-	public void fetchTorrentDaoExceptionTest() throws Exception {
+	public void fetchTorrentUriDaoExceptionTest() throws Exception {
 		FeedProcessUnit result = new FeedProcessUnit();
-		result.setDownloadUri(new URI("http://test.com?removed=true"));
+		result.setDownloadUri(new URI("http://test.com"));
+		result.setInfoHash(null);
 
 		TorrentService torrentService = Mockito.mock(TorrentService.class);
 		Mockito.when(torrentService.read(new URI("http://test.com"))).thenThrow(TorrentException.class);
@@ -208,9 +158,73 @@ public class FeedItemProcessor_ImplTest {
 		Mockito.verify(torrentService).read(new URI("http://test.com"));
 		Mockito.verifyNoMoreInteractions(torrentService);
 	}
-
+	
 	@Test
-	public void validateTorrentTest() throws Exception {
+	public void fetchTorrentInfoHashTest() throws Exception {
+		FeedProcessUnit result = new FeedProcessUnit();
+		result.setDownloadUri(null);
+		result.setInfoHash(new InfoHash("INFO_HASH".getBytes()));
+
+
+		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		Torrent torrent = new Torrent();
+		TorrentInfo info = new TorrentInfo();
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		info.setInfoHash(infoHash);
+		torrent.setInfo(info);
+		Mockito.when(torrentService.read(new InfoHash("INFO_HASH".getBytes()))).thenReturn(torrent);
+		processor.setTorrentService(torrentService);
+
+		processor.fetchTorrent(result);
+		
+		Assert.assertEquals(torrent, result.getTorrent());
+		Assert.assertEquals(new InfoHash("INFO_HASH".getBytes()), result.getInfoHash());
+		Assert.assertEquals(0, result.getRejections().size());
+		
+		Mockito.verify(torrentService).read(new InfoHash("INFO_HASH".getBytes()));
+		Mockito.verifyNoMoreInteractions(torrentService);
+	}
+	
+	@Test
+	public void fetchTorrentInfoHashDaoExceptionTest() throws Exception {
+		FeedProcessUnit result = new FeedProcessUnit();
+		result.setDownloadUri(null);
+		result.setInfoHash(new InfoHash("INFO_HASH".getBytes()));
+
+		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		Mockito.when(torrentService.read(new InfoHash("INFO_HASH".getBytes()))).thenThrow(TorrentException.class);
+		processor.setTorrentService(torrentService);
+
+		processor.fetchTorrent(result);
+		
+		Assert.assertNull(result.getTorrent());
+		Assert.assertEquals(1, result.getRejections().size());
+		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
+		
+		Mockito.verify(torrentService).read(new InfoHash("INFO_HASH".getBytes()));
+		Mockito.verifyNoMoreInteractions(torrentService);
+	}
+	
+	@Test
+	public void fetchTorrentNoUriNoInfoHashTest() throws Exception {
+		FeedProcessUnit result = new FeedProcessUnit();
+		result.setDownloadUri(null);
+		result.setInfoHash(null);
+		
+		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		processor.setTorrentService(torrentService);
+		
+		processor.fetchTorrent(result);
+		Assert.assertNull(result.getTorrent());
+		Assert.assertEquals(1, result.getRejections().size());
+		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
+		
+		Mockito.verifyZeroInteractions(torrentService);
+
+	}
+	
+	@Test
+	public void validateTorrentOkTest() throws Exception {
 		Config config = new Config();
 		config.setIgnoreFolders(false);
 		
@@ -221,19 +235,41 @@ public class FeedItemProcessor_ImplTest {
 		processUnit.setTorrent(torrent);
 		
 		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
-		Mockito.when(validator.validate(torrent,show, config))
-				.thenReturn(true)
-				.thenReturn(false);
+		Mockito.when(validator.validate(torrent,show, config)).thenReturn(true);
+
+		processor.setTorrentValidators(Arrays.asList(validator));
+
+		processor.validateTorrent(processUnit, show, config);
+		
+     	Assert.assertEquals(0, processUnit.getRejections().size());
+		
+		Mockito.verify(validator).validate(torrent, show, config);
+		Mockito.verifyNoMoreInteractions(validator);
+	}
+	
+	@Test
+	public void validateTorrentInvalidTest() throws Exception {
+		Config config = new Config();
+		config.setIgnoreFolders(false);
+		
+		Show show = new Show();
+		
+		Torrent torrent = new Torrent();
+		FeedProcessUnit processUnit = new FeedProcessUnit();
+		processUnit.setTorrent(torrent);
+		
+		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
+		Mockito.when(validator.validate(torrent,show, config)).thenReturn(false);
 		Mockito.when(validator.getRejection()).thenReturn(FeedProcessUnitRejection.CONTAINS_COMPRESSED);
 
-		processor.setTorrentValidators(Arrays.asList(validator, validator));
+		processor.setTorrentValidators(Arrays.asList(validator));
 
 		processor.validateTorrent(processUnit, show, config);
 		
      	Assert.assertEquals(1, processUnit.getRejections().size());
      	Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, processUnit.getRejections().get(0));
 		
-		Mockito.verify(validator, Mockito.times(2)).validate(torrent, show, config);
+		Mockito.verify(validator).validate(torrent, show, config);
 		Mockito.verify(validator).getRejection();
 		Mockito.verifyNoMoreInteractions(validator);
 	}
@@ -247,71 +283,14 @@ public class FeedItemProcessor_ImplTest {
 		
 		FeedProcessUnit result2 = new FeedProcessUnit();
 		result2.setSeeders(50);
+		
+		FeedProcessUnit result3 = new FeedProcessUnit();
+		result3.setSeeders(200);
+		result3.getRejections().add(FeedProcessUnitRejection.CONTAINS_COMPRESSED);
 
 		FeedProcessUnit result = processor.selectBestResultTorrent(Arrays.asList(result2, result1));
 
-		Assert.assertEquals(result,result1);		
-	}
-
-	@Test
-	public void validatResultTorrentsTest() throws Exception {
-		FeedProcessUnit result1 = new FeedProcessUnit();
-		result1.setDownloadUri(new URI("http://test1.com"));
-		FeedProcessUnit result2 = new FeedProcessUnit();
-		result2.setDownloadUri(null);
-		FeedProcessUnit result3 = new FeedProcessUnit();
-		result3.setDownloadUri(new URI("http:URISYNTAXEXCEPTION"));
-		FeedProcessUnit result4 = new FeedProcessUnit();
-		result4.setDownloadUri(new URI("http://test2.com"));
-		FeedProcessUnit result5 = new FeedProcessUnit();
-		result5.setDownloadUri(new URI("http://test3.com"));
-		FeedProcessUnit result6 = new FeedProcessUnit();
-		result6.setDownloadUri(new URI("http://test4.com"));
-		FeedProcessUnit result7 = new FeedProcessUnit();
-		result7.setDownloadUri(new URI("http://test5.com"));
-
-		TorrentService torrentService = Mockito.mock(TorrentService.class);
-		Torrent torrent = new Torrent();
-		TorrentInfo info = new TorrentInfo();
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		info.setInfoHash(infoHash);
-		torrent.setInfo(info);
-		Mockito.when(torrentService.read(Mockito.any(URI.class)))
-        		.thenReturn(torrent)
-				.thenThrow(IOException.class)
-        		.thenThrow(TorrentException.class)
-        		.thenThrow(TorrentNotFoundException.class)
-				.thenReturn(torrent);
-
-		processor.setTorrentService(torrentService);
-
-		TorrentValidator validator = Mockito.mock(TorrentValidator.class);
-		Mockito.when(validator.validate(Mockito.any(Torrent.class),Mockito.any(Show.class), Mockito.any(Config.class)))
-        				.thenReturn(true)
-        				.thenReturn(false);
-		Mockito.when(validator.getRejection()).thenReturn(FeedProcessUnitRejection.CONTAINS_COMPRESSED);
-		processor.setTorrentValidators(Arrays.asList(validator));
-
-		Config config = new Config();
-
-		processor.validateResultTorrents(Arrays.asList(result1, result2, result3, result4, result5, result6, result7),new Show(), config);
-		
-		Mockito.verify(torrentService, Mockito.times(5)).read(Mockito.any(URI.class));
-		Mockito.verify(validator, Mockito.times(2)).validate(Mockito.any(Torrent.class), Mockito.any(Show.class), Mockito.any(Config.class));
-		
-		Assert.assertTrue(result1.getRejections().isEmpty());
-		Assert.assertEquals(1, result2.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result2.getRejections().get(0));
-		Assert.assertEquals(1, result3.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result3.getRejections().get(0));
-		Assert.assertEquals(1, result4.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result4.getRejections().get(0));
-		Assert.assertEquals(1, result5.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result5.getRejections().get(0));
-		Assert.assertEquals(1, result6.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result6.getRejections().get(0));
-		Assert.assertEquals(1, result7.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, result7.getRejections().get(0));
+		Assert.assertEquals(result, result1);		
 	}
   
   	@Test
@@ -342,17 +321,19 @@ public class FeedItemProcessor_ImplTest {
      	FeedService feedService = Mockito.mock(FeedService.class);
      	FeedResult feedResult = new FeedResult();
      	feedResult.setTorrentURL("http://test.com");
+     	feedResult.setInfoHashHex(null);
      	Mockito.when(feedService.read("SHOW_TITLE")).thenReturn(Arrays.asList(feedResult));
      	processor.setFeedService(feedService);
      
 		TorrentService torrentService = Mockito.mock(TorrentService.class);
      	Torrent torrent = new Torrent();
-     	torrent.setBytes("BYTES".getBytes());
      	TorrentInfo info = new TorrentInfo();
-     	info.setName("TORRENT");
+     	InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+     	info.setInfoHash(infoHash);
      	torrent.setInfo(info);
-		Mockito.when(torrentService.read(Mockito.any(URI.class)))
-        		.thenReturn(torrent);
+		Mockito.when(torrentService.read(Mockito.any(URI.class))).thenReturn(torrent);
+		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
 		processor.setTorrentService(torrentService);
      
      	TorrentValidator torrentValidator = Mockito.mock(TorrentValidator.class);
@@ -379,6 +360,7 @@ public class FeedItemProcessor_ImplTest {
 
      	Mockito.verify(torrentService).read(Mockito.any(URI.class));
      	Mockito.verify(torrentService).write("SHOW_TITLE_1x2_EPISODE_TITLE.torrent",torrent, config);
+     	Mockito.verify(torrentService).scrape(torrent);
      	Mockito.verifyNoMoreInteractions(torrentService);
      	
 		Mockito.verify(configService).read();
@@ -414,30 +396,6 @@ public class FeedItemProcessor_ImplTest {
   	}
   	
   	@Test
-  	public void buildDownloadUriTest() throws Exception{
-  		processor.setDownloadUriTemplate("http:%s");
-  		URI uri = processor.buildDownloadUri(new InfoHash("INFO_HASH".getBytes()));
-  		Assert.assertEquals(new URI("http:494E464F5F48415348"), uri);		
-  	}
-  	
-  	@Test(expected=URISyntaxException.class)
-  	public void buildDownloadUriExceptionTest() throws Exception{
-  		processor.setDownloadUriTemplate("JIBBERISH %s");
-  		processor.buildDownloadUri(new InfoHash("INFO_HASH".getBytes()));		
-  	}
-  	
-  	@Test
-  	public void buildInfoHashFromMagnetTest() throws Exception{
-  		InfoHash infoHash = processor.buildInfoHashFromMagnet("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
-  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", infoHash.getHex());
-  	}
-  	
-  	@Test
-  	public void buildInfoHashFromMagnetNoMatchTest() throws Exception{
-  		Assert.assertNull(processor.buildInfoHashFromMagnet("magnet:?xt=urn:btih:"));
-  	}
-  	
-  	@Test
   	public void convertFeedResultsTest() throws Exception{
   		FeedResult feedResult = new FeedResult();
   		feedResult.setContentLength(1);
@@ -445,7 +403,6 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setSeeders(99);
   		feedResult.setLeechers(100);
   		feedResult.setTorrentURL("http://download_1.url");
-  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
   		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
@@ -465,17 +422,14 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setSeeders(99);
   		feedResult.setLeechers(100);
   		feedResult.setTorrentURL(null);
-  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
   		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
-  		
-  		processor.setDownloadUriTemplate("https://itorrents.org/torrent/%s.torrent");
-  		  		
+  	  		  		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
   		Assert.assertEquals(1, processUnit.getContentLength());
   		Assert.assertEquals("TITLE_1", processUnit.getTitle());
   		Assert.assertEquals(99, processUnit.getSeeders());
   		Assert.assertEquals(100, processUnit.getLeechers());
-  		Assert.assertEquals(new URI("https://itorrents.org/torrent/DF706CF16F45E8C0FD226223509C7E97B4FFEC13.torrent"), processUnit.getDownloadUri());
+  		Assert.assertNull(processUnit.getDownloadUri());
   		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());
   	}
   	
@@ -487,7 +441,6 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setSeeders(99);
   		feedResult.setLeechers(100);
   		feedResult.setTorrentURL("http://download_1.url");
-  		feedResult.setMagnetUri("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce");
   		feedResult.setInfoHashHex(null);
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
@@ -496,7 +449,7 @@ public class FeedItemProcessor_ImplTest {
   		Assert.assertEquals(99, processUnit.getSeeders());
   		Assert.assertEquals(100, processUnit.getLeechers());
   		Assert.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
-  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());
+  		Assert.assertNull(processUnit.getInfoHash());
   	}
   	
   	@Test
@@ -507,7 +460,6 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setSeeders(99);
   		feedResult.setLeechers(100);
   		feedResult.setTorrentURL("//\\");
-  		feedResult.setMagnetUri(null);
   		feedResult.setInfoHashHex(null);
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
@@ -520,22 +472,66 @@ public class FeedItemProcessor_ImplTest {
   	}
   	
   	@Test
-  	public void convertFeedResultsInvalidMagnetUriTest() throws Exception{
-  		FeedResult feedResult = new FeedResult();
-  		feedResult.setContentLength(1);
-  		feedResult.setTitle("TITLE_1");
-  		feedResult.setSeeders(99);
-  		feedResult.setLeechers(100);
-  		feedResult.setTorrentURL("http://download_1.url");
-  		feedResult.setMagnetUri("//\\");
-  		feedResult.setInfoHashHex(null);
-  		
-  		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
-  		Assert.assertEquals(1, processUnit.getContentLength());
-  		Assert.assertEquals("TITLE_1", processUnit.getTitle());
-  		Assert.assertEquals(99, processUnit.getSeeders());
-  		Assert.assertEquals(100, processUnit.getLeechers());
-  		Assert.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
-  		Assert.assertNull(processUnit.getInfoHash());	
+  	public void scrapeTorrentTest(){
+  		FeedProcessUnit processUnit = new FeedProcessUnit();
+  		Torrent torrent = new Torrent();
+  		processUnit.setTorrent(torrent);
+
+  		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
+		processor.setTorrentService(torrentService); 
+		
+		processor.scrapeTorrent(processUnit);
+		
+		Assert.assertEquals(0,processUnit.getRejections().size());
+		Assert.assertEquals(100,processUnit.getSeeders());
+		Assert.assertEquals(200, processUnit.getLeechers());
+		
+		Mockito.verify(torrentService).scrape(torrent);
+		Mockito.verifyNoMoreInteractions(torrentService);		
+  	}
+  	
+  	@Test
+  	public void scrapeTorrentBelowMinTest(){
+  		FeedProcessUnit processUnit = new FeedProcessUnit();
+  		Torrent torrent = new Torrent();
+  		processUnit.setTorrent(torrent);
+
+  		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		ScrapeResult scrapeResult = new ScrapeResult(19,18);
+		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
+		processor.setTorrentService(torrentService); 
+		
+		processor.scrapeTorrent(processUnit);
+		
+		Assert.assertEquals(1,processUnit.getRejections().size());
+		Assert.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
+		Assert.assertEquals(19,processUnit.getSeeders());
+		Assert.assertEquals(18, processUnit.getLeechers());
+		
+		Mockito.verify(torrentService).scrape(torrent);
+		Mockito.verifyNoMoreInteractions(torrentService); 		
+  	}
+  	
+  	@Test
+  	public void scrpateTorrentNotReturnedTest(){
+  		FeedProcessUnit processUnit = new FeedProcessUnit();
+  		Torrent torrent = new Torrent();
+  		processUnit.setTorrent(torrent);
+
+  		TorrentService torrentService = Mockito.mock(TorrentService.class);
+		Mockito.when(torrentService.scrape(torrent)).thenReturn(null);
+		processor.setTorrentService(torrentService); 
+		
+		processor.scrapeTorrent(processUnit);
+		
+		Assert.assertEquals(1,processUnit.getRejections().size());
+		Assert.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
+		Assert.assertEquals(0,processUnit.getSeeders());
+		Assert.assertEquals(0, processUnit.getLeechers());
+		
+		Mockito.verify(torrentService).scrape(torrent);
+		Mockito.verifyNoMoreInteractions(torrentService);   		
   	}
 }

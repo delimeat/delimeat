@@ -17,11 +17,17 @@ package io.delimeat.torrent;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.config.domain.Config;
@@ -31,9 +37,12 @@ import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
+import io.delimeat.util.DelimeatUtils;
 
 @Service
 public class TorrentService_Impl implements TorrentService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TorrentService_Impl.class);
 
 	@Autowired
 	private TorrentDao dao;
@@ -43,6 +52,9 @@ public class TorrentService_Impl implements TorrentService {
 	
 	@Autowired
 	private List<ScrapeRequestHandler> scrapeRequestHandlers = new ArrayList<>();
+	
+  	@Value("${io.delimeat.torrent.downloadUriTemplate}")
+  	private String downloadUriTemplate;
 
 	public TorrentDao getDao() {
 		return dao;
@@ -68,31 +80,112 @@ public class TorrentService_Impl implements TorrentService {
 		this.scrapeRequestHandlers = scrapeRequestHandlers;
 	}
 	
-	@Override
-	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
-		return dao.read(uri);
+	/**
+	 * @return the downloadUriTemplate
+	 */
+	public String getDownloadUriTemplate() {
+		return downloadUriTemplate;
 	}
 
+	/**
+	 * @param downloadUriTemplate the downloadUriTemplate to set
+	 */
+	public void setDownloadUriTemplate(String downloadUriTemplate) {
+		this.downloadUriTemplate = downloadUriTemplate;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.TorrentService#read(java.net.URI)
+	 */
+	@Override
+	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
+		switch(uri.getScheme().toUpperCase()){
+		case "MAGNET":
+			return read(infoHashFromMagnet(uri));
+		case "HTTP":
+		case "HTTPS":
+			return dao.read(uri);
+		default:
+			throw new TorrentException("Unsupported scheme for uri " + uri.toASCIIString());
+		}
+		
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.TorrentService#read(io.delimeat.torrent.domain.InfoHash)
+	 */
+	@Override
+	public Torrent read(InfoHash infoHash) throws IOException, TorrentNotFoundException, TorrentException {
+		String downloadUri = String.format(downloadUriTemplate,infoHash.getHex().toUpperCase());
+		try{
+			return read(new URI(downloadUri));
+		}catch(URISyntaxException ex){
+			throw new TorrentException("Encountered an error creating download uri for " + infoHash.getHex(), ex);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.TorrentService#doScrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
+	 */
 	@Override
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash)
 			throws IOException, UnhandledScrapeException, TorrentException {
 		final String protocol = uri.getScheme().toUpperCase();
-		Optional<ScrapeRequestHandler> handler = scrapeRequestHandlers.stream()
-																		.filter(p->p.getSupportedProtocols()
-																						.contains(protocol))
-																		.findAny();
-		if(handler.isPresent()){
-			return handler.get().doScrape(uri, infoHash);
+		ScrapeRequestHandler handler = scrapeRequestHandlers.stream()
+				.filter(p->p.getSupportedProtocols().contains(protocol))
+				.findAny()
+				.orElse(null);
+		
+		if(handler != null){
+			return handler.doScrape(uri, infoHash);
 		}else{
 			throw new UnhandledScrapeException(String.format("Protocol %s not supported for scrape", protocol));
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.TorrentService#write(java.lang.String, io.delimeat.torrent.domain.Torrent, io.delimeat.config.domain.Config)
+	 */
 	@Override
 	public void write(String fileName, Torrent torrent, Config config) throws TorrentException {
 		writer.write(fileName, torrent.getBytes(), config);
 
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.TorrentService#scrape(io.delimeat.torrent.domain.Torrent)
+	 */
+	@Override
+	public ScrapeResult scrape(Torrent torrent) {
+
+        final InfoHash infoHash = torrent.getInfo().getInfoHash();
+        
+        List<String> trackers = new ArrayList<>();
+        trackers.addAll(torrent.getTrackers());
+        trackers.add(torrent.getTracker());
+                
+        ScrapeResult scrape = null;
+        Iterator<String> iterator = trackers.iterator();
+        while(scrape == null && iterator.hasNext()){
+        	String tracker = iterator.next();
+        	try {
+				scrape = doScrape(new URI(tracker), infoHash);
+			} catch (IOException | TorrentException | URISyntaxException e) {
+				LOGGER.info("Unnable to scrape tracker " + tracker, e);	
+			}
+        }
+        return scrape;
+	}
+	
+    public InfoHash infoHashFromMagnet(URI magnetUri){
+    	Matcher m = Pattern.compile("([A-Z]|[a-z]|\\d){40}").matcher(magnetUri.toASCIIString());
+    	if(m.find() == false){
+    		return null;
+    	}
+    	String infoHashStr = m.group();
+    	byte[] infoHashBytes = DelimeatUtils.hexToBytes(infoHashStr);
+    	return new InfoHash(infoHashBytes);
+    }
 
 }

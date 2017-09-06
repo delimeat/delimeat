@@ -21,11 +21,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.processor.filter.FeedResultFilter;
 
 @Service
 public class FeedService_Impl implements FeedService {
@@ -34,9 +34,9 @@ public class FeedService_Impl implements FeedService {
 	
 	@Autowired
 	private List<FeedDataSource> feedDataSources;
-	
-	@Autowired
-	private List<FeedResultFilter> feedResultFilters;
+  	
+  	@Value("${io.delimeat.feed.downloadUri}")
+  	private String downloadUriTemplate;
     
 	/**
 	 * @return the feedDataSources
@@ -53,17 +53,17 @@ public class FeedService_Impl implements FeedService {
 	}
 
 	/**
-	 * @return the feedResultFilter
+	 * @return the downloadUriTemplate
 	 */
-	public List<FeedResultFilter> getFeedResultFilters() {
-		return feedResultFilters;
+	public String getDownloadUriTemplate() {
+		return downloadUriTemplate;
 	}
 
 	/**
-	 * @param feedResultFilter the feedResultFilter to set
+	 * @param downloadUriTemplate the downloadUriTemplate to set
 	 */
-	public void setFeedResultFilters(List<FeedResultFilter> feedResultFilters) {
-		this.feedResultFilters = feedResultFilters;
+	public void setDownloadUriTemplate(String downloadUriTemplate) {
+		this.downloadUriTemplate = downloadUriTemplate;
 	}
 
 	/* (non-Javadoc)
@@ -92,9 +92,8 @@ public class FeedService_Impl implements FeedService {
 	@Override
 	public String toString() {
 		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources + ", " : "")
-				+ (feedResultFilters != null ? "feedResultFilters=" + feedResultFilters : "") + "]";
-	}
-
+				+ (downloadUriTemplate != null ? "downloadUriTemplate=" + downloadUriTemplate : "") + "]";
+	} 
 	
 	
 

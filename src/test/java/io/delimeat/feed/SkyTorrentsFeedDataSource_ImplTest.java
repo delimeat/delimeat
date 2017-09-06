@@ -101,6 +101,7 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 		
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
+     	System.out.println(results.get(0));
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
 	}
@@ -131,7 +132,7 @@ public class SkyTorrentsFeedDataSource_ImplTest {
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
      			+ "<rss><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
-     			+ "<link><![CDATA[torrentUrl]]></link>"
+     			+ "<link><![CDATA[magnet:?xt=urn:btih:ABCDEFGHIJKLMNOPQRSTUVWZY1234567890INFO&tr=udp://tracker.coppersurfer.tk:6969/announce]]></link>"
      			+ "<description><![CDATA[2 Seeders, 3 Leechers 168 MB]]></description>"
      			+ "</item></channel></rss>";
      	

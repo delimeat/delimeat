@@ -15,11 +15,7 @@
  */
 package io.delimeat.feed.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import io.delimeat.torrent.domain.Torrent;
 
 public class FeedResult {
 
@@ -29,9 +25,7 @@ public class FeedResult {
 	private long seeders;
 	private long leechers;
 	private String infoHashHex;
-	private String magnetUri;
-	private List<FeedResultRejection> feedResultRejections = new ArrayList<FeedResultRejection>();
-	private Torrent torrent;
+
 	/**
 	 * @return the torrentURL
 	 */
@@ -104,49 +98,13 @@ public class FeedResult {
 	public void setInfoHashHex(String infoHashHex) {
 		this.infoHashHex = infoHashHex;
 	}
-	/**
-	 * @return the magnetUri
-	 */
-	public String getMagnetUri() {
-		return magnetUri;
-	}
-	/**
-	 * @param magnetUri the magnetUri to set
-	 */
-	public void setMagnetUri(String magnetUri) {
-		this.magnetUri = magnetUri;
-	}
-	/**
-	 * @return the feedResultRejections
-	 */
-	public List<FeedResultRejection> getFeedResultRejections() {
-		return feedResultRejections;
-	}
-	/**
-	 * @param feedResultRejections the feedResultRejections to set
-	 */
-	public void setFeedResultRejections(List<FeedResultRejection> feedResultRejections) {
-		this.feedResultRejections = feedResultRejections;
-	}
-	/**
-	 * @return the torrent
-	 */
-	public Torrent getTorrent() {
-		return torrent;
-	}
-	/**
-	 * @param torrent the torrent to set
-	 */
-	public void setTorrent(Torrent torrent) {
-		this.torrent = torrent;
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(contentLength,leechers,seeders,title,torrent,torrentURL,magnetUri,infoHashHex);
+		return Objects.hash(contentLength,leechers,seeders,title,torrentURL,infoHashHex);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -169,22 +127,12 @@ public class FeedResult {
 			return false;
 		if (leechers != other.leechers)
 			return false;
-		if (magnetUri == null) {
-			if (other.magnetUri != null)
-				return false;
-		} else if (!magnetUri.equals(other.magnetUri))
-			return false;
 		if (seeders != other.seeders)
 			return false;
 		if (title == null) {
 			if (other.title != null)
 				return false;
 		} else if (!title.equals(other.title))
-			return false;
-		if (torrent == null) {
-			if (other.torrent != null)
-				return false;
-		} else if (!torrent.equals(other.torrent))
 			return false;
 		if (torrentURL == null) {
 			if (other.torrentURL != null)
@@ -198,14 +146,13 @@ public class FeedResult {
 	 */
 	@Override
 	public String toString() {
-		return "FeedResult [" + (torrentURL != null ? "torrentURL=" + torrentURL + ", " : "")
-				+ (title != null ? "title=" + title + ", " : "") + "contentLength=" + contentLength + ", seeders="
-				+ seeders + ", leechers=" + leechers + ", "
+		return "FeedResult [" + (title != null ? "title=" + title + ", " : "")
 				+ (infoHashHex != null ? "infoHashHex=" + infoHashHex + ", " : "")
-				+ (magnetUri != null ? "magnetUri=" + magnetUri + ", " : "")
-				+ (feedResultRejections != null ? "feedResultRejections=" + feedResultRejections + ", " : "")
-				+ (torrent != null ? "torrent=" + torrent : "") + "]";
+				+ (torrentURL != null ? "torrentURL=" + torrentURL + ", " : "") + "contentLength=" + contentLength
+				+ ", seeders=" + seeders + ", leechers=" + leechers + "]";
 	}
+
+	
 
 	
 	

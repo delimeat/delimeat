@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.exception.FeedException;
-import io.delimeat.processor.filter.FeedResultFilter;
 
 public class FeedService_ImplTest {
 	
@@ -46,17 +45,6 @@ public class FeedService_ImplTest {
 		Assert.assertNotNull(service.getFeedDataSources());
 		Assert.assertEquals(1, service.getFeedDataSources().size());
 		Assert.assertEquals(dao, service.getFeedDataSources().get(0));
-	}
-	
-	@Test
-	public void feedResultFiltersTest(){
-		Assert.assertNull(service.getFeedResultFilters());
-		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
-		service.setFeedResultFilters(Arrays.asList(filter));
-		
-		Assert.assertNotNull(service.getFeedResultFilters());
-		Assert.assertEquals(1, service.getFeedResultFilters().size());
-		Assert.assertEquals(filter, service.getFeedResultFilters().get(0));
 	}
 	
 	@Test

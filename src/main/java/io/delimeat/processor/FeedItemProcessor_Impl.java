@@ -19,14 +19,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -35,13 +32,11 @@ import javax.transaction.Transactional.TxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
-import io.delimeat.config.exception.ConfigException;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.domain.FeedProcessUnit;
@@ -55,6 +50,7 @@ import io.delimeat.show.domain.Show;
 import io.delimeat.show.domain.ShowType;
 import io.delimeat.torrent.TorrentService;
 import io.delimeat.torrent.domain.InfoHash;
+import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.util.DelimeatUtils;
@@ -64,7 +60,8 @@ import io.delimeat.util.DelimeatUtils;
 public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(FeedItemProcessor_Impl.class);
-
+  	private static final long MINSEEDERS = 20;
+  			
   	@Autowired
   	private ConfigService configService;
   	@Autowired
@@ -77,11 +74,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
   	@Autowired
   	private List<FeedResultFilter> feedResultFilters = new ArrayList<FeedResultFilter>();
-  	
-  	@Value("${io.delimeat.processor.feed.downloadUri}")
-  	private String downloadUriTemplate;
-  	  	
-  	private Config config;
+
       	
 	/**
 	 * @return the configService
@@ -167,20 +160,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		this.feedResultFilters = feedResultFilters;
 	}
 
-	/**
-	 * @return the downloadUriTemplate
-	 */
-	public String getDownloadUriTemplate() {
-		return downloadUriTemplate;
-	}
-
-	/**
-	 * @param downloadUriTemplate the downloadUriTemplate to set
-	 */
-	public void setDownloadUriTemplate(String downloadUriTemplate) {
-		this.downloadUriTemplate = downloadUriTemplate;
-	}
-
 	/* (non-Javadoc)
 	 * @see io.delimeat.processor.ItemProcessor#process(java.lang.Object)
 	 */
@@ -189,35 +168,50 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 	public void process(Episode episode) throws Exception {
     	LOGGER.debug(String.format("starting feed item processor for %s", episode.getTitle()));
 		
+    	final Config config = configService.read();
+    	
 		// read feed results
 		final List<FeedResult> readResults = feedService.read(episode.getShow().getTitle());
 		LOGGER.debug(String.format("read %s results, %s", readResults.size(), readResults));
 				
-		filterFeedResults(readResults, episode, getConfig());
+		feedResultFilters.forEach(p->p.filter(readResults, episode, config));
 		LOGGER.debug(String.format("After filtering %s results, %s", readResults.size(), readResults));
 
 		final List<FeedProcessUnit> processUnits = readResults.stream()
 				.map(p->convertFeedResult(p))
 				.collect(Collectors.toList());
 		
-		// select all the valid results based on the torrent files
-		validateResultTorrents(processUnits, episode.getShow(), getConfig());
-		//todo fix to display only valid results
-		LOGGER.debug(String.format("validated %s results, %s", processUnits.size(), processUnits));
- 		
-		final List<FeedProcessUnit> validResults = processUnits.stream()
-			.filter(p->p.getRejections().size()==0)
-			.collect(Collectors.toList());
+		// fetch all the torrents
+		processUnits.forEach(p->fetchTorrent(p));
+		
+		// validate each torrent 
+		processUnits.stream()
+			.filter(p->p.getTorrent() != null)
+			.forEach(p->validateTorrent(p,episode.getShow(), config));
+		
+		// scrape each torrent
+		processUnits.stream()
+			.filter(p->p.getTorrent() != null)
+			.filter(p->p.getSeeders()==0 && p.getLeechers()==0)
+			.forEach(p->scrapeTorrent(p));
+		
+		// count the valid results
+		long validResultsCnt = processUnits.stream()
+				.filter(p->p.getRejections().isEmpty())
+				.count();
+		
+		LOGGER.debug(String.format("validated %s results, %s", validResultsCnt, processUnits));
 		
 		Instant now = Instant.now();
-        if (validResults.isEmpty() == false) {
-            // select the best result
-            final FeedProcessUnit result = selectBestResultTorrent(validResults);
-            
+        // select the best result
+		final FeedProcessUnit result = selectBestResultTorrent(processUnits);
+        if (result != null) {
+            LOGGER.debug("selected best result: " + result);
+
             final Torrent torrent = result.getTorrent();
             LOGGER.debug("selected torrent: " + torrent);
     		
-			torrentService.write(generateTorrentFileName(episode), torrent, getConfig());
+			torrentService.write(generateTorrentFileName(episode), torrent, config);
 
 			episode.setLastFeedUpdate(now);
 			episode.setStatus(EpisodeStatus.FOUND);
@@ -229,12 +223,6 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		
     	LOGGER.debug(String.format("ending feed item processor for %s", episode.getTitle()));	
 	}
-
-    public void filterFeedResults(List<FeedResult> results, Episode episode, Config Config){
-    	for(FeedResultFilter filter: feedResultFilters){
-    		filter.filter(results, episode, Config);
-    	}
-    }
     
     public FeedProcessUnit convertFeedResult(FeedResult feedResult){
 
@@ -244,7 +232,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		processUnit.setSeeders(feedResult.getSeeders());
 		processUnit.setLeechers(feedResult.getLeechers());
 		
-		if(feedResult.getTorrentURL() != null && feedResult.getTorrentURL().length() > 0){
+		if(feedResult.getTorrentURL() != null){
     		try{
     			processUnit.setDownloadUri(new URI(feedResult.getTorrentURL()));
     		}catch(URISyntaxException ex){
@@ -252,23 +240,10 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     		}
 		} 
 		
-		if(feedResult.getInfoHashHex() != null && feedResult.getInfoHashHex().length() > 0){
+		if(feedResult.getInfoHashHex() != null){
 			byte[] infoHashBytes = DelimeatUtils.hexToBytes(feedResult.getInfoHashHex());
 			InfoHash infoHash = new InfoHash(infoHashBytes);
 			processUnit.setInfoHash(infoHash);
-		}else if(feedResult.getMagnetUri() != null && feedResult.getMagnetUri().length() > 0){
-			InfoHash infoHash = buildInfoHashFromMagnet(feedResult.getMagnetUri());
-			processUnit.setInfoHash(infoHash);
-		} 
-	 
-		
-		if(processUnit.getInfoHash() != null && processUnit.getDownloadUri() == null){
-    		try{
-    			URI uri = buildDownloadUri(processUnit.getInfoHash());
-    			processUnit.setDownloadUri(uri);
-    		}catch(URISyntaxException ex){
-    			LOGGER.debug("Unable to parse uri {} for result {}", feedResult.getTorrentURL(), feedResult);
-    		}
 		}
 		return processUnit;
     }
@@ -282,44 +257,32 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
      * @throws TorrentException
      */
     public boolean fetchTorrent(FeedProcessUnit result) {
-        
+       Torrent torrent = null;
     	if(result.getDownloadUri() != null){
     		try{
-	        	// construct the URI for the torrent
-	        	URL url = result.getDownloadUri().toURL();
-	        	URI uri = new URI(url.getProtocol(), null, url.getHost(), url.getPort(), url.getPath(), null, null);
 	        	// fetch the torrent
-	        	Torrent torrent = torrentService.read(uri);
-	        	result.setTorrent(torrent);
-	        	result.setInfoHash(torrent.getInfo().getInfoHash());
-	        	return true;
-            } catch (URISyntaxException | IOException | TorrentException ex) {
+	        	torrent = torrentService.read(result.getDownloadUri());
+            } catch (IOException | TorrentException ex) {
+                LOGGER.error("encountered an error fetching torrent for " + result, ex);
+            }
+        }else if(result.getInfoHash() != null){
+    		try{
+	        	// fetch the torrent
+	        	torrent = torrentService.read(result.getInfoHash());
+            } catch (IOException | TorrentException ex) {
                 LOGGER.error("encountered an error fetching torrent for " + result, ex);
             }
         }
-    	result.getRejections().add(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT);
-    	return false;
+    	
+    	if(torrent != null){
+        	result.setTorrent(torrent);
+        	result.setInfoHash(torrent.getInfo().getInfoHash());
+        	return true;
+    	}else{
+    		result.getRejections().add(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT);
+    		return false;
+    	}
         
-    }
-
-    /**
-     * @param inResults
-     * @param show
-     * @param config
-     * @return
-     * @throws ValidationException
-     * @throws ProcessorInteruptedException 
-     */
-    public void validateResultTorrents(List<FeedProcessUnit> results, Show show, Config config) {
-
-        for (FeedProcessUnit result: results) {
-    		    		
-            if(fetchTorrent(result) ==  false){
-            	continue;
-            }
-
-        	validateTorrent(result,show,config);    
-        }
     }
     
     public void validateTorrent(FeedProcessUnit result, Show show, Config config) {
@@ -337,6 +300,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
      */
     public FeedProcessUnit selectBestResultTorrent(List<FeedProcessUnit> results) {
         return results.stream()
+        		.filter(p->p.getRejections().isEmpty())
         		.sorted(new Comparator<FeedProcessUnit>() {
 					@Override
 					public int compare(FeedProcessUnit o1, FeedProcessUnit o2) {
@@ -344,7 +308,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 					}
 				})
         		.findFirst()
-        		.get();
+        		.orElse(null);
     }
     
     /**
@@ -361,31 +325,17 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     	}
     	
     }
-    
-    public URI buildDownloadUri(InfoHash infoHash) throws URISyntaxException {
-    	return new URI(String.format(downloadUriTemplate,infoHash.getHex().toUpperCase()));
-    }
-    
-    public InfoHash buildInfoHashFromMagnet(String magnetUri){
-    	Matcher m = Pattern.compile("([A-Z]|[a-z]|\\d){40}").matcher(magnetUri);
-    	if(m.find() == false){
-    		return null;
-    	}
-    	String infoHashHex = m.group();
-    	byte[] infoHashBytes = DelimeatUtils.hexToBytes(infoHashHex);
-    	return new InfoHash(infoHashBytes);
-    }
-    
-  	/**
-  	 * Get an instance of Config
-  	 * @return config
-  	 * @throws ConfigException
-  	 */
-  	public Config getConfig() throws ConfigException{
-  		if(config == null){
-  			config = configService.read();
-  		}
-  		return config;
+  	
+  	public void scrapeTorrent(FeedProcessUnit processUnit){
+		ScrapeResult result = torrentService.scrape(processUnit.getTorrent());
+		if(result != null){
+			processUnit.setSeeders(result.getSeeders());
+			processUnit.setLeechers(result.getLeechers());
+		}
+		
+		if(result == null || result.getSeeders() < MINSEEDERS){
+			processUnit.getRejections().add(FeedProcessUnitRejection.INSUFFICENT_SEEDERS);
+		}
   	}
 
 	/* (non-Javadoc)
@@ -398,7 +348,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 				+ (feedService != null ? "feedService=" + feedService + ", " : "")
 				+ (torrentService != null ? "torrentService=" + torrentService + ", " : "")
 				+ (torrentValidators != null ? "torrentValidators=" + torrentValidators + ", " : "")
-				+ (config != null ? "config=" + config : "") + "]";
+				+ "]";
 	}
   	
 }

@@ -130,4 +130,15 @@ public class TorrentService_ImplTest {
 		Assert.assertEquals(mockedResult,service.doScrape(uri, infoHash));
 	}
 	
+  	@Test
+  	public void buildInfoHashFromMagnetTest() throws Exception{
+  		InfoHash infoHash = service.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
+  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", infoHash.getHex());
+  	}
+  	
+  	@Test
+  	public void buildInfoHashFromMagnetNoMatchTest() throws Exception{
+  		Assert.assertNull(service.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:")));
+  	}
+	
 }
