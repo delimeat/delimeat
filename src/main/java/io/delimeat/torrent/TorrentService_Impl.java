@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +165,11 @@ public class TorrentService_Impl implements TorrentService {
         List<String> trackers = new ArrayList<>();
         trackers.addAll(torrent.getTrackers());
         trackers.add(torrent.getTracker());
-                
+        trackers = trackers.stream()
+        		.filter(p->p != null)
+        		.filter(p->p.isEmpty() == false)
+        		.collect(Collectors.toList());
+                        
         ScrapeResult scrape = null;
         Iterator<String> iterator = trackers.iterator();
         while(scrape == null && iterator.hasNext()){

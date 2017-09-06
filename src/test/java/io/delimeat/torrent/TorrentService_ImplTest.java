@@ -27,6 +27,8 @@ import io.delimeat.config.domain.Config;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
+import io.delimeat.torrent.domain.TorrentInfo;
+import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 public class TorrentService_ImplTest {
@@ -55,7 +57,14 @@ public class TorrentService_ImplTest {
 		Assert.assertEquals(writer, service.getWriter());
 	}
 	
-
+	@Test
+	public void downloadUriTemplateTest(){
+		Assert.assertNull(service.getDownloadUriTemplate());
+		service.setDownloadUriTemplate("template");
+		Assert.assertEquals("template", service.getDownloadUriTemplate());
+		
+	}
+	
 	@Test
 	public void setScrapeRequestHandlersTest() {
     	Assert.assertEquals(0, service.getScrapeRequestHandlers().size());
@@ -71,7 +80,7 @@ public class TorrentService_ImplTest {
 	}
 	
 	@Test
-	public void readTest() throws Exception{
+	public void readUriHTTPTest() throws Exception{
 		URI uri = new URI("http://test.com");
 		TorrentDao dao = Mockito.mock(TorrentDao.class);
 		Torrent torrent = new Torrent();
@@ -85,6 +94,69 @@ public class TorrentService_ImplTest {
 		Mockito.verifyNoMoreInteractions(dao);
 	}
 	
+	@Test
+	public void readUriHTTPSTest() throws Exception{
+		URI uri = new URI("https://test.com");
+		TorrentDao dao = Mockito.mock(TorrentDao.class);
+		Torrent torrent = new Torrent();
+		Mockito.when(dao.read(uri)).thenReturn(torrent);
+		service.setDao(dao);
+		
+		Torrent result = service.read(uri);
+		Assert.assertEquals(torrent, result);
+		
+		Mockito.verify(dao).read(uri);
+		Mockito.verifyNoMoreInteractions(dao);
+	}
+	
+	@Test
+	public void readUriMagnetTest() throws Exception{
+		
+		TorrentDao dao = Mockito.mock(TorrentDao.class);
+		Torrent torrent = new Torrent();
+		Mockito.when(dao.read(new URI("http://template/DF706CF16F45E8C0FD226223509C7E97B4FFEC13"))).thenReturn(torrent);
+		service.setDao(dao);
+		
+		service.setDownloadUriTemplate("http://template/%s");
+		
+		Torrent result = service.read(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
+		Assert.assertEquals(torrent, result);
+		
+		Mockito.verify(dao).read(new URI("http://template/DF706CF16F45E8C0FD226223509C7E97B4FFEC13"));
+		Mockito.verifyNoMoreInteractions(dao);
+	}
+	
+	@Test(expected=TorrentException.class)
+	public void readUriUnsupportedSchemeTest() throws Exception{	
+		service.read(new URI("udp://test.com"));
+	}
+	
+	@Test
+	public void readInfoHashTest() throws Exception{
+		TorrentDao dao = Mockito.mock(TorrentDao.class);
+		Torrent torrent = new Torrent();
+		Mockito.when(dao.read(new URI("http://template/494E464F5F48415348"))).thenReturn(torrent);
+		service.setDao(dao);
+		
+		service.setDownloadUriTemplate("http://template/%s");
+		
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		Torrent result = service.read(infoHash);
+		
+		Assert.assertEquals(torrent, result);
+		
+		Mockito.verify(dao).read(new URI("http://template/494E464F5F48415348"));
+		Mockito.verifyNoMoreInteractions(dao);		
+	}
+	
+	@Test(expected=TorrentException.class)
+	public void readInfoHashURISyntaxExceptionTest() throws Exception{
+		service.setDownloadUriTemplate("\\//");
+		
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		service.read(infoHash);		
+	}
+
 	@Test
 	public void writeTest() throws Exception{
 		String fileName = "fileName";
@@ -139,6 +211,103 @@ public class TorrentService_ImplTest {
   	@Test
   	public void buildInfoHashFromMagnetNoMatchTest() throws Exception{
   		Assert.assertNull(service.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:")));
+  	}
+  	
+  	@Test
+  	public void scrapeTrackerTest() throws Exception{
+  		Torrent torrent = new Torrent();
+  		torrent.setTracker("http://tracker");
+  		TorrentInfo info = new TorrentInfo();
+  		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+  		info.setInfoHash(infoHash);
+  		torrent.setInfo(info);
+  		
+		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
+		Mockito.when(scraper.doScrape(new URI("http://tracker"),
+				new InfoHash("INFO_HASH".getBytes()))).thenReturn(scrapeResult);
+		
+		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+  		
+  		ScrapeResult result = service.scrape(torrent);
+  		
+  		Assert.assertEquals(scrapeResult, result);
+  		
+  		Mockito.verify(scraper).getSupportedProtocols();
+  		Mockito.verify(scraper).doScrape(new URI("http://tracker"),new InfoHash("INFO_HASH".getBytes()));
+  		Mockito.verifyNoMoreInteractions(scraper);
+  		
+  	}
+  	
+  	@Test
+  	public void scrapeTrackersTest() throws Exception{
+  		Torrent torrent = new Torrent();
+  		torrent.setTrackers(Arrays.asList("http://tracker"));
+  		TorrentInfo info = new TorrentInfo();
+  		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+  		info.setInfoHash(infoHash);
+  		torrent.setInfo(info);
+  		
+		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
+		Mockito.when(scraper.doScrape(new URI("http://tracker"),
+				new InfoHash("INFO_HASH".getBytes()))).thenReturn(scrapeResult);
+		
+		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+  		
+  		ScrapeResult result = service.scrape(torrent);
+  		
+  		Assert.assertEquals(scrapeResult, result);
+  		
+  		Mockito.verify(scraper).getSupportedProtocols();
+  		Mockito.verify(scraper).doScrape(new URI("http://tracker"),new InfoHash("INFO_HASH".getBytes()));
+  		Mockito.verifyNoMoreInteractions(scraper);  	
+  	}
+  	
+  	@Test
+  	public void scrapeTrackersExceptionTest() throws Exception{
+  		Torrent torrent = new Torrent();
+  		torrent.setTrackers(Arrays.asList("http://tracker","http://tracker"));
+  		TorrentInfo info = new TorrentInfo();
+  		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+  		info.setInfoHash(infoHash);
+  		torrent.setInfo(info);
+  		
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
+		Mockito.when(scraper.doScrape(new URI("http://tracker"),
+				new InfoHash("INFO_HASH".getBytes())))
+					.thenReturn(null)
+					.thenThrow(TorrentException.class);
+		
+		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+  		
+  		Assert.assertNull(service.scrape(torrent));
+  		  		
+  		Mockito.verify(scraper,Mockito.times(2)).getSupportedProtocols();
+  		Mockito.verify(scraper, Mockito.times(2)).doScrape(new URI("http://tracker"),new InfoHash("INFO_HASH".getBytes()));
+  		Mockito.verifyNoMoreInteractions(scraper);  	
+  	}
+  	
+  	@Test
+  	public void scrapeNoTrackersTest(){
+  		Torrent torrent = new Torrent();
+  		torrent.setTrackers(Arrays.asList(""));
+  		torrent.setTracker(null);
+  		TorrentInfo info = new TorrentInfo();
+  		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+  		info.setInfoHash(infoHash);
+  		torrent.setInfo(info);
+  		
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		
+		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+  		
+  		Assert.assertNull(service.scrape(torrent));
+  		
+  		Mockito.verifyZeroInteractions(scraper);
   	}
 	
 }

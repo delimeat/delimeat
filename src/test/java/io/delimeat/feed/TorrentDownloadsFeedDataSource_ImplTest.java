@@ -159,7 +159,7 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
      			+ "<info_hash>INFO_HASH</info_hash>"
      			+ "<size>9223372036854775807</size>"
      			+ "<seeders>1</seeders>"
-     			+ "<leechers></leechers>"
+     			+ "<leechers/>"
      			+ "</item></channel></rss>";
      
 		MockResponse mockResponse = new MockResponse()

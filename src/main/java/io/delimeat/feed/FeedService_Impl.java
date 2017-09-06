@@ -21,7 +21,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.feed.domain.FeedResult;
@@ -34,9 +33,6 @@ public class FeedService_Impl implements FeedService {
 	
 	@Autowired
 	private List<FeedDataSource> feedDataSources;
-  	
-  	@Value("${io.delimeat.feed.downloadUri}")
-  	private String downloadUriTemplate;
     
 	/**
 	 * @return the feedDataSources
@@ -50,20 +46,6 @@ public class FeedService_Impl implements FeedService {
 	 */
 	public void setFeedDataSources(List<FeedDataSource> feedDataSources) {
 		this.feedDataSources = feedDataSources;
-	}
-
-	/**
-	 * @return the downloadUriTemplate
-	 */
-	public String getDownloadUriTemplate() {
-		return downloadUriTemplate;
-	}
-
-	/**
-	 * @param downloadUriTemplate the downloadUriTemplate to set
-	 */
-	public void setDownloadUriTemplate(String downloadUriTemplate) {
-		this.downloadUriTemplate = downloadUriTemplate;
 	}
 
 	/* (non-Javadoc)
@@ -91,9 +73,9 @@ public class FeedService_Impl implements FeedService {
 	 */
 	@Override
 	public String toString() {
-		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources + ", " : "")
-				+ (downloadUriTemplate != null ? "downloadUriTemplate=" + downloadUriTemplate : "") + "]";
-	} 
+		return "FeedService_Impl [" + (feedDataSources != null ? "feedDataSources=" + feedDataSources : "") + "]";
+	}
+	
 	
 	
 
