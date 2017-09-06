@@ -17,8 +17,9 @@
 				<xml-element java-attribute="torrentURL" xml-path="enclosure/@url/text()" />
 				<xml-element java-attribute="title" name="title"/>
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>
-				<xml-element java-attribute="seeders" namespace="http://test.com" name="numSeeders" />			
-				<xml-element java-attribute="leechers" namespace="http://test.com" name="numLeechers" />
+				<xml-element java-attribute="seeders" namespace="https://zooqle.com/xmlns/0.1/index.xmlns" name="seeds" />			
+				<xml-element java-attribute="leechers" namespace="https://zooqle.com/xmlns/0.1/index.xmlns" name="peers" />
+				<xml-element java-attribute="infoHashHex" namespace="https://zooqle.com/xmlns/0.1/index.xmlns" name="infoHash"/>
 			</java-attributes>
 		</java-type>
 

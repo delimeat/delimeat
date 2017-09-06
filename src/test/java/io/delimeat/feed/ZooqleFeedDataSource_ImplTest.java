@@ -79,10 +79,11 @@ public class ZooqleFeedDataSource_ImplTest {
 	@Test
 	public void readTest() throws Exception{    	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss xmlns:torrent=\"http://test.com\"><channel><item>"
+     			+ "<rss xmlns:torrent=\"https://zooqle.com/xmlns/0.1/index.xmlns\"><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
-     			+ "<torrent:numSeeders>100</torrent:numSeeders>"
-     			+ "<torrent:numLeechers>200</torrent:numLeechers>"
+     			+ "<torrent:seeds>100</torrent:seeds>"
+     			+ "<torrent:peers>200</torrent:peers>"
+     			+ "<torrent:infoHash>67A8DBA7DBF53CD815A4632F4CB1DC870114EDD7</torrent:infoHash>"
      			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
      			+ "</item></channel></rss>";
      
@@ -108,6 +109,7 @@ public class ZooqleFeedDataSource_ImplTest {
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
      	Assert.assertEquals(100, results.get(0).getSeeders());
      	Assert.assertEquals(200, results.get(0).getLeechers());
+     	Assert.assertEquals("67A8DBA7DBF53CD815A4632F4CB1DC870114EDD7", results.get(0).getInfoHashHex());
 
 	}
 
