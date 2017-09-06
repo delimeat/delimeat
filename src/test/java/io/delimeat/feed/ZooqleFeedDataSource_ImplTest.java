@@ -79,8 +79,10 @@ public class ZooqleFeedDataSource_ImplTest {
 	@Test
 	public void readTest() throws Exception{    	
      	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
+     			+ "<rss xmlns:torrent=\"http://test.com\"><channel><item>"
      			+ "<title><![CDATA[title]]></title>"
+     			+ "<torrent:numSeeders>100</torrent:numSeeders>"
+     			+ "<torrent:numLeechers>200</torrent:numLeechers>"
      			+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
      			+ "</item></channel></rss>";
      
@@ -100,9 +102,12 @@ public class ZooqleFeedDataSource_ImplTest {
 		
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
+     	System.out.println(results.get(0));
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals(100, results.get(0).getSeeders());
+     	Assert.assertEquals(200, results.get(0).getLeechers());
 
 	}
 

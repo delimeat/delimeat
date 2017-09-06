@@ -106,11 +106,84 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
      	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("http://itorrents.org/torrent/INFO_HASH.torrent",results.get(0).getTorrentURL());
+     	Assert.assertNull(results.get(0).getTorrentURL());
+     	Assert.assertEquals("INFO_HASH", results.get(0).getInfoHashHex());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
      	Assert.assertEquals(1, results.get(0).getSeeders());
      	Assert.assertEquals(1000, results.get(0).getLeechers());
 
+	}
+	
+	@Test
+	public void readNoSeedersTest() throws Exception{
+    	
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<info_hash>INFO_HASH</info_hash>"
+     			+ "<size>9223372036854775807</size>"
+     			+ "<seeders/>"
+     			+ "<leechers>1000</leechers>"
+     			+ "</item></channel></rss>";
+     
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "text/html")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		List<FeedResult> results = dataSource.read("title");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/rss.xml?type=search&search=title", request.getPath());
+		Assert.assertEquals("text/html", request.getHeader("Accept"));
+		
+     	Assert.assertNotNull(results);
+     	Assert.assertEquals(1, results.size());
+     	Assert.assertEquals("title",results.get(0).getTitle());
+     	Assert.assertNull(results.get(0).getTorrentURL());
+     	Assert.assertEquals("INFO_HASH", results.get(0).getInfoHashHex());
+     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals(0, results.get(0).getSeeders());
+     	Assert.assertEquals(1000, results.get(0).getLeechers());
+	}
+	
+	@Test
+	public void readNoLeechersTest() throws Exception{
+    	
+     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
+     			+ "<rss><channel><item>"
+     			+ "<title><![CDATA[title]]></title>"
+     			+ "<info_hash>INFO_HASH</info_hash>"
+     			+ "<size>9223372036854775807</size>"
+     			+ "<seeders>1</seeders>"
+     			+ "<leechers></leechers>"
+     			+ "</item></channel></rss>";
+     
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+			    .addHeader("Content-Type", "text/html")
+			    .setBody(responseBody);
+		
+		mockedServer.enqueue(mockResponse);
+
+		dataSource.setBaseUri("http://localhost:8089");
+		
+		List<FeedResult> results = dataSource.read("title");
+		RecordedRequest request = mockedServer.takeRequest();
+		Assert.assertEquals("/rss.xml?type=search&search=title", request.getPath());
+		Assert.assertEquals("text/html", request.getHeader("Accept"));
+		
+     	Assert.assertNotNull(results);
+     	Assert.assertEquals(1, results.size());
+     	Assert.assertEquals("title",results.get(0).getTitle());
+     	Assert.assertNull(results.get(0).getTorrentURL());
+     	Assert.assertEquals("INFO_HASH", results.get(0).getInfoHashHex());
+     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
+     	Assert.assertEquals(1, results.get(0).getSeeders());
+     	Assert.assertEquals(0, results.get(0).getLeechers());
 	}
   
 	@Test

@@ -9,17 +9,11 @@
 		<java-type name="FeedResult">
 			<xml-root-element/>
 			<java-attributes>
-				<xml-element java-attribute="torrentURL" name="info_hash">
-					<xml-java-type-adapter value="io.delimeat.feed.jaxb.TorrentDownloadsUrlAdapter" />
-				</xml-element>
+				<xml-element java-attribute="infoHashHex" name="info_hash" />
 				<xml-element java-attribute="title" name="title"/>
 				<xml-element java-attribute="contentLength" name="size"/>
-				<xml-element java-attribute="seeders" name="seeders">
-					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
-				</xml-element>				
-				<xml-element java-attribute="leechers" name="leechers">
-					<xml-java-type-adapter value="io.delimeat.feed.jaxb.ExtraTorrentIntegerAdapter" />
-				</xml-element>
+				<xml-element java-attribute="seeders" name="seeders" default-value="0"/>				
+				<xml-element java-attribute="leechers" name="leechers" default-value="0"/>
 			</java-attributes>
 		</java-type>
 

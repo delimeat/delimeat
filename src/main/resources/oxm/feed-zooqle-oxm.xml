@@ -4,6 +4,11 @@
 	xml-accessor-type="NONE" package-name="io.delimeat.feed.domain"
 	xml-mapping-metadata-complete="true">
 
+<!-- 
+	<xml-schema element-form-default="UNQUALIFIED">
+        <xml-ns prefix="torrent" namespace-uri="http://test.com" />
+    </xml-schema>
+!-->
 	<java-types>
 
 		<java-type name="FeedResult">
@@ -12,10 +17,8 @@
 				<xml-element java-attribute="torrentURL" xml-path="enclosure/@url/text()" />
 				<xml-element java-attribute="title" name="title"/>
 				<xml-element java-attribute="contentLength" xml-path="enclosure/@length/text()"/>
-				<!-- TODO add torrent namespace to include seeder/leecher info  
-				<xml-element java-attribute="seeders" name="numSeeders" />			
-				<xml-element java-attribute="leechers" name="numLeechers" />
-				!-->
+				<xml-element java-attribute="seeders" namespace="http://test.com" name="numSeeders" />			
+				<xml-element java-attribute="leechers" namespace="http://test.com" name="numLeechers" />
 			</java-attributes>
 		</java-type>
 
