@@ -126,10 +126,15 @@ public class TorrentService_Impl implements TorrentService {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.TorrentService#doScrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
+	/**
+	 * Perform a scrape
+	 * @param uri
+	 * @param infoHash
+	 * @return
+	 * @throws IOException
+	 * @throws UnhandledScrapeException
+	 * @throws TorrentException
 	 */
-	@Override
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash)
 			throws IOException, UnhandledScrapeException, TorrentException {
 		final String protocol = uri.getScheme().toUpperCase();
