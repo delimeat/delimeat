@@ -15,9 +15,7 @@
  */
 package io.delimeat.torrent;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,55 +23,49 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.domain.InfoHash;
-import io.delimeat.torrent.domain.Torrent;
+import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
-import io.delimeat.torrent.exception.TorrentNotFoundException;
 
 @Component
-public class MagnetTorrentReader_Impl extends HttpTorrentReader_Impl implements TorrentReader {
+public class MagnetScrapeRequestHandler_Impl extends HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 	private final List<String> protocols = Arrays.asList("MAGNET");
-	
-  	@Value("${io.delimeat.torrent.reader.downloadUriTemplate}")
-  	private String downloadUriTemplate;
+
+  	@Value("${io.delimeat.torrent.scraper.defaultTracker}")
+  	private URI defaultTracker;
   	
 	/**
-	 * @return the downloadUriTemplate
+	 * @return the defaultTracker
 	 */
-	public String getDownloadUriTemplate() {
-		return downloadUriTemplate;
+	public URI getDefaultTracker() {
+		return defaultTracker;
 	}
 
 	/**
-	 * @param downloadUriTemplate the downloadUriTemplate to set
+	 * @param defaultTracker the defaultTracker to set
 	 */
-	public void setDownloadUriTemplate(String downloadUriTemplate) {
-		this.downloadUriTemplate = downloadUriTemplate;
+	public void setDefaultTracker(URI defaultTracker) {
+		this.defaultTracker = defaultTracker;
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.TorrentReader#getSupportedProtocols()
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
 	 */
 	@Override
 	public List<String> getSupportedProtocols() {
 		return protocols;
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.TorrentReader#read(java.net.URI)
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
 	 */
 	@Override
-	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws TorrentException {
 		if(protocols.contains((uri.getScheme().toUpperCase())) == false ){
 			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
 		}
 		
-		InfoHash infoHash = TorrentUtils.infoHashFromMagnet(uri);
-		String downloadUri = String.format(downloadUriTemplate, infoHash.getHex().toUpperCase());
-		try{
-			return super.read(new URI(downloadUri));
-		}catch(URISyntaxException ex){
-			throw new TorrentException("Encountered an error creating uri for " + infoHash.getHex(), ex);
-		}
+		return super.scrape(getDefaultTracker(), infoHash);
 	}
+
 }

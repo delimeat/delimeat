@@ -134,12 +134,7 @@ public class TorrentService_Impl implements TorrentService {
 	 */
 	@Override
 	public Torrent read(InfoHash infoHash) throws IOException, TorrentNotFoundException, TorrentException {
-		String magnetUri = String.format("magnet:?xt=urn:btih:%s",infoHash.getHex());
-		try{
-			return read(new URI(magnetUri));
-		}catch(URISyntaxException ex){
-			throw new TorrentException("Encountered an error creating download uri for " + infoHash.getHex(), ex);
-		}
+		return read(buildMagnetUri(infoHash));
 	}
 
 	/**
@@ -190,6 +185,15 @@ public class TorrentService_Impl implements TorrentService {
         		.filter(p->p != null)
         		.filter(p->p.isEmpty() == false)
         		.collect(Collectors.toList());
+        
+        if(trackers.isEmpty()){
+        	try{
+        		URI magnet = buildMagnetUri(infoHash);
+        		trackers.add(magnet.toASCIIString());
+        	}catch(TorrentException ex){
+        		LOGGER.error(ex.getMessage());
+        	}
+        }
                         
         ScrapeResult scrape = null;
         Iterator<String> iterator = trackers.iterator();
@@ -202,6 +206,21 @@ public class TorrentService_Impl implements TorrentService {
 			}
         }
         return scrape;
+	}
+	
+	/**
+	 * Build a magnet uri from an infohash
+	 * @param infoHash
+	 * @return
+	 * @throws TorrentException
+	 */
+	public URI buildMagnetUri(InfoHash infoHash) throws TorrentException{
+		String magnetUri = String.format(magnetUriTemplate,infoHash.getHex());
+		try{
+			return new URI(magnetUri);
+		}catch(URISyntaxException ex){
+			throw new TorrentException("Encountered an error creating magnet uri for " + infoHash.getHex(), ex);
+		}
 	}
 
 }

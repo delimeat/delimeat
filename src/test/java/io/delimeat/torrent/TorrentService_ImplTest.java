@@ -85,6 +85,25 @@ public class TorrentService_ImplTest {
 	}
 	
 	@Test
+	public void buildMagnetUriTest() throws Exception{
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		URI uri = service.buildMagnetUri(infoHash);
+		
+		Assert.assertEquals(new URI("magnet:?xt=urn:btih:494e464f5f48415348"), uri);
+	}
+	
+	@Test(expected=TorrentException.class)
+	public void buildMagnetUriURISyntaxExceptionTest() throws Exception{
+		
+		service.setMagnetUriTemplate("\\//");
+
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		service.buildMagnetUri(infoHash);	
+	}
+	
+	@Test
 	public void readUriTest() throws Exception{
 		URI uri = new URI("http://test.com");
 		Torrent torrent = new Torrent();
@@ -126,15 +145,6 @@ public class TorrentService_ImplTest {
 		Mockito.verify(reader).getSupportedProtocols();
 		Mockito.verify(reader).read(new URI("magnet:?xt=urn:btih:494e464f5f48415348"));
 		Mockito.verifyNoMoreInteractions(reader);		
-	}
-	
-	@Test(expected=TorrentException.class)
-	public void readInfoHashURISyntaxExceptionTest() throws Exception{
-		
-		service.setMagnetUriTemplate("\\//");
-
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		service.read(infoHash);		
 	}
 
 	@Test
@@ -261,7 +271,7 @@ public class TorrentService_ImplTest {
   	}
   	
   	@Test
-  	public void scrapeNoTrackersTest(){
+  	public void scrapeNoTrackersTest() throws Exception{
   		Torrent torrent = new Torrent();
   		torrent.setTrackers(Arrays.asList(""));
   		torrent.setTracker(null);
@@ -271,12 +281,16 @@ public class TorrentService_ImplTest {
   		torrent.setInfo(info);
   		
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("MAGNET"));
 		
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
 		service.setScrapeRequestHandlers(Arrays.asList(scraper));
   		
   		Assert.assertNull(service.scrape(torrent));
   		
-  		Mockito.verifyZeroInteractions(scraper);
+  		Mockito.verify(scraper).getSupportedProtocols();
+  		Mockito.verify(scraper).scrape(new URI("magnet:?xt=urn:btih:494e464f5f48415348"), infoHash);
+  		Mockito.verifyNoMoreInteractions(scraper);
   	}
 	
 }
