@@ -288,7 +288,9 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     public void validateTorrent(FeedProcessUnit result, Show show, Config config) {
     	for(TorrentValidator validator: torrentValidators){
     		if(validator.validate(result.getTorrent(), show, config) == false){
-    			result.getRejections().add(validator.getRejection());
+    			FeedProcessUnitRejection rejection = validator.getRejection();
+    			result.getRejections().add(rejection);
+    			LOGGER.debug("Rejected {} for {}",result.getTitle(), rejection);
     			break;
     		}
     	}
@@ -335,6 +337,8 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		
 		if(result == null || result.getSeeders() < MINSEEDERS){
 			processUnit.getRejections().add(FeedProcessUnitRejection.INSUFFICENT_SEEDERS);
+			LOGGER.debug("Rejected {} for {}",processUnit.getTitle(), FeedProcessUnitRejection.INSUFFICENT_SEEDERS);
+
 		}
   	}
 
