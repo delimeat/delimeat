@@ -32,7 +32,7 @@ public interface TorrentDao {
 	 * @return
 	 * @throws TorrentException
 	 */
-	@Cacheable("torrent")
+	@Cacheable(value="torrent", key="uri")
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException;
 
 }

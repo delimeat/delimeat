@@ -46,7 +46,7 @@ public interface GuideDataSource {
 	 * @throws GuideAuthorizationException
 	 * @throws GuideException
 	 */
-	@Cacheable("guide-info")
+	@Cacheable(value="guide-info", key="guideId")
 	public GuideInfo info(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 	/**
@@ -58,7 +58,7 @@ public interface GuideDataSource {
 	 * @throws GuideAuthorizationException
 	 * @throws GuideException
 	 */
-	@Cacheable("guide-episodes")
+	@Cacheable(value="guide-episodes", key="guideId")
 	public List<GuideEpisode> episodes(String guideId) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 	/**
@@ -70,7 +70,7 @@ public interface GuideDataSource {
 	 * @throws GuideAuthorizationException
 	 * @throws GuideException
 	 */
-	@Cacheable("guide-search")
+	@Cacheable(value="guide-search", key="title")
 	public List<GuideSearchResult> search(String title) throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException;
 
 }

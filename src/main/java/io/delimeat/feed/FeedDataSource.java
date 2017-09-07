@@ -43,7 +43,7 @@ public interface FeedDataSource {
 	 * @throws FeedResponseBodyException
 	 * @throws FeedException
 	 */
-	@Cacheable("feed")
+	@Cacheable(value="feed", key="title")
 	public List<FeedResult> read(String title) throws FeedTimeoutException,FeedContentTypeException,FeedResponseException,FeedResponseBodyException, FeedException;
 	
 }

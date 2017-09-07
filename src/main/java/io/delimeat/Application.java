@@ -19,6 +19,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,6 +33,10 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -52,13 +57,14 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import io.delimeat.util.spark.SparkController;
 
-@EnableScheduling
 @Configuration
 @ComponentScan
 @PropertySource({ "classpath:delimeat.properties" })
 @EnableJpaRepositories("io.delimeat")
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableScheduling
+@EnableCaching
 public class Application {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -160,6 +166,18 @@ public class Application {
 		pointcut.setExpression("within(io.delimeat..*)");
 		// pointcut.setExpression("execution(public * io.delimeat..*.*(..))");
 		return new DefaultPointcutAdvisor(pointcut, customizableTraceInterceptor());
+	}
+	
+	@Bean
+	public CacheManager cacheManager(){
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+        cacheManager.setCaches(Arrays.asList(
+          new ConcurrentMapCache("feed"), 
+          new ConcurrentMapCache("guide-info"),
+          new ConcurrentMapCache("guide-episodes"),
+          new ConcurrentMapCache("guide-search"),
+          new ConcurrentMapCache("torrent")));
+        return cacheManager;
 	}
 
 }

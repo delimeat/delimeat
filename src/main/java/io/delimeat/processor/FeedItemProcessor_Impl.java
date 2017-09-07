@@ -166,7 +166,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     @Transactional(TxType.REQUIRES_NEW)
 	@Override
 	public void process(Episode episode) throws Exception {
-    	LOGGER.debug(String.format("starting feed item processor for %s", episode.getTitle()));
+    	LOGGER.debug("starting feed item processor for {} - {}", episode.getShow().getTitle(), episode.getTitle());
 		
     	final Config config = configService.read();
     	
@@ -192,7 +192,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		// scrape each torrent
 		processUnits.stream()
 			.filter(p->p.getTorrent() != null)
-			.filter(p->p.getSeeders()==0 && p.getLeechers()==0)
+			.filter(p->p.getSeeders() == 0 && p.getLeechers() == 0)
 			.forEach(p->scrapeTorrent(p));
 		
 		// count the valid results
@@ -200,7 +200,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 				.filter(p->p.getRejections().isEmpty())
 				.count();
 		
-		LOGGER.debug(String.format("validated %s results, %s", validResultsCnt, processUnits));
+		LOGGER.debug("validated {} results, {}", validResultsCnt, processUnits);
 		
 		Instant now = Instant.now();
         // select the best result
@@ -221,7 +221,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
         episode.setLastFeedCheck(now);	   
 		episodeService.update(episode);
 		
-    	LOGGER.debug(String.format("ending feed item processor for %s", episode.getTitle()));	
+    	LOGGER.debug("ending feed item processor for {} - {}", episode.getShow().getTitle(), episode.getTitle());	
 	}
     
     public FeedProcessUnit convertFeedResult(FeedResult feedResult){
