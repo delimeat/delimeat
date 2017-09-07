@@ -51,14 +51,24 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 	private final List<String> protocols = Arrays.asList("HTTP", "HTTPS");
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
+	 */
 	@Override
 	public List<String> getSupportedProtocols() {
 		return protocols;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
+	 */
 	@Override
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentTimeoutException,TorrentResponseException, TorrentResponseBodyException, TorrentException {
-
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentTimeoutException,TorrentResponseException, TorrentResponseBodyException, TorrentException {
+		
+		if(protocols.contains(uri.getScheme().toUpperCase()) == false ){
+			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
+		}
+		
 		try {
 			final URL scrapeURL = generateScrapeURL(uri, infoHash);
 

@@ -21,8 +21,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -38,7 +36,6 @@ import io.delimeat.torrent.domain.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
-import io.delimeat.util.DelimeatUtils;
 
 @Service
 public class TorrentService_Impl implements TorrentService {
@@ -46,7 +43,7 @@ public class TorrentService_Impl implements TorrentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TorrentService_Impl.class);
 
 	@Autowired
-	private TorrentDao dao;
+	private List<TorrentReader> readers = new ArrayList<>();
 	
 	@Autowired
 	private TorrentWriter writer;
@@ -54,45 +51,63 @@ public class TorrentService_Impl implements TorrentService {
 	@Autowired
 	private List<ScrapeRequestHandler> scrapeRequestHandlers = new ArrayList<>();
 	
-  	@Value("${io.delimeat.torrent.downloadUriTemplate}")
-  	private String downloadUriTemplate;
-
-	public TorrentDao getDao() {
-		return dao;
+  	@Value("${io.delimeat.torrent.magnetUriTemplate}")
+  	private String magnetUriTemplate;
+  	
+	/**
+	 * @return the magnetUriTemplate
+	 */
+	public String getMagnetUriTemplate() {
+		return magnetUriTemplate;
 	}
 
-	public void setDao(TorrentDao dao) {
-		this.dao = dao;
+	/**
+	 * @param magnetUriTemplate the magnetUriTemplate to set
+	 */
+	public void setMagnetUriTemplate(String magnetUriTemplate) {
+		this.magnetUriTemplate = magnetUriTemplate;
 	}
 
+	/**
+	 * @return the readers
+	 */
+	public List<TorrentReader> getReaders() {
+		return readers;
+	}
+
+	/**
+	 * @param readers the readers to set
+	 */
+	public void setReaders(List<TorrentReader> readers) {
+		this.readers = readers;
+	}
+
+	/**
+	 * @return the writer
+	 */
 	public TorrentWriter getWriter() {
 		return writer;
 	}
 
+	/**
+	 * @param writer the writer to set
+	 */
 	public void setWriter(TorrentWriter writer) {
 		this.writer = writer;
 	}
-	
-	public List<ScrapeRequestHandler> getScrapeRequestHandlers(){
-		return scrapeRequestHandlers;
-	}
-	
-	public void setScrapeRequestHandlers(List<ScrapeRequestHandler> scrapeRequestHandlers){
-		this.scrapeRequestHandlers = scrapeRequestHandlers;
-	}
-	
+
 	/**
-	 * @return the downloadUriTemplate
+	 * @return the scrapeRequestHandlers
 	 */
-	public String getDownloadUriTemplate() {
-		return downloadUriTemplate;
+	public List<ScrapeRequestHandler> getScrapeRequestHandlers() {
+		return scrapeRequestHandlers;
 	}
 
 	/**
-	 * @param downloadUriTemplate the downloadUriTemplate to set
+	 * @param scrapeRequestHandlers the scrapeRequestHandlers to set
 	 */
-	public void setDownloadUriTemplate(String downloadUriTemplate) {
-		this.downloadUriTemplate = downloadUriTemplate;
+	public void setScrapeRequestHandlers(List<ScrapeRequestHandler> scrapeRequestHandlers) {
+		this.scrapeRequestHandlers = scrapeRequestHandlers;
 	}
 	
 	/* (non-Javadoc)
@@ -100,16 +115,17 @@ public class TorrentService_Impl implements TorrentService {
 	 */
 	@Override
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
-		switch(uri.getScheme().toUpperCase()){
-		case "MAGNET":
-			return read(infoHashFromMagnet(uri));
-		case "HTTP":
-		case "HTTPS":
-			return dao.read(uri);
-		default:
-			throw new TorrentException("Unsupported scheme for uri " + uri.toASCIIString());
+		final String protocol = uri.getScheme().toUpperCase();
+		TorrentReader reader =  readers.stream()
+				.filter(p->p.getSupportedProtocols().contains(protocol))
+				.findAny()
+				.orElse(null);
+		
+		if(reader == null){
+			throw new UnhandledScrapeException(String.format("Protocol %s not supported for read", protocol));
 		}
 		
+		return reader.read(uri);		
 	}
 	
 
@@ -118,9 +134,9 @@ public class TorrentService_Impl implements TorrentService {
 	 */
 	@Override
 	public Torrent read(InfoHash infoHash) throws IOException, TorrentNotFoundException, TorrentException {
-		String downloadUri = String.format(downloadUriTemplate,infoHash.getHex().toUpperCase());
+		String magnetUri = String.format("magnet:?xt=urn:btih:%s",infoHash.getHex());
 		try{
-			return read(new URI(downloadUri));
+			return read(new URI(magnetUri));
 		}catch(URISyntaxException ex){
 			throw new TorrentException("Encountered an error creating download uri for " + infoHash.getHex(), ex);
 		}
@@ -143,11 +159,11 @@ public class TorrentService_Impl implements TorrentService {
 				.findAny()
 				.orElse(null);
 		
-		if(handler != null){
-			return handler.doScrape(uri, infoHash);
-		}else{
+		if(handler == null){
 			throw new UnhandledScrapeException(String.format("Protocol %s not supported for scrape", protocol));
 		}
+		
+		return handler.scrape(uri, infoHash);
 	}
 
 	/* (non-Javadoc)
@@ -187,15 +203,5 @@ public class TorrentService_Impl implements TorrentService {
         }
         return scrape;
 	}
-	
-    public InfoHash infoHashFromMagnet(URI magnetUri){
-    	Matcher m = Pattern.compile("([A-Z]|[a-z]|\\d){40}").matcher(magnetUri.toASCIIString());
-    	if(m.find() == false){
-    		return null;
-    	}
-    	String infoHashStr = m.group();
-    	byte[] infoHashBytes = DelimeatUtils.hexToBytes(infoHashStr);
-    	return new InfoHash(infoHashBytes);
-    }
 
 }

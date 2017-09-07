@@ -66,4 +66,5 @@ public class DelimeatUtilsTest {
 		Assert.assertEquals(1, client.interceptors().size());
 		Assert.assertEquals(HttpLoggingInterceptor.class, client.interceptors().get(0).getClass());
 	}
+
 }

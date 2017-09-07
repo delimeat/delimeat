@@ -129,7 +129,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		
 		mockedServer.enqueue(mockResponse);
 		
-		ScrapeResult result = scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		ScrapeResult result = scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 
 		RecordedRequest request = mockedServer.takeRequest();
 		Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
@@ -151,7 +151,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		mockedServer.enqueue(mockResponse);
 				
 		try{
-			scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 		}catch(TorrentTimeoutException ex){
 			RecordedRequest request = mockedServer.takeRequest();
 			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
@@ -173,7 +173,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		mockedServer.enqueue(mockResponse);
 		
 		try{
-			scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 		}catch(TorrentNotFoundException ex){
 			RecordedRequest request = mockedServer.takeRequest();
 			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
@@ -195,7 +195,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		mockedServer.enqueue(mockResponse);
 		
 		try{
-			scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 		}catch(TorrentResponseException ex){
 			RecordedRequest request = mockedServer.takeRequest();
 			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
@@ -219,7 +219,7 @@ public class HttpScrapeRequestHandler_ImplTest {
 		mockedServer.enqueue(mockResponse);
 		
 		try{
-			scraper.doScrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 		}catch(TorrentResponseBodyException ex){
 			RecordedRequest request = mockedServer.takeRequest();
 			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
@@ -235,12 +235,12 @@ public class HttpScrapeRequestHandler_ImplTest {
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 
-		scraper.doScrape(new URI("http://localhost/announce?test=true"), infoHash);
+		scraper.scrape(new URI("http://localhost/announce?test=true"), infoHash);
 	}
 
 	@Test(expected=TorrentException.class)
 	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.doScrape(new URI("udp://test.com/announce"), infoHash);
+		scraper.scrape(new URI("udp://test.com/announce"), infoHash);
 	}
 }

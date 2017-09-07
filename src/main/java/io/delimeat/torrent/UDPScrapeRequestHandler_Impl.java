@@ -53,21 +53,39 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	@Qualifier("updScrapeDatagramSocket")
 	private DatagramSocket socket;
 	
+	/**
+	 * Set datagram socket
+	 * @param socket
+	 */
 	public void setSocket(DatagramSocket socket){
 		this.socket = socket;
 	}
 	
+	/**
+	 * get datagram socket
+	 * @return
+	 */
 	public DatagramSocket getSocket(){
 		return socket;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
+	 */
 	@Override
 	public List<String> getSupportedProtocols() {
 		return protocols;
 	}
 	
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
+	 */
 	@Override
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException,TorrentTimeoutException, TorrentException, IOException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException,TorrentTimeoutException, TorrentException, IOException {
+		if(protocols.contains(uri.getScheme().toUpperCase()) == false ){
+			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
+		}
+		
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);

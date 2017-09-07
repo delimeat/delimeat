@@ -27,6 +27,13 @@ import io.delimeat.torrent.exception.UnhandledScrapeException;
 public interface ScrapeRequestHandler {
 
 	/**
+	 * Get list of supported protocols
+	 * 
+	 * @return list of supported protocols
+	 */
+	public List<String> getSupportedProtocols();
+	
+	/**
 	 * Perform a scrape
 	 * @param uri
 	 * @param infoHash
@@ -34,7 +41,6 @@ public interface ScrapeRequestHandler {
 	 * @throws UnhandledScrapeException
 	 * @throws TorrentException
 	 */
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException;
-	
-	public List<String> getSupportedProtocols();
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException;
+
 }
