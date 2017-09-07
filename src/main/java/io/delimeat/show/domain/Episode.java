@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -100,7 +101,7 @@ public class Episode {
 	@Column(name="VERSION")
 	private int version;
 	
-	@ManyToOne(targetEntity=Show.class, optional=false, fetch=FetchType.EAGER)
+	@ManyToOne(targetEntity=Show.class, optional=false, fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
 	@JoinColumn(name="SHOW_ID", referencedColumnName="SHOW_ID", nullable=false)
 	private Show show;
 
