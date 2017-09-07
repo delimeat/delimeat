@@ -20,6 +20,8 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import okhttp3.OkHttpClient;
+
 public class DelimeatUtilsTest {
 
 	@Test
@@ -52,5 +54,13 @@ public class DelimeatUtilsTest {
 	@Test(expected=RuntimeException.class)
 	public void hashBytesInvalidAlgorithmTest(){
 		DelimeatUtils.hashBytes("byes".getBytes(),"JIBBERISH");
+	}
+	
+	@Test
+	public void httpClientTest(){
+		OkHttpClient client = DelimeatUtils.httpClient();
+		Assert.assertEquals(2000, client.connectTimeoutMillis());
+		Assert.assertEquals(2000, client.readTimeoutMillis());
+		Assert.assertEquals(2000, client.writeTimeoutMillis());
 	}
 }

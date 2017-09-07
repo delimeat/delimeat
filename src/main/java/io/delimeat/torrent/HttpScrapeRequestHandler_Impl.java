@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -40,7 +39,6 @@ import io.delimeat.torrent.exception.TorrentResponseException;
 import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 import io.delimeat.util.DelimeatUtils;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -64,12 +62,11 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		try {
 			final URL scrapeURL = generateScrapeURL(uri, infoHash);
 
-			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
 			Request request = new Request.Builder().url(scrapeURL).addHeader("Accept", "text/plain").build();
 
 			Response response;
 			try {
-				response = client.newCall(request).execute();
+				response = DelimeatUtils.httpClient().newCall(request).execute();
 			} catch (SocketTimeoutException ex) {
 				throw new TorrentTimeoutException(scrapeURL);
 			}

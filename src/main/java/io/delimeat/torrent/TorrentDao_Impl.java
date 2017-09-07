@@ -21,7 +21,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -42,7 +41,6 @@ import io.delimeat.torrent.exception.TorrentResponseBodyException;
 import io.delimeat.torrent.exception.TorrentResponseException;
 import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.util.DelimeatUtils;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -61,7 +59,6 @@ public class TorrentDao_Impl implements TorrentDao {
 	@Override
 	public Torrent read(URI uri) throws TorrentNotFoundException,TorrentResponseException, TorrentResponseBodyException, TorrentException, IOException {
 		try {
-			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
 			URL url = uri.toURL();
 			Request request = new Request.Builder()
 										.addHeader("Referer", uri.toASCIIString())
@@ -71,7 +68,7 @@ public class TorrentDao_Impl implements TorrentDao {
 
 			Response response;
 			try{
-				response = client.newCall(request).execute();
+				response = DelimeatUtils.httpClient().newCall(request).execute();
 			}catch(SocketTimeoutException ex){
 				throw new TorrentTimeoutException(uri.toURL());
 			}

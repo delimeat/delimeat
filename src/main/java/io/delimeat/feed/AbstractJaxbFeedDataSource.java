@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -37,14 +36,13 @@ import org.slf4j.LoggerFactory;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSearch;
 import io.delimeat.feed.domain.FeedSource;
-import io.delimeat.feed.exception.FeedResponseBodyException;
 import io.delimeat.feed.exception.FeedContentTypeException;
 import io.delimeat.feed.exception.FeedException;
+import io.delimeat.feed.exception.FeedResponseBodyException;
 import io.delimeat.feed.exception.FeedResponseException;
 import io.delimeat.feed.exception.FeedTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -113,12 +111,11 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 			URL url = generateUrl(DelimeatUtils.urlEscape(title, "UTF-8"));
 			LOGGER.info("Opening {}",url);
 			
-			OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).build();
 			Request request = new Request.Builder().url(url).headers(Headers.of(headers)).build();
 
 			Response response = null;
 			try{
-				response = client.newCall(request).execute();
+				response = DelimeatUtils.httpClient().newCall(request).execute();
 			} catch(SocketTimeoutException ex){
 				throw new FeedTimeoutException(url);
 			}

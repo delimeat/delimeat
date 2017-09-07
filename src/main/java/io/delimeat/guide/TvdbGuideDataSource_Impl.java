@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -55,7 +54,6 @@ import io.delimeat.guide.exception.GuideTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import okhttp3.Headers;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -278,14 +276,6 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 				.collect(Collectors.toList());
 	}
 	
-	public OkHttpClient getClient(){
-		return new OkHttpClient()
-				.newBuilder()
-				.connectTimeout(2, TimeUnit.SECONDS)
-				.readTimeout(2, TimeUnit.SECONDS)
-				.build();
-	}
-	
 	public Request buildGet(URL url, Map<String, String> headers){
 		return new Request.Builder()
 				.url(url)
@@ -316,7 +306,7 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		try{
 			Response response = null;
 			try{
-				response = getClient().newCall(request).execute();
+				response = DelimeatUtils.httpClient().newCall(request).execute();
 			}catch(SocketTimeoutException ex){
 				throw new GuideTimeoutException(request.url().url());
 			}
