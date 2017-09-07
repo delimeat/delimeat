@@ -257,13 +257,6 @@
 		</dependency>
 		
 		<!-- OTHER ! -->
-		<!-- 
-		<dependency>
-    		<groupId>com.github.ben-manes.caffeine</groupId>
-   			<artifactId>caffeine</artifactId>
-    		<version>${com.github.ben-manes.caffeine.version}</version>
-		</dependency>
-		!-->
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
@@ -273,6 +266,11 @@
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>
 		    <version>${com.squareup.okhttp3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>logging-interceptor</artifactId>
+			<version>${com.squareup.okhttp3.version}</version>
 		</dependency>
         
 		<!-- LOGGING -->
@@ -290,14 +288,7 @@
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>log4j-over-slf4j</artifactId>
 		    <version>${org.slf4j.version}</version>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		!-->	
+		</dependency>	
 		<dependency>
 		    <groupId>ch.qos.logback</groupId>
 		    <artifactId>logback-classic</artifactId>
