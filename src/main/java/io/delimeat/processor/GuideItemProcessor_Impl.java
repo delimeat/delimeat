@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -160,17 +161,32 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
     	LOGGER.debug(String.format("ending guide item processor for %s", show.getTitle()));	
 	}
 
-	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) throws ShowException {
+	public LocalDate minPendingAirDate(List<Episode> showEps){
+		return showEps.stream()
+				.filter(ep->EpisodeStatus.PENDING.equals(ep.getStatus()))
+				.min(new Comparator<Episode>() {
+					@Override
+					public int compare(Episode ep1, Episode ep2) {
+						return ep1.getAirDate().compareTo(ep2.getAirDate());
+					}
+				}).map(p->p.getAirDate())
+				.orElse(LocalDate.now());
+	}
+	
+	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) throws ShowException {		
 		List<Episode> episodesToCreate = guideEps.stream()
 											.filter(guideEp -> showEps.stream().noneMatch(ep->DelimeatUtils.equals(guideEp, ep)))
 											.map(ShowUtils::fromGuideEpisode)
-											.map(ep -> {
-												ep.setShow(show);
-												return ep;
-											})
 											.collect(Collectors.toList());
 
+		final LocalDate minPendingAirDate = minPendingAirDate(showEps);
 		for (Episode ep : episodesToCreate) {
+			ep.setShow(show);
+			if(minPendingAirDate.isAfter(ep.getAirDate())){
+				ep.setStatus(EpisodeStatus.SKIPPED);
+			}else{
+				ep.setStatus(EpisodeStatus.PENDING);
+			}
 			episodeService.create(ep);
 		}
 

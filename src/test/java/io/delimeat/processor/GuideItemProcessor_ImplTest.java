@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import io.delimeat.guide.GuideService;
@@ -75,28 +76,119 @@ public class GuideItemProcessor_ImplTest {
 	}
 	
 	@Test
+	public void minPendingAirDateTest(){
+		Episode skippedEpisode = new Episode();
+		skippedEpisode.setStatus(EpisodeStatus.SKIPPED);
+		skippedEpisode.setAirDate(LocalDate.of(2000, 12, 31));
+		
+		Episode foundEpisode = new Episode();
+		foundEpisode.setStatus(EpisodeStatus.FOUND);
+		foundEpisode.setAirDate(LocalDate.of(2017, 01, 01));
+		
+		Episode minPendingEpisode = new Episode();
+		minPendingEpisode.setStatus(EpisodeStatus.PENDING);
+		minPendingEpisode.setAirDate(LocalDate.of(2017, 01, 02));
+		
+		Episode maxPendingEpisode = new Episode();
+		maxPendingEpisode.setStatus(EpisodeStatus.PENDING);
+		maxPendingEpisode.setAirDate(LocalDate.of(2017, 12, 31));
+		
+		LocalDate result = processor.minPendingAirDate(Arrays.asList(skippedEpisode,foundEpisode,minPendingEpisode,maxPendingEpisode));
+		
+		Assert.assertEquals(LocalDate.of(2017, 01, 02), result);
+	}
+	
+	@Test
+	public void minPendingAirDateNoPendingTest(){
+		Episode skippedEpisode = new Episode();
+		skippedEpisode.setStatus(EpisodeStatus.SKIPPED);
+		skippedEpisode.setAirDate(LocalDate.of(2000, 12, 31));
+		
+		Episode foundEpisode = new Episode();
+		foundEpisode.setStatus(EpisodeStatus.FOUND);
+		foundEpisode.setAirDate(LocalDate.of(2017, 01, 01));
+		
+		LocalDate result = processor.minPendingAirDate(Arrays.asList(skippedEpisode,foundEpisode));
+		
+		Assert.assertNotNull(result);
+		Assert.assertEquals(LocalDate.now(),result);
+	}
+	
+	@Test
 	public void createEpisodesTest() throws Exception {
 		Episode existingEp = new Episode();
 		existingEp.setSeasonNum(1);
 		existingEp.setEpisodeNum(1);
+		existingEp.setAirDate(LocalDate.MIN);
+		existingEp.setStatus(EpisodeStatus.PENDING);
 		List<Episode> showEps = Arrays.asList(existingEp);
 		
 		GuideEpisode existingGuideEp = new GuideEpisode();
 		existingGuideEp.setSeasonNum(1);
 		existingGuideEp.setEpisodeNum(1);
+		existingGuideEp.setAirDate(LocalDate.MIN);
 		
 		GuideEpisode newGuideEp = new GuideEpisode();
 		newGuideEp.setSeasonNum(2);
 		newGuideEp.setEpisodeNum(3);
+		newGuideEp.setAirDate(LocalDate.of(2017, 9, 8));
 		
 		List<GuideEpisode> guideEps = Arrays.asList(existingGuideEp, newGuideEp);
 
 		Show show = new Show();
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
+		Mockito.when(episodeService.create(argumentCaptor.capture())).thenReturn(null);
 		processor.setEpisodeService(episodeService);
 		
 		Assert.assertTrue(processor.createEpisodes(guideEps, showEps,show));
+		
+		Episode result = argumentCaptor.getValue();
+		Assert.assertEquals(LocalDate.of(2017, 9, 8), result.getAirDate());
+		Assert.assertEquals(EpisodeStatus.PENDING, result.getStatus());
+		Assert.assertEquals(2, result.getSeasonNum());
+		Assert.assertEquals(3, result.getEpisodeNum());
+		
+		Mockito.verify(episodeService).create(Mockito.any());
+		Mockito.verifyNoMoreInteractions(episodeService);
+	}
+	
+	@Test
+	public void createEpisodesSkippedTest() throws Exception {
+		Episode existingEp = new Episode();
+		existingEp.setSeasonNum(1);
+		existingEp.setEpisodeNum(1);
+		existingEp.setAirDate(LocalDate.of(2017, 9, 9));
+		existingEp.setStatus(EpisodeStatus.PENDING);
+		List<Episode> showEps = Arrays.asList(existingEp);
+		
+		GuideEpisode existingGuideEp = new GuideEpisode();
+		existingGuideEp.setSeasonNum(1);
+		existingGuideEp.setEpisodeNum(1);
+		existingGuideEp.setAirDate(LocalDate.of(2017, 9, 9));
+		
+		GuideEpisode newGuideEp = new GuideEpisode();
+		newGuideEp.setSeasonNum(2);
+		newGuideEp.setEpisodeNum(3);
+		newGuideEp.setAirDate(LocalDate.of(2017, 9, 8));
+		
+		List<GuideEpisode> guideEps = Arrays.asList(existingGuideEp, newGuideEp);
+
+		Show show = new Show();
+		
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
+		Mockito.when(episodeService.create(argumentCaptor.capture())).thenReturn(null);
+		processor.setEpisodeService(episodeService);
+		
+		Assert.assertTrue(processor.createEpisodes(guideEps, showEps,show));
+		
+		Episode result = argumentCaptor.getValue();
+		Assert.assertEquals(LocalDate.of(2017, 9, 8), result.getAirDate());
+		Assert.assertEquals(EpisodeStatus.SKIPPED, result.getStatus());
+		Assert.assertEquals(2, result.getSeasonNum());
+		Assert.assertEquals(3, result.getEpisodeNum());
 		
 		Mockito.verify(episodeService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -286,12 +378,13 @@ public class GuideItemProcessor_ImplTest {
 		showEpToDelete.setEpisodeNum(2);
 		showEpToDelete.setEpisodeId(Long.MIN_VALUE);
 		showEpToDelete.setStatus(EpisodeStatus.PENDING);
+		showEpToDelete.setAirDate(LocalDate.of(2017,9,8));
 		
 		Episode showEpToUpdate = new Episode();
 		showEpToUpdate.setSeasonNum(2);
 		showEpToUpdate.setEpisodeNum(3);
 		showEpToUpdate.setTitle("TITLE");
-		showEpToUpdate.setAirDate(LocalDate.parse("2000-01-01"));
+		showEpToUpdate.setAirDate(LocalDate.of(2000,1,1));
 		showEpToUpdate.setStatus(EpisodeStatus.PENDING);
 		
 		ShowService showService = Mockito.mock(ShowService.class);
@@ -301,6 +394,12 @@ public class GuideItemProcessor_ImplTest {
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		Mockito.when(episodeService.findByShow(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEpToDelete, showEpToUpdate));
+		ArgumentCaptor<Episode> createCaptor = ArgumentCaptor.forClass(Episode.class);
+		Mockito.when(episodeService.create(createCaptor.capture())).thenReturn(null);
+		ArgumentCaptor<Long> deleteCaptor = ArgumentCaptor.forClass(Long.class);
+		Mockito.doNothing().when(episodeService).delete(deleteCaptor.capture());
+		ArgumentCaptor<Episode> updateCaptor = ArgumentCaptor.forClass(Episode.class);
+		Mockito.when(episodeService.update(updateCaptor.capture())).thenReturn(null);
 
 		processor.setEpisodeService(episodeService);
 
@@ -313,11 +412,12 @@ public class GuideItemProcessor_ImplTest {
 		guideEpToUpdate.setSeasonNum(2);
 		guideEpToUpdate.setEpisodeNum(3);
 		guideEpToUpdate.setTitle("UPDATED_TITLE");
-		guideEpToUpdate.setAirDate(LocalDate.parse("2017-03-28"));
+		guideEpToUpdate.setAirDate(LocalDate.of(2017,03,28));
 		
 		GuideEpisode guideEpToCreate = new GuideEpisode();
 		guideEpToCreate.setSeasonNum(3);
 		guideEpToCreate.setEpisodeNum(4);
+		guideEpToCreate.setAirDate(LocalDate.of(2017,03,28));
 		
 		GuideService guideService = Mockito.mock(GuideService.class);
 		Mockito.when(guideService.read("GUIDEID")).thenReturn(info);
@@ -333,14 +433,29 @@ public class GuideItemProcessor_ImplTest {
 		Assert.assertTrue(show.getLastGuideUpdate().toEpochMilli()<=testEnd.getTime());
 		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
 		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
-
+		
+		Episode createdEpResult = createCaptor.getValue();
+		Assert.assertEquals(LocalDate.of(2017,03,28), createdEpResult.getAirDate());
+		Assert.assertEquals(3, createdEpResult.getSeasonNum());
+		Assert.assertEquals(4, createdEpResult.getEpisodeNum());
+		Assert.assertEquals(EpisodeStatus.PENDING, createdEpResult.getStatus());
+		
+		Episode updatedEpResult = updateCaptor.getValue();
+		Assert.assertEquals(LocalDate.of(2017,03,28), updatedEpResult.getAirDate());
+		Assert.assertEquals(2, updatedEpResult.getSeasonNum());
+		Assert.assertEquals(3, updatedEpResult.getEpisodeNum());
+		Assert.assertEquals("UPDATED_TITLE", updatedEpResult.getTitle());
+		Assert.assertEquals(EpisodeStatus.PENDING, updatedEpResult.getStatus());
+		
+		Assert.assertEquals(Long.MIN_VALUE, deleteCaptor.getValue().longValue());
+		
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
 		
 		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
 		Mockito.verify(episodeService).delete(Long.MIN_VALUE);
-		Mockito.verify(episodeService).create(Mockito.any(Episode.class));
-		Mockito.verify(episodeService).update(Mockito.any(Episode.class));
+		Mockito.verify(episodeService).create(Mockito.any());
+		Mockito.verify(episodeService).update(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
 
 		Mockito.verify(guideService).read("GUIDEID");
