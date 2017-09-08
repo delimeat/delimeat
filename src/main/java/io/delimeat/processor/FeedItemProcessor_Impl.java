@@ -288,9 +288,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     public void validateTorrent(FeedProcessUnit result, Show show, Config config) {
     	for(TorrentValidator validator: torrentValidators){
     		if(validator.validate(result.getTorrent(), show, config) == false){
-    			FeedProcessUnitRejection rejection = validator.getRejection();
-    			result.getRejections().add(rejection);
-    			LOGGER.debug("Rejected {} for {}",result.getTitle(), rejection);
+    			result.getRejections().add(validator.getRejection());
     			break;
     		}
     	}

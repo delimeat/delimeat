@@ -16,6 +16,7 @@
 package io.delimeat.processor.filter;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,10 @@ public abstract class AbstractFeedResultFilter implements FeedResultFilter {
 	 */
 	@Override
 	public void filter(List<FeedResult> results, Episode episode, Config config) {
-		LOGGER.trace("Start filtering {}", results);
-		LOGGER.trace("Episode {}", episode);
-		LOGGER.trace("Config {}", config);
+		Objects.requireNonNull(results, "Results must not be null");
+		Objects.requireNonNull(episode, "Episode must not be null");
+		Objects.requireNonNull(config, "Config must not be null");
+		LOGGER.trace("Start filtering\n{}\n{}\n{}", results,episode,config);
 		
 		doFilter(results,episode,config);
 		

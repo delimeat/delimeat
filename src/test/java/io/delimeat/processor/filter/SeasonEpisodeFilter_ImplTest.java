@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.filter.SeasonEpisodeFilter_Impl;
 import io.delimeat.show.domain.Episode;
@@ -52,7 +53,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("texttextS01E19TEXTTEXT");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1,results.size());
 		Assert.assertEquals(result, results.get(0));
 		
@@ -71,7 +72,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0,results.size());	
 	}
 	
@@ -88,7 +89,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("TITLE");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0,results.size());	
 
 	}
@@ -106,7 +107,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("TITLE");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());	
 	
 	}
@@ -124,7 +125,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("texttextS01E19TEXTTEXT");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1,results.size());
 		Assert.assertEquals(result, results.get(0));
 
@@ -143,7 +144,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("texttext2012.01.05_03of99TEXTTEXT");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0,results.size());	
 
 	}
@@ -161,7 +162,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("texttextS02E19TEXTTEXT");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0,results.size());	
 
 	}
@@ -179,7 +180,7 @@ public class SeasonEpisodeFilter_ImplTest {
 		result.setTitle("texttextS01E18TEXTTEXT");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());	
 
 	}
@@ -210,7 +211,7 @@ public class SeasonEpisodeFilter_ImplTest {
 
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result1,result2,result3,result4,result5));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1,results.size());
 		Assert.assertEquals(result1, results.get(0));
 		

@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.filter.MiniSeriesEpisodeFilter_Impl;
 import io.delimeat.show.domain.Episode;
@@ -50,7 +51,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
 	}
@@ -67,7 +68,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle(null);
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	
 	}
@@ -84,7 +85,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	
 	}
@@ -101,7 +102,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("testtext12.02");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	
 	}
@@ -118,7 +119,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 
 	}
@@ -134,7 +135,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_03Of99");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 
 	}
@@ -150,7 +151,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 		result.setTitle("SHOW_TITLE_S01E02_2012.12.12_01Of99");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
 	}
@@ -181,7 +182,7 @@ public class MiniSeriesEpisodeFilter_ImplTest {
 
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result1,result2,result3,result4,result5));
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result1, results.get(0));
 	}

@@ -26,22 +26,17 @@ import io.delimeat.torrent.domain.TorrentInfo;
 
 @Component
 @Order(4)
-public class TorrentFolderValidator_Impl implements TorrentValidator{
+public class TorrentFolderValidator_Impl extends AbstractTorrentValidator implements TorrentValidator{
+
+	public TorrentFolderValidator_Impl(){
+		super(FeedProcessUnitRejection.CONTAINS_FOLDERS);
+	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 * @see io.delimeat.processor.validation.AbstractTorrentValidator#doValidate(io.delimeat.torrent.domain.Torrent, io.delimeat.show.domain.Show, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public FeedProcessUnitRejection getRejection() {
-		return FeedProcessUnitRejection.CONTAINS_FOLDERS;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.server.processor.validation.TorrentValidator#validate(io.delimeat.server.torrent.model.Torrent, io.delimeat.common.show.model.Show, io.delimeat.common.config.model.Config)
-	 */
-	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) {
-		
+	boolean doValidate(Torrent torrent, Show show, Config config) {
 		if(config.isIgnoreFolders() == true){
 			final TorrentInfo info = torrent.getInfo();
 			
@@ -50,7 +45,6 @@ public class TorrentFolderValidator_Impl implements TorrentValidator{
 			}
 		}
 		return true;
-
 	}
 
 	

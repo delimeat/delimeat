@@ -27,6 +27,7 @@ import org.junit.Test;
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.filter.ExcludedKeywordFilter_Impl;
+import io.delimeat.show.domain.Episode;
 
 public class ExcludedKeywordFilter_ImplTest {
 
@@ -43,7 +44,7 @@ public class ExcludedKeywordFilter_ImplTest {
 		FeedResult result = new FeedResult();
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
      
-		filter.filter(results, null, config);
+		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
    }
@@ -56,7 +57,7 @@ public class ExcludedKeywordFilter_ImplTest {
 		FeedResult result = new FeedResult();
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
      
-		filter.filter(results, null, config);
+		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
    }
@@ -70,7 +71,7 @@ public class ExcludedKeywordFilter_ImplTest {
      	result.setTitle("BLAH_BLAHFIND_ME_BLAH");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
      
-		filter.filter(results, null, config);
+		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(0, results.size());
    }
   
@@ -83,7 +84,7 @@ public class ExcludedKeywordFilter_ImplTest {
      	result.setTitle("BLAH_BLAH_BLAH");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
      
-		filter.filter(results, null, config);
+		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
    }

@@ -28,22 +28,17 @@ import io.delimeat.torrent.domain.TorrentInfo;
 
 @Component
 @Order(1)
-public class TorrentSizeValidator_Impl implements TorrentValidator {
+public class TorrentSizeValidator_Impl extends AbstractTorrentValidator implements TorrentValidator {
 
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
-	 */
-	@Override
-	public FeedProcessUnitRejection getRejection() {
-		return FeedProcessUnitRejection.FILE_SIZE_INCORRECT;
+	public TorrentSizeValidator_Impl(){
+		super(FeedProcessUnitRejection.FILE_SIZE_INCORRECT);
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see io.delimeat.processor.validation.TorrentValidator#validate(io.delimeat.torrent.domain.Torrent, io.delimeat.show.domain.Show, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.validation.AbstractTorrentValidator#doValidate(io.delimeat.torrent.domain.Torrent, io.delimeat.show.domain.Show, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) {
+	boolean doValidate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 		
 		long torrentSize = Optional.ofNullable(info.getFiles())

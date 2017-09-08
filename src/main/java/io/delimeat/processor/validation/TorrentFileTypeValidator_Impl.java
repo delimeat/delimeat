@@ -32,21 +32,20 @@ import io.delimeat.torrent.domain.TorrentInfo;
 
 @Component
 @Order(3)
-public class TorrentFileTypeValidator_Impl implements TorrentValidator {
+public class TorrentFileTypeValidator_Impl extends AbstractTorrentValidator implements TorrentValidator {
+
+	/**
+	 * @param rejection
+	 */
+	public TorrentFileTypeValidator_Impl() {
+		super(FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES);
+	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.processor.validation.TorrentValidator#getRejection()
+	 * @see io.delimeat.processor.validation.AbstractTorrentValidator#doValidate(io.delimeat.torrent.domain.Torrent, io.delimeat.show.domain.Show, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public FeedProcessUnitRejection getRejection() {
-		return FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.server.processor.validation.TorrentValidator#validate(io.delimeat.server.torrent.model.Torrent, io.delimeat.common.show.model.Show, io.delimeat.common.config.model.Config)
-	 */
-	@Override
-	public boolean validate(Torrent torrent, Show show, Config config) {
+	boolean doValidate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 		
 		if(config.getIgnoredFileTypes() == null || config.getIgnoredFileTypes().isEmpty() == true){

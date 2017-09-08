@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.filter.DailyEpisodeFilter_Impl;
 import io.delimeat.show.domain.Episode;
@@ -51,7 +52,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.02.03");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());	
 		Assert.assertEquals(result, results.get(0));	
 	}
@@ -70,7 +71,7 @@ public class DailyEpisodeFilter_ImplTest {
 
 		System.out.println(results.size());
 		
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 
@@ -86,7 +87,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 	
@@ -102,7 +103,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext12.02");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 	
@@ -118,7 +119,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext12.02");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 	
@@ -134,7 +135,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.JAN.02");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 	@Test
@@ -149,7 +150,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.02.TUES");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
   
@@ -165,7 +166,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2013.02.03");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
     
@@ -181,7 +182,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.13.03");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 	@Test
@@ -196,7 +197,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.02.14");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
   
@@ -212,7 +213,7 @@ public class DailyEpisodeFilter_ImplTest {
 		result.setTitle("testtext2012.02.03");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
 	}
@@ -254,7 +255,7 @@ public class DailyEpisodeFilter_ImplTest {
 
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result1,result2,result3,result4,result5,result6,result7,result8,result9));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result1, results.get(0));	
 

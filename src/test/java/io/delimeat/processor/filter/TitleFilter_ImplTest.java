@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.delimeat.config.domain.Config;
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.processor.filter.TitleFilter_Impl;
 import io.delimeat.show.domain.Episode;
@@ -48,7 +49,7 @@ public class TitleFilter_ImplTest {
 		result.setTitle("");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 
 	}
@@ -64,7 +65,7 @@ public class TitleFilter_ImplTest {
 		result.setTitle("other_text_DIFFERENT_TITLE_other_text");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));		
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(0, results.size());
 	}
 
@@ -79,7 +80,7 @@ public class TitleFilter_ImplTest {
 		result.setTitle("other_text_SHOW_TITLE_other_text");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));		
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());	
 		Assert.assertEquals(result, results.get(0));	
 	}
@@ -102,7 +103,7 @@ public class TitleFilter_ImplTest {
 		
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result1, result2, result3));
 
-		filter.filter(results, episode, null);
+		filter.filter(results, episode, new Config());
 		Assert.assertEquals(1, results.size());	
 		Assert.assertEquals(result2, results.get(0));	
 	
