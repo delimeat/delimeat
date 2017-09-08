@@ -27,13 +27,13 @@ import io.delimeat.show.domain.Episode;
 
 @Component
 @Order(1)
-public class TitleFilter_Impl implements FeedResultFilter {
+public class TitleFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.filter.AbstractFeedResultFilter#doFilter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config)  {
+	void doFilter(List<FeedResult> results, Episode episode, Config config) {
 		final String showTitle = episode.getShow().getTitle().toLowerCase().replace(".", " ");
 
 		String title;
@@ -44,10 +44,11 @@ public class TitleFilter_Impl implements FeedResultFilter {
 			
 			if(title == null || title.toLowerCase().replace(".", " ").contains(showTitle) == false){
 				iterator.remove();
+				LOGGER.trace("Removing  {}", result);
 			}
 
 		}
-
+		
 	}
 
 }

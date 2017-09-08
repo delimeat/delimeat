@@ -30,14 +30,16 @@ import io.delimeat.show.domain.Episode;
 
 @Component
 @Order(2)
-public class ExcludedKeywordFilter_Impl implements FeedResultFilter {
+public class ExcludedKeywordFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
+
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.filter.AbstractFeedResultFilter#doFilter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config) {
+	void doFilter(List<FeedResult> results, Episode episode, Config config) {
 		if (config.getExcludedKeywords() == null || config.getExcludedKeywords().isEmpty()) {
+			LOGGER.trace("No excluded keywords, ending");
 			return;
 		}
 		
@@ -56,9 +58,10 @@ public class ExcludedKeywordFilter_Impl implements FeedResultFilter {
 
 			if (pattern.matcher(title).find()) {
 				iterator.remove();
+				LOGGER.trace("Removing  {}", result);
 			}
 		}
-
+		
 	}
 
 }

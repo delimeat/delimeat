@@ -30,18 +30,19 @@ import io.delimeat.show.domain.ShowType;
 
 @Component
 @Order(3)
-public class SeasonEpisodeFilter_Impl implements FeedResultFilter {
+public class SeasonEpisodeFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	private static final String SEASON_REGEX = "(?<=[Ss]?)\\d{1,2}(?=[xXeE]\\d{1,2})";
 	private static final String EPISODE_REGEX = "(?<=[Ss]?\\d{1,2}[eExX])\\d{1,2}";
-	
+
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.filter.AbstractFeedResultFilter#doFilter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config) {
+	void doFilter(List<FeedResult> results, Episode episode, Config config) {
 		// if its not a season episode do nothing
 		if(ShowType.SEASON.equals(episode.getShow().getShowType()) != true){
+			LOGGER.trace("Not a season show, ending");
 			return;
 		}
 		
@@ -72,8 +73,8 @@ public class SeasonEpisodeFilter_Impl implements FeedResultFilter {
 			}
 			
 			iterator.remove();
+			LOGGER.trace("Removing  {}", result);
 		}
-
 	}
 
 }

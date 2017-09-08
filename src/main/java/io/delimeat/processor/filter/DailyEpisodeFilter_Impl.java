@@ -32,19 +32,20 @@ import io.delimeat.show.domain.ShowType;
 
 @Component
 @Order(4)
-public class DailyEpisodeFilter_Impl implements FeedResultFilter {
+public class DailyEpisodeFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	private static final String YEAR_REGEX = "\\d{4}(?=[\\s\\.]\\d{2}[\\s\\.]\\d{2})";
 	private static final String MONTH_REGEX = "(?<=\\d{4}[\\s\\.])\\d{2}(?=[\\s\\.]\\d{2})";
 	private static final String DAY_REGEX = "(?<=\\d{4}[\\s\\.]\\d{2}[\\s\\.])\\d{2}";
-	
+
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.filter.AbstractFeedResultFilter#doFilter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config){
+	void doFilter(List<FeedResult> results, Episode episode, Config config) {
 		// if its not a daily show don't bother 
 		if(ShowType.DAILY.equals(episode.getShow().getShowType()) == false){
+			LOGGER.trace("Not a daily show, ending");
 			return;
 		}
 		
@@ -80,8 +81,9 @@ public class DailyEpisodeFilter_Impl implements FeedResultFilter {
 				}
 			}
 			iterator.remove();
+			LOGGER.trace("Removing  {}", result);
 		}
-
+		
 	}
 
 }

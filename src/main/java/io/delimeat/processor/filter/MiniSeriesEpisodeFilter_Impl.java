@@ -30,17 +30,18 @@ import io.delimeat.show.domain.ShowType;
 
 @Component
 @Order(5)
-public class MiniSeriesEpisodeFilter_Impl implements FeedResultFilter {
+public class MiniSeriesEpisodeFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	private static final String MINI_SERIES_REGEX = "\\d{2}(?=[Oo][Ff]\\d{2})";
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.feed.filter.FeedResultFilter#filter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
+	 * @see io.delimeat.processor.filter.AbstractFeedResultFilter#doFilter(java.util.List, io.delimeat.show.domain.Episode, io.delimeat.config.domain.Config)
 	 */
 	@Override
-	public void filter(List<FeedResult> results, Episode episode, Config config) {
+	void doFilter(List<FeedResult> results, Episode episode, Config config) {
 		// if its not a mini series don't bother 
 		if(ShowType.MINI_SERIES.equals(episode.getShow().getShowType()) != true){
+			LOGGER.trace("Not a mini series, ending");
 			return;
 		}
 		
@@ -63,8 +64,9 @@ public class MiniSeriesEpisodeFilter_Impl implements FeedResultFilter {
 				}
 			}
 			iterator.remove();
+			LOGGER.trace("Removing  {}", result);
 		}
-
+		
 	}
 
 }
