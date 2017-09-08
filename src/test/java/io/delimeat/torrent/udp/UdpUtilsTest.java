@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 
 import org.bouncycastle.util.Arrays;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import io.delimeat.torrent.domain.InfoHash;
@@ -34,19 +33,12 @@ import io.delimeat.torrent.udp.exception.UdpInvalidFormatException;
 import io.delimeat.torrent.udp.exception.UdpUnsupportedActionException;
 import io.delimeat.util.DelimeatUtils;
 
-public class UdpMessageFactory_ImplTest {
-	
-	private UdpMessageFactory_Impl factory;
-	
-	@Before
-	public void setUp(){
-		factory = new UdpMessageFactory_Impl();
-	}
+public class UdpUtilsTest {
 	
 	@Test
 	public void buildErrorTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
-		ErrorUdpResponse result = factory.buildError(Integer.MAX_VALUE, buf);
+		ErrorUdpResponse result = UdpUtils.buildError(Integer.MAX_VALUE, buf);
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
 		Assert.assertEquals("MESSAGE", result.getMessage());
@@ -56,7 +48,7 @@ public class UdpMessageFactory_ImplTest {
 	public void buildErrorExceptionTest() throws Exception{
 		byte[] messageBytes = new byte[0];
 		ByteBuffer buf = ByteBuffer.wrap(messageBytes);
-		factory.buildError(Integer.MAX_VALUE, buf);
+		UdpUtils.buildError(Integer.MAX_VALUE, buf);
 	}
 	
 	@Test
@@ -65,7 +57,7 @@ public class UdpMessageFactory_ImplTest {
 		buf.putLong(0x41727101980L);
 		
 		ByteBuffer buff2 = ByteBuffer.wrap(buf.array());
-		ConnectUdpResponse result = factory.buildConnect(Integer.MAX_VALUE, buff2);
+		ConnectUdpResponse result = UdpUtils.buildConnect(Integer.MAX_VALUE, buff2);
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
 		Assert.assertEquals(0x41727101980L, result.getConnectionId());
@@ -74,7 +66,7 @@ public class UdpMessageFactory_ImplTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildConnectExceptionTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
-		factory.buildConnect(Integer.MAX_VALUE, buf);
+		UdpUtils.buildConnect(Integer.MAX_VALUE, buf);
 	}
 	
 	@Test
@@ -84,7 +76,7 @@ public class UdpMessageFactory_ImplTest {
 		buf.putInt(Integer.MIN_VALUE);
 		
 		ByteBuffer buff2 = ByteBuffer.wrap(buf.array());
-		ScrapeUdpResponse result = factory.buildScrape(Integer.MAX_VALUE, buff2);
+		ScrapeUdpResponse result = UdpUtils.buildScrape(Integer.MAX_VALUE, buff2);
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
 		Assert.assertEquals(Integer.MAX_VALUE, result.getSeeders());
@@ -94,13 +86,13 @@ public class UdpMessageFactory_ImplTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildScrapeExceptionTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
-		factory.buildScrape(Integer.MAX_VALUE, buf);
+		UdpUtils.buildScrape(Integer.MAX_VALUE, buf);
 	}
 	
 	@Test
 	public void connectRequestTest(){
 		ConnectUdpRequest request = new ConnectUdpRequest(Integer.MIN_VALUE);
-		byte[] result = factory.connectRequest(request);
+		byte[] result = UdpUtils.connectRequest(request);
 		
 		ByteBuffer buf = ByteBuffer.wrap(result);
 		Assert.assertEquals(0x41727101980L, buf.getLong());
@@ -113,7 +105,7 @@ public class UdpMessageFactory_ImplTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		InfoHash infoHash = new InfoHash(infoBytes);
 		ScrapeUdpRequest request = new ScrapeUdpRequest(Long.MAX_VALUE, Integer.MIN_VALUE, infoHash);
-		byte[] result = factory.scrapeRequest(request);
+		byte[] result = UdpUtils.scrapeRequest(request);
 		
 		ByteBuffer buf = ByteBuffer.wrap(result);
 		Assert.assertEquals(Long.MAX_VALUE, buf.getLong());
@@ -127,7 +119,7 @@ public class UdpMessageFactory_ImplTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildResponseTooShortTest() throws Exception{
 		byte[] bytes = new byte[]{1,3,4,5};
-		factory.buildResponse(bytes);
+		UdpUtils.buildResponse(bytes);
 	}
 	
 	@Test(expected=UdpUnsupportedActionException.class)
@@ -135,7 +127,7 @@ public class UdpMessageFactory_ImplTest {
 		ByteBuffer buf = ByteBuffer.allocate(8);
 		buf.putInt(Integer.MAX_VALUE);
 		buf.putInt(Integer.MIN_VALUE);
-		factory.buildResponse(buf.array());
+		UdpUtils.buildResponse(buf.array());
 	}
 	
 	@Test
@@ -144,7 +136,7 @@ public class UdpMessageFactory_ImplTest {
 		buf.putInt(0);
 		buf.putInt(Integer.MIN_VALUE);
 		buf.putLong(Long.MAX_VALUE);
-		UdpResponse result = factory.buildResponse(buf.array());
+		UdpResponse result = UdpUtils.buildResponse(buf.array());
 		
 		Assert.assertEquals(UdpAction.CONNECT, result.getAction());
 		Assert.assertEquals(Integer.MIN_VALUE, result.getTransactionId());
@@ -160,7 +152,7 @@ public class UdpMessageFactory_ImplTest {
 		buf.putInt(Integer.MIN_VALUE);
 		buf.putInt(Integer.MAX_VALUE);
 		buf.putInt(Integer.MIN_VALUE);
-		UdpResponse result = factory.buildResponse(buf.array());
+		UdpResponse result = UdpUtils.buildResponse(buf.array());
 		
 		Assert.assertEquals(UdpAction.SCRAPE, result.getAction());
 		Assert.assertEquals(Integer.MIN_VALUE, result.getTransactionId());
@@ -177,7 +169,7 @@ public class UdpMessageFactory_ImplTest {
 		buf.putInt(Integer.MIN_VALUE);
 		buf.put("MESSAGE".getBytes());
 		
-		UdpResponse result = factory.buildResponse(buf.array());
+		UdpResponse result = UdpUtils.buildResponse(buf.array());
 		
 		Assert.assertEquals(UdpAction.ERROR, result.getAction());
 		Assert.assertEquals(Integer.MIN_VALUE, result.getTransactionId());

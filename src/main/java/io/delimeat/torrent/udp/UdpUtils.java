@@ -18,8 +18,6 @@ package io.delimeat.torrent.udp;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import org.springframework.stereotype.Component;
-
 import io.delimeat.torrent.udp.domain.ConnectUdpRequest;
 import io.delimeat.torrent.udp.domain.ConnectUdpResponse;
 import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
@@ -29,8 +27,7 @@ import io.delimeat.torrent.udp.domain.UdpResponse;
 import io.delimeat.torrent.udp.exception.UdpInvalidFormatException;
 import io.delimeat.torrent.udp.exception.UdpUnsupportedActionException;
 
-@Component
-public class UdpMessageFactory_Impl implements UdpMessageFactory {
+public class UdpUtils {
 
 	private static final int CONNECT_ACTION = 0;
 	private static final int SCRAPE_ACTION = 2;
@@ -39,8 +36,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 	/* (non-Javadoc)
 	 * @see io.delimeat.torrent.udp.UdpMessageFactory#connectRequest(io.delimeat.torrent.udp.domain.ConnectUdpRequest)
 	 */
-	@Override
-	public byte[] connectRequest(ConnectUdpRequest request) {
+	public static byte[] connectRequest(ConnectUdpRequest request) {
 		ByteBuffer buf = ByteBuffer.allocate(16);
 		buf.putLong(request.getConnectionId());
 		buf.putInt(request.getAction().value());
@@ -51,8 +47,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 	/* (non-Javadoc)
 	 * @see io.delimeat.torrent.udp.UdpMessageFactory#scrapeRequest(io.delimeat.torrent.udp.domain.ScrapeUdpRequest)
 	 */
-	@Override
-	public byte[] scrapeRequest(ScrapeUdpRequest request) {
+	public static byte[] scrapeRequest(ScrapeUdpRequest request) {
 		ByteBuffer buf = ByteBuffer.allocate(36);
 		buf.putLong(request.getConnectionId());
 		buf.putInt(request.getAction().value());
@@ -61,11 +56,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 		return buf.array();
 	}
 
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.udp.UdpMessageFactory#buildResponse(byte[])
-	 */
-	@Override
-	public UdpResponse buildResponse(byte[] bytes) throws UdpInvalidFormatException, UdpUnsupportedActionException{
+	public static UdpResponse buildResponse(byte[] bytes) throws UdpInvalidFormatException, UdpUnsupportedActionException{
 		if(bytes.length < 8){
 			throw new UdpInvalidFormatException(String.format("Incorrect message length received %s expected more than 8 bytes",bytes.length));
 		}
@@ -91,7 +82,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 	 * @return
 	 * @throws UdpInvalidFormatException
 	 */
-	public ConnectUdpResponse buildConnect(int transactionId,  ByteBuffer buf) throws UdpInvalidFormatException{
+	protected static ConnectUdpResponse buildConnect(int transactionId,  ByteBuffer buf) throws UdpInvalidFormatException{
 		try{
 			return new ConnectUdpResponse(transactionId, buf.getLong());
 		}catch(BufferUnderflowException ex){
@@ -105,7 +96,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 	 * @return
 	 * @throws UdpInvalidFormatException
 	 */
-	public ScrapeUdpResponse buildScrape(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
+	protected static ScrapeUdpResponse buildScrape(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
 		try{
 			return new ScrapeUdpResponse(transactionId, buf.getInt(), buf.getInt());
 		}catch(BufferUnderflowException ex){
@@ -119,7 +110,7 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 	 * @return
 	 * @throws UdpInvalidFormatException
 	 */
-	public ErrorUdpResponse buildError(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
+	protected static ErrorUdpResponse buildError(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
 		if(buf.hasRemaining() == false)
 			throw new UdpInvalidFormatException(String.format("Unable to build error response\nbytes: %s", new String(buf.array())));
 
@@ -127,5 +118,4 @@ public class UdpMessageFactory_Impl implements UdpMessageFactory {
 		buf.get(messageBytes);
 		return new ErrorUdpResponse(transactionId, new String(messageBytes).trim());
 	}
-
 }
