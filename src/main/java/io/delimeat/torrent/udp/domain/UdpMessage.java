@@ -15,7 +15,7 @@
  */
 package io.delimeat.torrent.udp.domain;
 
-public class UdpMessage {
+public abstract class UdpMessage {
 
 	protected final UdpAction action;
 	protected final int transactionId;

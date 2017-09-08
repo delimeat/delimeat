@@ -15,7 +15,7 @@
  */
 package io.delimeat.torrent.udp.domain;
 
-public class UdpResponse extends UdpMessage{
+public abstract class UdpResponse extends UdpMessage{
 
 	/**
 	 * @param action
