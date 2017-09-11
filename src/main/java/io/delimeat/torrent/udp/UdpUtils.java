@@ -18,104 +18,58 @@ package io.delimeat.torrent.udp;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import io.delimeat.torrent.udp.domain.ConnectUdpRequest;
 import io.delimeat.torrent.udp.domain.ConnectUdpResponse;
 import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
-import io.delimeat.torrent.udp.domain.ScrapeUdpRequest;
 import io.delimeat.torrent.udp.domain.ScrapeUdpResponse;
 import io.delimeat.torrent.udp.domain.UdpResponse;
+import io.delimeat.torrent.udp.exception.UdpException;
 import io.delimeat.torrent.udp.exception.UdpInvalidFormatException;
-import io.delimeat.torrent.udp.exception.UdpUnsupportedActionException;
 
 public class UdpUtils {
 
-	private static final int CONNECT_ACTION = 0;
-	private static final int SCRAPE_ACTION = 2;
-	private static final int ERROR_ACTION = 3;
+	public final static int CONNECT_ACTION = 0;
+	public final static int SCRAPE_ACTION = 2;
+	public final static int ERROR_ACTION = 3;
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.udp.UdpMessageFactory#connectRequest(io.delimeat.torrent.udp.domain.ConnectUdpRequest)
-	 */
-	public static byte[] connectRequest(ConnectUdpRequest request) {
-		ByteBuffer buf = ByteBuffer.allocate(16);
-		buf.putLong(request.getConnectionId());
-		buf.putInt(request.getAction().value());
-		buf.putInt(request.getTransactionId());
-		return buf.array();
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.udp.UdpMessageFactory#scrapeRequest(io.delimeat.torrent.udp.domain.ScrapeUdpRequest)
-	 */
-	public static byte[] scrapeRequest(ScrapeUdpRequest request) {
-		ByteBuffer buf = ByteBuffer.allocate(36);
-		buf.putLong(request.getConnectionId());
-		buf.putInt(request.getAction().value());
-		buf.putInt(request.getTransactionId());
-		buf.put(request.getInfoHash().getBytes());
-		return buf.array();
-	}
-
-	public static UdpResponse buildResponse(byte[] bytes) throws UdpInvalidFormatException, UdpUnsupportedActionException{
-		if(bytes.length < 8){
-			throw new UdpInvalidFormatException(String.format("Incorrect message length received %s expected more than 8 bytes",bytes.length));
-		}
-		ByteBuffer buf = ByteBuffer.wrap(bytes);
-		int action = buf.getInt();
-		int transactionId = buf.getInt();
-		
+	
+	public static UdpResponse buildResponse(ByteBuffer buffer) throws UdpException{
+		int action = buffer.getInt();			
 		switch(action){
-		case CONNECT_ACTION:
-			return buildConnect(transactionId,buf);
-		case SCRAPE_ACTION:
-			return buildScrape(transactionId,buf);
-		case ERROR_ACTION:
-			return buildError(transactionId,buf);
+		case UdpUtils.CONNECT_ACTION:
+			return UdpUtils.buildConnectResponse(buffer);		
+		case UdpUtils.SCRAPE_ACTION:
+			return UdpUtils.buildScrapeResponse(buffer);
+		case UdpUtils.ERROR_ACTION:
+			return UdpUtils.buildErrorResponse(buffer);
 		default:
-			throw new UdpUnsupportedActionException(String.format("Action {} received, this is unsupported", action));
+			throw new UdpException(String.format("Received unsupported udp action %s", action));
 		}
 	}
-	
-	/**
-	 * @param transactionId
-	 * @param buf
-	 * @return
-	 * @throws UdpInvalidFormatException
-	 */
-	protected static ConnectUdpResponse buildConnect(int transactionId,  ByteBuffer buf) throws UdpInvalidFormatException{
+	public static ConnectUdpResponse buildConnectResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
 		try{
-			return new ConnectUdpResponse(transactionId, buf.getLong());
+			return new ConnectUdpResponse(buffer.getInt(), buffer.getLong());
 		}catch(BufferUnderflowException ex){
-			throw new UdpInvalidFormatException(String.format("Unable to build connect response\nbytes: %s", new String(buf.array())));
+			throw new UdpInvalidFormatException(String.format("Unable to build connect response\nbytes: %s", new String(buffer.array())));
 		}
 	}
 	
-	/**
-	 * @param transactionId
-	 * @param buf
-	 * @return
-	 * @throws UdpInvalidFormatException
-	 */
-	protected static ScrapeUdpResponse buildScrape(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
+	public static ScrapeUdpResponse buildScrapeResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
 		try{
-			return new ScrapeUdpResponse(transactionId, buf.getInt(), buf.getInt());
+			return new ScrapeUdpResponse(buffer.getInt(), buffer.getInt(), buffer.getInt());
 		}catch(BufferUnderflowException ex){
-			throw new UdpInvalidFormatException(String.format("Unable to build connect response\nbytes: %s", new String(buf.array())));
+			throw new UdpInvalidFormatException(String.format("Unable to build connect response\nbytes: %s", new String(buffer.array())));
 		}
 	}
 	
-	/**
-	 * @param transactionId
-	 * @param buf
-	 * @return
-	 * @throws UdpInvalidFormatException
-	 */
-	protected static ErrorUdpResponse buildError(int transactionId, ByteBuffer buf) throws UdpInvalidFormatException{
-		if(buf.hasRemaining() == false)
-			throw new UdpInvalidFormatException(String.format("Unable to build error response\nbytes: %s", new String(buf.array())));
-
-		byte[] messageBytes = new byte[buf.remaining()] ;
-		buf.get(messageBytes);
-		return new ErrorUdpResponse(transactionId, new String(messageBytes).trim());
+	public static ErrorUdpResponse buildErrorResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
+		try{
+			int transactionId = buffer.getInt();
+			byte[] msgBytes = new byte[buffer.remaining()];
+			buffer.get(msgBytes);
+			String message = new String(msgBytes).trim();
+			return new ErrorUdpResponse(transactionId, message);
+		}catch(BufferUnderflowException ex){
+			throw new UdpInvalidFormatException(String.format("Unable to build connect response\nbytes: %s", new String(buffer.array())));
+		}
 	}
 }

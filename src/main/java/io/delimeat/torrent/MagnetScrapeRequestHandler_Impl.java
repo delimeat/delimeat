@@ -15,6 +15,7 @@
  */
 package io.delimeat.torrent;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +61,7 @@ public class MagnetScrapeRequestHandler_Impl extends HttpScrapeRequestHandler_Im
 	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
 	 */
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws TorrentException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, TorrentException {
 		if(protocols.contains((uri.getScheme().toUpperCase())) == false ){
 			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
 		}

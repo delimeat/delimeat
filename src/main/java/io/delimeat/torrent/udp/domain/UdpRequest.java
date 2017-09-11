@@ -15,21 +15,29 @@
  */
 package io.delimeat.torrent.udp.domain;
 
-public abstract class UdpRequest extends UdpMessage {
+import java.nio.ByteBuffer;
 
-	protected final long connectionId;
-	
-	UdpRequest(long connectionId,UdpAction action, int transactionId){
-		super(action, transactionId);
-		this.connectionId = connectionId;
-	}
+public interface UdpRequest {
 
 	/**
 	 * @return the connectionId
 	 */
-	public long getConnectionId() {
-		return connectionId;
-	}	
+	public long getConnectionId();
 	
+	/**
+	 * @return the action
+	 */
+	public UdpAction getAction();
+	
+	/**
+	 * @return the transactionId
+	 */
+	public int getTransactionId();
+	
+	
+	/**
+	 * @return byte buffer representing the request
+	 */
+	public ByteBuffer toByteBuffer();
 	
 }

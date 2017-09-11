@@ -17,13 +17,34 @@ package io.delimeat.torrent.udp.domain;
 
 import java.util.Objects;
 
-public class ErrorUdpResponse extends UdpResponse {
+public class ErrorUdpResponse implements UdpResponse {
 
+	private final int transactionId;
 	private final String message;
+	private final UdpAction action = UdpAction.ERROR;
 	
 	public ErrorUdpResponse(int transactionId, String message) {
-		super(UdpAction.ERROR, transactionId);
+		this.transactionId = transactionId;
 		this.message = message;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * io.delimeat.torrent.udp.domain.AbstractUdpResponse#getTransactionId()
+	 */
+	@Override
+	public int getTransactionId() {
+		return transactionId;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.udp.domain.UdpResponse#getAction()
+	 */
+	@Override
+	public UdpAction getAction() {
+		return action;
 	}
 
 	/**
@@ -33,15 +54,19 @@ public class ErrorUdpResponse extends UdpResponse {
 		return message;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(action,transactionId,message);
+		return Objects.hash(message, transactionId);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -53,14 +78,12 @@ public class ErrorUdpResponse extends UdpResponse {
 		if (getClass() != obj.getClass())
 			return false;
 		ErrorUdpResponse other = (ErrorUdpResponse) obj;
-		if (action != other.action)
-			return false;
-		if (transactionId != other.transactionId)
-			return false;
 		if (message == null) {
 			if (other.message != null)
 				return false;
 		} else if (!message.equals(other.message))
+			return false;
+		if (transactionId != other.transactionId)
 			return false;
 		return true;
 	}
@@ -70,12 +93,7 @@ public class ErrorUdpResponse extends UdpResponse {
 	 */
 	@Override
 	public String toString() {
-		return "ErrorUdpResponse [" + (action != null ? "action=" + action + ", " : "") + "transactionId="
-				+ transactionId + ", " + (message != null ? "message=" + message : "") + "]";
+		return "ErrorUdpResponse [transactionId=" + transactionId + ", action=" + action + ", message=" + message + "]";
 	}
-	
-	
-	
-	
 
 }

@@ -15,14 +15,17 @@
  */
 package io.delimeat.torrent.udp.domain;
 
-public abstract class UdpResponse extends UdpMessage{
+public interface UdpResponse{
 
+	
 	/**
-	 * @param action
-	 * @param transactionId
+	 * @return the action
 	 */
-	UdpResponse(UdpAction action, int transactionId) {
-		super(action, transactionId);
-	}
+	public UdpAction getAction();
+	
+	/**
+	 * @return the transactionId
+	 */
+	public int getTransactionId();
 
 }

@@ -17,34 +17,59 @@ package io.delimeat.torrent.udp.domain;
 
 import java.util.Objects;
 
-public class ConnectUdpResponse extends UdpResponse {
+public class ConnectUdpResponse implements UdpResponse {
 
+	private final int transactionId;
 	private final long connectionId;
-	
-	/**
-	 * @param action
-	 * @param transactionId
-	 */
+	private final UdpAction action = UdpAction.CONNECT;
+
 	public ConnectUdpResponse(int transactionId, long connectionId) {
-		super(UdpAction.CONNECT, transactionId);
+		this.transactionId = transactionId;
 		this.connectionId = connectionId;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * io.delimeat.torrent.udp.domain.AbstractUdpResponse#getTransactionId()
+	 */
+	@Override
+	public int getTransactionId() {
+		return transactionId;
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.udp.domain.UdpResponse#getAction()
+	 */
+	@Override
+	public UdpAction getAction() {
+		return action;
+	}
+
 	/**
 	 * @return the connectionId
+	 */
+	/**
+	 * @return
 	 */
 	public long getConnectionId() {
 		return connectionId;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(action,transactionId,connectionId);
+		return Objects.hash(connectionId, transactionId);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -56,24 +81,20 @@ public class ConnectUdpResponse extends UdpResponse {
 		if (getClass() != obj.getClass())
 			return false;
 		ConnectUdpResponse other = (ConnectUdpResponse) obj;
-		if (action != other.action)
+		if (connectionId != other.connectionId)
 			return false;
 		if (transactionId != other.transactionId)
 			return false;
-		if (connectionId != other.connectionId) 
-			return false;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "ConnectUdpResponse [" + (action != null ? "action=" + action + ", " : "") 
-				+ "transactionId=" + transactionId + ", connectionId=" + connectionId + "]";
+		return "ConnectUdpResponse [transactionId=" + transactionId + ", action=" + action + ", connectionId="
+				+ connectionId + "]";
 	}
-	
-	
 
 }

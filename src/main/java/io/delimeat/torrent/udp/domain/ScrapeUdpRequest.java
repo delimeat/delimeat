@@ -15,36 +15,90 @@
  */
 package io.delimeat.torrent.udp.domain;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import io.delimeat.torrent.domain.InfoHash;
 
-public class ScrapeUdpRequest extends UdpRequest {
+public class ScrapeUdpRequest implements UdpRequest {
 
+	private final long connectionId;
+	private final int transactionId;
 	private final InfoHash infoHash;
-	/**
-	 * @param connectionId
-	 * @param transactionId
-	 * @param infoHash
-	 */
+	private final UdpAction action = UdpAction.SCRAPE;
+
 	public ScrapeUdpRequest(long connectionId, int transactionId, InfoHash infoHash) {
-		super(connectionId, UdpAction.SCRAPE, transactionId);
+		this.connectionId = connectionId;
+		this.transactionId = transactionId;
 		this.infoHash = infoHash;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getConnectionId()
+	 */
+	@Override
+	public long getConnectionId() {
+		return connectionId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getAction()
+	 */
+	@Override
+	public UdpAction getAction() {
+		return action;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getTransactionId()
+	 */
+	@Override
+	public int getTransactionId() {
+		return transactionId;
+	}
+
 	/**
 	 * @return the infoHash
 	 */
 	public InfoHash getInfoHash() {
 		return infoHash;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#toByteBuffer()
+	 */
+	@Override
+	public ByteBuffer toByteBuffer() {
+		ByteBuffer buffer = ByteBuffer.allocate(36)
+				.putLong(connectionId)
+				.putInt(action.value())
+				.putInt(transactionId)
+				.put(infoHash.getBytes());
+		buffer.clear();
+		return buffer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(connectionId,action,transactionId,infoHash);
+		return Objects.hash(connectionId, infoHash, transactionId);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -56,30 +110,27 @@ public class ScrapeUdpRequest extends UdpRequest {
 		if (getClass() != obj.getClass())
 			return false;
 		ScrapeUdpRequest other = (ScrapeUdpRequest) obj;
-		if (connectionId != other.connectionId) 
-			return false;
-		if (action != other.action)
-			return false;
-		if (transactionId != other.transactionId)
+		if (connectionId != other.connectionId)
 			return false;
 		if (infoHash == null) {
 			if (other.infoHash != null)
 				return false;
 		} else if (!infoHash.equals(other.infoHash))
 			return false;
+		if (transactionId != other.transactionId)
+			return false;
 		return true;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "ScrapeUdpRequest [" + "connectionId=" + connectionId + ", " 
-				+ (action != null ? "action=" + action + ", " : "") 
-				+ "transactionId=" + transactionId 
-				+ (infoHash != null ? "infoHash=" + infoHash + ", " : "") + "]";
+		return "ScrapeUdpRequest [connectionId=" + connectionId + ", action=" + action + ", transactionId="
+				+ transactionId + ", infoHash=" + infoHash + "]";
 	}
-	
-	
 
 }

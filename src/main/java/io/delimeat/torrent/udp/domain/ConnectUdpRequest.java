@@ -15,25 +15,72 @@
  */
 package io.delimeat.torrent.udp.domain;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public class ConnectUdpRequest extends UdpRequest {
-	
-	/**
-	 * @param transactionId
-	 */
-	public ConnectUdpRequest(int transactionId){
-		super(0x41727101980L,UdpAction.CONNECT,transactionId);
+public class ConnectUdpRequest implements UdpRequest {
+
+	private final long connectionId = 0x41727101980L;
+	private final int transactionId;
+	private final UdpAction action = UdpAction.CONNECT;
+
+	public ConnectUdpRequest(int transactionId) {
+		this.transactionId = transactionId;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getConnectionId()
+	 */
+	@Override
+	public long getConnectionId() {
+		return connectionId;
+	}
+	
+	@Override
+	public UdpAction getAction() {
+		return action;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getTransactionId()
+	 */
+	@Override
+	public int getTransactionId() {
+		return transactionId;
+	}
+	
+	/* 
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.udp.domain.UdpRequest#toByteBuffer()
+	 */
+	@Override
+	public ByteBuffer toByteBuffer() {
+		ByteBuffer buffer = ByteBuffer.allocate(16)
+				.putLong(connectionId)
+				.putInt(action.value())
+				.putInt(transactionId);
+		buffer.clear();
+		return buffer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(connectionId,action,transactionId);
+		return Objects.hash(connectionId, transactionId);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -45,22 +92,19 @@ public class ConnectUdpRequest extends UdpRequest {
 		if (getClass() != obj.getClass())
 			return false;
 		ConnectUdpRequest other = (ConnectUdpRequest) obj;
-		if (connectionId != other.connectionId) 
-				return false;
-		if (action != other.action)
-			return false;
 		if (transactionId != other.transactionId)
 			return false;
 		return true;
 	}
-	
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "ConnectUdpRequest [connectionId=" + connectionId + ", "
-				+ (action != null ? "action=" + action + ", " : "") + "transactionId=" + transactionId + "]";
-	}	
-	
+		return "ConnectUdpRequest [connectionId=" + connectionId + ", action=" + action + ", transactionId="
+				+ transactionId + "]";
+	}
+
 }

@@ -21,7 +21,6 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -43,32 +42,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 @Component
-public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
+public class HttpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
 
 	private final BString FILES_KEY = new BString("files");
 	private final BString COMPLETE_KEY = new BString("complete");
 	private final BString INCOMPLETE_KEY = new BString("incomplete");
 
-	private final List<String> protocols = Arrays.asList("HTTP", "HTTPS");
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
-	 */
-	@Override
-	public List<String> getSupportedProtocols() {
-		return protocols;
+	public HttpScrapeRequestHandler_Impl(){
+		super(Arrays.asList("HTTP", "HTTPS"));	
 	}
 
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
-	 */
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentTimeoutException,TorrentResponseException, TorrentResponseBodyException, TorrentException {
-		
-		if(protocols.contains(uri.getScheme().toUpperCase()) == false ){
-			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
-		}
-		
+	ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException {
 		try {
 			final URL scrapeURL = generateScrapeURL(uri, infoHash);
 

@@ -24,7 +24,6 @@ import java.net.URI;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 @Component
-public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
+public class UDPScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
 
 	private static final Random RANDOM_GEN = new Random();
 	private static final int ACTION_CONNECT = 0;
@@ -46,13 +45,14 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	private static final int ACTION_ERROR = 3;
 	private static final long CONNECT_CONNECTION_ID = 0x41727101980L;
 	private static final int MAX_SEND_RETRYS = 3; // 3 try's is lazy, because i can't be bothered getting an new connection id
-	
-	private final List<String> protocols = Arrays.asList("UDP");
-	
+		
 	@Autowired
 	@Qualifier("updScrapeDatagramSocket")
 	private DatagramSocket socket;
 	
+	public UDPScrapeRequestHandler_Impl(){
+		super(Arrays.asList("UDP"));
+	}
 	/**
 	 * Set datagram socket
 	 * @param socket
@@ -68,24 +68,9 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	public DatagramSocket getSocket(){
 		return socket;
 	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
-	 */
-	@Override
-	public List<String> getSupportedProtocols() {
-		return protocols;
-	}
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
-	 */
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException,TorrentTimeoutException, TorrentException, IOException {
-		if(protocols.contains(uri.getScheme().toUpperCase()) == false ){
-			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
-		}
-		
+	ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
 		InetSocketAddress address = new InetSocketAddress(host,port);
@@ -98,7 +83,6 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		byte[] scrapeResponse = sendRequest(scrapeRequest,address);
 		ScrapeResult result = handleScrapeResponse(scrapeResponse, scrapeTransId);
 		return result;
-
 	}
 	
 	public byte[] createConnectRequest(int transId){
@@ -168,10 +152,10 @@ public class UDPScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
 	public synchronized byte[] sendRequest(byte[] sendData, InetSocketAddress address) throws IOException, TorrentTimeoutException{
 		DatagramSocket clientSocket = getSocket();
-		byte[] receiveData = new byte[1024];
+		byte[] receiveBuffer = new byte[1024];
 		byte[] response = null;
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address);
-		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 		int sendTry = 0;
 		while(response==null && sendTry < MAX_SEND_RETRYS){
 			sendTry++;

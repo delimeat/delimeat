@@ -17,22 +17,35 @@ package io.delimeat.torrent.udp.domain;
 
 import java.util.Objects;
 
-public class ScrapeUdpResponse extends UdpResponse{
+public class ScrapeUdpResponse implements UdpResponse {
 
+	private final int transactionId;
 	private final int seeders;
 	private final int leechers;
+	private final UdpAction action = UdpAction.SCRAPE;
 
-	/**
-	 * @param transactionId
-	 * @param seeders
-	 * @param leechers
-	 */
 	public ScrapeUdpResponse(int transactionId, int seeders, int leechers) {
-		super(UdpAction.SCRAPE, transactionId);
+		this.transactionId = transactionId;
 		this.seeders = seeders;
 		this.leechers = leechers;
 	}
 
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.udp.domain.AbstractUdpResponse#getTransactionId()
+	 */
+	@Override
+	public int getTransactionId() {
+		return transactionId;
+	}
+	
+	/* (non-Javadoc)
+	 * @see io.delimeat.torrent.udp.domain.UdpResponse#getAction()
+	 */
+	@Override
+	public UdpAction getAction() {
+		return action;
+	}
+	
 	/**
 	 * @return the seeders
 	 */
@@ -52,7 +65,7 @@ public class ScrapeUdpResponse extends UdpResponse{
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(action,transactionId,seeders,leechers);
+		return Objects.hash(leechers, seeders, transactionId);
 	}
 
 	/* (non-Javadoc)
@@ -67,13 +80,11 @@ public class ScrapeUdpResponse extends UdpResponse{
 		if (getClass() != obj.getClass())
 			return false;
 		ScrapeUdpResponse other = (ScrapeUdpResponse) obj;
-		if (action != other.action)
-			return false;
-		if (transactionId != other.transactionId)
-			return false;
 		if (leechers != other.leechers)
 			return false;
 		if (seeders != other.seeders)
+			return false;
+		if (transactionId != other.transactionId)
 			return false;
 		return true;
 	}
@@ -83,9 +94,8 @@ public class ScrapeUdpResponse extends UdpResponse{
 	 */
 	@Override
 	public String toString() {
-		return "ScrapeUdpResponse [" + (action != null ? "action=" + action + ", " : "") + "transactionId="
-				+ transactionId + ", seeders=" + seeders + ", leechers=" + leechers + "]";
+		return "ScrapeUdpResponse [transactionId=" + transactionId + ", action=" + action + ", seeders=" + seeders
+				+ ", leechers=" + leechers + "]";
 	}
-
 	
 }
