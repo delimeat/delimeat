@@ -68,10 +68,26 @@ public class ConnectionIdTest {
 
 		Assert.assertFalse(id.equals(other));
 	}
+	
+	@Test
+	public void equalsExpiryNullTest() {
+		ConnectionId id = new ConnectionId(Long.MAX_VALUE, new InetSocketAddress("host", 80), null);
+		ConnectionId other = new ConnectionId(Long.MAX_VALUE, new InetSocketAddress("host", 80), Instant.MIN);
+
+		Assert.assertFalse(id.equals(other));
+	}
 
 	@Test
 	public void equalsFromAddressTest() {
 		ConnectionId id = new ConnectionId(Long.MAX_VALUE, new InetSocketAddress("host", 80), Instant.EPOCH);
+		ConnectionId other = new ConnectionId(Long.MAX_VALUE, new InetSocketAddress("test", 80), Instant.EPOCH);
+
+		Assert.assertFalse(id.equals(other));
+	}
+	
+	@Test
+	public void equalsFromAddressNullTest() {
+		ConnectionId id = new ConnectionId(Long.MAX_VALUE, null, Instant.EPOCH);
 		ConnectionId other = new ConnectionId(Long.MAX_VALUE, new InetSocketAddress("test", 80), Instant.EPOCH);
 
 		Assert.assertFalse(id.equals(other));

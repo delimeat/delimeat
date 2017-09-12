@@ -13,7 +13,9 @@ public class ConnectUdpRequestTest {
 
 		Assert.assertEquals(0x41727101980L, request.getConnectionId());
 		Assert.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
+		Assert.assertEquals(UdpAction.CONNECT, request.getAction());
 	}
+
 	
 	@Test
 	public void toByteBufferTest(){

@@ -19,6 +19,8 @@ public class ScrapeUdpRequestTest {
 		Assert.assertEquals(Long.MAX_VALUE, request.getConnectionId());
 		Assert.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
 		Assert.assertEquals(new InfoHash(infoBytes), request.getInfoHash());
+		Assert.assertEquals(UdpAction.SCRAPE, request.getAction());
+
 
 	}
 	
@@ -101,6 +103,15 @@ public class ScrapeUdpRequestTest {
 		ScrapeUdpRequest request = new ScrapeUdpRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 		ScrapeUdpRequest other = new ScrapeUdpRequest(Long.MAX_VALUE, Integer.MIN_VALUE,
 				new InfoHash("INFO_HASH".getBytes()));
+
+		Assert.assertFalse(request.equals(other));
+	}
+	
+	@Test
+	public void equalsInfoHashNullTest() {
+		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
+		ScrapeUdpRequest request = new ScrapeUdpRequest(Long.MAX_VALUE, Integer.MIN_VALUE, null);
+		ScrapeUdpRequest other = new ScrapeUdpRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
 		Assert.assertFalse(request.equals(other));
 	}

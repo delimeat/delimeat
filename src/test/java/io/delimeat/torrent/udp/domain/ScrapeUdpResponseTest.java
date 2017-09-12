@@ -13,6 +13,7 @@ public class ScrapeUdpResponseTest {
 		Assert.assertEquals(Integer.MAX_VALUE, response.getTransactionId());
 		Assert.assertEquals(Integer.MIN_VALUE, response.getSeeders());
 		Assert.assertEquals(Integer.MAX_VALUE, response.getLeechers());
+		Assert.assertEquals(UdpAction.SCRAPE, response.getAction());
 
 	}
 	

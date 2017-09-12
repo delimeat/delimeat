@@ -57,41 +57,36 @@ public class HttpTorrentReader_Impl implements TorrentReader {
 			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
 		}
 		
-		try {
-			URL url = uri.toURL();
-			Request request = new Request.Builder()
-										.addHeader("Referer", uri.toASCIIString())
-										.addHeader("Accept", "application/x-bittorrent")
-										.url(uri.toURL())
-										.build();
+		URL url = uri.toURL();
+		Request request = new Request.Builder()
+									.addHeader("Referer", uri.toASCIIString())
+									.addHeader("Accept", "application/x-bittorrent")
+									.url(uri.toURL())
+									.build();
 
-			Response response;
-			try{
-				response = DelimeatUtils.httpClient().newCall(request).execute();
-			}catch(SocketTimeoutException ex){
-				throw new TorrentTimeoutException(uri.toURL());
+		Response response;
+		try{
+			response = DelimeatUtils.httpClient().newCall(request).execute();
+		}catch(SocketTimeoutException ex){
+			throw new TorrentTimeoutException(uri.toURL());
+		}
+		
+		if (response.isSuccessful() == false) {
+			switch (response.code()) {
+			case 404:
+				throw new TorrentNotFoundException(response.code(), response.message(), url);
+			default:
+				throw new TorrentResponseException(response.code(), response.message(), url);
 			}
-			
-			if (response.isSuccessful() == false) {
-				switch (response.code()) {
-				case 404:
-					throw new TorrentNotFoundException(response.code(), response.message(), url);
-				default:
-					throw new TorrentResponseException(response.code(), response.message(), url);
-				}
-			}
-			
-			final byte[] responseBytes = response.body().bytes();
-			response.body().close();
-			
-			try{
-				return TorrentUtils.parseRootDictionary(responseBytes);
-			}catch(BencodeException ex){
-				throw new TorrentResponseBodyException(url, new String(responseBytes), ex);
-			}
-
-		}catch (IOException e) {
-			throw new TorrentException(e);
+		}
+		
+		final byte[] responseBytes = response.body().bytes();
+		response.body().close();
+		
+		try{
+			return TorrentUtils.parseRootDictionary(responseBytes);
+		}catch(BencodeException ex){
+			throw new TorrentResponseBodyException(url, new String(responseBytes), ex);
 		}
 
 	}

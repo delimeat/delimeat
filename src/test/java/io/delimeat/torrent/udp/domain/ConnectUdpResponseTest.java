@@ -12,6 +12,7 @@ public class ConnectUdpResponseTest {
 		
 		Assert.assertEquals(Integer.MAX_VALUE, response.getTransactionId());
 		Assert.assertEquals(Long.MAX_VALUE, response.getConnectionId());
+		Assert.assertEquals(UdpAction.CONNECT, response.getAction());
 	}
 	
 	@Test

@@ -209,4 +209,14 @@ public class MagnetTorrentReader_ImplTest {
 	public void readUnsupportedProtocalTest() throws Exception {
 		reader.read(new URI("udp://read.com:8080"));
 	}
+	
+  	@Test(expected = TorrentException.class)
+	public void readUriSyntaxExceptionTest() throws Exception {
+		
+		reader.setDownloadUriTemplate("\\//");
+
+		reader.read(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
+
+		Assert.fail();
+	}
 }

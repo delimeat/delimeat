@@ -219,7 +219,7 @@ public class TorrentService_Impl implements TorrentService {
 		try{
 			return new URI(magnetUri);
 		}catch(URISyntaxException ex){
-			throw new TorrentException("Encountered an error creating magnet uri for " + infoHash.getHex(), ex);
+			throw new TorrentException("Encountered an error creating magnet uri " + magnetUri, ex);
 		}
 	}
 

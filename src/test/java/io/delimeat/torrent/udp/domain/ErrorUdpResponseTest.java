@@ -12,6 +12,8 @@ public class ErrorUdpResponseTest {
 		
 		Assert.assertEquals(Integer.MAX_VALUE, response.getTransactionId());
 		Assert.assertEquals("MESSAGE", response.getMessage());
+		Assert.assertEquals(UdpAction.ERROR, response.getAction());
+
 	}
 	
 	@Test
@@ -76,8 +78,8 @@ public class ErrorUdpResponseTest {
 	
 	@Test
 	public void equalsMessageNullTest() {
-		ErrorUdpResponse response = new ErrorUdpResponse(Integer.MAX_VALUE, "MESSAGE");
-		ErrorUdpResponse other = new ErrorUdpResponse(Integer.MAX_VALUE, null);
+		ErrorUdpResponse response = new ErrorUdpResponse(Integer.MAX_VALUE, null );
+		ErrorUdpResponse other = new ErrorUdpResponse(Integer.MAX_VALUE, "MESSAGE");
 
 		Assert.assertFalse(response.equals(other));
 	}
