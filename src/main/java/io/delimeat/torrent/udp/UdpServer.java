@@ -3,14 +3,21 @@ package io.delimeat.torrent.udp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +45,83 @@ public class UdpServer {
 	private Map<InetSocketAddress,ConnectionId> connections = new ConcurrentHashMap<>(); 
 	
 	private DatagramChannel channel;
+	private Selector selector;
+	private Executor executor;
+	
+	private boolean writeActive = false;
+	private boolean readActive = false;
+	
+	public void initialize() throws IOException{
+		
+		selector = Selector.open();
+		channel = DatagramChannel.open();
+		channel.bind(new InetSocketAddress("localhost", 4041));
+		channel.configureBlocking(false);
+		
+		channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024*1024);
+		channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024*1024);
+		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+		
+		channel.register(selector, SelectionKey.OP_ACCEPT);
+		channel.register(selector, SelectionKey.OP_CONNECT);
+		channel.register(selector, SelectionKey.OP_READ);
+		channel.register(selector, SelectionKey.OP_WRITE);
+		
+		executor = Executors.newSingleThreadExecutor();
+		
+		while (true) {
+            selector.select();
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iter = selectedKeys.iterator();
+            while (iter.hasNext()) {
+ 
+                SelectionKey key = iter.next();
+ 
+                if(key.isValid() == false){
+                	continue;
+                }
+                
+                if (key.isAcceptable()) {
+                	System.out.println("ACCEPTABLE");
+                	System.out.println(key);
+                }else if (key.isWritable()) {
+                	System.out.println("WRITEABLE");
+                	System.out.println(key);
+                }else if (key.isConnectable()) {
+                	System.out.println("CONNECTABLE");
+                	System.out.println(key);
+                }else if ( key.isReadable()) {	
+                	System.out.println("READABLE");
+                	System.out.println(key);
+                	executor.execute(new Runnable(){
+
+						@Override
+						public void run() {
+							read();	
+						}
+                		
+                	});
+                }
+                
+                iter.remove();
+            }
+        }
+	}
+	
+	public void setChannel(DatagramChannel channel){
+		this.channel = channel;
+	}
+	
+	public DatagramChannel getChannel(){
+		return channel;
+	}
 	
 	public void write(){
+		if(writeActive == true){
+			return;
+		}
+		
+		writeActive = true;
 		while(true){
 			UdpTransaction transaction = sendPipeline.poll();
 			if(transaction == null){
@@ -56,11 +138,15 @@ public class UdpServer {
 				//TODO alert errors
 			}
 		}
+		writeActive = false;
 	}
 	
 	public void read(){
+		if(readActive == true){
+			return;
+		}
+		readActive = true;
 		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-
 		while(true){
 			readBuffer.clear();
 			InetSocketAddress fromAddress = null;
@@ -127,12 +213,21 @@ public class UdpServer {
 			}
 			transaction.setResponse(response);
 		}
+		readActive = false;
 	}
 	
 	public ConnectionId connect(InetSocketAddress toAddress) throws Exception{
 		ConnectUdpRequest request = new ConnectUdpRequest(generateTransactionId());
 		
 		UdpTransaction txn = new UdpTransaction(request, toAddress);
+		executor.execute(new Runnable(){
+
+			@Override
+			public void run() {
+				write();	
+			}
+			
+		});
 		
 		UdpResponse response = txn.getResponse(3000);
 		
