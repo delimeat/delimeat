@@ -69,6 +69,15 @@ public class UdpTransaction {
 		return request;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "UdpTransaction [toAddress=" + toAddress + ", request=" + request + ", response=" + response
+				+ ", exception=" + exception + "]";
+	}
+
 	
 	
 }
