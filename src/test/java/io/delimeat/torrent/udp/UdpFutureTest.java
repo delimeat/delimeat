@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.delimeat.torrent.domain.InfoHash;
@@ -189,6 +190,7 @@ public class UdpFutureTest {
 		readActive = false;
 	}
 	
+	@Ignore
 	@Test
 	public void test() throws Exception{
 		UdpServer server = new UdpServer();
