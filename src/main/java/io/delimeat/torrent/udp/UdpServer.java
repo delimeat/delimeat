@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -113,41 +114,43 @@ public class UdpServer {
 		
 		channel.register(selector, SelectionKey.OP_READ);
 		
-		executor = Executors.newFixedThreadPool(3);
+		executor = Executors.newFixedThreadPool(2);
 		
 		active = true;
-		executor.execute(new Runnable(){
+		executor.execute(this::select);
 
-			@Override
-			public void run() {
-				while (active) {
-					try{
-						selector.select();
-					}catch(IOException ex){
-						LOGGER.error("Selector encountered an error",ex);
-					}
-		            Set<SelectionKey> selectedKeys = selector.selectedKeys();
-		            Iterator<SelectionKey> iter = selectedKeys.iterator();
-		            while (iter.hasNext()) {
-		 
-		                SelectionKey key = iter.next();
-		                iter.remove();
-		                
-		                if (key.isValid() && key.isReadable()) {	
-		                	receive();
-		                }
-		            }
-		        }				
+	}
+	
+	public void select(){
+		while (active) {
+			try{
+				selector.select();
+			}catch(IOException | ClosedSelectorException ex){
+				LOGGER.error("Selector encountered an error",ex);
+			}
+			//allows for closing gracefully
+			if(selector.isOpen() == false){
+				break;
 			}
 			
-		});
-
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iter = selectedKeys.iterator();
+            while (iter.hasNext()) {
+ 
+                SelectionKey key = iter.next();
+                iter.remove();
+                
+                if (key.isValid() && key.isReadable()) {	
+                	receive();
+                }
+            }
+        }	
 	}
 	
 	public void shudown() throws IOException{
 		active = false;
-		channel.close();
 		selector.close();
+		channel.close();
 	}
 	
 	public void send(){
@@ -252,7 +255,7 @@ public class UdpServer {
 		if(transaction == null){
 			LOGGER.warn("Received unsolicited response {} from {}", response, fromAddress);
 			return;
-		}else if(transaction.getToAddress() != fromAddress){
+		}else if(fromAddress.equals(transaction.getToAddress()) == false){
 			LOGGER.warn("TransactionId {} received from different address it was sent to\n{}\n{}",response.getTransactionId(), transaction, response);
 			return;			
 		}else if(action == UdpUtils.ERROR_ACTION){
@@ -281,6 +284,7 @@ public class UdpServer {
 			// put the send request in another thread
 			ConnectUdpRequest request = new ConnectUdpRequest(generateTransactionId());
 			UdpTransaction txn = new UdpTransaction(request, toAddress);
+			sendPipeline.add(txn);
 			executor.execute(this::send);
 			
 			// wait for response

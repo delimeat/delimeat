@@ -189,11 +189,15 @@ public class UdpFutureTest {
 		readActive = false;
 	}
 	
+	@Test
 	public void test() throws Exception{
 		UdpServer server = new UdpServer();
 		
+		server.initialize();
 		ConnectionId connectionId = server.connect(new InetSocketAddress("tracker.leechers-paradise.org",6969));
 		System.out.println(connectionId);
 		Thread.sleep(10000);
+		server.shudown();
+		System.out.println("FINISHED");
 	}
 }
