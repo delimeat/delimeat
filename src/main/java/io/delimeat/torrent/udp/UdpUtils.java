@@ -36,16 +36,16 @@ public class UdpUtils {
 		int action = buffer.getInt();			
 		switch(action){
 		case UdpUtils.CONNECT_ACTION:
-			return UdpUtils.buildConnectResponse(buffer);		
+			return UdpUtils.unmarshallConnectResponse(buffer);		
 		case UdpUtils.SCRAPE_ACTION:
-			return UdpUtils.buildScrapeResponse(buffer);
+			return UdpUtils.unmarshallScrapeResponse(buffer);
 		case UdpUtils.ERROR_ACTION:
-			return UdpUtils.buildErrorResponse(buffer);
+			return UdpUtils.unmarshallErrorResponse(buffer);
 		default:
 			throw new UdpException(String.format("Received unsupported udp action %s", action));
 		}
 	}
-	public static ConnectUdpResponse buildConnectResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
+	public static ConnectUdpResponse unmarshallConnectResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
 		try{
 			return new ConnectUdpResponse(buffer.getInt(), buffer.getLong());
 		}catch(BufferUnderflowException ex){
@@ -53,7 +53,7 @@ public class UdpUtils {
 		}
 	}
 	
-	public static ScrapeUdpResponse buildScrapeResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
+	public static ScrapeUdpResponse unmarshallScrapeResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
 		try{
 			return new ScrapeUdpResponse(buffer.getInt(), buffer.getInt(), buffer.getInt());
 		}catch(BufferUnderflowException ex){
@@ -61,7 +61,7 @@ public class UdpUtils {
 		}
 	}
 	
-	public static ErrorUdpResponse buildErrorResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
+	public static ErrorUdpResponse unmarshallErrorResponse(ByteBuffer buffer) throws UdpInvalidFormatException{
 		try{
 			int transactionId = buffer.getInt();
 			byte[] msgBytes = new byte[buffer.remaining()];

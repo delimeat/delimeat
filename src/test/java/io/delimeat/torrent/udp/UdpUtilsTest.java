@@ -34,7 +34,7 @@ public class UdpUtilsTest {
 				.put("MESSAGE".getBytes());
 		buf.clear();
 
-		ErrorUdpResponse result = UdpUtils.buildErrorResponse(buf);
+		ErrorUdpResponse result = UdpUtils.unmarshallErrorResponse(buf);
 		
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
@@ -44,7 +44,7 @@ public class UdpUtilsTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildErrorResponseExceptionTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.allocate(0);
-		UdpUtils.buildErrorResponse( buf);
+		UdpUtils.unmarshallErrorResponse( buf);
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ public class UdpUtilsTest {
 				.putLong(0x41727101980L);
 		buf.clear();
 		
-		ConnectUdpResponse result = UdpUtils.buildConnectResponse(buf);
+		ConnectUdpResponse result = UdpUtils.unmarshallConnectResponse(buf);
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
 		Assert.assertEquals(0x41727101980L, result.getConnectionId());
@@ -63,7 +63,7 @@ public class UdpUtilsTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildConnectResponseExceptionTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
-		UdpUtils.buildConnectResponse(buf);
+		UdpUtils.unmarshallConnectResponse(buf);
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class UdpUtilsTest {
 				.putInt(Integer.MIN_VALUE);
 		
 		ByteBuffer buff2 = ByteBuffer.wrap(buf.array());
-		ScrapeUdpResponse result = UdpUtils.buildScrapeResponse(buff2);
+		ScrapeUdpResponse result = UdpUtils.unmarshallScrapeResponse(buff2);
 		
 		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
 		Assert.assertEquals(Integer.MAX_VALUE, result.getSeeders());
@@ -84,7 +84,7 @@ public class UdpUtilsTest {
 	@Test(expected=UdpInvalidFormatException.class)
 	public void buildScrapeResponseExceptionTest() throws Exception{
 		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
-		UdpUtils.buildScrapeResponse(buf);
+		UdpUtils.unmarshallScrapeResponse(buf);
 	}
 
 }

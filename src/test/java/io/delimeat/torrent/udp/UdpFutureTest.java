@@ -30,6 +30,7 @@ import org.junit.Test;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.udp.domain.ConnectUdpRequest;
 import io.delimeat.torrent.udp.domain.ConnectUdpResponse;
+import io.delimeat.torrent.udp.domain.ConnectionId;
 import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
 import io.delimeat.torrent.udp.domain.ScrapeUdpRequest;
 import io.delimeat.torrent.udp.domain.UdpAction;
@@ -186,5 +187,13 @@ public class UdpFutureTest {
 			
 		}
 		readActive = false;
+	}
+	
+	public void test() throws Exception{
+		UdpServer server = new UdpServer();
+		
+		ConnectionId connectionId = server.connect(new InetSocketAddress("tracker.leechers-paradise.org",6969));
+		System.out.println(connectionId);
+		Thread.sleep(10000);
 	}
 }
