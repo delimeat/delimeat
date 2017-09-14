@@ -5,3 +5,5 @@ sudo: false
 script: mvn clean verify
 after_success:
   - mvn jacoco:report coveralls:report
+notifications:
+  slack: delimeatbuild:rE8POCwu1K6ls3UiWQI1Rwla
