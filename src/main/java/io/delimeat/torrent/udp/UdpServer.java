@@ -22,10 +22,15 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.delimeat.torrent.domain.InfoHash;
+import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.udp.domain.ConnectUdpRequest;
 import io.delimeat.torrent.udp.domain.ConnectUdpResponse;
 import io.delimeat.torrent.udp.domain.ConnectionId;
 import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
+import io.delimeat.torrent.udp.domain.ScrapeUdpRequest;
+import io.delimeat.torrent.udp.domain.ScrapeUdpResponse;
+import io.delimeat.torrent.udp.domain.UdpRequest;
 import io.delimeat.torrent.udp.domain.UdpResponse;
 import io.delimeat.torrent.udp.domain.UdpTransaction;
 import io.delimeat.torrent.udp.exception.UdpErrorResponseException;
@@ -271,6 +276,14 @@ public class UdpServer {
 		LOGGER.trace("Successfully processed {} ", transaction);
 	}
 	
+	public UdpResponse enqueue(UdpRequest request, InetSocketAddress address) throws Exception{
+		UdpTransaction txn = new UdpTransaction(request, address);
+		LOGGER.trace("Adding {} to send queue", txn);
+		sendPipeline.add(txn);
+		executor.execute(this::send);	
+		return txn.getResponse(3000);
+	}
+	
 	public ConnectionId connect(InetSocketAddress toAddress) throws Exception {
 		LOGGER.trace("Received request for connectionId for {}", toAddress);
 
@@ -283,22 +296,18 @@ public class UdpServer {
 			
 			// put the send request in another thread
 			ConnectUdpRequest request = new ConnectUdpRequest(generateTransactionId());
-			UdpTransaction txn = new UdpTransaction(request, toAddress);
-			sendPipeline.add(txn);
-			executor.execute(this::send);
 			
 			// wait for response
-			UdpResponse response;
+			ConnectUdpResponse response;
 			try{
-				response = txn.getResponse(3000);
+				response = (ConnectUdpResponse)enqueue(request, toAddress);
 			}catch(Exception ex){
 				LOGGER.error("Received an error fetching the connection id", ex);
 				throw ex;
 			}
 			
 			// assume txn will throw exception if no response
-			ConnectUdpResponse connResp = (ConnectUdpResponse)response;
-			connectionId = new ConnectionId(connResp.getConnectionId(), txn.getToAddress(), Instant.now().plusSeconds(10*60));
+			connectionId = new ConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(10*60));
 			connections.put(toAddress, connectionId);
 			LOGGER.trace("Receieve new connection id {} for {}", connectionId, toAddress);
 
@@ -306,6 +315,24 @@ public class UdpServer {
 		LOGGER.trace("Returning valid connectionId {}", connectionId);
 		return connectionId;
 
+	}
+	
+	public ScrapeResult scrape(InfoHash infoHash, InetSocketAddress address) throws Exception{
+		LOGGER.trace("Received request for scrape of {} from {}", infoHash, address);
+
+		ConnectionId connId = connect(address);
+		ScrapeUdpRequest request = new ScrapeUdpRequest(connId.getValue(), generateTransactionId(), infoHash);
+
+		ScrapeUdpResponse response;
+		try{
+			response = (ScrapeUdpResponse)enqueue(request, address);
+		}catch(Exception ex){
+			LOGGER.error("Received an error scraping", ex);
+			throw ex;
+		}
+		ScrapeResult result = new ScrapeResult(response.getSeeders(),response.getLeechers());
+		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
+		return result;
 	}
 	
 	public Integer generateTransactionId(){

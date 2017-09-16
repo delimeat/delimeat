@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.delimeat.torrent.exception.TorrentTimeoutException;
+import io.delimeat.torrent.udp.exception.UdpException;
 import io.delimeat.torrent.udp.exception.UdpTimeoutException;
 
 public class UdpTransaction {
@@ -28,9 +30,12 @@ public class UdpTransaction {
 		
 		if(response == null){
 			try{
-				latch.await(timeout, TimeUnit.MILLISECONDS);
+				if(latch.await(timeout, TimeUnit.MILLISECONDS) == false){
+					throw new UdpTimeoutException();
+				}
 			}catch(InterruptedException ex){
-				throw new UdpTimeoutException();
+				//TODO
+				throw new UdpException("EXCEPTION");
 			}
 		}
 		
