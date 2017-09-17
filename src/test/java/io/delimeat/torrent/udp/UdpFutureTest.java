@@ -1,13 +1,13 @@
 package io.delimeat.torrent.udp;
 
-import java.net.InetSocketAddress;
+import java.net.URI;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
+import io.delimeat.torrent.UdpNIOScrapeRequestHandler_Impl;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
-import io.delimeat.torrent.udp.domain.ConnectionId;
 import io.delimeat.util.DelimeatUtils;
 
 public class UdpFutureTest {
@@ -15,29 +15,26 @@ public class UdpFutureTest {
 	@Ignore
 	@Test
 	public void test() throws Exception{
-		UdpServer server = new UdpServer();
-		InetSocketAddress address = new InetSocketAddress("tracker.leechers-paradise.org",6969);
+		UdpNIOScrapeRequestHandler_Impl server = new UdpNIOScrapeRequestHandler_Impl();
+		URI uri = new URI("udp://tracker.leechers-paradise.org:6969");
 		InfoHash infoHash = new InfoHash(DelimeatUtils.hexToBytes("d73ae09044abf44faf3ade9e43cbc902b319c15b"));
-		server.initialize();
-		ConnectionId connectionId = server.connect(address);
-		System.out.println(connectionId);
-		ScrapeResult result = server.scrape(infoHash, address);
+		ScrapeResult result = server.doScrape(uri, infoHash);
 		System.out.println(result);
 		
-		address = new InetSocketAddress("tracker.coppersurfer.tk",6969);
-		result = server.scrape(infoHash, address);
+		uri = new URI("udp://tracker.coppersurfer.tk:6969");
+		result = server.doScrape(uri, infoHash);
 		System.out.println(result);
 
-		address = new InetSocketAddress("eddie4.nl",6969);
-		result = server.scrape(infoHash, address);
+		uri = new URI("udp://eddie4.nl:6969");
+		result = server.doScrape(uri, infoHash);
 		System.out.println(result);
 		
-		address = new InetSocketAddress("tracker.pirateparty.gr",6969);
-		result = server.scrape(infoHash, address);
+		uri = new URI("udp://tracker.pirateparty.gr:6969");
+		result = server.doScrape(uri, infoHash);
 		System.out.println(result);
-		
-		address = new InetSocketAddress("tracker.zer0day.to",1337);
-		result = server.scrape(infoHash, address);
+
+		uri = new URI("udp://tracker.zer0day.to:1337");
+		result = server.doScrape(uri, infoHash);
 		System.out.println(result);
 		
 		Thread.sleep(10000);

@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.delimeat.torrent.exception.TorrentTimeoutException;
 import io.delimeat.torrent.udp.exception.UdpException;
 import io.delimeat.torrent.udp.exception.UdpTimeoutException;
 

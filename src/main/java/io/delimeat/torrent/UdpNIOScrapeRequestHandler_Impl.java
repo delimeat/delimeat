@@ -5,14 +5,21 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
@@ -25,25 +32,33 @@ import io.delimeat.torrent.udp.domain.ConnectionId;
 import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
 import io.delimeat.torrent.udp.domain.ScrapeUdpRequest;
 import io.delimeat.torrent.udp.domain.ScrapeUdpResponse;
-import io.delimeat.torrent.udp.domain.UdpAction;
 import io.delimeat.torrent.udp.domain.UdpRequest;
 import io.delimeat.torrent.udp.domain.UdpResponse;
+import io.delimeat.torrent.udp.domain.UdpTransaction;
 import io.delimeat.torrent.udp.exception.UdpErrorResponseException;
 import io.delimeat.torrent.udp.exception.UdpException;
 
 public class UdpNIOScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UdpNIOScrapeRequestHandler_Impl.class);
 
 	private static final Random RANDOM_GEN = new Random();
-
 	
-	@Autowired
-	@Qualifier("udpScrapeDatagramChannel")
+	private final Map<Integer, UdpTransaction> queue = new ConcurrentHashMap<>();
+	private final Queue<UdpTransaction> sendPipeline = new ConcurrentLinkedQueue<>();
+	
+	private final Map<InetSocketAddress,ConnectionId> connections = new ConcurrentHashMap<>(); 
+	
+	private boolean sendActive = false;
+	private boolean receiveActive = false;
+	private boolean active = false;
+	
 	private DatagramChannel channel;
-
-	private Map<InetSocketAddress,ConnectionId> connections = new ConcurrentHashMap<>(); 
-
+	private Selector selector;
+	private Executor executor;
+	
 	public UdpNIOScrapeRequestHandler_Impl(){
-		super(Arrays.asList("UDP"));
+		super(Arrays.asList("UDP"));	
 	}
 	
 	/**
@@ -60,63 +75,272 @@ public class UdpNIOScrapeRequestHandler_Impl extends AbstractScrapeRequestHandle
 		this.channel = channel;
 	}
 
+	/**
+	 * @return the selector
+	 */
+	public Selector getSelector() {
+		return selector;
+	}
+
+	/**
+	 * @param selector the selector to set
+	 */
+	public void setSelector(Selector selector) {
+		this.selector = selector;
+	}
+
+	/**
+	 * @return the executor
+	 */
+	public Executor getExecutor() {
+		return executor;
+	}
+
+	/**
+	 * @param executor the executor to set
+	 */
+	public void setExecutor(Executor executor) {
+		this.executor = executor;
+	}
+	
+	public void initialize() throws IOException{
+		if(active == true){
+			selector = Selector.open();
+		
+			channel.register(selector, SelectionKey.OP_READ);
+				
+			executor.execute(this::select);
+			active = true;
+		}
+
+	}
+	
+	public void select(){
+		while (active) {
+			try{
+				selector.select();
+			}catch(IOException ex){
+				LOGGER.error("Selector encountered an error",ex);
+			}
+			
+			//allows for closing gracefully
+			if(selector.isOpen() == false){
+				break;
+			}
+			
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iter = selectedKeys.iterator();
+            while (iter.hasNext()) {
+ 
+                SelectionKey key = iter.next();
+                iter.remove();
+                
+                if (key.isValid() && key.isReadable()) {	
+                	receive();
+                }
+            }
+        }	
+	}
+	
+	public void shudown() throws IOException{
+		active = false;
+		selector.close();
+		channel.close();
+	}
+	
+	public void send(){
+		LOGGER.trace("Starting sending");
+		if(sendActive == true){
+			LOGGER.warn("Send processing is already underway, exiting");
+			return;
+		}
+		
+		sendActive = true;
+		UdpTransaction transaction = null;
+		while((transaction = sendPipeline.poll()) != null){
+			LOGGER.trace("Sending request for {}", transaction);
+			try{
+				channel.send(transaction.getRequest().toByteBuffer(), transaction.getToAddress());
+			}catch(IOException e){
+				LOGGER.error("Encountered an error sending", e);
+				transaction.setException(e);
+				continue;
+			}
+			queue.put(transaction.getRequest().getTransactionId(), transaction);
+			LOGGER.trace("Sent request for {}", transaction);
+		}
+		sendActive = false;
+		LOGGER.trace("Finished sending");
+	}
+	
+	public void receive(){
+		LOGGER.trace("Processing reads");
+		if(receiveActive == true){
+			LOGGER.warn("Receiving processing is already underway, exiting");
+			return;
+		}
+		
+		receiveActive = true;
+		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+		while(true){
+			try{
+				readBuffer.clear();
+				
+				InetSocketAddress fromAddress = (InetSocketAddress) channel.receive(readBuffer);
+				
+				// if there is no fromAddress there are no responses to read
+				if(fromAddress == null){
+					break;
+				}
+				
+				LOGGER.trace("Received data from {}", fromAddress);
+				
+				// if the response is less than 8 bytes its invalid and port zero is reserved
+				if(readBuffer.position() < 8 || fromAddress.getPort() == 0){
+					LOGGER.warn("Invalid response received from {}", fromAddress);
+					continue;
+				}
+				
+				// copy the buffer because its processed in a separate thread
+				readBuffer.flip();		
+				ByteBuffer messageBuffer = ByteBuffer.allocate(readBuffer.limit()).put(readBuffer);
+				messageBuffer.flip();
+				
+				//process the response on a separate thread
+				executor.execute(()->{processResponse(messageBuffer,fromAddress);});
+			
+			}catch(IOException ex){
+				LOGGER.error("Encountered an error receiving", ex);
+				continue;
+			}
+		}
+		receiveActive = false;
+	}
+	
+	public void processResponse(ByteBuffer buffer, InetSocketAddress fromAddress){
+		LOGGER.trace("Processing response from", fromAddress);
+		int action = buffer.getInt();	
+		UdpResponse response;
+		try{
+			switch(action){
+			case UdpUtils.CONNECT_ACTION:
+				LOGGER.trace("Unmarshalling a connect response");
+				response = UdpUtils.unmarshallConnectResponse(buffer);
+				break;
+			
+			case UdpUtils.SCRAPE_ACTION:
+				LOGGER.trace("Unmarshalling a scrape response");
+				response = UdpUtils.unmarshallScrapeResponse(buffer);
+				break;
+			case UdpUtils.ERROR_ACTION:
+				LOGGER.trace("Unmarshalling an error response");
+				response = UdpUtils.unmarshallErrorResponse(buffer);
+				break;
+			default:
+				LOGGER.warn("Received unsupported udp action {} from {}", action, fromAddress);
+				return;
+			}
+		}catch(UdpException ex){
+			LOGGER.error(String.format("Unable to unmarshall response from %s", fromAddress), ex);
+			return;
+		}
+				
+		Integer transactionId = response.getTransactionId();
+		UdpTransaction transaction = queue.remove(transactionId);
+		if(transaction == null){
+			LOGGER.warn("Received unsolicited response {} from {}", response, fromAddress);
+			return;
+		}else if(fromAddress.equals(transaction.getToAddress()) == false){
+			LOGGER.warn("TransactionId {} received from different address it was sent to\n{}\n{}",response.getTransactionId(), transaction, response);
+			return;			
+		}else if(action == UdpUtils.ERROR_ACTION){
+			transaction.setException(new UdpErrorResponseException((ErrorUdpResponse)response));
+			return;
+		} else if(transaction.getRequest().getAction() != response.getAction()){
+			LOGGER.error("Unexpected response for request\n{}\n{}", transaction, response);
+			//TODO new exception type
+			transaction.setException(new Exception(String.format("Received unexpected response type\n%s\n%s", transaction, response)));
+			return;	
+		}
+		transaction.setResponse(response);
+		LOGGER.trace("Successfully processed {} ", transaction);
+	}
+	
+	public UdpResponse enqueue(UdpRequest request, InetSocketAddress address) throws Exception{
+		UdpTransaction txn = new UdpTransaction(request, address);
+		LOGGER.trace("Adding {} to send queue", txn);
+		sendPipeline.add(txn);
+		executor.execute(this::send);	
+		return txn.getResponse(3000);
+	}
+	
+	public ConnectionId connect(InetSocketAddress toAddress) throws Exception {
+		LOGGER.trace("Received request for connectionId for {}", toAddress);
+
+		ConnectionId connectionId = connections.get(toAddress);
+		if(connectionId == null || connectionId.getExpiry().isBefore(Instant.now().minusSeconds(60))){
+			LOGGER.trace("Requesting new connectionId for {}", toAddress);
+			
+			// remove expired connectionId if it exists
+			connections.remove(toAddress);
+			
+			// put the send request in another thread
+			ConnectUdpRequest request = new ConnectUdpRequest(generateTransactionId());
+			
+			// wait for response
+			ConnectUdpResponse response;
+			try{
+				response = (ConnectUdpResponse)enqueue(request, toAddress);
+			}catch(Exception ex){
+				LOGGER.error("Received an error fetching the connection id", ex);
+				throw ex;
+			}
+			
+			// assume txn will throw exception if no response
+			connectionId = new ConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(10*60));
+			connections.put(toAddress, connectionId);
+			LOGGER.trace("Receieve new connection id {} for {}", connectionId, toAddress);
+
+		}
+		LOGGER.trace("Returning valid connectionId {}", connectionId);
+		return connectionId;
+
+	}
+	
 	@Override
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException {
+	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
+		LOGGER.trace("Received request for scrape of {} from {}", infoHash, uri);
+
 		String host = uri.getHost();
-		int port = uri.getPort() != -1 ? uri.getPort() : 80; // if no port is provided use default of 80
+		int port = uri.getPort() != -1 ? uri.getPort() : 6969; // if no port is provided use default of 6969
 		InetSocketAddress address = new InetSocketAddress(host,port);
 		
+		ConnectionId connId;
 		try{
-			ConnectionId connectionId = getConnectionId(address);
-			return getScrapeResult(connectionId, infoHash, address);
+			connId = connect(address);
 		}catch(Exception ex){
 			throw new TorrentException(ex);
 		}
+		ScrapeUdpRequest request = new ScrapeUdpRequest(connId.getValue(), generateTransactionId(), infoHash);
+
+		ScrapeUdpResponse response;
+		try{
+			response = (ScrapeUdpResponse)enqueue(request, address);
+		}catch(Exception ex){
+			LOGGER.error("Received an error scraping", ex);
+			throw new TorrentException(ex);
+		}
+		ScrapeResult result = new ScrapeResult(response.getSeeders(),response.getLeechers());
+		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
+		return result;
 	}
 	
 	public Integer generateTransactionId(){
 		Integer transactionId = RANDOM_GEN.nextInt();
+		do{
+			transactionId = RANDOM_GEN.nextInt();
+		}while(queue.containsKey(transactionId) == true);
 		return transactionId;
-	}
-	
-	public ConnectionId getConnectionId(InetSocketAddress address) throws Exception{
-		ConnectionId connectionId = connections.get(address);
-		if(connectionId == null || connectionId.getExpiry().isBefore(Instant.now())){
-			ConnectUdpRequest connReq = new ConnectUdpRequest(generateTransactionId());
-			ConnectUdpResponse response = (ConnectUdpResponse)send(connReq, address);
-			connectionId = new ConnectionId(response.getConnectionId(),address, Instant.now().plusSeconds(10*60));
-			connections.put(address, connectionId);
-			return connectionId;
-		}else{
-			return connectionId;
-		}
-	}
-	
-	public ScrapeResult getScrapeResult(ConnectionId connectionId,InfoHash infoHash, InetSocketAddress address) throws Exception{
-		ScrapeUdpRequest request = new ScrapeUdpRequest(connectionId.getValue(), generateTransactionId(), infoHash);
-		ScrapeUdpResponse response = (ScrapeUdpResponse)send(request, address);
-		return new ScrapeResult(response.getSeeders(), response.getLeechers());
-	}
-	
-	
-	public UdpResponse send(UdpRequest request, InetSocketAddress toAddress) throws IOException, UdpException{
-		channel.send(request.toByteBuffer(), toAddress);
-		
-		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-		InetSocketAddress fromAddress = (InetSocketAddress)channel.receive(readBuffer);
-
-		UdpResponse response = UdpUtils.buildResponse(readBuffer);
-		if(response.getTransactionId() != request.getTransactionId()){
-			//TODO mismatched transaction id error
-		}else if (fromAddress != toAddress){
-			//TODO mismatched address exception
-		}else if(response.getAction() == UdpAction.ERROR){
-			throw new UdpErrorResponseException((ErrorUdpResponse)response);
-		}else if(response.getAction() != request.getAction()){
-			throw new UdpException(String.format("Response action doesnt match request\n%s\n%s", request, response));
-		}
-		return response;
-		
 	}
 
 }
