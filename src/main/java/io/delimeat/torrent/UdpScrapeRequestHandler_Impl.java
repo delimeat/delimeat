@@ -20,6 +20,8 @@ import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
@@ -38,9 +40,9 @@ import io.delimeat.torrent.udp.domain.UdpTransaction;
 import io.delimeat.torrent.udp.exception.UdpErrorResponseException;
 import io.delimeat.torrent.udp.exception.UdpException;
 
-public class UdpNIOScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
+public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(UdpNIOScrapeRequestHandler_Impl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UdpScrapeRequestHandler_Impl.class);
 
 	private static final Random RANDOM_GEN = new Random();
 	
@@ -53,11 +55,17 @@ public class UdpNIOScrapeRequestHandler_Impl extends AbstractScrapeRequestHandle
 	private boolean receiveActive = false;
 	private boolean active = false;
 	
+	@Autowired
+	@Qualifier("updScrapeDatagramChannel")
 	private DatagramChannel channel;
+	@Autowired
+	@Qualifier("updScrapeSelector")
 	private Selector selector;
+	@Autowired
+	@Qualifier("updScrapeExecutor")
 	private Executor executor;
 	
-	public UdpNIOScrapeRequestHandler_Impl(){
+	public UdpScrapeRequestHandler_Impl(){
 		super(Arrays.asList("UDP"));	
 	}
 	
@@ -104,7 +112,7 @@ public class UdpNIOScrapeRequestHandler_Impl extends AbstractScrapeRequestHandle
 	}
 	
 	public void initialize() throws IOException{
-		if(active == true){
+		if(active == false){
 			selector = Selector.open();
 		
 			channel.register(selector, SelectionKey.OP_READ);
