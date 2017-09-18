@@ -3,17 +3,12 @@ package io.delimeat.torrent;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.net.URI;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.Selector;
 import java.util.Arrays;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
@@ -34,53 +29,47 @@ public class UdpScrapeRequestHandler_ImplTest {
 	}
 	
 	@Test
-	public void channelTest(){
-		Assert.assertNull(handler.getChannel());
+	public void addressTest(){
+		Assert.assertNull(handler.getAddress());
 		
-		DatagramChannel channel = Mockito.mock(DatagramChannel.class);
-		handler.setChannel(channel);
+		InetSocketAddress address = new InetSocketAddress("localhost", 4040);
+		handler.setAddress(address);
 		
-		Assert.assertEquals(channel, handler.getChannel());
+		Assert.assertEquals(address, handler.getAddress());
 	}
 	
 	@Test
-	public void selectorTest(){
-		Assert.assertNull(handler.getSelector());
+	public void initializeAndShutdownTest() throws Exception{
+		InetSocketAddress address = new InetSocketAddress("localhost", 4040);
+		handler.setAddress(address);
 		
-		Selector selector = Mockito.mock(Selector.class);
-		handler.setSelector(selector);
+		handler.initialize();
+
+		Assert.assertTrue(handler.isActive());
+		Assert.assertTrue(handler.getSelector().isOpen());
 		
-		Assert.assertEquals(selector, handler.getSelector());
-	}
-	
-	@Test
-	public void executorTest(){
-		Assert.assertNull(handler.getExecutor());
+		Assert.assertFalse(handler.getExecutor().isShutdown());
+		Assert.assertFalse(handler.getExecutor().isTerminated());
 		
-		Executor executor = Mockito.mock(Executor.class);
-		handler.setExecutor(executor);
+		Assert.assertTrue(handler.getChannel().isOpen());
+		Assert.assertFalse(handler.getChannel().isBlocking());
+		Assert.assertEquals(address, handler.getChannel().getLocalAddress());
+		Assert.assertEquals(2*1024, handler.getChannel().getOption(StandardSocketOptions.SO_SNDBUF).intValue());
+		Assert.assertEquals(2*1024, handler.getChannel().getOption(StandardSocketOptions.SO_RCVBUF).intValue());
+		Assert.assertTrue(handler.getChannel().getOption(StandardSocketOptions.SO_REUSEADDR).booleanValue());
 		
-		Assert.assertEquals(executor, handler.getExecutor());
-	}
+		handler.shutdown();
+		Assert.assertFalse(handler.isActive());
+		Assert.assertFalse(handler.getSelector().isOpen());
+		Assert.assertFalse(handler.getChannel().isOpen());
+		Assert.assertTrue(handler.getExecutor().isShutdown());
+		Assert.assertTrue(handler.getExecutor().isTerminated());
+	}	
 	
 	@Ignore
 	@Test
-	public void test() throws Exception{
-		Selector selector = Selector.open();
-		DatagramChannel channel = DatagramChannel.open();
-		channel.bind(new InetSocketAddress("0.0.0.0", 4041));
-		channel.configureBlocking(false);
-
-		channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024*1024);
-		channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024*1024);
-		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-		
-		Executor executor = Executors.newScheduledThreadPool(2);
-		
+	public void test() throws Exception{	
 		UdpScrapeRequestHandler_Impl server = new UdpScrapeRequestHandler_Impl();
-		server.setChannel(channel);
-		server.setSelector(selector);
-		server.setExecutor(executor);
 		
 		server.initialize();
 		
@@ -106,7 +95,7 @@ public class UdpScrapeRequestHandler_ImplTest {
 		System.out.println(result);
 		
 		Thread.sleep(10000);
-		server.shudown();
+		server.shutdown();
 		System.out.println("FINISHED");
 	}
 }

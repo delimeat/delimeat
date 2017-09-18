@@ -2,6 +2,7 @@ package io.delimeat.torrent;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -16,7 +17,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,16 +58,15 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	private boolean sendActive = false;
 	private boolean receiveActive = false;
 	private boolean active = false;
+	private Instant lastTransaction = Instant.EPOCH;
+	
+	private DatagramChannel channel;
+	private Selector selector;
+	private ScheduledExecutorService executor;
 	
 	@Autowired
-	@Qualifier("updScrapeDatagramChannel")
-	private DatagramChannel channel;
-	@Autowired
-	@Qualifier("updScrapeSelector")
-	private Selector selector;
-	@Autowired
-	@Qualifier("updScrapeExecutor")
-	private Executor executor;
+	@Qualifier("io.delimeat.torrent.udpAddress")
+	private InetSocketAddress address;
 	
 	public UdpScrapeRequestHandler_Impl(){
 		super(Arrays.asList("UDP"));	
@@ -77,13 +80,6 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 
 	/**
-	 * @param channel the channel to set
-	 */
-	public void setChannel(DatagramChannel channel) {
-		this.channel = channel;
-	}
-
-	/**
 	 * @return the selector
 	 */
 	public Selector getSelector() {
@@ -91,40 +87,96 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 
 	/**
-	 * @param selector the selector to set
-	 */
-	public void setSelector(Selector selector) {
-		this.selector = selector;
-	}
-
-	/**
 	 * @return the executor
 	 */
-	public Executor getExecutor() {
+	public ExecutorService getExecutor() {
 		return executor;
+	}
+	
+	/**
+	 * @return the address
+	 */
+	public InetSocketAddress getAddress() {
+		return address;
 	}
 
 	/**
-	 * @param executor the executor to set
+	 * @return the connections
 	 */
-	public void setExecutor(Executor executor) {
-		this.executor = executor;
+	public Map<InetSocketAddress, ConnectionId> getConnections() {
+		return connections;
 	}
-	
+
+	/**
+	 * @return the lastTransaction
+	 */
+	public Instant getLastTransaction() {
+		return lastTransaction;
+	}
+
+	/**
+	 * @param address the address to set
+	 */
+	public void setAddress(InetSocketAddress address) {
+		this.address = address;
+	}
+
 	public void initialize() throws IOException{
 		if(active == false){
 			selector = Selector.open();
-		
-			channel.register(selector, SelectionKey.OP_READ);
-				
+			
+			channel = DatagramChannel.open();
+			channel.bind(address);
+			channel.configureBlocking(false);
+			channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024);
+			channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024);
+			channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+			
+			executor = Executors.newScheduledThreadPool(2);
 			executor.execute(this::select);
+			executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+			executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 			active = true;
 		}
 
 	}
 	
+	public void shutdown() throws IOException, InterruptedException{
+		if(active == true){
+			active = false;
+			selector.close();
+			channel.close();
+			executor.shutdown();
+			executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+		}
+	}
+	
+	public boolean isActive(){
+		return active;
+	}
+	
+	public void shutdownDueToInactivity(){
+		if(lastTransaction.isBefore(Instant.now().minusMillis(5*60*1000))){
+			try{
+				shutdown();
+			}catch(IOException | InterruptedException ex){
+				LOGGER.warn("Encountered an error shuting down", ex);
+			}
+		}
+	}
+	
+	public void purgeInvalidConnectionIds(){
+		Instant now = Instant.now();
+		for(InetSocketAddress address: connections.keySet()){
+			ConnectionId connectionId = connections.get(address);
+			if(connectionId.getExpiry().isBefore(now)){
+				connections.remove(address);
+			}
+		}
+	}
+	
 	public void select(){
-		while (active) {
+		while (active && Thread.currentThread().isInterrupted() == false) {
 			try{
 				selector.select();
 			}catch(IOException ex){
@@ -132,7 +184,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			}
 			
 			//allows for closing gracefully
-			if(selector.isOpen() == false){
+			if(active == false || selector.isOpen() == false){
 				break;
 			}
 			
@@ -148,12 +200,6 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
                 }
             }
         }	
-	}
-	
-	public void shudown() throws IOException{
-		active = false;
-		selector.close();
-		channel.close();
 	}
 	
 	public void send(){
@@ -338,7 +384,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			LOGGER.error("Received an error scraping", ex);
 			throw new TorrentException(ex);
 		}
-		ScrapeResult result = new ScrapeResult(response.getSeeders(),response.getLeechers());
+		ScrapeResult result = new ScrapeResult(response.getSeeders(), response.getLeechers());
 		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
 		return result;
 	}
