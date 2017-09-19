@@ -155,46 +155,6 @@ public class GuideItemProcessor_ImplTest {
 	}
 	
 	@Test
-	public void createEpisodesSkippedTest() throws Exception {
-		Episode existingEp = new Episode();
-		existingEp.setSeasonNum(1);
-		existingEp.setEpisodeNum(1);
-		existingEp.setAirDate(LocalDate.of(2017, 9, 9));
-		existingEp.setStatus(EpisodeStatus.PENDING);
-		List<Episode> showEps = Arrays.asList(existingEp);
-		
-		GuideEpisode existingGuideEp = new GuideEpisode();
-		existingGuideEp.setSeasonNum(1);
-		existingGuideEp.setEpisodeNum(1);
-		existingGuideEp.setAirDate(LocalDate.of(2017, 9, 9));
-		
-		GuideEpisode newGuideEp = new GuideEpisode();
-		newGuideEp.setSeasonNum(2);
-		newGuideEp.setEpisodeNum(3);
-		newGuideEp.setAirDate(LocalDate.of(2017, 9, 8));
-		
-		List<GuideEpisode> guideEps = Arrays.asList(existingGuideEp, newGuideEp);
-
-		Show show = new Show();
-		
-		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
-		Mockito.when(episodeService.create(argumentCaptor.capture())).thenReturn(null);
-		processor.setEpisodeService(episodeService);
-		
-		Assert.assertTrue(processor.createEpisodes(guideEps, showEps,show));
-		
-		Episode result = argumentCaptor.getValue();
-		Assert.assertEquals(LocalDate.of(2017, 9, 8), result.getAirDate());
-		Assert.assertEquals(EpisodeStatus.SKIPPED, result.getStatus());
-		Assert.assertEquals(2, result.getSeasonNum());
-		Assert.assertEquals(3, result.getEpisodeNum());
-		
-		Mockito.verify(episodeService).create(Mockito.any());
-		Mockito.verifyNoMoreInteractions(episodeService);
-	}
-	
-	@Test
 	public void createEpisodesNoEpisodesTest() throws Exception {
 		
 		Assert.assertFalse(processor.createEpisodes(Collections.emptyList(), Collections.emptyList(), null));

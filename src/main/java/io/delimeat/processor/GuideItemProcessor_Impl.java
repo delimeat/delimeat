@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -174,38 +173,48 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 	}
 	
 	public boolean createEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps, Show show) throws ShowException {		
-		List<Episode> episodesToCreate = guideEps.stream()
-											.filter(guideEp -> showEps.stream().noneMatch(ep->DelimeatUtils.equals(guideEp, ep)))
-											.map(ShowUtils::fromGuideEpisode)
-											.collect(Collectors.toList());
-
-		final LocalDate minPendingAirDate = minPendingAirDate(showEps);
-		for (Episode ep : episodesToCreate) {
-			ep.setShow(show);
-			if(minPendingAirDate.isAfter(ep.getAirDate())){
-				ep.setStatus(EpisodeStatus.SKIPPED);
-			}else{
-				ep.setStatus(EpisodeStatus.PENDING);
+		boolean creates = false;
+		for(GuideEpisode guideEp: guideEps){
+			boolean create = true;
+			for(Episode showEp: showEps){
+				if(DelimeatUtils.equals(guideEp, showEp)){
+					create = false;
+					break;
+				}
 			}
-			episodeService.create(ep);
+			
+			if(create){
+				Episode showEp = ShowUtils.fromGuideEpisode(guideEp);
+				episodeService.create(showEp);
+				creates = true;
+			}
 		}
-
-		return !episodesToCreate.isEmpty();
-
+		return creates;
 	}
 
 	public boolean deleteEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) throws ShowException {
-		List<Long> episodesToDelete = showEps.stream()
-											.filter(ep -> EpisodeStatus.PENDING.equals(ep.getStatus()))
-											.filter(ep-> guideEps.stream().noneMatch(guideEp->DelimeatUtils.equals(guideEp, ep)))
-											.map(p ->p.getEpisodeId())
-											.collect(Collectors.toList());
-
-		for (Long epId : episodesToDelete) {
-			episodeService.delete(epId);
+		boolean deletes = false;
+		for(Episode showEp: showEps){
+			// dont delete non pending episodes
+			if(showEp.getStatus() != EpisodeStatus.PENDING){
+				continue;
+			}
+			
+			boolean delete = true;
+			for(GuideEpisode guideEp: guideEps){
+				if(DelimeatUtils.equals(guideEp, showEp)){
+					delete = false;
+					break;
+				}
+			}
+			
+			if(delete){
+				episodeService.delete(showEp.getEpisodeId());
+				deletes = true;
+			}
+			
 		}
-
-		return !episodesToDelete.isEmpty();
+		return deletes;
 	}
 
 	/**
@@ -218,20 +227,39 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 	 * @throws ShowConcurrencyException 
 	 */
 	public boolean updateEpisodes(List<GuideEpisode> guideEps, List<Episode> showEps) throws ShowConcurrencyException, ShowException {
-		List<Episode> pendingShowEps = showEps.stream()
-												.filter(ep->EpisodeStatus.PENDING.equals(ep.getStatus()))
-												.collect(Collectors.toList());
+		boolean updates = false;
 		
-		List<Episode> episodesToUpdate = guideEps.stream()
-											.map(guideEp->determineEpisodeToUpdate(guideEp,pendingShowEps))
-											.filter(Objects::nonNull)
-											.collect(Collectors.toList());
-
-		for (Episode ep : episodesToUpdate) {
-			episodeService.update(ep);
+		for(Episode showEp: showEps){
+			// only interested in pending episodes
+			if(showEp.getStatus() != EpisodeStatus.PENDING){
+				continue;
+			}
+			
+			for(GuideEpisode guideEp: guideEps){
+				if(DelimeatUtils.equals(guideEp, showEp) == false){
+					continue;
+				}
+				
+				boolean update = false;
+				if(showEp.getAirDate().equals(guideEp.getAirDate()) == false){
+					showEp.setAirDate(guideEp.getAirDate());
+					update = true;
+				}
+				
+				if(showEp.getTitle().equals(guideEp.getTitle()) == false){
+					showEp.setTitle(guideEp.getTitle());
+					update = true;
+				}
+				
+				if(update){
+					episodeService.update(showEp);
+					updates = true;
+				}
+				break;
+			}
+			
 		}
-
-		return !episodesToUpdate.isEmpty();
+		return updates;
 	}
 	
 	/**
