@@ -237,7 +237,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		
 		receiveActive = true;
 		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-		while(true){
+		while(true && Thread.currentThread().isInterrupted() == false){
 			try{
 				readBuffer.clear();
 				
