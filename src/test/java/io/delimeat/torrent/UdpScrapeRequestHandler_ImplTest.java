@@ -3,6 +3,7 @@ package io.delimeat.torrent;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.net.URI;
+import java.time.Instant;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
+import io.delimeat.torrent.udp.domain.ConnectionId;
 import io.delimeat.util.DelimeatUtils;
 
 public class UdpScrapeRequestHandler_ImplTest {
@@ -66,6 +68,36 @@ public class UdpScrapeRequestHandler_ImplTest {
 		Assert.assertTrue(handler.getExecutor().isTerminated());
 	}	
 	
+	@Test
+	public void shutdownDueToInactivityTest() throws Exception{
+		InetSocketAddress address = new InetSocketAddress("localhost", 4040);
+		handler.setAddress(address);
+		
+		handler.initialize();
+		Assert.assertTrue(handler.isActive());
+		
+		handler.shutdownDueToInactivity();
+		Assert.assertFalse(handler.isActive());
+		Assert.assertFalse(handler.getSelector().isOpen());
+		Assert.assertFalse(handler.getChannel().isOpen());
+		Assert.assertTrue(handler.getExecutor().isShutdown());
+		Assert.assertTrue(handler.getExecutor().isTerminated());
+	}
+	
+	@Test
+	public void purgeInvalidConnectionIdsTest(){
+		ConnectionId connIdRemove = new ConnectionId(Long.MAX_VALUE,new InetSocketAddress("localhost",9004),Instant.EPOCH);
+		ConnectionId connIdKeep = new ConnectionId(Long.MIN_VALUE,new InetSocketAddress("0.0.0.0",9004),Instant.MAX);
+
+		handler.getConnections().put(connIdRemove.getFromAddress(), connIdRemove);
+		handler.getConnections().put(connIdKeep.getFromAddress(), connIdKeep);
+		
+		handler.purgeInvalidConnectionIds();
+		
+		Assert.assertEquals(1, handler.getConnections().size());
+		Assert.assertEquals(connIdKeep, handler.getConnections().get(connIdKeep.getFromAddress()));
+
+	}
 	@Ignore
 	@Test
 	public void test() throws Exception{	

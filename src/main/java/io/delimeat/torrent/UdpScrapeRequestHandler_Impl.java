@@ -167,11 +167,12 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public void purgeInvalidConnectionIds(){
 		Instant now = Instant.now();
-		for(InetSocketAddress address: connections.keySet()){
-			ConnectionId connectionId = connections.get(address);
+		Iterator<ConnectionId> iterator = connections.values().iterator();
+		while(iterator.hasNext()){
+			ConnectionId connectionId = iterator.next();
 			if(connectionId.getExpiry().isBefore(now)){
-				connections.remove(address);
-			}
+				iterator.remove();
+			}	
 		}
 	}
 	
