@@ -54,8 +54,8 @@ public class UdpScrapeRequestHandler_ImplTest {
 		Assert.assertTrue(handler.getChannel().isOpen());
 		Assert.assertFalse(handler.getChannel().isBlocking());
 		Assert.assertEquals(address, handler.getChannel().getLocalAddress());
-		Assert.assertEquals(2*1024, handler.getChannel().getOption(StandardSocketOptions.SO_SNDBUF).intValue());
-		Assert.assertEquals(2*1024, handler.getChannel().getOption(StandardSocketOptions.SO_RCVBUF).intValue());
+		Assert.assertEquals("2048", handler.getChannel().getOption(StandardSocketOptions.SO_SNDBUF).toString());
+		Assert.assertEquals("2048", handler.getChannel().getOption(StandardSocketOptions.SO_RCVBUF).toString());
 		Assert.assertTrue(handler.getChannel().getOption(StandardSocketOptions.SO_REUSEADDR).booleanValue());
 		
 		handler.shutdown();
