@@ -23,6 +23,7 @@
 	</scm>
 
 	<build>
+		<finalName>delimeat</finalName>
 		<plugins>
 
 			<plugin>
