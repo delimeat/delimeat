@@ -1,3 +1,4 @@
 {
-    "directory": "frontend/components"
+    "directory": "frontend/components",
+    "allow_root": true
 }
