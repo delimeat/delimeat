@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
@@ -44,6 +45,7 @@ import io.delimeat.torrent.udp.domain.UdpTransaction;
 import io.delimeat.torrent.udp.exception.UdpErrorResponseException;
 import io.delimeat.torrent.udp.exception.UdpException;
 
+@Component
 public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UdpScrapeRequestHandler_Impl.class);
@@ -366,6 +368,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
 		LOGGER.trace("Received request for scrape of {} from {}", infoHash, uri);
 
+		initialize();
+		
 		String host = uri.getHost();
 		int port = uri.getPort() != -1 ? uri.getPort() : 6969; // if no port is provided use default of 6969
 		InetSocketAddress address = new InetSocketAddress(host,port);

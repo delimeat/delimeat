@@ -17,6 +17,7 @@ package io.delimeat.torrent;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
@@ -64,6 +65,8 @@ public class HttpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler 
 				response = DelimeatUtils.httpClient().newCall(request).execute();
 			} catch (SocketTimeoutException ex) {
 				throw new TorrentTimeoutException(scrapeURL);
+			} catch(ConnectException ex){
+				throw new TorrentException(String.format("Unnable to connect to %s", scrapeURL));
 			}
 			
 			if (response.isSuccessful() == false) {
