@@ -15,10 +15,7 @@
  */
 package io.delimeat;
 
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -136,17 +133,12 @@ public class Application {
 		transactionManager.setEntityManagerFactory(emf);
 		return transactionManager;
 	}
-
-	@Bean
-	public InetAddress udpScrapeAddress() throws UnknownHostException {
-		return InetAddress.getByName(env.getProperty("io.delimeat.torrent.udp.address"));
-	}
-
-	@Bean
-	public DatagramSocket updScrapeDatagramSocket()
-			throws NumberFormatException, SocketException, UnknownHostException {
-		return new DatagramSocket(Integer.valueOf(env.getProperty("io.delimeat.torrent.udp.port")),
-				udpScrapeAddress());
+	
+	@Bean(name="io.delimeat.torrent.udpAddress")
+	public InetSocketAddress udpScrapeSocketAddress(){
+		String address = env.getProperty("io.delimeat.torrent.udp.address");
+		int port = Integer.valueOf(env.getProperty("io.delimeat.torrent.udp.port"));
+		return new InetSocketAddress(address,port);
 	}
 
 	@Bean

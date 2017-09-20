@@ -15,10 +15,8 @@
  */
 package io.delimeat;
 
-import java.net.DatagramSocket;
 import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import javax.persistence.EntityManagerFactory;
@@ -106,33 +104,17 @@ public class ApplicationTest {
 	}
 	
 	@Test
-	public void udpScrapeAddressTest() throws UnknownHostException{
-		Environment env = Mockito.mock(Environment.class);
-		Mockito.when(env.getProperty("io.delimeat.torrent.udp.address")).thenReturn("0.0.0.0");
-		application.setEnv(env);
-		
-		InetAddress address = application.udpScrapeAddress();
-		
-		Assert.assertEquals(Inet4Address.class, address.getClass());
-		Assert.assertEquals("0.0.0.0", address.getHostAddress());
-		
-		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.address");
-
-	}
-	
-	@Test
-	public void updScrapeDatagramSocketTest() throws NumberFormatException, SocketException, UnknownHostException{
+	public void udpScrapeSocketAddressTest() throws UnknownHostException{
 		Environment env = Mockito.mock(Environment.class);
 		Mockito.when(env.getProperty("io.delimeat.torrent.udp.address")).thenReturn("0.0.0.0");
 		Mockito.when(env.getProperty("io.delimeat.torrent.udp.port")).thenReturn("1234");
 		application.setEnv(env);
-	
-		DatagramSocket socket = application.updScrapeDatagramSocket();
 		
-		Assert.assertEquals(1234, socket.getLocalPort());
-		Assert.assertEquals("0.0.0.0", socket.getLocalAddress().getHostAddress());
-		Assert.assertTrue(socket.isBound());
-		Assert.assertFalse(socket.isClosed());
+		InetSocketAddress address = application.udpScrapeSocketAddress();
+		
+		Assert.assertEquals(Inet4Address.class, address.getAddress().getClass());
+		Assert.assertEquals("0.0.0.0", address.getAddress().getHostAddress());
+		Assert.assertEquals(1234, address.getPort());
 		
 		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.address");
 		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.port");
