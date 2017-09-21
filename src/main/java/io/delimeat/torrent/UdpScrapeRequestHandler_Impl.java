@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +58,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	private final Map<InetSocketAddress,ConnectionId> connections = new ConcurrentHashMap<>(); 
 	
-	private boolean sendActive = false;
-	private boolean receiveActive = false;
+	private AtomicBoolean sendActive = new AtomicBoolean(false);
+	private AtomicBoolean receiveActive = new AtomicBoolean(false);
 	private boolean active = false;
 	private Instant lastTransaction = Instant.EPOCH;
 	
@@ -207,12 +208,12 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public void send(){
 		LOGGER.trace("Starting sending");
-		if(sendActive == true){
+		if(sendActive.compareAndSet(false, true) == false){
 			LOGGER.warn("Send processing is already underway, exiting");
 			return;
 		}
 		
-		sendActive = true;
+		lastTransaction = Instant.now();
 		UdpTransaction transaction = null;
 		while((transaction = sendPipeline.poll()) != null){
 			LOGGER.trace("Sending request for {}", transaction);
@@ -225,19 +226,21 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			}
 			queue.put(transaction.getRequest().getTransactionId(), transaction);
 			LOGGER.trace("Sent request for {}", transaction);
+			
 		}
-		sendActive = false;
+		sendActive.compareAndSet(true, false);
 		LOGGER.trace("Finished sending");
 	}
 	
 	public void receive(){
 		LOGGER.trace("Processing reads");
-		if(receiveActive == true){
+		if(receiveActive.compareAndSet(false, true) == false){
 			LOGGER.warn("Receiving processing is already underway, exiting");
 			return;
 		}
 		
-		receiveActive = true;
+
+		lastTransaction = Instant.now();
 		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 		while(true && Thread.currentThread().isInterrupted() == false){
 			try{
@@ -271,7 +274,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				continue;
 			}
 		}
-		receiveActive = false;
+		receiveActive.compareAndSet(true, false);
 	}
 	
 	public void processResponse(ByteBuffer buffer, InetSocketAddress fromAddress){

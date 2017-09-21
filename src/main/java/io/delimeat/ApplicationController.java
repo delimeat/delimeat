@@ -15,8 +15,12 @@
  */
 package io.delimeat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,12 +30,16 @@ import spark.Response;
 import spark.Spark;
 
 @Component
-public class ApplicationController implements SparkController {
+public class ApplicationController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationController.class);
-
+	private static final String JSON_CONTENT_TYPE = "application/json";
+	
 	@Value("${io.delimeat.port}")
 	private int port = 8080;
+	
+	@Autowired
+	private List<SparkController> controllers = new ArrayList<SparkController>();
 	
 	/**
 	 * @return the port
@@ -47,10 +55,23 @@ public class ApplicationController implements SparkController {
 		this.port = port;
 	}
 
+	/**
+	 * @return the controllers
+	 */
+	public List<SparkController> getControllers() {
+		return controllers;
+	}
+
+	/**
+	 * @param controllers the controllers to set
+	 */
+	public void setControllers(List<SparkController> controllers) {
+		this.controllers = controllers;
+	}
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.util.spark.SparkController#init()
 	 */
-	@Override
 	public void init() throws Exception {
 		LOGGER.trace("Entering init");
 		Spark.port(port);
@@ -116,6 +137,12 @@ public class ApplicationController implements SparkController {
 		    LOGGER.trace(sb.toString());
 		});
 		
+		LOGGER.trace("Starting child controllers");
+		for(SparkController controller: controllers){
+			controller.init();
+		}
+		LOGGER.trace("Started child controllers");
+
 		LOGGER.trace("Leaving init");
 	}
 

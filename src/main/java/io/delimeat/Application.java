@@ -17,7 +17,6 @@ package io.delimeat;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -51,8 +50,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import io.delimeat.util.spark.SparkController;
 
 @Configuration
 @ComponentScan
@@ -91,10 +88,8 @@ public class Application {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
 		ctx.registerShutdownHook();
 
-		Map<String, SparkController> controllers = ctx.getBeansOfType(SparkController.class);
-		for (String controllerName : controllers.keySet()) {
-			controllers.get(controllerName).init();
-		}
+		ApplicationController controller = ctx.getBean(ApplicationController.class);
+		controller.init();
 
 		LOGGER.info("Delimeat started in {} ms", System.currentTimeMillis() - appStart);
 	}

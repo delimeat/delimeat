@@ -82,7 +82,6 @@
 						</goals>
 						<configuration>
 							<nodeVersion>${node.version}</nodeVersion>
-							<npmVersion>${npm.version}</npmVersion>
 						</configuration>
 					</execution>
 		
@@ -142,7 +141,6 @@
 		
 		<!-- Front end stuff !-->
 		<node.version>v7.0.0</node.version>
-		<npm.version>4.0.2</npm.version>
 		
 		<!-- Maven plugins  !-->
 		<org.jacoco.version>0.7.9</org.jacoco.version>
