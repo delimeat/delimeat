@@ -128,7 +128,7 @@ public class ConfigControllerTest {
     			.path("/api/config")
     			.request()
     			.accept("application/json")
-    			.post(Entity.entity(config, "application/json"));
+    			.put(Entity.entity(config, "application/json"));
     	
     	Assert.assertEquals(200, response.getStatus());
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
@@ -159,7 +159,7 @@ public class ConfigControllerTest {
     			.path("/api/config")
     			.request()
     			.accept("application/json")
-    			.post(Entity.entity(config, "application/json"));
+    			.put(Entity.entity(config, "application/json"));
     	
     	Assert.assertEquals(412, response.getStatus());
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 

@@ -62,7 +62,7 @@ public class ConfigController implements SparkController {
 				return configService.read();
 			}, JsonUtils::toJson);
 	
-			Spark.post("",(Request request, Response response) -> {
+			Spark.put("",(Request request, Response response) -> {
 				Config config = JsonUtils.fromJson(request.bodyAsBytes(), Config.class);
 				return configService.update(config);
 			}, JsonUtils::toJson);
