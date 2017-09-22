@@ -32,5 +32,7 @@ public interface EpisodeRepository extends Repository<Episode, Long> {
 	
 	public List<Episode> findByStatusIn(List<EpisodeStatus> statuses);
 	
-	public List<Episode> findByShowShowId(Long showId);
+	public List<Episode> findEpisodeByShowShowId(Long showId);
+	
+	public void deleteByShowShowId(Long showId);
 }

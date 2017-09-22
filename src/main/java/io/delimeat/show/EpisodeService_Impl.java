@@ -123,10 +123,21 @@ public class EpisodeService_Impl implements EpisodeService {
 	@Override
 	public List<Episode> findByShow(Long showId) throws ShowException {
 		try{
-			return episodeRepository.findByShowShowId(showId);
+			return episodeRepository.findEpisodeByShowShowId(showId);
 		} catch (DataAccessException e) {
 			throw new ShowException(e);
 		}
+	}
+	
+
+	@Override
+	public void deleteByShow(Long showId) throws ShowException {
+		try{
+			episodeRepository.deleteByShowShowId(showId);
+		} catch (DataAccessException e) {
+			throw new ShowException(e);
+		}
+		
 	}
 
 	/* (non-Javadoc)

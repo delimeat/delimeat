@@ -15,6 +15,7 @@
  */
 package io.delimeat.guide;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,11 @@ public class GuideService_Impl implements GuideService {
 	 */
 	@Override
 	public GuideInfo read(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException {
-		return guideDataSource.info(guideId);
+		GuideInfo info = guideDataSource.info(guideId);
+		if(info.getAirTime() == null){
+			info.setAirTime(LocalTime.MIDNIGHT);
+		}
+		return info;
 	}
 
 	/* (non-Javadoc)

@@ -76,5 +76,5 @@ public class ConfigController implements SparkController {
 
 		LOGGER.trace("Leaving init");
 
-	}	
+	}
 }

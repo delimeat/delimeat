@@ -71,6 +71,14 @@ public interface EpisodeService {
 	 * @throws ShowException
 	 */
 	public List<Episode> findByShow(Long showId) throws ShowException;
+	
+	/**
+	 * Delete episodes by show
+	 * @param showId
+	 * @return
+	 * @throws ShowException
+	 */
+	public void deleteByShow(Long showId) throws ShowException;
 
 
 }

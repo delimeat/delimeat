@@ -211,14 +211,14 @@ public class EpisodeService_ImplTest {
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
 		Mockito.doReturn(Arrays.asList(ep))
 			.when(repository)
-			.findByShowShowId(Long.MAX_VALUE);
+			.findEpisodeByShowShowId(Long.MAX_VALUE);
 		service.setEpisodeRepository(repository);	
 		
 		List<Episode> result = service.findByShow(Long.MAX_VALUE);
 		Assert.assertEquals("results size",1, result.size());
 		Assert.assertEquals("first result", ep, result.get(0));
 		
-		Mockito.verify(repository).findByShowShowId(Long.MAX_VALUE);
+		Mockito.verify(repository).findEpisodeByShowShowId(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(repository);		
 	}
 	
@@ -228,7 +228,7 @@ public class EpisodeService_ImplTest {
 		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
 		Mockito.doThrow(new DataSourceLookupFailureException("EX"))
 			.when(repository)
-			.findByShowShowId(Long.MAX_VALUE);
+			.findEpisodeByShowShowId(Long.MAX_VALUE);
 		service.setEpisodeRepository(repository);	
 		
 		service.findByShow(Long.MAX_VALUE);

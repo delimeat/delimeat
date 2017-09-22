@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import io.delimeat.util.jaxb.InstantAdapter;
@@ -107,7 +108,8 @@ public class Show {
 	@Column(name="VERSION")
 	private int version;
 	
-	@OneToMany(mappedBy="show", fetch=FetchType.LAZY, orphanRemoval=true, cascade=CascadeType.ALL)
+	@XmlTransient
+	@OneToMany(mappedBy="show", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	private List<Episode> episodes;
 	
 
@@ -277,6 +279,21 @@ public class Show {
 	 */
 	public void setMaxSize(int maxSize) {
 		this.maxSize = maxSize;
+	}
+
+	/**
+	 * @return the episodes
+	 */
+	@XmlTransient
+	public List<Episode> getEpisodes() {
+		return episodes;
+	}
+
+	/**
+	 * @param episodes the episodes to set
+	 */
+	public void setEpisodes(List<Episode> episodes) {
+		this.episodes = episodes;
 	}
 
 	/**

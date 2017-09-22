@@ -177,6 +177,7 @@ public class ShowService_Impl implements ShowService {
 	@Transactional
 	public void delete(Long id) throws ShowException {
 		try{
+			episodeService.deleteByShow(id);
 			showRepository.delete(id);
 		} catch (DataAccessException e) {
 			throw new ShowException(e);
