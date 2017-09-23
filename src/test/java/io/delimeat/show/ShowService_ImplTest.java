@@ -240,10 +240,16 @@ public class ShowService_ImplTest {
 	public void deleteTest() throws Exception {
 		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
 		service.setShowRepository(showRepository);
+		
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		service.setEpisodeService(episodeService);
+		
 		service.delete(Long.MAX_VALUE);
+		
 
 		Mockito.verify(showRepository).delete(Long.MAX_VALUE);
-		Mockito.verifyNoMoreInteractions(showRepository);
+		Mockito.verify(episodeService).deleteByShow(Long.MAX_VALUE);
+		Mockito.verifyNoMoreInteractions(showRepository, episodeService);
 	}
 
 	@Test(expected = ShowException.class)
@@ -252,6 +258,9 @@ public class ShowService_ImplTest {
 		service.setShowRepository(showRepository);
 		Mockito.doThrow(new DataSourceLookupFailureException("EX")).when(showRepository).delete(Long.MAX_VALUE);
 
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		service.setEpisodeService(episodeService);
+		
 		service.delete(Long.MAX_VALUE);
 	}
 
