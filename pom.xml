@@ -157,14 +157,14 @@
 		<javax.transaction.version>1.2</javax.transaction.version>
 		
 		<!-- Runtime versions ! -->
-		<org.springframework.version>4.3.9.RELEASE</org.springframework.version>
-		<org.springframework.data.version>1.11.4.RELEASE</org.springframework.data.version>
+		<org.springframework.version>4.3.11.RELEASE</org.springframework.version>
+		<org.springframework.data.version>1.11.7.RELEASE</org.springframework.data.version>
 		<com.h2database.version>1.4.196</com.h2database.version>
-		<com.zaxxer.hikari.version>2.5.1</com.zaxxer.hikari.version>
-		<org.eclipse.persistence.version>2.6.4</org.eclipse.persistence.version>
+		<com.zaxxer.hikari.version>2.7.1</com.zaxxer.hikari.version>
+		<org.eclipse.persistence.version>2.7.0</org.eclipse.persistence.version>
 		
 		<com.sparkjava.version>2.6.0</com.sparkjava.version>
-		<com.squareup.okhttp3.version>3.8.1</com.squareup.okhttp3.version>
+		<com.squareup.okhttp3.version>3.9.0</com.squareup.okhttp3.version>
 		
 		<org.slf4j.version>1.7.22</org.slf4j.version>
 		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>
