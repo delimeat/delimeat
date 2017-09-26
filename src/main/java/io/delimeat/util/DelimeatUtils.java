@@ -24,9 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.show.domain.Episode;
+import io.delimeat.util.okhttp.LoggingInterceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.logging.HttpLoggingInterceptor.Level;
 
 public class DelimeatUtils {
 	
@@ -76,14 +75,12 @@ public class DelimeatUtils {
 	}
 	
 	public static OkHttpClient httpClient(){
-		HttpLoggingInterceptor loggingIntercepter = new HttpLoggingInterceptor();
-		loggingIntercepter.setLevel(Level.BODY);
 		
 		return new OkHttpClient().newBuilder()
 				.connectTimeout(2, TimeUnit.SECONDS)
 				.readTimeout(2, TimeUnit.SECONDS)
 				.writeTimeout(2, TimeUnit.SECONDS)
-				.addInterceptor(loggingIntercepter)
+				.addInterceptor(new LoggingInterceptor())
 				.build();
 	}
 	

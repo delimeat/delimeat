@@ -20,8 +20,8 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.delimeat.util.okhttp.LoggingInterceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class DelimeatUtilsTest {
 
@@ -64,7 +64,7 @@ public class DelimeatUtilsTest {
 		Assert.assertEquals(2000, client.readTimeoutMillis());
 		Assert.assertEquals(2000, client.writeTimeoutMillis());
 		Assert.assertEquals(1, client.interceptors().size());
-		Assert.assertEquals(HttpLoggingInterceptor.class, client.interceptors().get(0).getClass());
+		Assert.assertEquals(LoggingInterceptor.class, client.interceptors().get(0).getClass());
 	}
 
 }
