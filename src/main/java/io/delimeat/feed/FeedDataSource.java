@@ -17,8 +17,6 @@ package io.delimeat.feed;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
-
 import io.delimeat.feed.domain.FeedResult;
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedContentTypeException;
@@ -43,7 +41,6 @@ public interface FeedDataSource {
 	 * @throws FeedResponseBodyException
 	 * @throws FeedException
 	 */
-	@Cacheable(value="feed", key="title")
 	public List<FeedResult> read(String title) throws FeedTimeoutException,FeedContentTypeException,FeedResponseException,FeedResponseBodyException, FeedException;
 	
 }

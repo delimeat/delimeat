@@ -16,7 +16,6 @@
 package io.delimeat;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -29,10 +28,6 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -58,7 +53,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableScheduling
-@EnableCaching
+//@EnableCaching()
 public class Application {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -155,6 +150,9 @@ public class Application {
 		return new DefaultPointcutAdvisor(pointcut, customizableTraceInterceptor());
 	}
 	
+	//TODO cache disabled because spring not applying cache from interfaces
+	//TODO re-enable once spring works, possible replace with caffeine 
+	/*
 	@Bean
 	public CacheManager cacheManager(){
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
@@ -163,8 +161,10 @@ public class Application {
           new ConcurrentMapCache("guide-info"),
           new ConcurrentMapCache("guide-episodes"),
           new ConcurrentMapCache("guide-search"),
-          new ConcurrentMapCache("torrent")));
+          new ConcurrentMapCache("torrent"),
+          new ConcurrentMapCache("scrape")));
         return cacheManager;
 	}
+	*/
 
 }

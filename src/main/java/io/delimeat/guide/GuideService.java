@@ -17,6 +17,8 @@ package io.delimeat.guide;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import io.delimeat.guide.domain.GuideEpisode;
 import io.delimeat.guide.domain.GuideInfo;
 import io.delimeat.guide.domain.GuideSearchResult;
@@ -33,6 +35,7 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
+	@Cacheable("guide-search")
 	public List<GuideSearchResult> readLike(final String title) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 	/**
@@ -42,6 +45,7 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
+	@Cacheable("guide-info")
 	public GuideInfo read(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 	/**
@@ -51,6 +55,7 @@ public interface GuideService {
 	 * @return
 	 * @throws Exception
 	 */
+	@Cacheable("guide-episodes")
 	public List<GuideEpisode> readEpisodes(final String guideId) throws GuideNotFoundException,GuideAuthorizationException, GuideException;
 	
 }
