@@ -24,8 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.delimeat.util.spark.RequestLoggingFilter;
+import io.delimeat.util.spark.ResponseLoggingFilter;
 import io.delimeat.util.spark.SparkController;
-import io.delimeat.util.spark.SparkLoggingFilter;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -105,7 +106,7 @@ public class ApplicationController {
 		    response.header("Content-Encoding", "gzip");
 		});
 
-		Spark.before(new SparkLoggingFilter(true));
+		Spark.before(new RequestLoggingFilter());
 		
 		Spark.after("/api/*",(Request request, Response response) -> {
 			if(response.body() != null){
@@ -115,7 +116,7 @@ public class ApplicationController {
 			}
 		});
 
-		Spark.afterAfter(new SparkLoggingFilter(false));
+		Spark.afterAfter(new ResponseLoggingFilter());
 		
 		LOGGER.trace("Starting child controllers");
 		for(SparkController controller: controllers){
