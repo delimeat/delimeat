@@ -299,12 +299,12 @@ public class ShowService_ImplTest {
 	@Test
 	public void cleanTitleTest() {
 		Show show = new Show();
-		show.setTitle("This is 2015 a V'ery Nice $#10293734521,.<>~???! title (2016)");
+		show.setTitle("This is 2015 a V'ery-Nice $#10293734521,.<>~?! title & (2016)");
 
 		Show result = service.cleanTitle(show);
 
 		Assert.assertEquals(show, result);
-		Assert.assertEquals("This is 2015 a Very Nice 10293734521 title", result.getTitle());
+		Assert.assertEquals("This is 2015 a Very-Nice 10293734521 title and", result.getTitle());
 	}
 
 }

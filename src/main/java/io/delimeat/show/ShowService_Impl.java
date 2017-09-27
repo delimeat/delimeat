@@ -39,7 +39,7 @@ import io.delimeat.show.exception.ShowNotFoundException;
 @Service
 public class ShowService_Impl implements ShowService {
 
-	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s]";
+	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s-]";
 	
 	@Autowired
 	private ShowRepository showRepository;
@@ -205,7 +205,7 @@ public class ShowService_Impl implements ShowService {
 	 */
 	public Show cleanTitle(Show show){
 		final String originalTitle = show.getTitle() != null ? show.getTitle() : "";
-		String cleanedTitle = originalTitle.replaceAll(TITLE_REGEX, "").trim();
+		String cleanedTitle = originalTitle.replaceAll("&", "and").replaceAll(TITLE_REGEX, "").trim();
 		show.setTitle(cleanedTitle);
 		return show;
 	}
