@@ -32,60 +32,61 @@ import io.delimeat.show.domain.Episode;
 public class ExcludedKeywordFilter_ImplTest {
 
 	private ExcludedKeywordFilter_Impl filter;
-	
+
 	@Before
-	public void setUp(){
+	public void setUp() {
 		filter = new ExcludedKeywordFilter_Impl();
 	}
-	
-  	@Test
-  	public void nullExcludedKeywordsTest() throws Exception{
-  		Config config = new Config();
+
+	@Test
+	public void nullExcludedKeywordsTest() throws Exception {
+		Config config = new Config();
 		FeedResult result = new FeedResult();
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
-     
+
 		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
-   }
-   
-  	@Test
-  	public void emptyExcludedKeywordsTest() throws Exception{
-  		Config config = new Config();
-     	config.setExcludedKeywords(Collections.<String>emptyList());
-     
+	}
+
+	@Test
+	public void emptyExcludedKeywordsTest() throws Exception {
+		Config config = new Config();
+		config.setExcludedKeywords(Collections.<String>emptyList());
+
 		FeedResult result = new FeedResult();
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
-     
+
 		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
-   }
-  
-  	@Test
-  	public void foundTest() throws Exception{
-  		Config config = new Config();
-     	config.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
-     
+	}
+
+	@Test
+	public void foundTest() throws Exception {
+		Config config = new Config();
+		config.setExcludedKeywords(Arrays.asList("FIND_ME", "TEXT2"));
+
 		FeedResult result = new FeedResult();
-     	result.setTitle("BLAH_BLAHFIND_ME_BLAH");
+		result.setTitle("BLAH_BLAHFIND_ME_BLAH");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
-     
+
 		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(0, results.size());
-   }
-  
-  	@Test
-  	public void notFoundTest() throws Exception{
-  		Config config = new Config();
-     	config.setExcludedKeywords(Arrays.asList("FIND_ME","TEXT2"));
-     
+	}
+
+	@Test
+	public void notFoundTest() throws Exception {
+		Config config = new Config();
+		config.setExcludedKeywords(Arrays.asList("FIND_ME", "TEXT2"));
+
 		FeedResult result = new FeedResult();
-     	result.setTitle("BLAH_BLAH_BLAH");
+		result.setTitle("BLAH_BLAH_BLAH");
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
-     
+
 		filter.filter(results, new Episode(), config);
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(result, results.get(0));
-   }
+	}
+	
 }

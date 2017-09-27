@@ -47,6 +47,8 @@ public class ExcludedKeywordFilter_Impl extends AbstractFeedResultFilter impleme
 				.stream()
 				.collect(Collectors.joining("|", "(", ")"));
 		
+		LOGGER.trace("Using regex {}",regex);
+		
 		final Pattern pattern = Pattern.compile(regex.toLowerCase());
 		String title;
 		Iterator<FeedResult> iterator = results.iterator();
