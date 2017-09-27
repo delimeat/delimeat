@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -38,18 +37,25 @@ public class ExcludedKeywordFilter_Impl extends AbstractFeedResultFilter impleme
 	 */
 	@Override
 	void doFilter(List<FeedResult> results, Episode episode, Config config) {
-		if (config.getExcludedKeywords() == null || config.getExcludedKeywords().isEmpty()) {
+		List<String> keywords = config.getExcludedKeywords();
+		if (keywords == null || keywords.isEmpty()) {
 			LOGGER.trace("No excluded keywords, ending");
 			return;
 		}
 		
-		String regex = config.getExcludedKeywords()
-				.stream()
-				.collect(Collectors.joining("|", "(", ")"));
-		
+		String regex = "(";
+		for(int i = 0; i < keywords.size(); i++){
+			if(i>0){
+				regex += "|";
+			}
+			regex += keywords.get(i);
+		}
+		regex += ")";
+		regex = regex.toLowerCase();
+
 		LOGGER.trace("Using regex {}",regex);
 		
-		final Pattern pattern = Pattern.compile(regex.toLowerCase());
+		final Pattern pattern = Pattern.compile(regex);
 		String title;
 		Iterator<FeedResult> iterator = results.iterator();
 		while(iterator.hasNext()){
