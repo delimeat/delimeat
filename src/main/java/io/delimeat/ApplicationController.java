@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.delimeat.util.spark.SparkController;
+import io.delimeat.util.spark.SparkLoggingFilter;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -103,39 +104,18 @@ public class ApplicationController {
 		    response.status(400);
 		    response.header("Content-Encoding", "gzip");
 		});
-		
-		Spark.before((request, response) -> {
-			StringBuilder sb = new StringBuilder();
-			sb.append("HTTP REQUEST \n");
-		    sb.append(request.requestMethod());
-		    sb.append(" " + request.url());
-		    sb.append(" " + request.ip());
-		    sb.append("\n");
-		    for(String key: request.headers()){
-		    	sb.append(key + ": " + request.headers(key) + "\n");
-		    }
-		    sb.append("Body: " + (request.body().isEmpty() ? "empty" : request.body()));
-		    LOGGER.trace(sb.toString());
-		});
+
+		Spark.before(new SparkLoggingFilter(true));
 		
 		Spark.after("/api/*",(Request request, Response response) -> {
-			response.type(JSON_CONTENT_TYPE);
-			response.header("Content-Encoding", "gzip");
+			if(response.body() != null){
+				response.type(JSON_CONTENT_TYPE);
+				response.header("Content-Encoding", "gzip");
+				response.header("Content-Length", Integer.toString(response.body().getBytes().length));
+			}
 		});
-		
-		
-		Spark.afterAfter((request, response) -> {
-			StringBuilder sb = new StringBuilder();
-			sb.append("HTTP RESPONSE \n");
-		    sb.append(response.status());
-		    sb.append(" " + response.type());
-		    sb.append("\n");		    
-		    sb.append(request.url());
-		    sb.append(" " + request.ip());
-		    sb.append("\n");		    
-		    sb.append("Body: " + (response.body() == null || response.body().isEmpty() ? "empty" : response.body()));
-		    LOGGER.trace(sb.toString());
-		});
+
+		Spark.afterAfter(new SparkLoggingFilter(false));
 		
 		LOGGER.trace("Starting child controllers");
 		for(SparkController controller: controllers){

@@ -56,6 +56,8 @@ public class TorrentFileTypeValidator_Impl extends AbstractTorrentValidator impl
 								.stream()
 								.collect(Collectors.joining("|", "(", ")$"));
 
+		LOGGER.trace("Using regex {}",regex);
+
 		final Pattern pattern = Pattern.compile(regex.toLowerCase());
 
 		final List<String> files = Optional.ofNullable(info.getFiles())
