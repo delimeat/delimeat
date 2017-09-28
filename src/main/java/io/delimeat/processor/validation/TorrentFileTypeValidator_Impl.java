@@ -48,13 +48,20 @@ public class TorrentFileTypeValidator_Impl extends AbstractTorrentValidator impl
 	boolean doValidate(Torrent torrent, Show show, Config config) {
 		final TorrentInfo info = torrent.getInfo();
 		
+		List<String> fileTypes = config.getIgnoredFileTypes();
 		if(config.getIgnoredFileTypes() == null || config.getIgnoredFileTypes().isEmpty() == true){
 			return true;
 		}
 		
-		String regex = config.getIgnoredFileTypes()
-								.stream()
-								.collect(Collectors.joining("|", "(", ")$"));
+		String regex = "(";
+		for(int i = 0; i < fileTypes.size(); i++){
+			if(i>0){
+				regex += "|";
+			}
+			regex += fileTypes.get(i);
+		}
+		regex += ")$";
+		regex = regex.toLowerCase();
 
 		LOGGER.trace("Using regex {}",regex);
 
