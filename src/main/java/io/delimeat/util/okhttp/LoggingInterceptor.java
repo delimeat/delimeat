@@ -146,8 +146,9 @@ public class LoggingInterceptor implements Interceptor {
 			if (contentType != null) {
 				charset = contentType.charset(UTF8);
 			}
+
 			
-			if (!isPlaintext(buffer)) {
+			if (!isPlaintext(buffer) || "application/x-bittorrent".equals(response.headers().get("Content-Type"))) {
 				respStrBuilder.append("<-- END HTTP (binary " + buffer.size() + "-byte body omitted)\n");
 				return response;
 			}
