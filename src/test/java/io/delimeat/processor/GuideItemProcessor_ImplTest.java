@@ -149,6 +149,7 @@ public class GuideItemProcessor_ImplTest {
 		Assert.assertEquals(EpisodeStatus.PENDING, result.getStatus());
 		Assert.assertEquals(2, result.getSeasonNum());
 		Assert.assertEquals(3, result.getEpisodeNum());
+		Assert.assertEquals(show, result.getShow());
 		
 		Mockito.verify(episodeService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -399,6 +400,7 @@ public class GuideItemProcessor_ImplTest {
 		Assert.assertEquals(3, createdEpResult.getSeasonNum());
 		Assert.assertEquals(4, createdEpResult.getEpisodeNum());
 		Assert.assertEquals(EpisodeStatus.PENDING, createdEpResult.getStatus());
+		Assert.assertEquals(show, createdEpResult.getShow());
 		
 		Episode updatedEpResult = updateCaptor.getValue();
 		Assert.assertEquals(LocalDate.of(2017,03,28), updatedEpResult.getAirDate());

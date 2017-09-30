@@ -193,7 +193,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		processUnits.stream()
 			.filter(p->p.getTorrent() != null)
 			.filter(p->p.getSeeders() == 0 && p.getLeechers() == 0)
-			.forEach(p->scrapeTorrent(p));
+			.forEach(this::scrapeTorrent);
 		
 		// count the valid results
 		long validResultsCnt = processUnits.stream()

@@ -185,6 +185,7 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 			
 			if(create){
 				Episode showEp = ShowUtils.fromGuideEpisode(guideEp);
+				showEp.setShow(show);
 				episodeService.create(showEp);
 				creates = true;
 			}

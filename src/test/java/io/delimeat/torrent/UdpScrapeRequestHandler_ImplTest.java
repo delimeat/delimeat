@@ -5,6 +5,7 @@ import java.net.StandardSocketOptions;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -98,33 +99,34 @@ public class UdpScrapeRequestHandler_ImplTest {
 		Assert.assertEquals(connIdKeep, handler.getConnections().get(connIdKeep.getFromAddress()));
 
 	}
+	
 	@Ignore
 	@Test
 	public void test() throws Exception{	
+		InetSocketAddress address = new InetSocketAddress("0.0.0.0",9004);
+		
 		UdpScrapeRequestHandler_Impl server = new UdpScrapeRequestHandler_Impl();
+		server.setAddress(address);
 		
-		server.initialize();
+		//server.initialize();
 		
-		URI uri = new URI("udp://tracker.coppersurfer.tk:6969");
 		InfoHash infoHash = new InfoHash(DelimeatUtils.hexToBytes("d73ae09044abf44faf3ade9e43cbc902b319c15b"));
-		ScrapeResult result = server.doScrape(uri, infoHash);
-		System.out.println(result);
-		
-		uri = new URI("udp://tracker.leechers-paradise.org:6969");
-		result = server.doScrape(uri, infoHash);
-		System.out.println(result);
 
-		uri = new URI("udp://eddie4.nl:6969");
-		result = server.doScrape(uri, infoHash);
-		System.out.println(result);
-		
-		uri = new URI("udp://tracker.pirateparty.gr:6969");
-		result = server.doScrape(uri, infoHash);
-		System.out.println(result);
-
-		uri = new URI("udp://tracker.zer0day.to:1337");
-		result = server.doScrape(uri, infoHash);
-		System.out.println(result);
+		List<URI> uris = Arrays.asList(new URI("udp://tracker.coppersurfer.tk:6969"),
+				new URI("udp://tracker.leechers-paradise.org:6969"),
+				new URI("udp://eddie4.nl:6969"),
+				new URI("udp://tracker.pirateparty.gr:6969"),
+				new URI("udp://tracker.zer0day.to:1337")
+				);
+		ScrapeResult result = null;
+		for(URI uri : uris){
+			try{
+			result = server.scrape(uri, infoHash);
+			System.out.println(result);
+			}catch(Exception ex){
+				System.out.println("Exception");
+			}
+		}
 		
 		Thread.sleep(10000);
 		server.shutdown();

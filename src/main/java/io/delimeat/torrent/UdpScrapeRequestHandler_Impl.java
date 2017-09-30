@@ -65,7 +65,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	private DatagramChannel channel;
 	private Selector selector;
-	private ScheduledExecutorService executor;
+	private ExecutorService executor;
+	private ScheduledExecutorService scheduler;
 	
 	@Autowired
 	@Qualifier("io.delimeat.torrent.udpAddress")
@@ -95,7 +96,13 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public ExecutorService getExecutor() {
 		return executor;
 	}
-	
+
+	/**
+	 * @return the scheduler
+	 */
+	public ScheduledExecutorService getScheduler() {
+		return scheduler;
+	}	
 	/**
 	 * @return the address
 	 */
@@ -125,33 +132,46 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 
 	public void initialize() throws IOException{
+		LOGGER.trace("Start initialize");
 		if(active == false){
+			LOGGER.trace("Initializing");
 			selector = Selector.open();
 			
 			channel = DatagramChannel.open();
+			LOGGER.trace("Address: {}", address);
 			channel.bind(address);
 			channel.configureBlocking(false);
 			channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024);
 			channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024);
 			channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+			channel.register(selector, SelectionKey.OP_READ);
 			
-			executor = Executors.newScheduledThreadPool(2);
+			executor = Executors.newFixedThreadPool(5);
 			executor.execute(this::select);
-			executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
-			executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+			
+			//scheduler = Executors.newScheduledThreadPool(2);
+			//scheduler.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+			//scheduler.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+			
 			active = true;
 		}
+		LOGGER.trace("End initialize");
 
 	}
 	
 	public void shutdown() throws IOException, InterruptedException{
+		LOGGER.trace("Start shutdown");
 		if(active == true){
+			LOGGER.trace("Shutting down");
 			active = false;
 			selector.close();
 			channel.close();
 			executor.shutdown();
 			executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+			scheduler.shutdown();
+			scheduler.awaitTermination(5000, TimeUnit.MILLISECONDS);
 		}
+		LOGGER.trace("End shutdown");
 	}
 	
 	public boolean isActive(){
@@ -159,36 +179,45 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 	
 	public void shutdownDueToInactivity(){
+		LOGGER.trace("Start shutdown due to inactivity");
 		if(lastTransaction.isBefore(Instant.now().minusMillis(5*60*1000))){
+			LOGGER.trace("Going to shutdown");
 			try{
 				shutdown();
 			}catch(IOException | InterruptedException ex){
 				LOGGER.warn("Encountered an error shuting down", ex);
 			}
 		}
+		LOGGER.trace("End shutdown due to inactivity");
+
 	}
 	
 	public void purgeInvalidConnectionIds(){
+		LOGGER.trace("Start purge expired connection ids");
 		Instant now = Instant.now();
 		Iterator<ConnectionId> iterator = connections.values().iterator();
 		while(iterator.hasNext()){
 			ConnectionId connectionId = iterator.next();
 			if(connectionId.getExpiry().isBefore(now)){
+				LOGGER.trace("Expired connection id {} for {}", connectionId.getValue(), connectionId.getFromAddress());
 				iterator.remove();
 			}	
 		}
+		LOGGER.trace("End purge expired connection ids");
 	}
 	
 	public void select(){
 		while (active && Thread.currentThread().isInterrupted() == false) {
 			try{
 				selector.select();
+				LOGGER.trace("Selected");
 			}catch(IOException ex){
 				LOGGER.error("Selector encountered an error",ex);
 			}
 			
 			//allows for closing gracefully
 			if(active == false || selector.isOpen() == false){
+				LOGGER.trace("Breaking select active: {} open: {}",active, selector.isOpen());
 				break;
 			}
 			
@@ -200,6 +229,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
                 iter.remove();
                 
                 if (key.isValid() && key.isReadable()) {	
+                	LOGGER.trace("Got a readable key");
                 	receive();
                 }
             }
