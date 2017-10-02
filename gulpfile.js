@@ -1,7 +1,5 @@
 var gulp = require('gulp')
 	, del = require('del')
-	, lrserver = require('tiny-lr')()
-    , express = require('express')
     , $ = require('gulp-load-plugins')({
     	  rename: {
     	    'gulp-ng-annotate': 'ngannotate',
@@ -9,8 +7,6 @@ var gulp = require('gulp')
     	    'gulp-ng-config':'ngconfig'
     	  }
     	});
-
-var SERVER_PORT = 5000;
  
 // Clean output directory
 gulp.task('clean', function(){
@@ -60,16 +56,6 @@ gulp.task('favicon',['clean'], function () {
 	  .pipe(gulp.dest('target/classes/static'));
 });
 
-//create config file for api endpoint - DEVELOPMENT
-gulp.task('config:dev',['clean'], function () {
-	  gulp.src('./frontend/config.json')
-	  .pipe($.ngconfig('delimeat.config', {
-		  environment: 'development'
-		}))
-	    .pipe($.rename('config.js'))
-	    .pipe(gulp.dest('target/tmp/js'));
-});
-
 //create config file for api endpoint - BUILD
 gulp.task('config:build',['clean'], function () {
 	  gulp.src('./frontend/config.json')
@@ -99,23 +85,10 @@ gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyp
 	.pipe(gulp.dest('target/classes/static'));
 });
 
-//Serve tasks
-gulp.task('reload:html', function () {
-    return gulp.src('./frontend/**/*.html')
-        .pipe($.livereload(lrserver));
-});
 
 //watch for updated source files
 gulp.task('watch',['clean'], function () {
     gulp.watch('./frontend/**/*.html', ['reload:html']);
-});
-
-//serve the source files for development
-gulp.task('serve:dev', ['clean','watch','config:dev'], function() {
-    var server = express();
-    server.use(express.static('target/tmp/'));
-    server.use(express.static('./frontend/'));
-    server.listen(SERVER_PORT);
 });
 
 gulp.task('default',['clean','compile'], function() {});
