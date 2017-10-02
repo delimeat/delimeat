@@ -180,11 +180,11 @@ public class UdpScrapeRequestHandler_ImplTest {
 		
 		InfoHash infoHash = new InfoHash(DelimeatUtils.hexToBytes("d73ae09044abf44faf3ade9e43cbc902b319c15b"));
 
-		List<URI> uris = Arrays.asList(new URI("udp://tracker.coppersurfer.tk:6969"),
-				new URI("udp://tracker.leechers-paradise.org:6969"),
-				new URI("udp://eddie4.nl:6969"),
-				new URI("udp://tracker.pirateparty.gr:6969"),
-				new URI("udp://tracker.zer0day.to:1337")
+		List<URI> uris = Arrays.asList(new URI("udp://tracker.coppersurfer.tk:6969")
+				//,new URI("udp://tracker.leechers-paradise.org:6969")
+				//,new URI("udp://eddie4.nl:6969")
+				//,new URI("udp://tracker.pirateparty.gr:6969")
+				//,new URI("udp://tracker.zer0day.to:1337")
 				);
 		ScrapeResult result = null;
 		for(URI uri : uris){
@@ -206,37 +206,25 @@ public class UdpScrapeRequestHandler_ImplTest {
 	public void test2() throws Exception{
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 		
-		scheduler.execute(new Runnable(){
-
-			@Override
-			public void run() {
-				int count = 0;
-				while(count < 10){
-					System.out.println("Sleeping");
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					count++;
-					System.out.println("Woke up");
-				}
-				
-			}
-			
-		});
+		scheduler.execute(this::doThread);
 		
 		scheduler.scheduleWithFixedDelay(this::doSchedule, 200, 3000, TimeUnit.MILLISECONDS);
-		scheduler.schedule(new Runnable(){
-
-			@Override
-			public void run() {
-				System.out.println("Thread 3");
-			}
-			}, 500, TimeUnit.MILLISECONDS);
-
 		
 		Thread.sleep(11000);
+	}
+	
+	public void doThread(){
+		int count = 0;
+		while(count < 10){
+			System.out.println("Sleeping");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			count++;
+			System.out.println("Woke up");
+		}
 	}
 	
 	public void doSchedule(){

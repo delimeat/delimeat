@@ -143,15 +143,13 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 		channel.register(selector, SelectionKey.OP_READ);
 		
-		//executor = Executors.newFixedThreadPool(5);
-		//executor.execute(this::select);
+		active = true;
 		
-		executor = Executors.newScheduledThreadPool(4);
-		executor.execute(this::select);
+		executor = Executors.newScheduledThreadPool(2);
+		executor.execute(this::doSelect);
 		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 		executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 		
-		active = true;
 		LOGGER.trace("End initialize");
 
 	}
@@ -203,9 +201,10 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		LOGGER.trace("End purge expired connection ids");
 	}
 	
-	public void select(){
+	public void doSelect(){
 		LOGGER.trace("Select thread started");
 		while (active && Thread.currentThread().isInterrupted() == false) {
+			
 			try{
 				selector.select();
 				LOGGER.trace("Selected");
@@ -228,14 +227,14 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
                 
                 if (key.isValid() && key.isReadable()) {	
                 	LOGGER.trace("Got a readable key");
-                	receive();
+                	doReceive();
                 }
             }
         }
 		LOGGER.trace("Select thread ended with active {} isInterupted {}", active, Thread.currentThread().isInterrupted());
 	}
 	
-	public void send(){
+	public void doSend(){
 		LOGGER.trace("Starting sending");
 		if(sendActive.compareAndSet(false, true) == false){
 			LOGGER.warn("Send processing is already underway, exiting");
@@ -261,7 +260,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		LOGGER.trace("Finished sending");
 	}
 	
-	public void receive(){
+	public void doReceive(){
 		LOGGER.trace("Processing reads");
 		if(receiveActive.compareAndSet(false, true) == false){
 			LOGGER.warn("Receiving processing is already underway, exiting");
@@ -358,7 +357,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		UdpTransaction txn = new UdpTransaction(request, address);
 		LOGGER.trace("Adding {} to send queue", txn);
 		sendPipeline.add(txn);
-		executor.execute(this::send);	
+		executor.execute(this::doSend);	
 		return txn.getResponse(3000);
 	}
 	
