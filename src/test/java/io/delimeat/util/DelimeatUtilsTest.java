@@ -66,5 +66,22 @@ public class DelimeatUtilsTest {
 		Assert.assertEquals(1, client.interceptors().size());
 		Assert.assertEquals(LoggingInterceptor.class, client.interceptors().get(0).getClass());
 	}
+	
+	@Test
+	public void cleanTitleTest() {
+		String result = DelimeatUtils.cleanTitle("Marvel's DC's This is 2015 a V'ery-Nice $#10293734521,.<>~?! title & (2016)");
+
+		Assert.assertEquals("This is 2015 a Very-Nice 10293734521 title and", result);
+	}
+	
+	@Test
+	public void cleanTitleNullTest() {
+		Assert.assertNull(DelimeatUtils.cleanTitle(null));
+	}
+	
+	@Test
+	public void cleanTitleEmptyTest() {
+		Assert.assertEquals("", DelimeatUtils.cleanTitle(""));
+	}
 
 }

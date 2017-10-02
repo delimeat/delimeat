@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -141,7 +142,13 @@ public abstract class AbstractJaxbFeedDataSource implements FeedDataSource {
 						.createUnmarshaller()
 						.unmarshal(source, FeedSearch.class)
 						.getValue()
-						.getResults();
+						.getResults()
+						.stream()
+						.map(result->{
+							result.setSource(getFeedSource());
+							return result;
+						})
+						.collect(Collectors.toList());
 				
 			} catch( UnmarshalException ex){
 				throw new FeedResponseBodyException(url,new String(responseBytes), ex);

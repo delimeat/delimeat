@@ -105,6 +105,7 @@ public class TorrentDownloadsFeedDataSource_ImplTest {
 		
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
+     	Assert.assertEquals(FeedSource.TORRENTDOWNLOADS, results.get(0).getSource());
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertNull(results.get(0).getTorrentURL());
      	Assert.assertEquals("INFO_HASH", results.get(0).getInfoHashHex());

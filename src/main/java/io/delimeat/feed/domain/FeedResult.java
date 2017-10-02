@@ -25,6 +25,7 @@ public class FeedResult {
 	private long seeders;
 	private long leechers;
 	private String infoHashHex;
+	private FeedSource source;
 
 	/**
 	 * @return the torrentURL
@@ -99,6 +100,18 @@ public class FeedResult {
 		this.infoHashHex = infoHashHex;
 	}
 
+	/**
+	 * @return the source
+	 */
+	public FeedSource getSource() {
+		return source;
+	}
+	/**
+	 * @param source the source to set
+	 */
+	public void setSource(FeedSource source) {
+		this.source = source;
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -106,6 +119,7 @@ public class FeedResult {
 	public int hashCode() {
 		return Objects.hash(contentLength,leechers,seeders,title,torrentURL,infoHashHex);
 	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -141,16 +155,19 @@ public class FeedResult {
 			return false;
 		return true;
 	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "FeedResult [" + (title != null ? "title=" + title + ", " : "")
+		return "FeedResult [" + (source != null ? "source=" + source + ", " : "")
+				+ (title != null ? "title=" + title + ", " : "")
 				+ (infoHashHex != null ? "infoHashHex=" + infoHashHex + ", " : "")
 				+ (torrentURL != null ? "torrentURL=" + torrentURL + ", " : "") + "contentLength=" + contentLength
 				+ ", seeders=" + seeders + ", leechers=" + leechers + "]";
 	}
+
 
 	
 

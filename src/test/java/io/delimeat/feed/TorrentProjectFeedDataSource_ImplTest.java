@@ -101,6 +101,7 @@ public class TorrentProjectFeedDataSource_ImplTest {
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.size());
+     	Assert.assertEquals(FeedSource.TORRENTPROJECT, results.get(0).getSource());
 		Assert.assertEquals("title", results.get(0).getTitle());
 		Assert.assertEquals("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce",results.get(0).getTorrentURL());
 		Assert.assertEquals(Long.MAX_VALUE, results.get(0).getContentLength());

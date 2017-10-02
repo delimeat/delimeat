@@ -67,7 +67,7 @@ public class FeedService_ImplTest {
 		Assert.assertEquals(feedResult, results.get(0));
 		
 		Mockito.verify(dao).read("TITLE");
-		Mockito.verify(dao, Mockito.times(2)).getFeedSource();
+		Mockito.verify(dao, Mockito.times(1)).getFeedSource();
 		Mockito.verifyNoMoreInteractions(dao);
 	}
 
@@ -87,7 +87,7 @@ public class FeedService_ImplTest {
 		Assert.assertEquals(feedResult, results.get(0));
 		
 		Mockito.verify(dao, Mockito.times(2)).read("TITLE");
-		Mockito.verify(dao, Mockito.times(4)).getFeedSource();
+		Mockito.verify(dao, Mockito.times(2)).getFeedSource();
 		Mockito.verifyNoMoreInteractions(dao);
 	}
 	

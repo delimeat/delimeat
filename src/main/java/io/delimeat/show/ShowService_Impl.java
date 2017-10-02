@@ -35,11 +35,10 @@ import io.delimeat.show.domain.Show;
 import io.delimeat.show.exception.ShowConcurrencyException;
 import io.delimeat.show.exception.ShowException;
 import io.delimeat.show.exception.ShowNotFoundException;
+import io.delimeat.util.DelimeatUtils;
 
 @Service
 public class ShowService_Impl implements ShowService {
-
-	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s-]";
 	
 	@Autowired
 	private ShowRepository showRepository;
@@ -99,7 +98,10 @@ public class ShowService_Impl implements ShowService {
 	@Transactional
 	public void create(Show show) throws ShowException {
 		try{
-			showRepository.save(cleanTitle(show));
+			String cleanTitle = DelimeatUtils.cleanTitle(show.getTitle());
+			show.setTitle(cleanTitle);
+			
+			showRepository.save(show);
 			final String guideId = show.getGuideId();
 	
 			if (guideId != null && guideId.length() > 0) {
@@ -116,7 +118,7 @@ public class ShowService_Impl implements ShowService {
 						episode.setStatus(EpisodeStatus.SKIPPED);
 					}
 					
-					episodeService.update(episode);
+					episodeService.create(episode);
 				}
 	
 			}
@@ -195,19 +197,6 @@ public class ShowService_Impl implements ShowService {
 		} catch (DataAccessException e) {
 			throw new ShowException(e);
 		}
-	}
-	
-	/**
-	 * Clean up a title remove any unwanted characters
-	 * 
-	 * @param show
-	 * @return show
-	 */
-	public Show cleanTitle(Show show){
-		final String originalTitle = show.getTitle() != null ? show.getTitle() : "";
-		String cleanedTitle = originalTitle.replaceAll("&", "and").replaceAll(TITLE_REGEX, "").trim();
-		show.setTitle(cleanedTitle);
-		return show;
 	}
 
 	/* (non-Javadoc)

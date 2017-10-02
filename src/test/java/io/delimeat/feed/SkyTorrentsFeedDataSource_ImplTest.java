@@ -101,7 +101,7 @@ public class SkyTorrentsFeedDataSource_ImplTest {
 		
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
-     	System.out.println(results.get(0));
+     	Assert.assertEquals(FeedSource.SKYTORRENTS, results.get(0).getSource());
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
 	}

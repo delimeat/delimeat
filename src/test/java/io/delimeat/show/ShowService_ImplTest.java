@@ -104,9 +104,8 @@ public class ShowService_ImplTest {
 		Mockito.verify(showRepository).save(show);
 		Mockito.verifyNoMoreInteractions(showRepository);
 
-		Mockito.verify(episodeService, Mockito.times(2)).update(Mockito.any());
 		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
-		Mockito.verify(episodeService, Mockito.times(2)).update(argumentCaptor.capture());
+		Mockito.verify(episodeService, Mockito.times(2)).create(argumentCaptor.capture());
 		Assert.assertEquals(2, argumentCaptor.getAllValues().size());
 		Assert.assertEquals(EpisodeStatus.SKIPPED, argumentCaptor.getAllValues().get(0).getStatus());
 		Assert.assertEquals(EpisodeStatus.PENDING, argumentCaptor.getAllValues().get(1).getStatus());
@@ -294,17 +293,6 @@ public class ShowService_ImplTest {
 		service.setEpisodeService(episodeService);
 
 		service.readAllEpisodes(1L);
-	}
-
-	@Test
-	public void cleanTitleTest() {
-		Show show = new Show();
-		show.setTitle("This is 2015 a V'ery-Nice $#10293734521,.<>~?! title & (2016)");
-
-		Show result = service.cleanTitle(show);
-
-		Assert.assertEquals(show, result);
-		Assert.assertEquals("This is 2015 a Very-Nice 10293734521 title and", result.getTitle());
 	}
 
 }

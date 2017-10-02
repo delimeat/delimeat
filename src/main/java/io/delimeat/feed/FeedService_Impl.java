@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
 @Service
@@ -54,14 +55,15 @@ public class FeedService_Impl implements FeedService {
 	@Override
 	public List<FeedResult> read(String title) throws FeedException {
 		List<FeedResult> readResults =  new ArrayList<>();
-		for(FeedDataSource dao: feedDataSources){
+		for(FeedDataSource ds: feedDataSources){
+			FeedSource source = ds.getFeedSource();
 			try{
-				LOGGER.debug(String.format("Reading from %s ",dao.getFeedSource()));
-				List<FeedResult> results = dao.read(title);
-				LOGGER.debug(String.format("read %s results from %s", results.size(), dao.getFeedSource()));
+				LOGGER.debug(String.format("Reading from %s ",source));
+				List<FeedResult> results = ds.read(title);
+				LOGGER.debug(String.format("read %s results from %s", results.size(), source));
 				readResults.addAll(results);
 			}catch(FeedException ex){
-				LOGGER.warn(String.format("Encountered an error reading from %s, continuing", dao.getFeedSource()));
+				LOGGER.warn(String.format("Encountered an error reading from %s, continuing",source));
 				//TODO add some logging of statistics of failure/success by source
 			}
 		}

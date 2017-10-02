@@ -29,6 +29,7 @@ import io.delimeat.guide.domain.GuideSearchResult;
 import io.delimeat.guide.exception.GuideAuthorizationException;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
+import io.delimeat.util.DelimeatUtils;
 
 @Service
 public class GuideService_Impl implements GuideService {
@@ -55,7 +56,13 @@ public class GuideService_Impl implements GuideService {
 	 */
 	@Override
 	public List<GuideSearchResult> readLike(final String title) throws GuideNotFoundException,GuideAuthorizationException, GuideException {
-		return guideDataSource.search(title);
+		List<GuideSearchResult> results = guideDataSource.search(title);
+		
+		results.forEach(result->{
+			result.setTitle(DelimeatUtils.cleanTitle(result.getTitle()));
+		});
+		
+		return results;
 	}
 
 	/* (non-Javadoc)
@@ -67,6 +74,7 @@ public class GuideService_Impl implements GuideService {
 		if(info.getAirTime() == null){
 			info.setAirTime(LocalTime.MIDNIGHT);
 		}
+		info.setTitle(DelimeatUtils.cleanTitle(info.getTitle()));
 		return info;
 	}
 

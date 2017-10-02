@@ -77,6 +77,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -85,7 +86,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertTrue(result.equals(other));
 	}
 	
@@ -107,6 +109,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex(null);
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -115,7 +118,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -127,6 +131,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -135,7 +140,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -147,6 +153,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -155,7 +162,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -167,6 +175,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -175,7 +184,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -187,6 +197,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH_OTHER");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -195,7 +206,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 
@@ -207,6 +219,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MIN_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -215,7 +228,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -227,6 +241,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MAX_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -235,7 +250,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -247,6 +263,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -255,7 +272,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
 	
@@ -269,6 +287,7 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
+		result.setSource(FeedSource.KAT);
 		
 		FeedResult other = new FeedResult();
 		other.setTorrentURL("TORRENT_LOCATION");
@@ -277,7 +296,8 @@ public class FeedResultTest {
 		other.setSeeders(Long.MIN_VALUE);
 		other.setLeechers(Long.MAX_VALUE);
 		other.setInfoHashHex("INFO_HASH");
-		
+		other.setSource(FeedSource.KAT);
+
 		Assert.assertFalse(result.equals(other));
 	}
   

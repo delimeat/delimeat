@@ -29,6 +29,8 @@ import okhttp3.OkHttpClient;
 
 public class DelimeatUtils {
 	
+	private static final String TITLE_REGEX = "(\\(\\d{4}\\))$|[^A-Za-z\\d\\s-]";
+			
 	public static String toHex(byte[] bytes) {
 		StringBuilder sb = new StringBuilder(bytes.length * 2);
         for (int i = 0; i < bytes.length; i++) {
@@ -82,6 +84,18 @@ public class DelimeatUtils {
 				.writeTimeout(2, TimeUnit.SECONDS)
 				.addInterceptor(new LoggingInterceptor())
 				.build();
+	}
+	
+	public static String cleanTitle(String title){
+		if(title == null || title.length() == 0){
+			return title;
+		}
+		
+		return title.replaceAll("^Marvel's ", "")
+				.replaceAll("^DC's ", "")
+				.replaceAll("&", "and")
+				.replaceAll(TITLE_REGEX, "")
+				.trim();
 	}
 	
 }

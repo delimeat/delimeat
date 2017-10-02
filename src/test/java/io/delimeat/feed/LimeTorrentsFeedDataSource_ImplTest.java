@@ -100,6 +100,7 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 		
      	Assert.assertNotNull(results);
      	Assert.assertEquals(1, results.size());
+     	Assert.assertEquals(FeedSource.LIMETORRENTS, results.get(0).getSource());
      	Assert.assertEquals("title",results.get(0).getTitle());
      	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
      	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
