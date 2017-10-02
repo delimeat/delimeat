@@ -161,7 +161,14 @@ public class UdpScrapeRequestHandler_ImplTest {
 			
 		});
 		
-		scheduler.scheduleWithFixedDelay(this::doSchedule, 2000, 3000, TimeUnit.MILLISECONDS);
+		scheduler.scheduleWithFixedDelay(this::doSchedule, 200, 3000, TimeUnit.MILLISECONDS);
+		scheduler.schedule(new Runnable(){
+
+			@Override
+			public void run() {
+				System.out.println("Thread 3");
+			}
+			}, 500, TimeUnit.MILLISECONDS);
 
 		
 		Thread.sleep(11000);

@@ -16,23 +16,22 @@ public class RequestLoggingFilter implements Filter {
 			
 	@Override
 	public void handle(Request request, Response response) throws Exception {
-		boolean hasRequestBody = request.body() != null;
-
 		StringBuilder reqStrBuilder = new StringBuilder();
-
+		
 		reqStrBuilder.append("<-- " + request.requestMethod() + ' ' + request.url()
-				+ request.protocol());
-		if (hasRequestBody) {
-			reqStrBuilder.append(" (" + request.contentLength() + "-byte body)");
-		}
-		reqStrBuilder.append("\n");
+		+ request.protocol());
+		
+		boolean hasRequestBody = request.body() != null;
+		int contentLength = request.contentLength();
 
 		if (hasRequestBody) {
+
 			if (request.contentType() != null) {
 				reqStrBuilder.append("Content-Type: " + request.contentType() + "\n");
 			}
-			if (request.contentLength() != -1) {
-				reqStrBuilder.append("Content-Length: " + request.contentLength() + "\n");
+			
+			if (contentLength != -1) {
+				reqStrBuilder.append("Content-Length: " + contentLength + "\n");
 			}
 		}
 
@@ -43,15 +42,11 @@ public class RequestLoggingFilter implements Filter {
 			}
 		}
 
-		if (request.contentLength() == -1) {
-			reqStrBuilder.append("<-- END " + request.requestMethod() + "\n");
+		if (hasRequestBody) {;
+			reqStrBuilder.append("Body:\n"+ request.body() + "\n");
+			reqStrBuilder.append("<-- END " + request.requestMethod() + " (" + contentLength + "-byte body)" + "\n");
 		} else {
-
-			reqStrBuilder.append("\n");
-			reqStrBuilder.append(request.body() + "\n");
-			reqStrBuilder.append("<-- END " + request.requestMethod() 
-				+ " (" + request.contentLength() 
-				+ "-byte body)" + "\n");
+			reqStrBuilder.append("<-- END " + request.requestMethod() + "\n");
 		}
 		LOGGER.trace(reqStrBuilder.toString());
 	}

@@ -166,7 +166,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     @Transactional(TxType.REQUIRES_NEW)
 	@Override
 	public void process(Episode episode) throws Exception {
-    	LOGGER.debug("starting feed item processor for {} - {}", episode.getShow().getTitle(), episode.getTitle());
+    	LOGGER.debug("starting feed item processor for {} ", episode);
 		
     	final Config config = configService.read();
     	
@@ -221,7 +221,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
         episode.setLastFeedCheck(now);	   
 		episodeService.update(episode);
 		
-    	LOGGER.debug("ending feed item processor for {} - {}", episode.getShow().getTitle(), episode.getTitle());	
+    	LOGGER.debug("ending feed item processor for {}", episode);	
 	}
     
     public FeedProcessUnit convertFeedResult(FeedResult feedResult){
