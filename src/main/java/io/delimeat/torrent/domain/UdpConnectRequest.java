@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-import io.delimeat.torrent.domain.InfoHash;
+public class UdpConnectRequest implements UdpRequest {
 
-public class ScrapeUdpRequest implements UdpRequest {
-
-	private final long connectionId;
+	private final long connectionId = 0x41727101980L;
 	private final int transactionId;
-	private final InfoHash infoHash;
-	private final UdpAction action = UdpAction.SCRAPE;
+	private final UdpAction action = UdpAction.CONNECT;
 
-	public ScrapeUdpRequest(long connectionId, int transactionId, InfoHash infoHash) {
-		this.connectionId = connectionId;
+	public UdpConnectRequest(int transactionId) {
 		this.transactionId = transactionId;
-		this.infoHash = infoHash;
 	}
 
 	/*
@@ -42,12 +37,7 @@ public class ScrapeUdpRequest implements UdpRequest {
 	public long getConnectionId() {
 		return connectionId;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see io.delimeat.torrent.udp.domain.UdpRequest#getAction()
-	 */
+	
 	@Override
 	public UdpAction getAction() {
 		return action;
@@ -62,26 +52,18 @@ public class ScrapeUdpRequest implements UdpRequest {
 	public int getTransactionId() {
 		return transactionId;
 	}
-
-	/**
-	 * @return the infoHash
-	 */
-	public InfoHash getInfoHash() {
-		return infoHash;
-	}
-
-	/*
+	
+	/* 
 	 * (non-Javadoc)
 	 * 
 	 * @see io.delimeat.torrent.udp.domain.UdpRequest#toByteBuffer()
 	 */
 	@Override
 	public ByteBuffer toByteBuffer() {
-		ByteBuffer buffer = ByteBuffer.allocate(36)
+		ByteBuffer buffer = ByteBuffer.allocate(16)
 				.putLong(connectionId)
 				.putInt(action.value())
-				.putInt(transactionId)
-				.put(infoHash.getBytes());
+				.putInt(transactionId);
 		buffer.clear();
 		return buffer;
 	}
@@ -93,7 +75,7 @@ public class ScrapeUdpRequest implements UdpRequest {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(connectionId, infoHash, transactionId);
+		return Objects.hash(connectionId, transactionId);
 	}
 
 	/*
@@ -109,28 +91,20 @@ public class ScrapeUdpRequest implements UdpRequest {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ScrapeUdpRequest other = (ScrapeUdpRequest) obj;
-		if (connectionId != other.connectionId)
-			return false;
-		if (infoHash == null) {
-			if (other.infoHash != null)
-				return false;
-		} else if (!infoHash.equals(other.infoHash))
-			return false;
+		UdpConnectRequest other = (UdpConnectRequest) obj;
 		if (transactionId != other.transactionId)
 			return false;
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "ScrapeUdpRequest [connectionId=" + connectionId + ", action=" + action + ", transactionId="
-				+ transactionId + ", infoHash=" + infoHash + "]";
+		return "ConnectUdpRequest [connectionId=" + connectionId + ", action=" + action + ", transactionId="
+				+ transactionId + "]";
 	}
 
 }

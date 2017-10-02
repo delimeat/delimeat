@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.exception;
+package io.delimeat.torrent.domain;
 
-public class UdpInvalidFormatException extends UdpException {
+import java.nio.ByteBuffer;
 
-	private static final long serialVersionUID = 1L;
+public interface UdpRequest {
 
 	/**
-	 * @param message
+	 * @return the connectionId
 	 */
-	public UdpInvalidFormatException(String message){
-		super(message);
-	}
+	public long getConnectionId();
+	
+	/**
+	 * @return the action
+	 */
+	public UdpAction getAction();
+	
+	/**
+	 * @return the transactionId
+	 */
+	public int getTransactionId();
+	
+	
+	/**
+	 * @return byte buffer representing the request
+	 */
+	public ByteBuffer toByteBuffer();
+	
 }

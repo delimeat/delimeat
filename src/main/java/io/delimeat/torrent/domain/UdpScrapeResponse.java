@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
 import java.util.Objects;
 
-public class ScrapeUdpResponse implements UdpResponse {
+public class UdpScrapeResponse implements UdpResponse {
 
 	private final int transactionId;
 	private final int seeders;
 	private final int leechers;
 	private final UdpAction action = UdpAction.SCRAPE;
 
-	public ScrapeUdpResponse(int transactionId, int seeders, int leechers) {
+	public UdpScrapeResponse(int transactionId, int seeders, int leechers) {
 		this.transactionId = transactionId;
 		this.seeders = seeders;
 		this.leechers = leechers;
@@ -79,7 +79,7 @@ public class ScrapeUdpResponse implements UdpResponse {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ScrapeUdpResponse other = (ScrapeUdpResponse) obj;
+		UdpScrapeResponse other = (UdpScrapeResponse) obj;
 		if (leechers != other.leechers)
 			return false;
 		if (seeders != other.seeders)

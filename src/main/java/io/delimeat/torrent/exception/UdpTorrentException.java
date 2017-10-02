@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.exception;
+package io.delimeat.torrent.exception;
 
-public class UdpException extends Exception {
+public class UdpTorrentException extends TorrentException {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @param message
 	 */
-	public UdpException(String message) {
+	public UdpTorrentException(String message) {
 		super(message);
 	}
 }

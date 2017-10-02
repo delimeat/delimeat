@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
-import java.nio.ByteBuffer;
+public interface UdpResponse{
 
-public interface UdpRequest {
-
-	/**
-	 * @return the connectionId
-	 */
-	public long getConnectionId();
 	
 	/**
 	 * @return the action
@@ -33,11 +27,5 @@ public interface UdpRequest {
 	 * @return the transactionId
 	 */
 	public int getTransactionId();
-	
-	
-	/**
-	 * @return byte buffer representing the request
-	 */
-	public ByteBuffer toByteBuffer();
-	
+
 }

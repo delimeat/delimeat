@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
 import java.util.Objects;
 
-public class ErrorUdpResponse implements UdpResponse {
+public class UdpConnectResponse implements UdpResponse {
 
 	private final int transactionId;
-	private final String message;
-	private final UdpAction action = UdpAction.ERROR;
-	
-	public ErrorUdpResponse(int transactionId, String message) {
+	private final long connectionId;
+	private final UdpAction action = UdpAction.CONNECT;
+
+	public UdpConnectResponse(int transactionId, long connectionId) {
 		this.transactionId = transactionId;
-		this.message = message;
+		this.connectionId = connectionId;
 	}
 
 	/*
@@ -38,7 +38,7 @@ public class ErrorUdpResponse implements UdpResponse {
 	public int getTransactionId() {
 		return transactionId;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see io.delimeat.torrent.udp.domain.UdpResponse#getAction()
 	 */
@@ -48,10 +48,13 @@ public class ErrorUdpResponse implements UdpResponse {
 	}
 
 	/**
-	 * @return the message
+	 * @return the connectionId
 	 */
-	public String getMessage() {
-		return message;
+	/**
+	 * @return
+	 */
+	public long getConnectionId() {
+		return connectionId;
 	}
 
 	/*
@@ -61,7 +64,7 @@ public class ErrorUdpResponse implements UdpResponse {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(message, transactionId);
+		return Objects.hash(connectionId, transactionId);
 	}
 
 	/*
@@ -77,11 +80,8 @@ public class ErrorUdpResponse implements UdpResponse {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ErrorUdpResponse other = (ErrorUdpResponse) obj;
-		if (message == null) {
-			if (other.message != null)
-				return false;
-		} else if (!message.equals(other.message))
+		UdpConnectResponse other = (UdpConnectResponse) obj;
+		if (connectionId != other.connectionId)
 			return false;
 		if (transactionId != other.transactionId)
 			return false;
@@ -93,7 +93,8 @@ public class ErrorUdpResponse implements UdpResponse {
 	 */
 	@Override
 	public String toString() {
-		return "ErrorUdpResponse [transactionId=" + transactionId + ", action=" + action + ", message=" + message + "]";
+		return "ConnectUdpResponse [transactionId=" + transactionId + ", action=" + action + ", connectionId="
+				+ connectionId + "]";
 	}
 
 }

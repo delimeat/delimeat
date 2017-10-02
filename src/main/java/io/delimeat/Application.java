@@ -151,7 +151,7 @@ public class Application {
 	}
 	
 	//TODO cache disabled because spring not applying cache from interfaces
-	//TODO re-enable once spring works, possible replace with caffeine 
+	// re-enable once spring works, possible replace with caffeine 
 	/*
 	@Bean
 	public CacheManager cacheManager(){

@@ -3,6 +3,8 @@ package io.delimeat.torrent;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.net.URI;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +19,10 @@ import org.junit.Test;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
-import io.delimeat.torrent.udp.domain.ConnectionId;
+import io.delimeat.torrent.domain.UdpConnectResponse;
+import io.delimeat.torrent.domain.UdpConnectionId;
+import io.delimeat.torrent.domain.UdpErrorResponse;
+import io.delimeat.torrent.domain.UdpScrapeResponse;
 import io.delimeat.util.DelimeatUtils;
 
 public class UdpScrapeRequestHandler_ImplTest {
@@ -90,8 +95,8 @@ public class UdpScrapeRequestHandler_ImplTest {
 	
 	@Test
 	public void purgeInvalidConnectionIdsTest(){
-		ConnectionId connIdRemove = new ConnectionId(Long.MAX_VALUE,new InetSocketAddress("localhost",9004),Instant.EPOCH);
-		ConnectionId connIdKeep = new ConnectionId(Long.MIN_VALUE,new InetSocketAddress("0.0.0.0",9004),Instant.MAX);
+		UdpConnectionId connIdRemove = new UdpConnectionId(Long.MAX_VALUE,new InetSocketAddress("localhost",9004),Instant.EPOCH);
+		UdpConnectionId connIdKeep = new UdpConnectionId(Long.MIN_VALUE,new InetSocketAddress("0.0.0.0",9004),Instant.MAX);
 
 		handler.getConnections().put(connIdRemove.getFromAddress(), connIdRemove);
 		handler.getConnections().put(connIdKeep.getFromAddress(), connIdKeep);
@@ -100,7 +105,67 @@ public class UdpScrapeRequestHandler_ImplTest {
 		
 		Assert.assertEquals(1, handler.getConnections().size());
 		Assert.assertEquals(connIdKeep, handler.getConnections().get(connIdKeep.getFromAddress()));
+	}
+	
+	
+	@Test
+	public void buildErrorResponseTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.allocate(1024)
+				.putInt(Integer.MAX_VALUE)
+				.put("MESSAGE".getBytes());
+		buf.clear();
 
+		UdpErrorResponse result = handler.unmarshallErrorResponse(buf);
+		
+		
+		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
+		Assert.assertEquals("MESSAGE", result.getMessage());
+	}
+	
+	@Test(expected=BufferUnderflowException.class)
+	public void buildErrorResponseExceptionTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.allocate(0);
+		handler.unmarshallErrorResponse( buf);
+	}
+	
+	@Test
+	public void buildConnectResponseTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.allocate(12)
+				.putInt(Integer.MAX_VALUE)
+				.putLong(0x41727101980L);
+		buf.clear();
+		
+		UdpConnectResponse result = handler.unmarshallConnectResponse(buf);
+		
+		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
+		Assert.assertEquals(0x41727101980L, result.getConnectionId());
+	}
+	
+	@Test(expected=BufferUnderflowException.class)
+	public void buildConnectResponseExceptionTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
+		handler.unmarshallConnectResponse(buf);
+	}
+	
+	@Test
+	public void buildScrapeResponseTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.allocate(12)
+				.putInt(Integer.MAX_VALUE)
+				.putInt(Integer.MAX_VALUE)
+				.putInt(Integer.MIN_VALUE);
+		
+		ByteBuffer buff2 = ByteBuffer.wrap(buf.array());
+		UdpScrapeResponse result = handler.unmarshallScrapeResponse(buff2);
+		
+		Assert.assertEquals(Integer.MAX_VALUE, result.getTransactionId());
+		Assert.assertEquals(Integer.MAX_VALUE, result.getSeeders());
+		Assert.assertEquals(Integer.MIN_VALUE, result.getLeechers());
+	}
+	
+	@Test(expected=BufferUnderflowException.class)
+	public void buildScrapeResponseExceptionTest() throws Exception{
+		ByteBuffer buf = ByteBuffer.wrap("MESSAGE".getBytes());
+		handler.unmarshallScrapeResponse(buf);
 	}
 	
 	@Ignore

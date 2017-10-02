@@ -1,10 +1,10 @@
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
 import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.Objects;
 
-public class ConnectionId {
+public class UdpConnectionId {
 	
 	private final long value;
 	private final InetSocketAddress fromAddress;
@@ -14,7 +14,7 @@ public class ConnectionId {
 	 * @param value
 	 * @param expiry
 	 */
-	public ConnectionId(long value, InetSocketAddress fromAddress, Instant expiry){
+	public UdpConnectionId(long value, InetSocketAddress fromAddress, Instant expiry){
 		this.value = value;
 		this.fromAddress = fromAddress;
 		this.expiry = expiry;
@@ -60,7 +60,7 @@ public class ConnectionId {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ConnectionId other = (ConnectionId) obj;
+		UdpConnectionId other = (UdpConnectionId) obj;
 		if (expiry == null) {
 			if (other.expiry != null)
 				return false;

@@ -1,11 +1,10 @@
-package io.delimeat.torrent.udp.domain;
+package io.delimeat.torrent.domain;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.delimeat.torrent.udp.exception.UdpException;
-import io.delimeat.torrent.udp.exception.UdpTimeoutException;
+import io.delimeat.torrent.exception.UdpTimeoutException;
 
 public class UdpTransaction {
 
@@ -30,11 +29,12 @@ public class UdpTransaction {
 		if(response == null){
 			try{
 				if(latch.await(timeout, TimeUnit.MILLISECONDS) == false){
-					throw new UdpTimeoutException();
+					throw new UdpTimeoutException(this);
 				}
 			}catch(InterruptedException ex){
-				//TODO
-				throw new UdpException("EXCEPTION");
+				if(exception==null){
+					exception = ex;
+				}
 			}
 		}
 		

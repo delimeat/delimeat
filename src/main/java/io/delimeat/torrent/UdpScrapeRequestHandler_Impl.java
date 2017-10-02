@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.net.URI;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -31,32 +32,31 @@ import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.ScrapeResult;
+import io.delimeat.torrent.domain.UdpAction;
+import io.delimeat.torrent.domain.UdpConnectRequest;
+import io.delimeat.torrent.domain.UdpConnectResponse;
+import io.delimeat.torrent.domain.UdpConnectionId;
+import io.delimeat.torrent.domain.UdpErrorResponse;
+import io.delimeat.torrent.domain.UdpRequest;
+import io.delimeat.torrent.domain.UdpResponse;
+import io.delimeat.torrent.domain.UdpScrapeRequest;
+import io.delimeat.torrent.domain.UdpScrapeResponse;
+import io.delimeat.torrent.domain.UdpTransaction;
 import io.delimeat.torrent.exception.TorrentException;
+import io.delimeat.torrent.exception.UdpErrorResponseException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
-import io.delimeat.torrent.udp.UdpUtils;
-import io.delimeat.torrent.udp.domain.ConnectUdpRequest;
-import io.delimeat.torrent.udp.domain.ConnectUdpResponse;
-import io.delimeat.torrent.udp.domain.ConnectionId;
-import io.delimeat.torrent.udp.domain.ErrorUdpResponse;
-import io.delimeat.torrent.udp.domain.ScrapeUdpRequest;
-import io.delimeat.torrent.udp.domain.ScrapeUdpResponse;
-import io.delimeat.torrent.udp.domain.UdpRequest;
-import io.delimeat.torrent.udp.domain.UdpResponse;
-import io.delimeat.torrent.udp.domain.UdpTransaction;
-import io.delimeat.torrent.udp.exception.UdpErrorResponseException;
-import io.delimeat.torrent.udp.exception.UdpException;
 
 @Component
 public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UdpScrapeRequestHandler_Impl.class);
-
+	
 	private static final Random RANDOM_GEN = new Random();
 	
 	private final Map<Integer, UdpTransaction> queue = new ConcurrentHashMap<>();
 	private final Queue<UdpTransaction> sendPipeline = new ConcurrentLinkedQueue<>();
 	
-	private final Map<InetSocketAddress,ConnectionId> connections = new ConcurrentHashMap<>(); 
+	private final Map<InetSocketAddress,UdpConnectionId> connections = new ConcurrentHashMap<>(); 
 	
 	private AtomicBoolean sendActive = new AtomicBoolean(false);
 	private AtomicBoolean receiveActive = new AtomicBoolean(false);
@@ -106,7 +106,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	/**
 	 * @return the connections
 	 */
-	public Map<InetSocketAddress, ConnectionId> getConnections() {
+	public Map<InetSocketAddress, UdpConnectionId> getConnections() {
 		return connections;
 	}
 
@@ -192,9 +192,9 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public void purgeInvalidConnectionIds(){
 		LOGGER.trace("Start purge expired connection ids");
 		Instant now = Instant.now();
-		Iterator<ConnectionId> iterator = connections.values().iterator();
+		Iterator<UdpConnectionId> iterator = connections.values().iterator();
 		while(iterator.hasNext()){
-			ConnectionId connectionId = iterator.next();
+			UdpConnectionId connectionId = iterator.next();
 			if(connectionId.getExpiry().isBefore(now)){
 				LOGGER.trace("Expired connection id {} for {}", connectionId.getValue(), connectionId.getFromAddress());
 				iterator.remove();
@@ -308,28 +308,29 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public void processResponse(ByteBuffer buffer, InetSocketAddress fromAddress){
 		LOGGER.trace("Processing response from", fromAddress);
-		int action = buffer.getInt();	
+		int actionVal = buffer.getInt();
+		UdpAction action = UdpAction.getFor(actionVal);
+		
 		UdpResponse response;
 		try{
 			switch(action){
-			case UdpUtils.CONNECT_ACTION:
+			case CONNECT:
 				LOGGER.trace("Unmarshalling a connect response");
-				response = UdpUtils.unmarshallConnectResponse(buffer);
-				break;
-			
-			case UdpUtils.SCRAPE_ACTION:
+				response = unmarshallConnectResponse(buffer);
+				break;	
+			case SCRAPE:
 				LOGGER.trace("Unmarshalling a scrape response");
-				response = UdpUtils.unmarshallScrapeResponse(buffer);
+				response = unmarshallScrapeResponse(buffer);
 				break;
-			case UdpUtils.ERROR_ACTION:
+			case ERROR:
 				LOGGER.trace("Unmarshalling an error response");
-				response = UdpUtils.unmarshallErrorResponse(buffer);
+				response = unmarshallErrorResponse(buffer);
 				break;
 			default:
-				LOGGER.warn("Received unsupported udp action {} from {}", action, fromAddress);
+				LOGGER.warn("Received unsupported udp action {} from {}", actionVal, fromAddress);
 				return;
 			}
-		}catch(UdpException ex){
+		}catch(BufferUnderflowException ex){
 			LOGGER.error(String.format("Unable to unmarshall response from %s", fromAddress), ex);
 			return;
 		}
@@ -342,13 +343,11 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		}else if(fromAddress.equals(transaction.getToAddress()) == false){
 			LOGGER.warn("TransactionId {} received from different address it was sent to\n{}\n{}",response.getTransactionId(), transaction, response);
 			return;			
-		}else if(action == UdpUtils.ERROR_ACTION){
-			transaction.setException(new UdpErrorResponseException((ErrorUdpResponse)response));
+		}else if(action == UdpAction.ERROR){
+			transaction.setException(new UdpErrorResponseException((UdpErrorResponse)response));
 			return;
 		} else if(transaction.getRequest().getAction() != response.getAction()){
 			LOGGER.error("Unexpected response for request\n{}\n{}", transaction, response);
-			//TODO new exception type
-			transaction.setException(new Exception(String.format("Received unexpected response type\n%s\n%s", transaction, response)));
 			return;	
 		}
 		transaction.setResponse(response);
@@ -363,10 +362,10 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		return txn.getResponse(3000);
 	}
 	
-	public ConnectionId connect(InetSocketAddress toAddress) throws Exception {
+	public UdpConnectionId connect(InetSocketAddress toAddress) throws Exception {
 		LOGGER.trace("Received request for connectionId for {}", toAddress);
 
-		ConnectionId connectionId = connections.get(toAddress);
+		UdpConnectionId connectionId = connections.get(toAddress);
 		if(connectionId == null || connectionId.getExpiry().isBefore(Instant.now().minusSeconds(60))){
 			LOGGER.trace("Requesting new connectionId for {}", toAddress);
 			
@@ -374,19 +373,19 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			connections.remove(toAddress);
 			
 			// put the send request in another thread
-			ConnectUdpRequest request = new ConnectUdpRequest(generateTransactionId());
+			UdpConnectRequest request = new UdpConnectRequest(generateTransactionId());
 			
 			// wait for response
-			ConnectUdpResponse response;
+			UdpConnectResponse response;
 			try{
-				response = (ConnectUdpResponse)enqueue(request, toAddress);
+				response = (UdpConnectResponse)enqueue(request, toAddress);
 			}catch(Exception ex){
 				LOGGER.error("Received an error fetching the connection id", ex);
 				throw ex;
 			}
 			
 			// assume txn will throw exception if no response
-			connectionId = new ConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(10*60));
+			connectionId = new UdpConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(10*60));
 			connections.put(toAddress, connectionId);
 			LOGGER.trace("Receieve new connection id {} for {}", connectionId, toAddress);
 
@@ -406,17 +405,17 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		int port = uri.getPort() != -1 ? uri.getPort() : 6969; // if no port is provided use default of 6969
 		InetSocketAddress address = new InetSocketAddress(host,port);
 		
-		ConnectionId connId;
+		UdpConnectionId connId;
 		try{
 			connId = connect(address);
 		}catch(Exception ex){
 			throw new TorrentException(ex);
 		}
-		ScrapeUdpRequest request = new ScrapeUdpRequest(connId.getValue(), generateTransactionId(), infoHash);
+		UdpScrapeRequest request = new UdpScrapeRequest(connId.getValue(), generateTransactionId(), infoHash);
 
-		ScrapeUdpResponse response;
+		UdpScrapeResponse response;
 		try{
-			response = (ScrapeUdpResponse)enqueue(request, address);
+			response = (UdpScrapeResponse)enqueue(request, address);
 		}catch(Exception ex){
 			LOGGER.error("Received an error scraping", ex);
 			throw new TorrentException(ex);
@@ -432,6 +431,23 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			transactionId = RANDOM_GEN.nextInt();
 		}while(queue.containsKey(transactionId) == true);
 		return transactionId;
+	}
+	
+	public UdpConnectResponse unmarshallConnectResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		return new UdpConnectResponse(buffer.getInt(), buffer.getLong());
+	}
+	
+	public UdpScrapeResponse unmarshallScrapeResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		return new UdpScrapeResponse(buffer.getInt(), buffer.getInt(), buffer.getInt());
+
+	}
+	
+	public UdpErrorResponse unmarshallErrorResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		int transactionId = buffer.getInt();
+		byte[] msgBytes = new byte[buffer.remaining()];
+		buffer.get(msgBytes);
+		String message = new String(msgBytes).trim();
+		return new UdpErrorResponse(transactionId, message);
 	}
 
 }
