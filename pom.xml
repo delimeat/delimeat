@@ -67,12 +67,6 @@
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
 				<version>${com.github.eirslett.version}</version>
-				<!--
-				<configuration>
-			        <workingDirectory>frontend</workingDirectory>
-					<installDirectory>target</installDirectory> 
-				</configuration> 
-				! -->
 				<executions>
 					<execution>
 						<id>install node and npm</id>
@@ -130,7 +124,7 @@
 					
 				</executions>
 			</plugin>
-    
+
 		</plugins>
 	</build>
 
@@ -145,7 +139,7 @@
 		<!-- Maven plugins  !-->
 		<org.jacoco.version>0.7.9</org.jacoco.version>
 		<org.eluder.coveralls.version>4.3.0</org.eluder.coveralls.version>
-		<com.github.eirslett.version>1.5</com.github.eirslett.version>
+		<com.github.eirslett.version>1.6</com.github.eirslett.version>
 		<org.springframework.boot.version>1.5.7.RELEASE</org.springframework.boot.version>
 
 		<!-- Test versions ! -->
