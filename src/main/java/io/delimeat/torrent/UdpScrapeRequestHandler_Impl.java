@@ -65,8 +65,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	private DatagramChannel channel;
 	private Selector selector;
-	private ExecutorService executor;
-	private ScheduledExecutorService scheduler;
+	private ScheduledExecutorService executor;
 	
 	@Autowired
 	@Qualifier("io.delimeat.torrent.udpAddress")
@@ -96,13 +95,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public ExecutorService getExecutor() {
 		return executor;
 	}
-
-	/**
-	 * @return the scheduler
-	 */
-	public ScheduledExecutorService getScheduler() {
-		return scheduler;
-	}	
+	
 	/**
 	 * @return the address
 	 */
@@ -133,44 +126,48 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 
 	public void initialize() throws IOException{
 		LOGGER.trace("Start initialize");
-		if(active == false){
-			LOGGER.trace("Initializing");
-			selector = Selector.open();
-			
-			channel = DatagramChannel.open();
-			LOGGER.trace("Address: {}", address);
-			channel.bind(address);
-			channel.configureBlocking(false);
-			channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024);
-			channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024);
-			channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-			channel.register(selector, SelectionKey.OP_READ);
-			
-			executor = Executors.newFixedThreadPool(5);
-			executor.execute(this::select);
-			
-			//scheduler = Executors.newScheduledThreadPool(2);
-			//scheduler.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
-			//scheduler.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
-			
-			active = true;
+		
+		if(active){
+			LOGGER.trace("Already initialized");
+			return;
 		}
+		
+		selector = Selector.open();
+		
+		channel = DatagramChannel.open();
+		LOGGER.trace("Binding to address: {}", address);
+		channel.bind(address);
+		channel.configureBlocking(false);
+		channel.setOption(StandardSocketOptions.SO_SNDBUF, 2*1024);
+		channel.setOption(StandardSocketOptions.SO_RCVBUF, 2*1024);
+		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+		channel.register(selector, SelectionKey.OP_READ);
+		
+		//executor = Executors.newFixedThreadPool(5);
+		//executor.execute(this::select);
+		
+		executor = Executors.newScheduledThreadPool(4);
+		executor.execute(this::select);
+		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+		executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+		
+		active = true;
 		LOGGER.trace("End initialize");
 
 	}
 	
 	public void shutdown() throws IOException, InterruptedException{
 		LOGGER.trace("Start shutdown");
-		if(active == true){
-			LOGGER.trace("Shutting down");
-			active = false;
-			selector.close();
-			channel.close();
-			executor.shutdown();
-			executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
-			scheduler.shutdown();
-			scheduler.awaitTermination(5000, TimeUnit.MILLISECONDS);
+		if(active == false){
+			LOGGER.trace("Already shutdown");
+			return;
 		}
+		
+		active = false;
+		selector.close();
+		channel.close();
+		executor.shutdown();
+		executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
 		LOGGER.trace("End shutdown");
 	}
 	
@@ -207,6 +204,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 	
 	public void select(){
+		LOGGER.trace("Select thread started");
 		while (active && Thread.currentThread().isInterrupted() == false) {
 			try{
 				selector.select();
@@ -217,7 +215,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			
 			//allows for closing gracefully
 			if(active == false || selector.isOpen() == false){
-				LOGGER.trace("Breaking select active: {} open: {}",active, selector.isOpen());
+				LOGGER.trace("Breaking select active: {} open: {}", active, selector.isOpen());
 				break;
 			}
 			
@@ -233,7 +231,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
                 	receive();
                 }
             }
-        }	
+        }
+		LOGGER.trace("Select thread ended with active {} isInterupted {}", active, Thread.currentThread().isInterrupted());
 	}
 	
 	public void send(){

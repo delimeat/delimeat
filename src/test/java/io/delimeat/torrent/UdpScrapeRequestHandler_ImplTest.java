@@ -6,6 +6,9 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -131,5 +134,40 @@ public class UdpScrapeRequestHandler_ImplTest {
 		Thread.sleep(10000);
 		server.shutdown();
 		System.out.println("FINISHED");
+	}
+	
+	@Ignore
+	@Test
+	public void test2() throws Exception{
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+		
+		scheduler.execute(new Runnable(){
+
+			@Override
+			public void run() {
+				int count = 0;
+				while(count < 10){
+					System.out.println("Sleeping");
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					count++;
+					System.out.println("Woke up");
+				}
+				
+			}
+			
+		});
+		
+		scheduler.scheduleWithFixedDelay(this::doSchedule, 2000, 3000, TimeUnit.MILLISECONDS);
+
+		
+		Thread.sleep(11000);
+	}
+	
+	public void doSchedule(){
+		System.out.println("Scheduled run");
 	}
 }
