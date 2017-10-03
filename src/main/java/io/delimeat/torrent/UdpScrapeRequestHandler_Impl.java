@@ -60,7 +60,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	private AtomicBoolean sendActive = new AtomicBoolean(false);
 	private AtomicBoolean receiveActive = new AtomicBoolean(false);
-	private boolean active = false;
+	private AtomicBoolean active = new AtomicBoolean(false);
 	private Instant lastTransaction = Instant.EPOCH;
 	
 	private DatagramChannel channel;
@@ -127,7 +127,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public void initialize() throws IOException{
 		LOGGER.trace("Start initialize");
 		
-		if(active){
+		if(active.compareAndSet(false, true) == false){
 			LOGGER.trace("Already initialized");
 			return;
 		}
@@ -143,9 +143,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 		channel.register(selector, SelectionKey.OP_READ);
 		
-		active = true;
-		
-		executor = Executors.newScheduledThreadPool(2);
+		executor = Executors.newScheduledThreadPool(2);		
 		executor.execute(this::doSelect);
 		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 		executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
@@ -156,12 +154,11 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public void shutdown() throws IOException, InterruptedException{
 		LOGGER.trace("Start shutdown");
-		if(active == false){
+		if(active.compareAndSet(true, false) == false){
 			LOGGER.trace("Already shutdown");
 			return;
 		}
 		
-		active = false;
 		selector.close();
 		channel.close();
 		executor.shutdown();
@@ -170,7 +167,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 	
 	public boolean isActive(){
-		return active;
+		return active.get();
 	}
 	
 	public void shutdownDueToInactivity(){
@@ -184,7 +181,6 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			}
 		}
 		LOGGER.trace("End shutdown due to inactivity");
-
 	}
 	
 	public void purgeInvalidConnectionIds(){
@@ -203,7 +199,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public void doSelect(){
 		LOGGER.trace("Select thread started");
-		while (active && Thread.currentThread().isInterrupted() == false) {
+		while (active.get() && Thread.currentThread().isInterrupted() == false) {
 			
 			try{
 				selector.select();
@@ -213,7 +209,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			}
 			
 			//allows for closing gracefully
-			if(active == false || selector.isOpen() == false){
+			if(active.get() == false || selector.isOpen() == false){
 				LOGGER.trace("Breaking select active: {} open: {}", active, selector.isOpen());
 				break;
 			}
@@ -226,7 +222,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
                 iter.remove();
                 
                 if (key.isValid() && key.isReadable()) {	
-                	LOGGER.trace("Got a readable key");
+                	LOGGER.trace("Got a valid readable key");
                 	doReceive();
                 }
             }
@@ -295,7 +291,9 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				messageBuffer.flip();
 				
 				//process the response on a separate thread
-				executor.execute(()->{processResponse(messageBuffer,fromAddress);});
+				executor.execute(()->{
+						processResponse(messageBuffer,fromAddress);
+					});
 			
 			}catch(IOException ex){
 				LOGGER.error("Encountered an error receiving", ex);
@@ -342,8 +340,9 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		}else if(fromAddress.equals(transaction.getToAddress()) == false){
 			LOGGER.warn("TransactionId {} received from different address it was sent to\n{}\n{}",response.getTransactionId(), transaction, response);
 			return;			
-		}else if(action == UdpAction.ERROR){
+		}else if(response.getAction() == UdpAction.ERROR){
 			transaction.setException(new UdpErrorResponseException((UdpErrorResponse)response));
+			LOGGER.trace("Successfully processed error response {}", transaction);
 			return;
 		} else if(transaction.getRequest().getAction() != response.getAction()){
 			LOGGER.error("Unexpected response for request\n{}\n{}", transaction, response);
@@ -353,7 +352,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		LOGGER.trace("Successfully processed {} ", transaction);
 	}
 	
-	public UdpResponse enqueue(UdpRequest request, InetSocketAddress address) throws Exception{
+	public UdpResponse enqueueRequest(UdpRequest request, InetSocketAddress address) throws Exception{
 		UdpTransaction txn = new UdpTransaction(request, address);
 		LOGGER.trace("Adding {} to send queue", txn);
 		sendPipeline.add(txn);
@@ -361,7 +360,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		return txn.getResponse(3000);
 	}
 	
-	public UdpConnectionId connect(InetSocketAddress toAddress) throws Exception {
+	public UdpConnectionId requestConnection(InetSocketAddress toAddress) throws Exception {
 		LOGGER.trace("Received request for connectionId for {}", toAddress);
 
 		UdpConnectionId connectionId = connections.get(toAddress);
@@ -377,7 +376,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			// wait for response
 			UdpConnectResponse response;
 			try{
-				response = (UdpConnectResponse)enqueue(request, toAddress);
+				response = (UdpConnectResponse)enqueueRequest(request, toAddress);
 			}catch(Exception ex){
 				LOGGER.error("Received an error fetching the connection id", ex);
 				throw ex;
@@ -406,7 +405,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		
 		UdpConnectionId connId;
 		try{
-			connId = connect(address);
+			connId = requestConnection(address);
 		}catch(Exception ex){
 			throw new TorrentException(ex);
 		}
@@ -414,7 +413,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 
 		UdpScrapeResponse response;
 		try{
-			response = (UdpScrapeResponse)enqueue(request, address);
+			response = (UdpScrapeResponse)enqueueRequest(request, address);
 		}catch(Exception ex){
 			LOGGER.error("Received an error scraping", ex);
 			throw new TorrentException(ex);
@@ -425,10 +424,12 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 	
 	public Integer generateTransactionId(){
-		Integer transactionId = RANDOM_GEN.nextInt();
+		Integer transactionId;
+		
 		do{
 			transactionId = RANDOM_GEN.nextInt();
 		}while(queue.containsKey(transactionId) == true);
+		
 		return transactionId;
 	}
 	
