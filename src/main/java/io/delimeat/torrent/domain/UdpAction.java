@@ -17,7 +17,7 @@ public enum UdpAction {
 		return value;
 	}
 	
-	public static UdpAction getFor(int value){
+	public static UdpAction get(int value){
 		UdpAction[] actions = UdpAction.values();
 		for(int i = 0; i < actions.length; i++){
 			UdpAction action = actions[i];

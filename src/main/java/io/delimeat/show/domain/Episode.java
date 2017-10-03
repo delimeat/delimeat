@@ -30,8 +30,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
@@ -45,12 +43,6 @@ import io.delimeat.util.jaxb.LocalDateAdapter;
 
 @Entity
 @Table(name="EPISODE",uniqueConstraints={@UniqueConstraint(columnNames={"SEASON_NUM","EPISODE_NUM","SHOW_ID"})})
-@NamedQueries({
-	@NamedQuery(name="Episode.findAllByStatus", query="SELECT e FROM Episode e WHERE e.status IN :statusList ORDER BY e.airDate"),
-	@NamedQuery(name="Episode.findAllByStatus.count", query="SELECT count(e) FROM Episode e WHERE e.status IN :statusList"),
-	@NamedQuery(name="Episode.findAllByShow", query="SELECT e FROM Episode e WHERE e.show = :show"),
-	@NamedQuery(name="Episode.findAllPending", query="SELECT e FROM Episode e WHERE e.status = 'PENDING' ORDER BY e.airDate")
-})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Episode {
 

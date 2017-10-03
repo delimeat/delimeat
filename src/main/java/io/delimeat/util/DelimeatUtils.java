@@ -77,7 +77,6 @@ public class DelimeatUtils {
 	}
 	
 	public static OkHttpClient httpClient(){
-		
 		return new OkHttpClient().newBuilder()
 				.connectTimeout(2, TimeUnit.SECONDS)
 				.readTimeout(2, TimeUnit.SECONDS)

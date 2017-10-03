@@ -54,43 +54,38 @@ public class HttpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler 
 	}
 
 	@Override
-	ScrapeResult doScrape(URI uri, InfoHash infoHash) throws UnhandledScrapeException, TorrentException {
+	ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
+		final URL scrapeURL = generateScrapeURL(uri, infoHash);
+
+		Request request = new Request.Builder().url(scrapeURL).addHeader("Accept", "text/plain").build();
+
+		Response response;
 		try {
-			final URL scrapeURL = generateScrapeURL(uri, infoHash);
-
-			Request request = new Request.Builder().url(scrapeURL).addHeader("Accept", "text/plain").build();
-
-			Response response;
-			try {
-				response = DelimeatUtils.httpClient().newCall(request).execute();
-			} catch (SocketTimeoutException ex) {
-				throw new TorrentTimeoutException(scrapeURL);
-			} catch(ConnectException ex){
-				throw new TorrentException(String.format("Unnable to connect to %s", scrapeURL));
-			}
-			
-			if (response.isSuccessful() == false) {
-				switch (response.code()) {
-				case 404:
-					throw new TorrentNotFoundException(response.code(), response.message(), scrapeURL);
-				default:
-					throw new TorrentResponseException(response.code(), response.message(), scrapeURL);
-				}
-			}
-			
-			BDictionary dictionary; 
-			byte[] responseBytes = response.body().bytes();
-			response.body().close();
-			try{
-				 dictionary = BencodeUtils.decode(new ByteArrayInputStream(responseBytes));
-			}catch(BencodeException ex){
-				throw new TorrentResponseBodyException(scrapeURL, new String(responseBytes), ex);
-			}
-			return umarshalScrapeResult(dictionary, infoHash);
-
-		} catch (IOException e) {
-			throw new TorrentException(e);
+			response = DelimeatUtils.httpClient().newCall(request).execute();
+		} catch (SocketTimeoutException ex) {
+			throw new TorrentTimeoutException(scrapeURL);
+		} catch(ConnectException ex){
+			throw new TorrentException(String.format("Unnable to connect to %s", scrapeURL));
 		}
+		
+		if (response.isSuccessful() == false) {
+			switch (response.code()) {
+			case 404:
+				throw new TorrentNotFoundException(response.code(), response.message(), scrapeURL);
+			default:
+				throw new TorrentResponseException(response.code(), response.message(), scrapeURL);
+			}
+		}
+		
+		BDictionary dictionary; 
+		byte[] responseBytes = response.body().bytes();
+		response.body().close();
+		try{
+			 dictionary = BencodeUtils.decode(new ByteArrayInputStream(responseBytes));
+		}catch(BencodeException ex){
+			throw new TorrentResponseBodyException(scrapeURL, new String(responseBytes), ex);
+		}
+		return umarshalScrapeResult(dictionary, infoHash);
 	}
 
 	public URL generateScrapeURL(URI uri, InfoHash infoHash)

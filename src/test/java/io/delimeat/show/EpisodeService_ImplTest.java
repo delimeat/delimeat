@@ -76,6 +76,8 @@ public class EpisodeService_ImplTest {
 		service.setEpisodeRepository(repository);
 		
 		service.create(ep);
+		
+		Assert.fail();
 	}
 	
 	@Test
@@ -100,7 +102,9 @@ public class EpisodeService_ImplTest {
 		
 		service.setEpisodeRepository(repository);
 		
-		service.read(1L);				
+		service.read(1L);	
+		
+		Assert.fail();
 	}
 	
 	@Test(expected=ShowException.class)
@@ -110,7 +114,9 @@ public class EpisodeService_ImplTest {
 		
 		service.setEpisodeRepository(repository);
 		
-		service.read(1L);				
+		service.read(1L);		
+		
+		Assert.fail();
 	}
 	
 	@Test
@@ -136,6 +142,8 @@ public class EpisodeService_ImplTest {
 		service.setEpisodeRepository(repository);
 		
 		service.update(ep);
+		
+		Assert.fail();
 	}
 	
 	@Test(expected = ShowException.class)
@@ -148,6 +156,8 @@ public class EpisodeService_ImplTest {
 		service.setEpisodeRepository(repository);
 		
 		service.update(ep);
+		
+		Assert.fail();
 	}
 	
 	@Test
@@ -168,7 +178,9 @@ public class EpisodeService_ImplTest {
 
 		service.setEpisodeRepository(repository);
 		
-		service.delete(1L);			
+		service.delete(1L);	
+		
+		Assert.fail();
 	}
 	
 	@Test
@@ -199,6 +211,8 @@ public class EpisodeService_ImplTest {
 		service.setEpisodeRepository(repository);	
 		
 		service.findAllPending();
+		
+		Assert.fail();
 	}
 	
 	@Test
@@ -233,6 +247,30 @@ public class EpisodeService_ImplTest {
 		
 		service.findByShow(Long.MAX_VALUE);
 		
+		Assert.fail();
+	}
+	
+	
+	@Test
+	public void deleteByShowTest() throws Exception{
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		service.setEpisodeRepository(repository);	
+		
+		service.deleteByShow(Long.MAX_VALUE);
+		
+		Mockito.verify(repository).deleteByShowShowId(Long.MAX_VALUE);
+		Mockito.verifyNoMoreInteractions(repository);			
+	}
+	
+	@Test(expected = ShowException.class)
+	public void deleteByShowExceptionTest() throws Exception{
+		EpisodeRepository repository = Mockito.mock(EpisodeRepository.class);
+		Mockito.doThrow(new DataSourceLookupFailureException("EX")).when(repository).deleteByShowShowId(Long.MAX_VALUE);
+		service.setEpisodeRepository(repository);	
+		
+		service.deleteByShow(Long.MAX_VALUE);
+		
+		Assert.fail();
 	}
 
 }

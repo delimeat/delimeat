@@ -15,6 +15,8 @@
  */
 package io.delimeat;
 
+import java.util.Arrays;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -23,7 +25,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import io.delimeat.util.spark.SparkController;
 import spark.Spark;
 
 public class ApplicationControllerTest {
@@ -55,6 +59,16 @@ public class ApplicationControllerTest {
 		Assert.assertEquals(4567, controller.getPort());
 		controller.setPort(9090);
 		Assert.assertEquals(9090, controller.getPort());		
+	}
+	
+	@Test
+	public void controllersTest(){
+		SparkController newController = Mockito.mock(SparkController.class);
+		Assert.assertEquals(0, controller.getControllers().size());
+		controller.setControllers(Arrays.asList(newController));
+		Assert.assertEquals(1, controller.getControllers().size());
+		Assert.assertEquals(newController, controller.getControllers().get(0));
+
 	}
 	
 	@Test

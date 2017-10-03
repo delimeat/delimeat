@@ -18,6 +18,7 @@ package io.delimeat.show.domain;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -125,6 +126,17 @@ public class ShowTest {
 		Assert.assertEquals(0, show.getMaxSize());
 		show.setMaxSize(Integer.MAX_VALUE);
 		Assert.assertEquals(Integer.MAX_VALUE, show.getMaxSize());
+	}
+	
+	@Test
+	public void episodesTest(){
+		Episode episode = new Episode();
+		Assert.assertNull(show.getEpisodes());
+		show.setEpisodes(Arrays.asList(episode,episode));
+		Assert.assertEquals(2, show.getEpisodes().size());
+		Assert.assertEquals(episode, show.getEpisodes().get(0));
+		Assert.assertEquals(episode, show.getEpisodes().get(1));
+
 	}
 
   	@Test

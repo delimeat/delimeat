@@ -306,7 +306,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public void processResponse(ByteBuffer buffer, InetSocketAddress fromAddress){
 		LOGGER.trace("Processing response from", fromAddress);
 		int actionVal = buffer.getInt();
-		UdpAction action = UdpAction.getFor(actionVal);
+		UdpAction action = UdpAction.get(actionVal);
 		
 		UdpResponse response;
 		try{

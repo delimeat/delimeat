@@ -22,8 +22,6 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -261,31 +259,6 @@ public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
 			
 		}
 		return updates;
-	}
-	
-	/**
-	 * Determine episode to update when air date or title have changed
-	 * 
-	 * @param guideEp
-	 * @param showEps
-	 * @return showEp to update
-	 */
-	public Episode determineEpisodeToUpdate(GuideEpisode guideEp, List<Episode> showEps){
-		try{
-			Episode showEp = showEps.stream()
-									.filter(ep->DelimeatUtils.equals(guideEp, ep))
-									.filter(ep->!Objects.equals(ep.getAirDate(), guideEp.getAirDate())
-												|| ! Objects.equals(ep.getTitle(), guideEp.getTitle()))
-									.findFirst()
-									.get();
-			
-			showEp.setAirDate(guideEp.getAirDate());
-			showEp.setTitle(guideEp.getTitle());
-			return showEp;
-			
-		}catch(NoSuchElementException ex){
-			return null;
-		}
 	}
 
 	/* (non-Javadoc)

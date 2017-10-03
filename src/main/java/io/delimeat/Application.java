@@ -83,8 +83,7 @@ public class Application {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
 		ctx.registerShutdownHook();
 
-		ApplicationController controller = ctx.getBean(ApplicationController.class);
-		controller.init();
+		ctx.getBean(ApplicationController.class).init();
 
 		LOGGER.info("Delimeat started in {} ms", System.currentTimeMillis() - appStart);
 	}
