@@ -79,11 +79,11 @@ public class Application {
 		Long appStart = System.currentTimeMillis();
 		LOGGER.info("Delimeat starting");
 
-		@SuppressWarnings("resource")
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-		ctx.registerShutdownHook();
-
-		ctx.getBean(ApplicationController.class).init();
+		//@SuppressWarnings("resource")
+		try(AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class)){
+			ctx.registerShutdownHook();
+		}
+		
 
 		LOGGER.info("Delimeat started in {} ms", System.currentTimeMillis() - appStart);
 	}

@@ -72,7 +72,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	private InetSocketAddress address;
 	
 	public UdpScrapeRequestHandler_Impl(){
-		super(Arrays.asList("UDP"));	
+		super(Arrays.asList("UDP"));
 	}
 	
 	/**
@@ -143,9 +143,9 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 		channel.register(selector, SelectionKey.OP_READ);
 		
-		executor = Executors.newScheduledThreadPool(2);		
+		executor = Executors.newScheduledThreadPool(4);		
 		executor.execute(this::doSelect);
-		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
+		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 60*1000, TimeUnit.MILLISECONDS);
 		executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 		
 		LOGGER.trace("End initialize");
@@ -304,7 +304,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	}
 	
 	public void processResponse(ByteBuffer buffer, InetSocketAddress fromAddress){
-		LOGGER.trace("Processing response from", fromAddress);
+		LOGGER.trace("Processing response from {}", fromAddress);
 		int actionVal = buffer.getInt();
 		UdpAction action = UdpAction.get(actionVal);
 		

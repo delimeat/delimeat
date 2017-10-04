@@ -18,6 +18,8 @@ package io.delimeat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +73,7 @@ public class ApplicationController {
 		this.controllers = controllers;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.delimeat.util.spark.SparkController#init()
-	 */
+	@PostConstruct
 	public void init() throws Exception {
 		LOGGER.trace("Entering init");
 		Spark.port(port);
