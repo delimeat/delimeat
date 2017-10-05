@@ -184,6 +184,7 @@ public class TorrentService_Impl implements TorrentService {
         trackers = trackers.stream()
         		.filter(p->p != null)
         		.filter(p->p.isEmpty() == false)
+        		.sorted(new SchemeComparator())
         		.collect(Collectors.toList());
         
         if(trackers.isEmpty()){
