@@ -317,12 +317,21 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
      */
     public String generateTorrentFileName(Episode episode){
     	final Show show = episode.getShow();
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(show.getTitle());
     	if(ShowType.DAILY.equals(show.getShowType())){
-    		return String.format("%s_%s_%s.torrent", show.getTitle(), DateTimeFormatter.ISO_DATE.format(episode.getAirDate()), episode.getTitle());
+    		sb.append("_").append( DateTimeFormatter.ISO_DATE.format(episode.getAirDate()));
 
     	}else{
-    		return String.format("%s_%sx%s_%s.torrent", show.getTitle(), episode.getSeasonNum(), episode.getEpisodeNum(), episode.getTitle());
+    		sb.append("_").append(String.format("%02dx%02d", episode.getSeasonNum(), episode.getEpisodeNum()));
     	}
+    	
+    	if(episode.getTitle() != null && episode.getTitle().isEmpty() == false){
+    		sb.append("_").append(episode.getTitle());
+    	}
+    	
+    	sb.append(".torrent");
+    	return sb.toString();
     	
     }
   	

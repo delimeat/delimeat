@@ -359,7 +359,7 @@ public class FeedItemProcessor_ImplTest {
      	Mockito.verifyNoMoreInteractions(torrentValidator);
 
      	Mockito.verify(torrentService).read(Mockito.any(URI.class));
-     	Mockito.verify(torrentService).write("SHOW_TITLE_1x2_EPISODE_TITLE.torrent",torrent, config);
+     	Mockito.verify(torrentService).write("SHOW_TITLE_01x02_EPISODE_TITLE.torrent",torrent, config);
      	Mockito.verify(torrentService).scrape(torrent);
      	Mockito.verifyNoMoreInteractions(torrentService);
      	
@@ -387,12 +387,12 @@ public class FeedItemProcessor_ImplTest {
   		show.setShowType(ShowType.SEASON);
   		show.setTitle("SHOW_TITLE");
   		Episode episode = new Episode();
-  		episode.setSeasonNum(100);
-  		episode.setEpisodeNum(99);
+  		episode.setSeasonNum(10);
+  		episode.setEpisodeNum(9);
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("SHOW_TITLE_100x99_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));	
+  		Assert.assertEquals("SHOW_TITLE_10x09_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));	
   	}
   	
   	@Test
