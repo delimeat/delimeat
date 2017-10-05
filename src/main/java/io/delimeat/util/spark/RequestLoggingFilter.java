@@ -19,7 +19,7 @@ public class RequestLoggingFilter implements Filter {
 		StringBuilder reqStrBuilder = new StringBuilder();
 		
 		reqStrBuilder.append("<-- " + request.requestMethod() + ' ' + request.url()
-		+ request.protocol());
+		+ ' ' + request.protocol());
 		
 		boolean hasRequestBody = request.body() != null;
 		int contentLength = request.contentLength();

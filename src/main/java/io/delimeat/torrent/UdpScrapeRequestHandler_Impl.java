@@ -356,7 +356,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		UdpTransaction txn = new UdpTransaction(request, address);
 		LOGGER.trace("Adding {} to send queue", txn);
 		sendPipeline.add(txn);
-		executor.execute(this::doSend);	
+		executor.execute(this::doSend);
 		return txn.getResponse(3000);
 	}
 	
