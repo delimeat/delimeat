@@ -7,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 import io.delimeat.torrent.exception.UdpTimeoutException;
 
 public class UdpTransaction {
-
-	public enum Status {PENDING, COMPLETE};
 	
 	private final InetSocketAddress toAddress;
 	private final UdpRequest request;
