@@ -145,7 +145,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		
 		executor = Executors.newScheduledThreadPool(4);		
 		executor.execute(this::doSelect);
-		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 5*60*1000, 60*1000, TimeUnit.MILLISECONDS);
+		executor.scheduleWithFixedDelay(this::purgeInvalidConnectionIds, 60*1000, 60*1000, TimeUnit.MILLISECONDS);
 		executor.scheduleWithFixedDelay(this::shutdownDueToInactivity,  5*60*1000, 5*60*1000, TimeUnit.MILLISECONDS);
 		
 		LOGGER.trace("End initialize");
@@ -364,7 +364,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		LOGGER.trace("Received request for connectionId for {}", toAddress);
 
 		UdpConnectionId connectionId = connections.get(toAddress);
-		if(connectionId == null || connectionId.getExpiry().isBefore(Instant.now().minusSeconds(60))){
+		if(connectionId == null || connectionId.getExpiry().isBefore(Instant.now())){
 			LOGGER.trace("Requesting new connectionId for {}", toAddress);
 			
 			// remove expired connectionId if it exists
@@ -383,7 +383,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			}
 			
 			// assume txn will throw exception if no response
-			connectionId = new UdpConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(10*60));
+			connectionId = new UdpConnectionId(response.getConnectionId(), toAddress, Instant.now().plusSeconds(60));
 			connections.put(toAddress, connectionId);
 			LOGGER.trace("Receieve new connection id {} for {}", connectionId, toAddress);
 
