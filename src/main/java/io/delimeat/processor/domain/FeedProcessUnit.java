@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.torrent.domain.InfoHash;
 import io.delimeat.torrent.domain.Torrent;
 
@@ -33,6 +34,7 @@ public class FeedProcessUnit {
 	private long seeders;
 	private String title;
 	private Torrent torrent;
+	private FeedSource source;
 
 	/**
 	 * @return the contentLength
@@ -139,6 +141,20 @@ public class FeedProcessUnit {
 		this.torrent = torrent;
 	}
 
+	/**
+	 * @return the source
+	 */
+	public FeedSource getSource() {
+		return source;
+	}
+
+	/**
+	 * @param source the source to set
+	 */
+	public void setSource(FeedSource source) {
+		this.source = source;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -193,15 +209,14 @@ public class FeedProcessUnit {
 	 */
 	@Override
 	public String toString() {
-		return "FeedProcessUnit [contentLength=" + contentLength + ", "
-				+ (downloadUri != null ? "downloadUri=" + downloadUri + ", " : "")
+		return "FeedProcessUnit [" + (source != null ? "source=" + source + ", " : "")
+				+ (title != null ? "title=" + title + ", " : "")
+				+ (infoHash != null ? "infoHash=" + infoHash + ", " : "")
+				+ (downloadUri != null ? "downloadUri=" + downloadUri + ", " : "") + "contentLength=" + contentLength
+				+ ", leechers=" + leechers + ", seeders=" + seeders + ", "
 				+ (rejections != null ? "rejections=" + rejections + ", " : "")
-				+ (infoHash != null ? "infoHash=" + infoHash + ", " : "") + "leechers=" + leechers + ", "
-				+ "seeders=" + seeders + ", "
-				+ (title != null ? "title=" + title + ", " : "") + (torrent != null ? "torrent=" + torrent : "") + "]";
+				+ (torrent != null ? "torrent=" + torrent : "") + "]";
 	}
-	
-	
 
 	
 }

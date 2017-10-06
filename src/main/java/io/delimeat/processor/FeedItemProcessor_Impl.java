@@ -39,6 +39,7 @@ import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.processor.domain.FeedProcessUnit;
 import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.processor.filter.FeedResultFilter;
@@ -211,7 +212,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
             final Torrent torrent = result.getTorrent();
             LOGGER.debug("selected torrent: " + torrent);
     		
-			torrentService.write(generateTorrentFileName(episode), torrent, config);
+			torrentService.write(generateTorrentFileName(result.getSource(), episode), torrent, config);
 
 			episode.setLastFeedUpdate(now);
 			episode.setStatus(EpisodeStatus.FOUND);
@@ -227,6 +228,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     public FeedProcessUnit convertFeedResult(FeedResult feedResult){
 
 		FeedProcessUnit processUnit = new FeedProcessUnit();
+		processUnit.setSource(feedResult.getSource());
 		processUnit.setContentLength(feedResult.getContentLength());
 		processUnit.setTitle(feedResult.getTitle());
 		processUnit.setSeeders(feedResult.getSeeders());
@@ -315,10 +317,12 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
      * @param episode
      * @return
      */
-    public String generateTorrentFileName(Episode episode){
+    public String generateTorrentFileName(FeedSource source, Episode episode){
     	final Show show = episode.getShow();
     	StringBuilder sb = new StringBuilder();
-    	sb.append(show.getTitle());
+    	sb.append(source.toString())
+    		.append("_")
+    		.append(show.getTitle());
     	if(ShowType.DAILY.equals(show.getShowType())){
     		sb.append("_").append( DateTimeFormatter.ISO_DATE.format(episode.getAirDate()));
 

@@ -29,6 +29,7 @@ import io.delimeat.config.ConfigService;
 import io.delimeat.config.domain.Config;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.domain.FeedResult;
+import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.processor.domain.FeedProcessUnit;
 import io.delimeat.processor.domain.FeedProcessUnitRejection;
 import io.delimeat.processor.filter.FeedResultFilter;
@@ -320,6 +321,7 @@ public class FeedItemProcessor_ImplTest {
      
      	FeedService feedService = Mockito.mock(FeedService.class);
      	FeedResult feedResult = new FeedResult();
+     	feedResult.setSource(FeedSource.BITSNOOP);
      	feedResult.setTorrentURL("http://test.com");
      	feedResult.setInfoHashHex(null);
      	Mockito.when(feedService.read("SHOW_TITLE")).thenReturn(Arrays.asList(feedResult));
@@ -359,7 +361,7 @@ public class FeedItemProcessor_ImplTest {
      	Mockito.verifyNoMoreInteractions(torrentValidator);
 
      	Mockito.verify(torrentService).read(Mockito.any(URI.class));
-     	Mockito.verify(torrentService).write("SHOW_TITLE_01x02_EPISODE_TITLE.torrent",torrent, config);
+     	Mockito.verify(torrentService).write("BITSNOOP_SHOW_TITLE_01x02_EPISODE_TITLE.torrent",torrent, config);
      	Mockito.verify(torrentService).scrape(torrent);
      	Mockito.verifyNoMoreInteractions(torrentService);
      	
@@ -377,7 +379,7 @@ public class FeedItemProcessor_ImplTest {
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("SHOW_TITLE_1970-01-01_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));
+  		Assert.assertEquals("BITSNOOP_SHOW_TITLE_1970-01-01_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));
   		
   	}
   	
@@ -392,12 +394,13 @@ public class FeedItemProcessor_ImplTest {
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("SHOW_TITLE_10x09_EPISODE_TITLE.torrent", processor.generateTorrentFileName(episode));	
+  		Assert.assertEquals("BITSNOOP_SHOW_TITLE_10x09_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));	
   	}
   	
   	@Test
   	public void convertFeedResultsTest() throws Exception{
   		FeedResult feedResult = new FeedResult();
+  		feedResult.setSource(FeedSource.BITSNOOP);
   		feedResult.setContentLength(1);
   		feedResult.setTitle("TITLE_1");
   		feedResult.setSeeders(99);
@@ -406,6 +409,7 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
+  		Assert.assertEquals(FeedSource.BITSNOOP,processUnit.getSource());
   		Assert.assertEquals(1, processUnit.getContentLength());
   		Assert.assertEquals("TITLE_1", processUnit.getTitle());
   		Assert.assertEquals(99, processUnit.getSeeders());

@@ -105,7 +105,7 @@ public class FeedProcessUnitTest {
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedProcessUnit [contentLength=0, rejections=[], leechers=0, seeders=0, ]", processUnit.toString());
+		Assert.assertEquals("FeedProcessUnit [contentLength=0, leechers=0, seeders=0, rejections=[], ]", processUnit.toString());
 	}
 	
 	@Test
