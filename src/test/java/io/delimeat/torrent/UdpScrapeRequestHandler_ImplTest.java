@@ -175,16 +175,16 @@ public class UdpScrapeRequestHandler_ImplTest {
 		
 		UdpScrapeRequestHandler_Impl server = new UdpScrapeRequestHandler_Impl();
 		server.setAddress(address);
-		
-		//server.initialize();
-		
+				
 		InfoHash infoHash = new InfoHash(DelimeatUtils.hexToBytes("d73ae09044abf44faf3ade9e43cbc902b319c15b"));
 
-		List<URI> uris = Arrays.asList(new URI("udp://tracker.coppersurfer.tk:6969")
-				//,new URI("udp://tracker.leechers-paradise.org:6969")
-				//,new URI("udp://eddie4.nl:6969")
-				//,new URI("udp://tracker.pirateparty.gr:6969")
-				//,new URI("udp://tracker.zer0day.to:1337")
+		List<URI> uris = Arrays.asList(
+				new URI("udp://tracker.coppersurfer.tk:6969")
+				,new URI("udp://tracker.leechers-paradise.org:6969")
+				,new URI("udp://eddie4.nl:6969")
+				,new URI("udp://tracker.pirateparty.gr:6969")
+				,new URI("udp://tracker.zer0day.to:1337")
+				,new URI("udp://tracker.coppersurfer.tk:6969")
 				);
 		ScrapeResult result = null;
 		for(URI uri : uris){

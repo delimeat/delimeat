@@ -22,7 +22,7 @@ public class UdpTransaction {
 	/**
 	 * @return the response
 	 */
-	public UdpResponse getResponse(long timeout) throws Exception {
+	public UdpResponse getResponse(long timeout) throws UdpTimeoutException, Exception {
 		
 		if(response == null){
 			try{

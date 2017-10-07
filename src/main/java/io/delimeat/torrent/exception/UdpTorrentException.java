@@ -25,4 +25,11 @@ public class UdpTorrentException extends TorrentException {
 	public UdpTorrentException(String message) {
 		super(message);
 	}
+	
+	/**
+	 * @param exception
+	 */	
+	public UdpTorrentException(Throwable exception) {
+		super(exception);
+	}
 }

@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.UnresolvedAddressException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -44,6 +45,8 @@ import io.delimeat.torrent.domain.UdpScrapeResponse;
 import io.delimeat.torrent.domain.UdpTransaction;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.UdpErrorResponseException;
+import io.delimeat.torrent.exception.UdpTimeoutException;
+import io.delimeat.torrent.exception.UdpTorrentException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 @Component
@@ -243,9 +246,13 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			LOGGER.trace("Sending request for {}", transaction);
 			try{
 				channel.send(transaction.getRequest().toByteBuffer(), transaction.getToAddress());
-			}catch(IOException e){
+			}catch(IOException | UnresolvedAddressException e){
 				LOGGER.error("Encountered an error sending", e);
 				transaction.setException(e);
+				continue;
+			}catch(Throwable e){
+				LOGGER.error("Encountered an error sending", e);
+				transaction.setException(new UdpTorrentException(e));
 				continue;
 			}
 			queue.put(transaction.getRequest().getTransactionId(), transaction);
@@ -354,10 +361,27 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	
 	public UdpResponse enqueueRequest(UdpRequest request, InetSocketAddress address) throws Exception{
 		UdpTransaction txn = new UdpTransaction(request, address);
+		int count = 0;
+		UdpResponse response = null;
+		do{
+			LOGGER.trace("Adding {} to send queue, attempt {}", txn, count+1);
+			sendPipeline.add(txn);
+			executor.execute(this::doSend);
+			try{
+				response = txn.getResponse((15*2^count)*1000);
+			}catch(UdpTimeoutException ex){
+				LOGGER.trace("Transaction {} timed out, attempt {}", txn, count+1);
+			}
+			count++;
+		}while(response==null && count < 3);
+		
+		return response;
+		/*
 		LOGGER.trace("Adding {} to send queue", txn);
 		sendPipeline.add(txn);
 		executor.execute(this::doSend);
 		return txn.getResponse(3000);
+		*/
 	}
 	
 	public UdpConnectionId requestConnection(InetSocketAddress toAddress) throws Exception {
