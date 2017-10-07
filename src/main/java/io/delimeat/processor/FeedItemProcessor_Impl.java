@@ -193,7 +193,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 		// scrape each torrent
 		processUnits.stream()
 			.filter(p->p.getTorrent() != null)
-			.filter(p->p.getSeeders() == 0 && p.getLeechers() == 0)
+			.filter(p->p.getScrape() == null)
 			.forEach(this::scrapeTorrent);
 		
 		// count the valid results
@@ -229,10 +229,10 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 
 		FeedProcessUnit processUnit = new FeedProcessUnit();
 		processUnit.setSource(feedResult.getSource());
-		processUnit.setContentLength(feedResult.getContentLength());
 		processUnit.setTitle(feedResult.getTitle());
-		processUnit.setSeeders(feedResult.getSeeders());
-		processUnit.setLeechers(feedResult.getLeechers());
+		if(feedResult.getSeeders() != 0 || feedResult.getLeechers() != 0){
+			processUnit.setScrape(new ScrapeResult(feedResult.getSeeders(), feedResult.getLeechers()));
+		}
 		
 		if(feedResult.getTorrentURL() != null){
     		try{
@@ -306,7 +306,7 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
         		.sorted(new Comparator<FeedProcessUnit>() {
 					@Override
 					public int compare(FeedProcessUnit o1, FeedProcessUnit o2) {
-						return Long.compare(o2.getSeeders(), o1.getSeeders());
+						return Long.compare(o2.getScrape().getSeeders(), o1.getScrape().getSeeders());
 					}
 				})
         		.findFirst()
@@ -340,16 +340,11 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
     }
   	
   	public void scrapeTorrent(FeedProcessUnit processUnit){
-		ScrapeResult result = torrentService.scrape(processUnit.getTorrent());
-		if(result != null){
-			processUnit.setSeeders(result.getSeeders());
-			processUnit.setLeechers(result.getLeechers());
-		}
+		processUnit.setScrape(torrentService.scrape(processUnit.getTorrent()));
 		
-		if(result == null || result.getSeeders() < MINSEEDERS){
+		if(processUnit.getScrape() == null || processUnit.getScrape().getSeeders() < MINSEEDERS){
 			processUnit.getRejections().add(FeedProcessUnitRejection.INSUFFICENT_SEEDERS);
 			LOGGER.debug("Rejected {} for {}",processUnit.getTitle(), FeedProcessUnitRejection.INSUFFICENT_SEEDERS);
-
 		}
   	}
 

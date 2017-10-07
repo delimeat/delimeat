@@ -22,26 +22,18 @@ import java.util.Objects;
 
 import io.delimeat.feed.domain.FeedSource;
 import io.delimeat.torrent.domain.InfoHash;
+import io.delimeat.torrent.domain.ScrapeResult;
 import io.delimeat.torrent.domain.Torrent;
 
 public class FeedProcessUnit {
 
-	private long contentLength;
 	private URI downloadUri;
 	private List<FeedProcessUnitRejection> rejections = new ArrayList<FeedProcessUnitRejection>();
 	private InfoHash infoHash;
-	private long leechers;
-	private long seeders;
 	private String title;
+	private ScrapeResult scrape;
 	private Torrent torrent;
 	private FeedSource source;
-
-	/**
-	 * @return the contentLength
-	 */
-	public long getContentLength() {
-		return contentLength;
-	}
 
 	/**
 	 * @return the downloadUri
@@ -65,20 +57,6 @@ public class FeedProcessUnit {
 	}
 
 	/**
-	 * @return the leechers
-	 */
-	public long getLeechers() {
-		return leechers;
-	}
-
-	/**
-	 * @return the seeders
-	 */
-	public long getSeeders() {
-		return seeders;
-	}
-
-	/**
 	 * @return the title
 	 */
 	public String getTitle() {
@@ -93,13 +71,6 @@ public class FeedProcessUnit {
 	}
 
 	/**
-	 * @param contentLength the contentLength to set
-	 */
-	public void setContentLength(long contentLength) {
-		this.contentLength = contentLength;
-	}
-
-	/**
 	 * @param downloadUri the downloadUri to set
 	 */
 	public void setDownloadUri(URI downloadUri) {
@@ -111,20 +82,6 @@ public class FeedProcessUnit {
 	 */
 	public void setInfoHash(InfoHash infoHash) {
 		this.infoHash = infoHash;
-	}
-
-	/**
-	 * @param leechers the leechers to set
-	 */
-	public void setLeechers(long leechers) {
-		this.leechers = leechers;
-	}
-
-	/**
-	 * @param seeders the seeders to set
-	 */
-	public void setSeeders(long seeders) {
-		this.seeders = seeders;
 	}
 
 	/**
@@ -155,12 +112,26 @@ public class FeedProcessUnit {
 		this.source = source;
 	}
 
+	/**
+	 * @return the scrape
+	 */
+	public ScrapeResult getScrape() {
+		return scrape;
+	}
+
+	/**
+	 * @param scrape the scrape to set
+	 */
+	public void setScrape(ScrapeResult scrape) {
+		this.scrape = scrape;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(contentLength,downloadUri,infoHash,leechers,seeders,title,torrent);
+		return Objects.hash(downloadUri,infoHash,title,scrape,torrent);
 	}
 
 	/* (non-Javadoc)
@@ -175,8 +146,6 @@ public class FeedProcessUnit {
 		if (getClass() != obj.getClass())
 			return false;
 		FeedProcessUnit other = (FeedProcessUnit) obj;
-		if (contentLength != other.contentLength)
-			return false;
 		if (downloadUri == null) {
 			if (other.downloadUri != null)
 				return false;
@@ -187,14 +156,15 @@ public class FeedProcessUnit {
 				return false;
 		} else if (!infoHash.equals(other.infoHash))
 			return false;
-		if (leechers != other.leechers)
-			return false;
-		if (seeders != other.seeders)
-			return false;
 		if (title == null) {
 			if (other.title != null)
 				return false;
 		} else if (!title.equals(other.title))
+			return false;
+		if (scrape == null) {
+			if (other.scrape != null)
+				return false;
+		} else if (!scrape.equals(other.scrape))
 			return false;
 		if (torrent == null) {
 			if (other.torrent != null)
@@ -204,19 +174,10 @@ public class FeedProcessUnit {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "FeedProcessUnit [" + (source != null ? "source=" + source + ", " : "")
-				+ (title != null ? "title=" + title + ", " : "")
-				+ (infoHash != null ? "infoHash=" + infoHash + ", " : "")
-				+ (downloadUri != null ? "downloadUri=" + downloadUri + ", " : "") + "contentLength=" + contentLength
-				+ ", leechers=" + leechers + ", seeders=" + seeders + ", "
-				+ (rejections != null ? "rejections=" + rejections + ", " : "")
-				+ (torrent != null ? "torrent=" + torrent : "") + "]";
+		return "FeedProcessUnit [source=" + source + ", title=" + title + ", infoHash=" + infoHash + ", downloadUri="
+				+ downloadUri + ", scrape=" + scrape + ", torrent=" + torrent + ", rejections=" + rejections + "]";
 	}
-
 	
 }
