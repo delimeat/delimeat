@@ -18,7 +18,7 @@ public class ResponseLoggingFilter implements Filter {
 		StringBuilder respStrBuilder = new StringBuilder();
 		
 		respStrBuilder.append("--> " + response.status() + ' '
-						+ request.ip() + " (" + 0 + "ms )\n");
+						+ request.ip()+"\n");
 
 		Collection<String> respHeaders = response.raw().getHeaderNames();
 		for(String name: respHeaders){
