@@ -31,5 +31,18 @@ function ShowsRouteConfig($routeProvider, ShowsService) {
 		title: function(locals){
 			return locals.show.title;
 		}
+	}).when('/show/:id/episode', {
+		templateUrl : 'js/episodes/episodes.tmpl.html',
+		controller : 'EpisodesController',
+		controllerAs : 'vm',
+		resolve : {
+			ShowsService : 'ShowsService',
+			episodes : ['$route','ShowsService', function($route, ShowsService) {
+				return ShowsService.episodes({
+					id : $route.current.params.id
+				}).$promise;
+			}]
+		},
+		title: "episodes.page_title"
 	});
   }
