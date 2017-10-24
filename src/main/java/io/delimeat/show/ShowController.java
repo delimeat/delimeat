@@ -99,7 +99,7 @@ public class ShowController implements SparkController {
 				return "";
 			});
 	
-			Spark.get("/:id/episodes", (Request request, Response response) -> {
+			Spark.get("/:id/episode", (Request request, Response response) -> {
 				Long showId = Long.valueOf(request.params(":id"));
 				return episodeService.findByShow(showId);
 			}, JsonUtils::toJson);

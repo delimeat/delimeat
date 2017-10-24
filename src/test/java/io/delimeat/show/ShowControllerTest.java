@@ -339,7 +339,7 @@ public class ShowControllerTest {
 		controller.setEpisodeService(episodeService);
 		
     	Response response = client.target("http://localhost:4567")
-    			.path("/api/show/99/episodes")
+    			.path("/api/show/99/episode")
     			.request()
     			.accept("application/json")
     			.get();

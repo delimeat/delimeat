@@ -36,9 +36,9 @@ function ShowsRouteConfig($routeProvider, ShowsService) {
 		controller : 'EpisodesController',
 		controllerAs : 'vm',
 		resolve : {
-			ShowsService : 'ShowsService',
-			episodes : ['$route','ShowsService', function($route, ShowsService) {
-				return ShowsService.episodes({
+			EpisodeService : 'EpisodeService',
+			episodes : ['$route','EpisodeService', function($route, EpisodeService) {
+				return EpisodeService.byShow({
 					id : $route.current.params.id
 				}).$promise;
 			}]

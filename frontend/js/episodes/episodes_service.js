@@ -11,8 +11,9 @@ function EpisodeService($resource, ResponseLoggingService, API) {
 	vm._logger = ResponseLoggingService;
 	
 	return $resource(API+'episode', {},{
-    	query: { method: 'GET', isArray: true , interceptor:{responseError: vm._logger.error} , transformResponse: responseTransform},
-        update: { method: 'PUT', url:API+'episode/:id', interceptor:{responseError: vm._logger.error} }
+    	query: { method: 'GET', isArray: true , interceptor:{responseError: vm._logger.error}, transformResponse: responseTransform},
+        update: { method: 'PUT', url:API+'episode/:id', interceptor:{responseError: vm._logger.error} },
+        byShow: { method: 'GET', url:API+'show/:id/episode', isArray:true, interceptor:{responseError: vm._logger.error}, transformResponse: responseTransform }
     });
 	
     function responseTransform(data){

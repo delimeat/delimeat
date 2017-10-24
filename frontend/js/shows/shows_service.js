@@ -15,8 +15,7 @@ function ShowsService($resource, ResponseLoggingService, API) {
     	read: { method: 'GET', url:API+'show/:id', interceptor:{responseError: vm._logger.error} },
         update: { method: 'PUT', url:API+'show/:id', interceptor:{responseError: vm._logger.error} },
         remove: { method: 'DELETE', url:API+'show/:id', interceptor:{responseError: vm._logger.error} },
-        create: {method:'POST', interceptor:{responseError: vm._logger.error} },
-        episodes: { method: 'GET', url:API+'show/:id/episode', isArray:true, interceptor:{responseError: vm._logger.error} }
-    });
+        create: {method:'POST', interceptor:{responseError: vm._logger.error} }
+	});
 	
 }
