@@ -25,8 +25,6 @@ import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.RecoverableDataAccessException;
 
-import io.delimeat.config.ConfigRepository;
-import io.delimeat.config.ConfigService_Impl;
 import io.delimeat.config.domain.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
 import io.delimeat.config.exception.ConfigException;

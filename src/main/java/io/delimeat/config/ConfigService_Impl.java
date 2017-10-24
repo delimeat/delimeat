@@ -88,7 +88,7 @@ public class ConfigService_Impl implements ConfigService {
 				defaultConfig.setIgnoreFolders(false);
 				defaultConfig.setOutputDirectory(defaultOutputDir);
 				LOGGER.trace(String.format("No config exists, creating default %s", defaultConfig));
-				config = update(defaultConfig);
+				return update(defaultConfig);
 			}
 			return config;
 		} catch (DataAccessException e) {
