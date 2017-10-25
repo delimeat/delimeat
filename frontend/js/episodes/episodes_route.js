@@ -14,7 +14,10 @@ function EpisodesRouteConfig($routeProvider, EpisodeService) {
 			EpisodeService : 'EpisodeService',
 			episodes : ['EpisodeService' ,function(EpisodeService) {
 				return EpisodeService.query().$promise;
-			}]
+			}],
+			showFilter: function(){
+				return true;
+			}
 		}
 	}).otherwise({
 		redirectTo : '/'

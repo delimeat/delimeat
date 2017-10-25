@@ -2,15 +2,16 @@ angular
 	.module('delimeat.episodes')
 	.controller('EpisodesController', EpisodesController);
 
-EpisodesController.$inject = ['$log', 'episodes'];
+EpisodesController.$inject = ['$log', 'episodes','showFilter'];
 
-function EpisodesController($log, episodes) {
+function EpisodesController($log, episodes, showFilter) {
 	
 	var vm = this;
 	
 	vm._log = $log;
 
 	vm.update = _update;
+	vm.showFilter = showFilter | false;
 	
 	// data
 	vm.episodes = episodes;

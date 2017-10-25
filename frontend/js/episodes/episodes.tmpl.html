@@ -6,7 +6,7 @@
   </div>
   
 
-  <div class="list-group-item" ng-show="vm.episodes.length>0">
+  <div class="list-group-item" ng-show="vm.episodes.length>0 && vm.showFilter == true">
 	<div class="input-group">
 	  <input type="text" class="form-control" placeholder="{{'episodes.title_filter_placeholder' | translate}}" ng-model="vm.title_filter">
 	  <span class="input-group-addon"><span class="glyphicon glyphicon-filter"/></span>

@@ -41,7 +41,10 @@ function ShowsRouteConfig($routeProvider, ShowsService) {
 				return EpisodeService.byShow({
 					id : $route.current.params.id
 				}).$promise;
-			}]
+			}],
+			showFilter: function(){
+				return false;
+			}
 		},
 		title: "episodes.page_title"
 	});
