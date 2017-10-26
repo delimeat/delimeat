@@ -44,6 +44,9 @@ function ShowsRouteConfig($routeProvider, ShowsService) {
 			}],
 			showFilter: function(){
 				return false;
+			},
+			sortDesc: function(){
+				return true;
 			}
 		},
 		title: "episodes.page_title"

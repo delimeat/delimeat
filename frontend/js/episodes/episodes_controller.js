@@ -2,9 +2,9 @@ angular
 	.module('delimeat.episodes')
 	.controller('EpisodesController', EpisodesController);
 
-EpisodesController.$inject = ['$log', 'episodes','showFilter'];
+EpisodesController.$inject = ['$log', 'episodes','showFilter', 'sortDesc'];
 
-function EpisodesController($log, episodes, showFilter) {
+function EpisodesController($log, episodes, showFilter, sortDesc) {
 	
 	var vm = this;
 	
@@ -12,6 +12,7 @@ function EpisodesController($log, episodes, showFilter) {
 
 	vm.update = _update;
 	vm.showFilter = showFilter | false;
+	vm.sort_desc = sortDesc;
 	
 	// data
 	vm.episodes = episodes;

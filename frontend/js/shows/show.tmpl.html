@@ -85,6 +85,13 @@
 			<input type="number" class="form-control" name="maxsize" id="maxsize" placeholder="{{'show.max_size'|translate}}" ng-model="vm.show.maxSize" required/>
 		</div>
 	</div>
+	
+	<div class="text-center col-xs-12 col-md-12">
+		<div class="form-group" ng-class="{ 'has-error': vm.form.maxsize.$invalid && vm.form.maxsize.$dirty }">
+			<a ng-href="#/show/{{vm.show.showId}}/episode"><span translate="show.view_episodes"/></a>
+		</div>
+	</div>
+	
 
 	<div class="text-center col-xs-12 col-md-12">
 		<button class="btn btn-danger" ng-click="vm.remove()"><span class="glyphicon glyphicon-trash"/> <span translate="common.delete"/></button>

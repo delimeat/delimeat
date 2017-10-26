@@ -17,6 +17,9 @@ function EpisodesRouteConfig($routeProvider, EpisodeService) {
 			}],
 			showFilter: function(){
 				return true;
+			},
+			sortDesc: function(){
+				return false;
 			}
 		}
 	}).otherwise({
