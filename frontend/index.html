@@ -50,7 +50,7 @@
 	<body id="delimeat-main" class="container-fluid">
 		<div class="alert alert-dismissible alert-{{alert.type}}" role="alert" ng-repeat="alert in alerts">
 			<button type="button" class="close" data-dismiss="alert" ng-click="alert.close()"><span aria-hidden="true">&times;</span></button>
-			<span ng-bind="alert.msg"/>
+			<span ng-bind="alert.msg"></span>
 		</div>
 		
 		<div ng-view></div>
