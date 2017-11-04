@@ -106,8 +106,8 @@ public class ApplicationTest {
 	@Test
 	public void udpScrapeSocketAddressTest() throws UnknownHostException{
 		Environment env = Mockito.mock(Environment.class);
-		Mockito.when(env.getProperty("io.delimeat.processor.torrent.udp.address")).thenReturn("0.0.0.0");
-		Mockito.when(env.getProperty("io.delimeat.processor.torrent.udp.port")).thenReturn("1234");
+		Mockito.when(env.getProperty("io.delimeat.torrent.udp.address")).thenReturn("0.0.0.0");
+		Mockito.when(env.getProperty("io.delimeat.torrent.udp.port")).thenReturn("1234");
 		application.setEnv(env);
 		
 		InetSocketAddress address = application.udpScrapeSocketAddress();
@@ -116,8 +116,8 @@ public class ApplicationTest {
 		Assert.assertEquals("0.0.0.0", address.getAddress().getHostAddress());
 		Assert.assertEquals(1234, address.getPort());
 		
-		Mockito.verify(env).getProperty("io.delimeat.processor.torrent.udp.address");
-		Mockito.verify(env).getProperty("io.delimeat.processor.torrent.udp.port");
+		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.address");
+		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.port");
 	}
 	
 	@Test
