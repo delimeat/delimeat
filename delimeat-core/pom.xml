@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.delimeat</groupId>
+    <artifactId>delimeat</artifactId>
+    <version>0.4-SNAPSHOT</version>
+  </parent>
+  <artifactId>delimeat-core</artifactId>
+  <properties>
+		<!-- Runtime versions ! -->
+  		<com.squareup.okhttp3.version>3.9.0</com.squareup.okhttp3.version>
+  		<org.springframework.data.version>1.11.8.RELEASE</org.springframework.data.version>
+  </properties>
+  <dependencies>
+  		<!-- TESTING -->
+  		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>mockwebserver</artifactId>
+		  <version>${com.squareup.okhttp3.version}</version>
+		  <scope>test</scope>
+		</dependency>		
+		<!-- APIs -->
+		<dependency>
+		    <groupId>javax.transaction</groupId>
+		    <artifactId>javax.transaction-api</artifactId>
+		    <version>${javax.transaction.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+    		<artifactId>javax.persistence</artifactId>
+    		<version>${javax.persistence.version}</version>
+		</dependency>	
+		<!-- SPRING  -->
+ 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!-- REST -->
+		<dependency>
+		    <groupId>com.squareup.okhttp3</groupId>
+		    <artifactId>okhttp</artifactId>
+		    <version>${com.squareup.okhttp3.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.moxy</artifactId>
+		    <version>${org.eclipse.persistence.version}</version>
+		</dependency>
+		
+		<!-- to be removed once dependency removed -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${org.springframework.data.version}</version>
+		</dependency>
+	</dependencies>
+</project>

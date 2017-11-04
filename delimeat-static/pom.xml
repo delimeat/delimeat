@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.delimeat</groupId>
+		<artifactId>delimeat</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+	<artifactId>delimeat-static</artifactId>
+	<properties>
+		<node.version>v8.5.0</node.version>
+		<com.github.eirslett.version>1.6</com.github.eirslett.version>
+	</properties>
+	<build>
+		<plugins>
+			<!-- Front end build ! -->
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>${com.github.eirslett.version}</version>
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm install</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>bower install</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>bower</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gulp build</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>gulp</goal>
+						</goals>
+						<configuration>
+							<srcdir>${basedir}/frontend</srcdir>
+							<outputdir>${project.build.outputDirectory}/static</outputdir>
+							<triggerfiles>
+								<triggerfile>gulpfile.js</triggerfile>
+								<triggerfile>package.json</triggerfile>
+							</triggerfiles>
+							<environmentVariables>
+								<BUILD_DIR>${project.build.directory}/frontend</BUILD_DIR>
+								<TEMP_DIR>${project.build.directory}/tmp</TEMP_DIR>
+								<OUTPUT_DIR>${project.build.outputDirectory}/static</OUTPUT_DIR>
+							</environmentVariables>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

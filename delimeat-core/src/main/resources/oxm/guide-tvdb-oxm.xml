@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xml-accessor-type="NONE" package-name="io.delimeat.guide.entity"
+	xml-mapping-metadata-complete="true">
+
+	<java-types>
+
+		<java-type name="TvdbApiKey">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="value" name="apikey" />
+			</java-attributes>
+		</java-type>
+
+      <java-type name="GuideError">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="message" name="Error" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="TvdbToken">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="value" name="token" />
+			</java-attributes>
+		</java-type>
+
+
+		<java-type name="GuideSearchResult">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="description" xml-path="overview/text()" />
+				<xml-element java-attribute="firstAired" xml-path="firstAired/text()">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.LocalDateAdapter" />
+					
+				</xml-element>
+				<xml-element java-attribute="guideId" name="id/text()"/>
+				<xml-element java-attribute="title" name="seriesName/text()" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="GuideSearch">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="results" xml-path="data"
+					xml-list="true" />
+			</java-attributes>
+		</java-type>
+
+
+		<java-type name="TvdbEpisodes">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="first" xml-path="links/first/text()" />
+				<xml-element java-attribute="last" xml-path="links/last/text()" />
+				<xml-element java-attribute="next" xml-path="links/next/text()" />
+				<xml-element java-attribute="previous" xml-path="links/prev/text()" />
+				<xml-element java-attribute="episodes" xml-path="data"
+					xml-list="true" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="GuideEpisode">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="airDate" name="firstAired">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.LocalDateAdapter" />
+				</xml-element>
+				<xml-element java-attribute="seasonNum" name="airedSeason">
+					<xml-schema-type name="integer" />
+				</xml-element>
+				<xml-element java-attribute="episodeNum" name="airedEpisodeNumber">
+					<xml-schema-type name="integer" />
+				</xml-element>
+				<xml-element java-attribute="productionNum" name="absoluteNumber">
+					<xml-schema-type name="integer" />
+				</xml-element>
+				<xml-element java-attribute="title" name="episodeName" />
+			</java-attributes>
+		</java-type>
+
+
+		<java-type name="GuideInfo">
+			<xml-root-element/>
+			<java-attributes>
+				<xml-element java-attribute="guideId" name="data/id/text()"/>
+				<xml-element java-attribute="firstAired" xml-path="data/firstAired/text()">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.LocalDateAdapter" />
+				</xml-element>
+				<xml-element java-attribute="description" xml-path="data/overview/text()" />
+				<xml-element java-attribute="runningTime" xml-path="data/runtime/text()" />
+				<xml-element java-attribute="timezone" xml-path="data/network/text()" >
+					<xml-java-type-adapter value="io.delimeat.guide.util.TvdbTimezoneAdapter" />
+				</xml-element>
+				<xml-element java-attribute="title" xml-path="data/seriesName/text()" />
+				<xml-element java-attribute="airDays" xml-path="data/airsDayOfWeek/text()">
+					<xml-java-type-adapter value="io.delimeat.guide.util.TvdbAiringDayAdapter" />
+				</xml-element>
+				<xml-element java-attribute="airing" xml-path="data/status/text()">
+					<xml-java-type-adapter value="io.delimeat.guide.util.TvdbAiringStatusAdapter" />
+				</xml-element>
+				<xml-element java-attribute="airTime" xml-path="data/airsTime/text()">
+					<xml-java-type-adapter value="io.delimeat.util.jaxb.LocalTimeAdapter" />
+				</xml-element>
+				<xml-element java-attribute="genres" xml-path="data/genre/text()">
+					<xml-java-type-adapter value="io.delimeat.guide.util.TvdbGenreAdapter" />
+				</xml-element>
+				<xml-element java-attribute="lastUpdated" xml-path="data/lastUpdated/text()" >	
+					<xml-java-type-adapter value="io.delimeat.guide.util.TvdbLastUpdatedAdapter" />		
+				</xml-element>
+			</java-attributes>
+		</java-type>
+
+	</java-types>
+
+</xml-bindings>
