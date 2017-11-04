@@ -58,17 +58,17 @@
 		<dependency>
 			<groupId>io.delimeat</groupId>
 			<artifactId>delimeat-core</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.delimeat</groupId>
 			<artifactId>delimeat-api</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.delimeat</groupId>
 			<artifactId>delimeat-static</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- LOGGING -->
 		<dependency>
