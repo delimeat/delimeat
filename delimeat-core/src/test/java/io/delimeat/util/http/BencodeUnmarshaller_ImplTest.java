@@ -15,20 +15,27 @@
  */
 package io.delimeat.util.http;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import io.delimeat.torrent.bencode.BDictionary;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.bencode.BencodeUtils;
+import io.delimeat.torrent.bencode.BInteger;
 
-public class BencodeUnmarshaller_Impl implements BodyUnmarshaller<BDictionary> {
+public class BencodeUnmarshaller_ImplTest {
+
+	private BencodeUnmarshaller_Impl unmarshaller;
 	
-	/* (non-Javadoc)
-	 * @see io.delimeat.util.rest.BodyUnmarshaller#unmarshall(java.io.InputStream, java.lang.Class)
-	 */
-	@Override
-	public BDictionary unmarshall(InputStream input, Class<BDictionary> responseClass) throws IOException, BencodeException {
-		return BencodeUtils.decode(input);
+	@Before
+	public void setUp(){
+		unmarshaller = new BencodeUnmarshaller_Impl();
+	}
+	
+	@Test
+	public void unmarshallTest() throws Exception{
+		BDictionary dict = unmarshaller.unmarshall(new ByteArrayInputStream("d7:INTEGERi2ee".getBytes()), BDictionary.class);
+		Assert.assertEquals(new BInteger(2), dict.get("INTEGER"));
 	}
 }

@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.util.http;
+package io.delimeat.util.http.exception;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.junit.Assert;
+import org.junit.Test;
 
-import io.delimeat.torrent.bencode.BDictionary;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.bencode.BencodeUtils;
+public class HttpBodyExceptionTest {
 
-public class BencodeUnmarshaller_Impl implements BodyUnmarshaller<BDictionary> {
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.util.rest.BodyUnmarshaller#unmarshall(java.io.InputStream, java.lang.Class)
-	 */
-	@Override
-	public BDictionary unmarshall(InputStream input, Class<BDictionary> responseClass) throws IOException, BencodeException {
-		return BencodeUtils.decode(input);
+	@Test
+	public void constructorTest(){
+		Throwable throwable = new Throwable("THROWABLE");
+		HttpBodyException exception = new HttpBodyException(Object.class, throwable);
+		
+		Assert.assertEquals("Unable to marshall/unmarshall body for class java.lang.Object", exception.getMessage());
+		Assert.assertEquals(throwable, exception.getCause());
 	}
 }

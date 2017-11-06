@@ -24,13 +24,13 @@ public class UdpTransaction {
 	 */
 	public UdpResponse getResponse(long timeout) throws UdpTimeoutException, Exception {
 		
-		if(response == null){
+		if(response == null && exception == null){
 			try{
 				if(latch.await(timeout, TimeUnit.MILLISECONDS) == false){
 					throw new UdpTimeoutException(this);
 				}
 			}catch(InterruptedException ex){
-				if(exception==null){
+				if(exception == null){
 					exception = ex;
 				}
 			}
@@ -76,9 +76,13 @@ public class UdpTransaction {
 	 */
 	@Override
 	public String toString() {
-		return "UdpTransaction [toAddress=" + toAddress + ", request=" + request + ", response=" + response
-				+ ", exception=" + exception + "]";
+		return "UdpTransaction [" + (toAddress != null ? "toAddress=" + toAddress + ", " : "")
+				+ (request != null ? "request=" + request + ", " : "")
+				+ (response != null ? "response=" + response + ", " : "")
+				+ (exception != null ? "exception=" + exception : "") + "]";
 	}
+
+	
 
 	
 	

@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.util.http;
+package io.delimeat.util.http.exception;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 
-import io.delimeat.torrent.bencode.BDictionary;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.bencode.BencodeUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class BencodeUnmarshaller_Impl implements BodyUnmarshaller<BDictionary> {
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.util.rest.BodyUnmarshaller#unmarshall(java.io.InputStream, java.lang.Class)
-	 */
-	@Override
-	public BDictionary unmarshall(InputStream input, Class<BDictionary> responseClass) throws IOException, BencodeException {
-		return BencodeUtils.decode(input);
+public class HttpTimeoutExceptionTest {
+
+	@Test
+	public void constructorTest() throws Exception{
+		HttpTimeoutException exception = new HttpTimeoutException(new URL("http://localhost"));
+		Assert.assertEquals("Timeout for http://localhost", exception.getMessage());
+		
 	}
 }

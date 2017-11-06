@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.util.http;
+package io.delimeat.util.http.exception;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 
-import io.delimeat.torrent.bencode.BDictionary;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.bencode.BencodeUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class BencodeUnmarshaller_Impl implements BodyUnmarshaller<BDictionary> {
-	
-	/* (non-Javadoc)
-	 * @see io.delimeat.util.rest.BodyUnmarshaller#unmarshall(java.io.InputStream, java.lang.Class)
-	 */
-	@Override
-	public BDictionary unmarshall(InputStream input, Class<BDictionary> responseClass) throws IOException, BencodeException {
-		return BencodeUtils.decode(input);
+public class HttpResponseExceptionTest {
+
+	@Test
+	public void constuctorTest() throws Exception{
+		HttpResponseException exception = new HttpResponseException(new URL("http://localhost"), 500, "MESSAGE");
+		
+		Assert.assertEquals(new URL("http://localhost"), exception.getUrl());
+		Assert.assertEquals(500, exception.getCode());
+		Assert.assertEquals("HTTP response code 500 with message \"MESSAGE\" for url http://localhost", exception.getMessage());
 	}
 }
