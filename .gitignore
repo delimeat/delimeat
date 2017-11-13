@@ -1,9 +1,6 @@
 /.classpath
 /.project
-node/
-node_modules/
 target/
-frontend/components/
 /delimeat.log
 /.settings/
 /.springBeans

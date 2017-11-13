@@ -21,14 +21,14 @@
 		<developerConnection>scm:git:git://github.com/delimeat/delimeat.git</developerConnection>
 		<url>https://github.com/delimeat/delimeat</url>
 	</scm>
-	
+
 	<modules>
 		<module>delimeat-core</module>
 		<module>delimeat-api</module>
 		<module>delimeat-app</module>
 		<module>delimeat-static</module>
 	</modules>
-	
+
 	<build>
 		<plugins>
 
@@ -42,17 +42,9 @@
 				</configuration>
 			</plugin>
 
-			<!-- 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
-				<configuration>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-				</configuration>
-			</plugin>
-			!-->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
+				<version>2.20</version> <configuration> <forkCount>1</forkCount> <reuseForks>false</reuseForks> 
+				</configuration> </plugin> ! -->
 		</plugins>
 	</build>
 
@@ -60,39 +52,49 @@
 		<!-- Project specific stuff ! -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-				
-		<!-- Maven plugins  !-->
+
+		<!-- Maven plugins ! -->
 		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 
 		<!-- Test versions ! -->
+		<org.junit.jupiter.version>5.0.1</org.junit.jupiter.version>
 		<org.junit.version>4.12</org.junit.version>
 		<org.mockito.version>2.11.0</org.mockito.version>
-		
+
 		<!-- API versions -->
 		<javax.transaction.version>1.2</javax.transaction.version>
 		<javax.persistence.version>2.2.0</javax.persistence.version>
 		<org.slf4j.version>1.7.22</org.slf4j.version>
-		
-		<!-- 
-		<org.springframework.version>4.3.12.RELEASE</org.springframework.version>
-		!-->
+
+		<!-- <org.springframework.version>4.3.12.RELEASE</org.springframework.version> 
+			! -->
 		<org.springframework.version>5.0.0.RELEASE</org.springframework.version>
 		<org.eclipse.persistence.version>2.6.5</org.eclipse.persistence.version>
-				
+
 	</properties>
 
 	<dependencies>
 
 		<!-- TEST ! -->
+
+ 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${org.junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+<!-- 
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${org.junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+!-->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -100,7 +102,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		
+
 	</dependencies>
 
 	<profiles>
@@ -135,7 +137,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 	</profiles>
 
 </project>
