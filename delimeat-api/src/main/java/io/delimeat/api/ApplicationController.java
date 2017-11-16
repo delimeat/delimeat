@@ -38,7 +38,7 @@ import spark.Spark;
 public class ApplicationController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationController.class);
-	private static final String JSON_CONTENT_TYPE = "application/json";
+	private static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 	
 	@Value("${io.delimeat.port}")
 	private int port = 8080;
