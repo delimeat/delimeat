@@ -10,7 +10,6 @@
 		<spring-boot-maven-plugin.version>1.5.7.RELEASE</spring-boot-maven-plugin.version>
 		<com.h2database.version>1.4.196</com.h2database.version>
 		<com.zaxxer.hikari.version>2.7.1</com.zaxxer.hikari.version>
-		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>
 	</properties>
 	<build>
 		<finalName>delimeat</finalName>
@@ -69,27 +68,6 @@
 			<groupId>io.delimeat</groupId>
 			<artifactId>delimeat-static</artifactId>
 			<version>${project.parent.version}</version>
-		</dependency>
-		<!-- LOGGING -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${ch.qos.logback.version}</version>
 		</dependency>
 		<!-- SPRING -->
 		<dependency>

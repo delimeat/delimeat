@@ -17,6 +17,7 @@ package io.delimeat.rest;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -109,6 +110,28 @@ public class EpisodeControllerTest {
     	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
     	Assert.assertEquals(1, results.size());
     	Assert.assertEquals(episode, results.get(0));
+								
+		Mockito.verify(episodeService).findAllPending();
+		Mockito.verifyNoMoreInteractions(episodeService);
+	}
+	
+	@Test
+	public void getAllEmptyListTest() throws Exception{	
+		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
+		Mockito.when(episodeService.findAllPending()).thenReturn(new ArrayList<>());
+		controller.setEpisodeService(episodeService);
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/episode")
+    			.request()
+    			.accept("application/json")
+    			.get();
+
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
+    	
+    	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
+    	Assert.assertEquals(0, results.size());
 								
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);

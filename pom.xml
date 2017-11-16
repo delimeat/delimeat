@@ -75,7 +75,10 @@
 		<!-- API versions -->
 		<javax.transaction.version>1.2</javax.transaction.version>
 		<javax.persistence.version>2.2.0</javax.persistence.version>
+		
 		<org.slf4j.version>1.7.22</org.slf4j.version>
+		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+		
 		<org.springframework.version>5.0.0.RELEASE</org.springframework.version>
 		<org.eclipse.persistence.version>2.6.5</org.eclipse.persistence.version>
 
@@ -109,6 +112,28 @@
 			<artifactId>mockito-core</artifactId>
 			<version>${org.mockito.version}</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<!-- LOGGING -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${ch.qos.logback.version}</version>
 		</dependency>
 
 

@@ -137,6 +137,26 @@ public class ApplicationControllerTest {
     	Assert.assertEquals(200, response.getStatus());
     	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assert.assertEquals("26", response.getHeaderString("Content-Length"));
     	Assert.assertEquals("{\"message\":\"this is json\"}",  response.readEntity(String.class));
+	}
+	
+	@Test
+	public void apiContentLengthNullTest(){
+		Spark.get("/api/contentlength",(spark.Request request, spark.Response response) -> {
+			return "[]";
+		});
+		
+    	Response response = client.target("http://localhost:4567")
+    			.path("/api/contentlength")
+    			.request()
+    			.accept("application/json")
+    			.get();
+    	
+    	Assert.assertEquals(200, response.getStatus());
+    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assert.assertEquals("2", response.getHeaderString("Content-Length"));
+    	Assert.assertEquals("[]",  response.readEntity(String.class));
 	}
 }
