@@ -17,8 +17,6 @@ package io.delimeat.show;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaQuery;
-
 import io.delimeat.show.entity.Show;
 import io.delimeat.util.AbstractJpaDao;
 
@@ -33,8 +31,7 @@ public class ShowDao_Impl extends AbstractJpaDao<Long, Show> implements ShowDao 
 	 */
 	@Override
 	public List<Show> readAll() {
-		CriteriaQuery<Show> query = getEntityManager().getCriteriaBuilder().createQuery(Show.class);
-		return readByCriteria(query);
+		return getEntityManager().createNamedQuery("Show.findAll", Show.class).getResultList();
 	}
 
 }

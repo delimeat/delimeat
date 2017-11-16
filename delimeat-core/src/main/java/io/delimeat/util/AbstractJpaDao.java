@@ -15,11 +15,8 @@
  */
 package io.delimeat.util;
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
 
 public abstract class AbstractJpaDao<I,T> {
 
@@ -74,14 +71,6 @@ public abstract class AbstractJpaDao<I,T> {
 	 */
 	public void delete(I id){
 		entityManager.remove(read(id));
-	}
-	
-	/**
-	 * @param criteria criteria to query
-	 * @return  list of entities
-	 */
-	protected List<T> readByCriteria(CriteriaQuery<T> criteria){
-		return entityManager.createQuery(criteria).getResultList();
 	}
 	
 }

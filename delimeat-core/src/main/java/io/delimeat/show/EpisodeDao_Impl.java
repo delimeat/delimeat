@@ -17,9 +17,6 @@ package io.delimeat.show;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.EpisodeStatus;
 import io.delimeat.util.AbstractJpaDao;
@@ -35,10 +32,9 @@ public class EpisodeDao_Impl extends AbstractJpaDao<Long,Episode> implements Epi
 	 */
 	@Override
 	public List<Episode> findByStatus(List<EpisodeStatus> statuses) {
-		CriteriaQuery<Episode> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(Episode.class);
-		Root<Episode> episode = criteriaQuery.from(Episode.class);
-		criteriaQuery.select(episode).where(episode.get("status").in(statuses));
-		return readByCriteria(criteriaQuery);
+		return getEntityManager().createNamedQuery("Episode.findByStatus", Episode.class)
+				.setParameter(":list", statuses)
+				.getResultList();
 	}
 
 }
