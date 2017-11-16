@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>delimeat-api</artifactId>
 	<properties>
-		<com.sparkjava.version>2.6.0</com.sparkjava.version>
+		<com.sparkjava.version>2.7.0</com.sparkjava.version>
 		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>
 	</properties>
 	<dependencies>
