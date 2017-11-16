@@ -15,6 +15,8 @@
  */
 package io.delimeat.rest.util;
 
+import java.util.ArrayList;
+
 import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
@@ -31,6 +33,11 @@ public class JsonUtilsTest {
 	}
 	
 	@Test
+	public void toJsonEmptyListTest() throws JAXBException{
+		Assert.assertEquals("[]",JsonUtils.toJson(new ArrayList<>()));
+	}
+	
+	@Test
 	public void toJsonTest() throws JAXBException{
 		ApiError apiError = new ApiError("test",500);
 		Assert.assertEquals("{\"error\":\"test\",\"status\":500}", JsonUtils.toJson(apiError));
@@ -38,7 +45,7 @@ public class JsonUtilsTest {
 	
 	@Test
 	public void fromJsonTest() throws JAXBException{
-		ApiError apiError = new ApiError("test",500);
-		Assert.assertEquals(apiError, JsonUtils.fromJson("{\"error\":\"test\",\"status\":500}".getBytes(), ApiError.class));
+		ApiError apiError = JsonUtils.fromJson("{\"error\":\"test\",\"status\":500}".getBytes(), ApiError.class);
+		Assert.assertEquals(new ApiError("test",500), apiError);
 	}
 }
