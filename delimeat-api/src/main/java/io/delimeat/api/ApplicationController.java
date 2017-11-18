@@ -89,14 +89,14 @@ public class ApplicationController {
 		
 		Spark.notFound((request, response) -> {
 			response.type(JSON_CONTENT_TYPE);
-			response.header("Content-Encoding", "gzip");
+			//response.header("Content-Encoding", "gzip");
 		    return "{\"message\":\"resource not found\"}";
 		});
 		
 		
 		Spark.internalServerError((request, response) -> {
 			response.type(JSON_CONTENT_TYPE);
-			response.header("Content-Encoding", "gzip");
+			//response.header("Content-Encoding", "gzip");
 		    return "{\"message\":\"internal server error\"}";		    
 		});
 		
@@ -104,7 +104,7 @@ public class ApplicationController {
 			response.type(JSON_CONTENT_TYPE);
 		    response.body("{\"message\":\"invalid request format\"}");
 		    response.status(400);
-		    response.header("Content-Encoding", "gzip");
+		    //response.header("Content-Encoding", "gzip");
 		});
 
 		Spark.before(new RequestLoggingFilter());
@@ -112,8 +112,8 @@ public class ApplicationController {
 		Spark.after("/api/*",(Request request, Response response) -> {
 			if(response.body() != null){
 				response.type(JSON_CONTENT_TYPE);
-				response.header("Content-Encoding", "gzip");
-				response.header("Content-Length", Integer.toString(response.body().getBytes().length));
+				//response.header("Content-Encoding", "gzip");
+				//response.header("Content-Length", Integer.toString(response.body().getBytes().length));
 			}
 		});
 
