@@ -22,9 +22,9 @@ import java.net.UnknownHostException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
@@ -41,17 +41,17 @@ public class ApplicationTest {
 
 	private Application application;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		application = new Application();
 	}
 	
 	@Test
 	public void environmentTest(){
-		Assert.assertNull(application.getEnv());
+		Assertions.assertNull(application.getEnv());
 		Environment env = Mockito.mock(Environment.class);
 		application.setEnv(env);	
-		Assert.assertEquals(env, application.getEnv());
+		Assertions.assertEquals(env, application.getEnv());
 	}
 	
 	@Test
@@ -61,9 +61,9 @@ public class ApplicationTest {
 		application.setEnv(env);
 		
 		DataSource dataSource = application.dataSource();
-		Assert.assertEquals(HikariDataSource.class, dataSource.getClass());
+		Assertions.assertEquals(HikariDataSource.class, dataSource.getClass());
 		HikariDataSource hikariDataSource = (HikariDataSource)dataSource;
-		Assert.assertEquals("url", hikariDataSource.getJdbcUrl());
+		Assertions.assertEquals("url", hikariDataSource.getJdbcUrl());
 		
 		hikariDataSource.close();
 		
@@ -76,13 +76,13 @@ public class ApplicationTest {
 		JpaVendorAdapter adapter = Mockito.mock(JpaVendorAdapter.class);
 		LocalContainerEntityManagerFactoryBean emf = application.entityManagerFactory(dataSource, adapter);
 		
-		Assert.assertEquals(dataSource, emf.getDataSource());
-		Assert.assertEquals(adapter, emf.getJpaVendorAdapter());
-		Assert.assertEquals(4, emf.getJpaPropertyMap().size());
-		Assert.assertEquals("database", emf.getJpaPropertyMap().get("eclipselink.ddl-generation.output-mode"));
-		Assert.assertEquals("create-or-extend-tables", emf.getJpaPropertyMap().get("eclipselink.ddl-generation"));
-		Assert.assertEquals("OFF", emf.getJpaPropertyMap().get("eclipselink.logging.level"));
-		Assert.assertEquals("false", emf.getJpaPropertyMap().get("eclipselink.weaving"));
+		Assertions.assertEquals(dataSource, emf.getDataSource());
+		Assertions.assertEquals(adapter, emf.getJpaVendorAdapter());
+		Assertions.assertEquals(4, emf.getJpaPropertyMap().size());
+		Assertions.assertEquals("database", emf.getJpaPropertyMap().get("eclipselink.ddl-generation.output-mode"));
+		Assertions.assertEquals("create-or-extend-tables", emf.getJpaPropertyMap().get("eclipselink.ddl-generation"));
+		Assertions.assertEquals("OFF", emf.getJpaPropertyMap().get("eclipselink.logging.level"));
+		Assertions.assertEquals("false", emf.getJpaPropertyMap().get("eclipselink.weaving"));
 
 	}
 	
@@ -90,7 +90,7 @@ public class ApplicationTest {
 	public void jpaVendorAdapter(){
 		JpaVendorAdapter adapter = application.jpaVendorAdapter();
 		
-		Assert.assertEquals(EclipseLinkJpaVendorAdapter.class, adapter.getClass());
+		Assertions.assertEquals(EclipseLinkJpaVendorAdapter.class, adapter.getClass());
 	}
 	
 	@Test
@@ -98,9 +98,9 @@ public class ApplicationTest {
 		EntityManagerFactory emf = Mockito.mock(EntityManagerFactory.class);
 		PlatformTransactionManager transactionManager = application.transactionManager(emf);
 		
-		Assert.assertEquals(JpaTransactionManager.class, transactionManager.getClass());
+		Assertions.assertEquals(JpaTransactionManager.class, transactionManager.getClass());
 		JpaTransactionManager jpaTransactionManager = (JpaTransactionManager)transactionManager;
-		Assert.assertEquals(emf,jpaTransactionManager.getEntityManagerFactory());
+		Assertions.assertEquals(emf,jpaTransactionManager.getEntityManagerFactory());
 	}
 	
 	@Test
@@ -112,9 +112,9 @@ public class ApplicationTest {
 		
 		InetSocketAddress address = application.udpScrapeSocketAddress();
 		
-		Assert.assertEquals(Inet4Address.class, address.getAddress().getClass());
-		Assert.assertEquals("0.0.0.0", address.getAddress().getHostAddress());
-		Assert.assertEquals(1234, address.getPort());
+		Assertions.assertEquals(Inet4Address.class, address.getAddress().getClass());
+		Assertions.assertEquals("0.0.0.0", address.getAddress().getHostAddress());
+		Assertions.assertEquals(1234, address.getPort());
 		
 		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.address");
 		Mockito.verify(env).getProperty("io.delimeat.torrent.udp.port");
@@ -123,7 +123,7 @@ public class ApplicationTest {
 	@Test
 	public void traceInteceptorAdvisorTest(){
 		Advisor advisor = application.traceInteceptorAdvisor();
-		Assert.assertEquals(DefaultPointcutAdvisor.class, advisor.getClass());
+		Assertions.assertEquals(DefaultPointcutAdvisor.class, advisor.getClass());
 		
 		//TODO better testing
 
