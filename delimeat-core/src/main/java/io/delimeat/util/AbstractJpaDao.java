@@ -55,7 +55,7 @@ public abstract class AbstractJpaDao<I,T> {
 	 * @return the entity
 	 */
 	public T read(I id){
-		return entityManager.find(entityClass, id);
+		return entityManager.getReference(entityClass, id);
 	}
 	
 	/**
