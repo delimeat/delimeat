@@ -26,7 +26,7 @@ import io.delimeat.feed.entity.FeedSource;
 @Component
 public class SkyTorrentsFeedDataSource_Impl extends AbstractJaxbFeedDataSource {
 
-	@Value("${io.delimeat.processor.feed.skytorrents.baseUri}") 
+	@Value("${io.delimeat.feed.skytorrents.baseUri}") 
 	private String baseUri;
 	
 	public SkyTorrentsFeedDataSource_Impl(){

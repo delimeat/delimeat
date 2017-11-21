@@ -26,7 +26,7 @@ import io.delimeat.feed.entity.FeedSource;
 @Component
 public class TorrentProjectFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource {
 	
-	@Value("${io.delimeat.processor.feed.torrentproject.baseUri}") 
+	@Value("${io.delimeat.feed.torrentproject.baseUri}") 
 	private String baseUri;
 
 	public TorrentProjectFeedDataSource_Impl(){

@@ -26,7 +26,7 @@ import io.delimeat.feed.entity.FeedSource;
 @Component
 public class ZooqleFeedDataSource_Impl extends AbstractJaxbFeedDataSource implements FeedDataSource {
 
-	@Value("${io.delimeat.processor.feed.zooqle.baseUri}") 
+	@Value("${io.delimeat.feed.zooqle.baseUri}") 
 	private String baseUri;
 
 	public ZooqleFeedDataSource_Impl(){
