@@ -17,9 +17,9 @@ package io.delimeat.guide.entity;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.GuideEpisode;
 import io.delimeat.guide.entity.TvdbEpisodes;
@@ -28,47 +28,47 @@ public class TvdbEpisodesTest {
 
 	private TvdbEpisodes episodes;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		episodes = new TvdbEpisodes();
 	}
 
 	@Test
 	public void firstTest() {
-		Assert.assertEquals(0, episodes.getFirst().intValue());
+		Assertions.assertEquals(0, episodes.getFirst().intValue());
 		episodes.setFirst(Integer.MAX_VALUE);
-		Assert.assertEquals(Integer.MAX_VALUE, episodes.getFirst().intValue());
+		Assertions.assertEquals(Integer.MAX_VALUE, episodes.getFirst().intValue());
 	}
 
 	@Test
 	public void lastTest() {
-		Assert.assertEquals(0, episodes.getLast().intValue());
+		Assertions.assertEquals(0, episodes.getLast().intValue());
 		episodes.setLast(Integer.MAX_VALUE);
-		Assert.assertEquals(Integer.MAX_VALUE, episodes.getLast().intValue());
+		Assertions.assertEquals(Integer.MAX_VALUE, episodes.getLast().intValue());
 	}
 
 	@Test
 	public void nextTest() {
-		Assert.assertEquals(0, episodes.getNext().intValue());
+		Assertions.assertEquals(0, episodes.getNext().intValue());
 		episodes.setNext(Integer.MAX_VALUE);
-		Assert.assertEquals(Integer.MAX_VALUE, episodes.getNext().intValue());
+		Assertions.assertEquals(Integer.MAX_VALUE, episodes.getNext().intValue());
 	}
 
 	@Test
 	public void previousTest() {
-		Assert.assertEquals(0, episodes.getPrevious().intValue());
+		Assertions.assertEquals(0, episodes.getPrevious().intValue());
 		episodes.setPrevious(Integer.MAX_VALUE);
-		Assert.assertEquals(Integer.MAX_VALUE, episodes.getPrevious().intValue());
+		Assertions.assertEquals(Integer.MAX_VALUE, episodes.getPrevious().intValue());
 	}
 
 	@Test
 	public void episodesTest() {
-		Assert.assertNotNull(episodes.getEpisodes());
-		Assert.assertEquals(0, episodes.getEpisodes().size());
+		Assertions.assertNotNull(episodes.getEpisodes());
+		Assertions.assertEquals(0, episodes.getEpisodes().size());
 		GuideEpisode episode = new GuideEpisode();
 		episodes.setEpisodes(Arrays.asList(episode));
-		Assert.assertEquals(1, episodes.getEpisodes().size());
-		Assert.assertEquals(episode, episodes.getEpisodes().get(0));
+		Assertions.assertEquals(1, episodes.getEpisodes().size());
+		Assertions.assertEquals(episode, episodes.getEpisodes().get(0));
 	}
 
 	@Test
@@ -79,13 +79,13 @@ public class TvdbEpisodesTest {
 		episodes.setPrevious(Integer.MAX_VALUE);
 		GuideEpisode episode = new GuideEpisode();
 		episodes.setEpisodes(Arrays.asList(episode));
-		Assert.assertEquals(-139285987, episodes.hashCode());
+		Assertions.assertEquals(-139285987, episodes.hashCode());
 	}
 
 	@Test
 	public void toStringTest() {
 		episodes.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertEquals("TvdbEpisodes [first=0, last=0, next=0, previous=0, episodes=[GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]]]",
+		Assertions.assertEquals("TvdbEpisodes [first=0, last=0, next=0, previous=0, episodes=[GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]]]",
 				episodes.toString());
 	}
 
@@ -103,22 +103,22 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertTrue(episodes.equals(other));
+		Assertions.assertTrue(episodes.equals(other));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		Assert.assertTrue(episodes.equals(episodes));
+		Assertions.assertTrue(episodes.equals(episodes));
 	}
 
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(episodes.equals(null));
+		Assertions.assertFalse(episodes.equals(null));
 	}
 
 	@Test
 	public void equalsOtherClassTest() {
-		Assert.assertFalse(episodes.equals("STRING"));
+		Assertions.assertFalse(episodes.equals(new Object()));
 	}
 	
 	@Test
@@ -135,7 +135,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -152,7 +152,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -169,7 +169,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -186,7 +186,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -203,7 +203,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -220,7 +220,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -237,7 +237,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -254,7 +254,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -271,7 +271,7 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 	
 	@Test
@@ -288,6 +288,6 @@ public class TvdbEpisodesTest {
 		other.setPrevious(Integer.MAX_VALUE);
 
 		other.setEpisodes(Arrays.asList(new GuideEpisode()));
-		Assert.assertFalse(episodes.equals(other));
+		Assertions.assertFalse(episodes.equals(other));
 	}
 }

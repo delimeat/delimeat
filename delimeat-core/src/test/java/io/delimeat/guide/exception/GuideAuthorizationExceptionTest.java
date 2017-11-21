@@ -15,8 +15,8 @@
  */
 package io.delimeat.guide.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GuideAuthorizationExceptionTest {
 
@@ -24,7 +24,7 @@ public class GuideAuthorizationExceptionTest {
 	public void constructorTest(){
 		GuideAuthorizationException ex = new GuideAuthorizationException("MESSAGE", new Exception());
 		
-		Assert.assertEquals("MESSAGE", ex.getMessage());
-		Assert.assertEquals(Exception.class, ex.getCause().getClass());
+		Assertions.assertEquals("MESSAGE", ex.getMessage());
+		Assertions.assertEquals(Exception.class, ex.getCause().getClass());
 	}
 }

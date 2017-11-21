@@ -18,9 +18,9 @@ package io.delimeat.guide.entity;
 import java.text.ParseException;
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.GuideSearchResult;
 
@@ -28,208 +28,208 @@ public class GuideSearchResultTest {
 
 	private GuideSearchResult result;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		result = new GuideSearchResult();
 	}
 
 	@Test
 	public void descriptionTest() {
-		Assert.assertEquals(null, result.getDescription());
+		Assertions.assertEquals(null, result.getDescription());
 		result.setDescription("DESCRIPTION");
-		Assert.assertEquals("DESCRIPTION", result.getDescription());
+		Assertions.assertEquals("DESCRIPTION", result.getDescription());
 	}
 
 	@Test
 	public void GuideIdsTest() {
-		Assert.assertNull(result.getGuideId());
+		Assertions.assertNull(result.getGuideId());
 		result.setGuideId("GUIDEID");
-		Assert.assertEquals("GUIDEID", result.getGuideId());
+		Assertions.assertEquals("GUIDEID", result.getGuideId());
 	}
 
 	@Test
 	public void firstAiredTest() throws ParseException {
-		Assert.assertEquals(null, result.getFirstAired());
+		Assertions.assertEquals(null, result.getFirstAired());
 		result.setFirstAired(LocalDate.parse("2005-04-03"));
-		Assert.assertEquals(LocalDate.parse("2005-04-03"), result.getFirstAired());
+		Assertions.assertEquals(LocalDate.parse("2005-04-03"), result.getFirstAired());
 	}
 
 	@Test
 	public void titleTest() {
-		Assert.assertEquals(null, result.getTitle());
+		Assertions.assertEquals(null, result.getTitle());
 		result.setTitle("TITLE");
-		Assert.assertEquals("TITLE", result.getTitle());
+		Assertions.assertEquals("TITLE", result.getTitle());
 	}
-  
+
 	@Test
-  	public void hashCodeTest() throws ParseException{
-     	result.setTitle("TITLE");
-     	result.setFirstAired(LocalDate.parse("2016-02-19"));
-     	Assert.assertEquals(-246322804, result.hashCode());
-   }
-  
-  	@Test
-  	public void toStringTest() throws ParseException{
-     	Assert.assertEquals("GuideSearchResult []", result.toString());
-   }
-  
-  	@Test
-  	public void equalsNullTest(){
-   	Assert.assertFalse(result.equals(null));
-   }
-  
-  	@Test
-  	public void equalsSelfTest(){
-     	Assert.assertTrue(result.equals(result));
-   }
-  
-  	@Test
-  	public void equalsOtherObjectTest(){
-     	Assert.assertFalse(result.equals(new Object()));
-   }
-  
-  	@Test
-  	public void equalsTest(){
-     	result.setTitle("TITLE");
+	public void hashCodeTest() throws ParseException {
+		result.setTitle("TITLE");
+		result.setFirstAired(LocalDate.parse("2016-02-19"));
+		Assertions.assertEquals(-246322804, result.hashCode());
+	}
+
+	@Test
+	public void toStringTest() throws ParseException {
+		Assertions.assertEquals("GuideSearchResult []", result.toString());
+	}
+
+	@Test
+	public void equalsNullTest() {
+		Assertions.assertFalse(result.equals(null));
+	}
+
+	@Test
+	public void equalsSelfTest() {
+		Assertions.assertTrue(result.equals(result));
+	}
+
+	@Test
+	public void equalsOtherObjectTest() {
+		Assertions.assertFalse(result.equals(new Object()));
+	}
+
+	@Test
+	public void equalsTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertTrue(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsTitleTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertTrue(result.equals(other));
+	}
+
+	@Test
+	public void equalsTitleTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("OTHER_TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("OTHER_TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsDescriptionTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsDescriptionTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("OTHER_DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsGuideIdTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsGuideIdTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("OTHER_GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsFirstAiredTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsFirstAiredTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(1));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
 
-  	@Test
-  	public void equalsTitleNullTest(){
-     	result.setTitle(null);
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsTitleNullTest() {
+		result.setTitle(null);
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsDescriptionNullTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsDescriptionNullTest() {
+		result.setTitle("TITLE");
 		result.setDescription(null);
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsGuideIdNullTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsGuideIdNullTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId(null);
 		result.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
-  
-  	@Test
-  	public void equalsFirstAiredNullTest(){
-     	result.setTitle("TITLE");
+
+		Assertions.assertFalse(result.equals(other));
+	}
+
+	@Test
+	public void equalsFirstAiredNullTest() {
+		result.setTitle("TITLE");
 		result.setDescription("DESCRIPTION");
 		result.setGuideId("GUIDEID");
 		result.setFirstAired(null);
-     
-     	GuideSearchResult other = new GuideSearchResult();
-     	other.setTitle("TITLE");
+
+		GuideSearchResult other = new GuideSearchResult();
+		other.setTitle("TITLE");
 		other.setDescription("DESCRIPTION");
 		other.setGuideId("GUIDEID");
 		other.setFirstAired(LocalDate.ofEpochDay(0));
-     
-     	Assert.assertFalse(result.equals(other));
-   }
+
+		Assertions.assertFalse(result.equals(other));
+	}
 
 }

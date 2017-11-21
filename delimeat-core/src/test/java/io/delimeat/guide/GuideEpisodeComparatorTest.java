@@ -17,9 +17,9 @@ package io.delimeat.guide;
 
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.GuideEpisode;
 
@@ -28,9 +28,9 @@ public class GuideEpisodeComparatorTest {
 	private GuideEpisodeComparator comparator;
 	private GuideEpisode ep1;
 	private GuideEpisode ep2;
-	
-	@Before
-	public void setUp(){
+
+	@BeforeEach
+	public void setUp() {
 		comparator = new GuideEpisodeComparator();
 		ep1 = new GuideEpisode();
 		ep2 = new GuideEpisode();
@@ -41,7 +41,7 @@ public class GuideEpisodeComparatorTest {
 		ep1.setAirDate(null);
 		ep2.setAirDate(null);
 
-		Assert.assertEquals(0, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(0, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -49,25 +49,25 @@ public class GuideEpisodeComparatorTest {
 		ep1.setAirDate(LocalDate.parse("2005-01-02"));
 		ep2.setAirDate(null);
 
-		Assert.assertTrue(comparator.compare(ep1,ep2) >= 1);
+		Assertions.assertTrue(comparator.compare(ep1, ep2) >= 1);
 	}
 
 	@Test
 	public void compareToThisNoAirDateTest() throws Exception {
 		ep1.setAirDate(null);
-		
+
 		ep2.setAirDate(LocalDate.parse("2005-01-02"));
 
-		Assert.assertTrue(comparator.compare(ep1,ep2) <= -1);
+		Assertions.assertTrue(comparator.compare(ep1, ep2) <= -1);
 	}
 
 	@Test
 	public void compareToAirDateBeforeTest() throws Exception {
 		ep1.setAirDate(LocalDate.parse("2005-01-02"));
-		
+
 		ep2.setAirDate(LocalDate.parse("2005-02-02"));
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(-1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class GuideEpisodeComparatorTest {
 		ep1.setAirDate(LocalDate.parse("2005-03-02"));
 		ep2.setAirDate(LocalDate.parse("2005-02-02"));
 
-		Assert.assertEquals(1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(1);
 		ep2.setEpisodeNum(1);
 
-		Assert.assertEquals(1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -96,12 +96,12 @@ public class GuideEpisodeComparatorTest {
 		ep1.setAirDate(LocalDate.parse("2005-03-02"));
 		ep1.setSeasonNum(1);
 		ep1.setEpisodeNum(1);
-		
+
 		ep2.setAirDate(LocalDate.parse("2005-03-02"));
 		ep2.setSeasonNum(2);
 		ep2.setEpisodeNum(1);
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(-1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(1);
 		ep2.setEpisodeNum(1);
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(-1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(1);
 		ep2.setEpisodeNum(1);
 
-		Assert.assertEquals(1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(2);
 		ep2.setEpisodeNum(2);
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(-1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(1);
 		ep2.setEpisodeNum(1);
 
-		Assert.assertEquals(-1, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(-1, comparator.compare(ep1, ep2));
 	}
 
 	@Test
@@ -166,6 +166,6 @@ public class GuideEpisodeComparatorTest {
 		ep2.setSeasonNum(2);
 		ep2.setEpisodeNum(2);
 
-		Assert.assertEquals(0, comparator.compare(ep1,ep2));
+		Assertions.assertEquals(0, comparator.compare(ep1, ep2));
 	}
 }

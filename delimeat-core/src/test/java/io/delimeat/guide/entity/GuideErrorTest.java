@@ -15,81 +15,80 @@
  */
 package io.delimeat.guide.entity;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GuideErrorTest {
-  
+
 	private GuideError error;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		error = new GuideError();
 	}
 
 	@Test
 	public void messageTest() {
-		Assert.assertNull(error.getMessage());
+		Assertions.assertNull(error.getMessage());
 		error.setMessage("MESSAGE");
-		Assert.assertEquals("MESSAGE", error.getMessage());
+		Assertions.assertEquals("MESSAGE", error.getMessage());
 	}
-	
+
 	@Test
-	public void toStringTest(){
+	public void toStringTest() {
 		error.setMessage("MESSAGE");
-		Assert.assertEquals("GuideError [message=MESSAGE]", error.toString());
+		Assertions.assertEquals("GuideError [message=MESSAGE]", error.toString());
 	}
-	
+
 	@Test
 	public void hashCodeTest() {
 		error.setMessage("MESSAGE");
 
-		Assert.assertEquals(1672907782, error.hashCode());
+		Assertions.assertEquals(1672907782, error.hashCode());
 	}
-	
+
 	@Test
-	public void equalsTest(){
+	public void equalsTest() {
 		error.setMessage("MESSAGE");
 		GuideError other = new GuideError();
 		other.setMessage("MESSAGE");
-		Assert.assertTrue(error.equals(other));
+		Assertions.assertTrue(error.equals(other));
 	}
-	
+
 	@Test
-	public void equalsSelfTest(){
-		Assert.assertTrue(error.equals(error));
+	public void equalsSelfTest() {
+		Assertions.assertTrue(error.equals(error));
 	}
-	
+
 	@Test
-	public void equalsNullTest(){
-		Assert.assertFalse(error.equals(null));
+	public void equalsNullTest() {
+		Assertions.assertFalse(error.equals(null));
 	}
-	
+
 	@Test
-	public void equalsOtherClassTest(){
-		Assert.assertFalse(error.equals("STRING"));
+	public void equalsOtherClassTest() {
+		Assertions.assertFalse(error.equals(new Object()));
 	}
-	
+
 	@Test
-	public void equalsNullMessageOtherNullMessageTest(){
+	public void equalsNullMessageOtherNullMessageTest() {
 		GuideError other = new GuideError();
-		Assert.assertTrue(error.equals(other));
+		Assertions.assertTrue(error.equals(other));
 	}
-	
+
 	@Test
-	public void equalsNullMessageOtherNotNullMessageTest(){
+	public void equalsNullMessageOtherNotNullMessageTest() {
 		GuideError other = new GuideError();
 		other.setMessage("NOT NULL");
-		Assert.assertFalse(error.equals(other));
+		Assertions.assertFalse(error.equals(other));
 	}
-	
+
 	@Test
-	public void equalsNotNullMessageOtherNullMessageTest(){
+	public void equalsNotNullMessageOtherNullMessageTest() {
 		error.setMessage("NOT NULL");
 		GuideError other = new GuideError();
-		Assert.assertFalse(error.equals(other));
+		Assertions.assertFalse(error.equals(other));
 	}
-	
-	
+
 }

@@ -20,9 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.AiringDay;
 import io.delimeat.guide.entity.GuideInfo;
@@ -31,120 +31,120 @@ public class GuideInfoTest {
 
 	private GuideInfo info;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		info = new GuideInfo();
 	}
 
 	@Test
 	public void setAirDayTest() {
-		Assert.assertNotNull(info.getAirDays());
-		Assert.assertEquals(0, info.getAirDays().size());
+		Assertions.assertNotNull(info.getAirDays());
+		Assertions.assertEquals(0, info.getAirDays().size());
 		info.setAirDays(Arrays.asList(AiringDay.FRIDAY));
-		Assert.assertNotNull(info.getAirDays());
-		Assert.assertEquals(1, info.getAirDays().size());
-		Assert.assertEquals(AiringDay.FRIDAY, info.getAirDays().get(0));
+		Assertions.assertNotNull(info.getAirDays());
+		Assertions.assertEquals(1, info.getAirDays().size());
+		Assertions.assertEquals(AiringDay.FRIDAY, info.getAirDays().get(0));
 	}
 
 	@Test
 	public void setDescriptionTest() {
 
-		Assert.assertEquals(null, info.getDescription());
+		Assertions.assertEquals(null, info.getDescription());
 		info.setDescription("DESCRIPTION");
-		Assert.assertEquals("DESCRIPTION", info.getDescription());
+		Assertions.assertEquals("DESCRIPTION", info.getDescription());
 	}
 
 	@Test
 	public void GuideIdTest() {
-		Assert.assertNull(info.getGuideId());
+		Assertions.assertNull(info.getGuideId());
 		info.setGuideId("GUIDEID");
-		Assert.assertEquals("GUIDEID", info.getGuideId());
+		Assertions.assertEquals("GUIDEID", info.getGuideId());
 	}
 
 	@Test
 	public void setTitleTest() {
-		Assert.assertEquals(null, info.getTitle());
+		Assertions.assertEquals(null, info.getTitle());
 		info.setTitle("TITLE");
-		Assert.assertEquals("TITLE", info.getTitle());
+		Assertions.assertEquals("TITLE", info.getTitle());
 	}
 
 	@Test
 	public void setTimezoneTest() {
-		Assert.assertEquals(null, info.getTimezone());
+		Assertions.assertEquals(null, info.getTimezone());
 		info.setTimezone("TIMEZONE");
-		Assert.assertEquals("TIMEZONE", info.getTimezone());
+		Assertions.assertEquals("TIMEZONE", info.getTimezone());
 	}
 
 	@Test
 	public void setRunningTimeTest() {
-		Assert.assertEquals(0, info.getRunningTime());
+		Assertions.assertEquals(0, info.getRunningTime());
 		info.setRunningTime(60);
-		Assert.assertEquals(60, info.getRunningTime());
+		Assertions.assertEquals(60, info.getRunningTime());
 	}
 
 	@Test
 	public void setGenresTest() {
-		Assert.assertEquals(0, info.getGenres().size());
+		Assertions.assertEquals(0, info.getGenres().size());
 		info.setGenres(Arrays.asList("GENRE1"));
-		Assert.assertEquals(1, info.getGenres().size());
-		Assert.assertEquals("GENRE1", info.getGenres().get(0));
+		Assertions.assertEquals(1, info.getGenres().size());
+		Assertions.assertEquals("GENRE1", info.getGenres().get(0));
 	}
 
 	@Test
 	public void airingTest() {
-		Assert.assertTrue(info.isAiring());
+		Assertions.assertTrue(info.isAiring());
 		info.setAiring(false);
-		Assert.assertFalse(info.isAiring());
+		Assertions.assertFalse(info.isAiring());
 	}
 
 	@Test
 	public void setAirTimeTest() {
-		Assert.assertNull(info.getAirTime());
+		Assertions.assertNull(info.getAirTime());
 		info.setAirTime(LocalTime.NOON);
-		Assert.assertEquals(LocalTime.NOON, info.getAirTime());
+		Assertions.assertEquals(LocalTime.NOON, info.getAirTime());
 	}
 
 	@Test
 	public void firstAiredTest() throws ParseException {
 
-		Assert.assertEquals(null, info.getFirstAired());
+		Assertions.assertEquals(null, info.getFirstAired());
 
 		info.setFirstAired(LocalDate.parse("2005-04-03"));
-		Assert.assertEquals(LocalDate.parse("2005-04-03"), info.getFirstAired());
+		Assertions.assertEquals(LocalDate.parse("2005-04-03"), info.getFirstAired());
 	}
 
 	@Test
 	public void lasUpdatedTest() throws ParseException {
-		Assert.assertEquals(null, info.getLastUpdated());
+		Assertions.assertEquals(null, info.getLastUpdated());
 		info.setLastUpdated(LocalDate.parse("2005-04-03"));
-		Assert.assertEquals(LocalDate.parse("2005-04-03"), info.getLastUpdated());
+		Assertions.assertEquals(LocalDate.parse("2005-04-03"), info.getLastUpdated());
 	}
 
 	@Test
 	public void hashCodeTest() throws ParseException {
 		info.setTitle("TITLE");
 		info.setLastUpdated(LocalDate.parse("2016-02-19"));
-		Assert.assertEquals(1002632019, info.hashCode());
+		Assertions.assertEquals(1002632019, info.hashCode());
 	}
 
 	@Test
 	public void toStringTest() throws ParseException {
-		Assert.assertEquals("GuideInfo [runningTime=0, genres=[], airDays=[], airing=true, ]", info.toString());
+		Assertions.assertEquals("GuideInfo [runningTime=0, genres=[], airDays=[], airing=true, ]", info.toString());
 	}
 
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(info.equals(null));
+		Assertions.assertFalse(info.equals(null));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		Assert.assertTrue(info.equals(info));
+		Assertions.assertTrue(info.equals(info));
 	}
 
 	@Test
 	public void equalsOtherObjectTest() {
-		Assert.assertFalse(info.equals(new Object()));
+		Assertions.assertFalse(info.equals(new Object()));
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.ofEpochDay(0));
 		other.setLastUpdated(LocalDate.ofEpochDay(0));
 
-		Assert.assertTrue(info.equals(other));
+		Assertions.assertTrue(info.equals(other));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -234,7 +234,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -264,7 +264,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -294,7 +294,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -324,7 +324,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -354,7 +354,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -384,7 +384,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -414,7 +414,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -444,7 +444,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -474,7 +474,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.ofEpochDay(0));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -504,7 +504,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.ofEpochDay(0));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -534,7 +534,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -564,7 +564,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -594,7 +594,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -624,7 +624,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -654,7 +654,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -684,7 +684,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -714,7 +714,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -744,7 +744,7 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 
 	@Test
@@ -774,6 +774,6 @@ public class GuideInfoTest {
 		other.setFirstAired(LocalDate.parse("2005-04-03"));
 		other.setLastUpdated(LocalDate.parse("2016-02-19"));
 
-		Assert.assertFalse(info.equals(other));
+		Assertions.assertFalse(info.equals(other));
 	}
 }

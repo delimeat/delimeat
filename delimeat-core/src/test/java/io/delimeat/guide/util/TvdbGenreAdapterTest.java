@@ -17,9 +17,9 @@ package io.delimeat.guide.util;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.util.TvdbGenreAdapter;
 
@@ -27,32 +27,32 @@ public class TvdbGenreAdapterTest {
 
 	private TvdbGenreAdapter adapter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		adapter = new TvdbGenreAdapter();
 	}
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertNull(adapter.marshal(null));
+		Assertions.assertNull(adapter.marshal(null));
 	}
 
 	@Test
 	public void unmarshalListTest() throws Exception {
 		List<?> list = (List<?>) adapter.unmarshal("GENRE1|GENRE2|GENRE3");
-		Assert.assertEquals(3, list.size());
-		Assert.assertEquals("GENRE1", list.get(0));
-		Assert.assertEquals("GENRE2", list.get(1));
-		Assert.assertEquals("GENRE3", list.get(2));
+		Assertions.assertEquals(3, list.size());
+		Assertions.assertEquals("GENRE1", list.get(0));
+		Assertions.assertEquals("GENRE2", list.get(1));
+		Assertions.assertEquals("GENRE3", list.get(2));
 	}
 
 	@Test
 	public void unmarshalNullTest() throws Exception {
-		Assert.assertNull(adapter.unmarshal(null));
+		Assertions.assertNull(adapter.unmarshal(null));
 	}
 
 	@Test
 	public void unmarshalEmptyStringTest() throws Exception {
-		Assert.assertNull(adapter.unmarshal(""));
+		Assertions.assertNull(adapter.unmarshal(""));
 	}
 }

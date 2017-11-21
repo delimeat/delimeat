@@ -127,7 +127,7 @@
 			<version>${org.mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- LOGGING -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

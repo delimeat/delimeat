@@ -18,55 +18,55 @@ package io.delimeat.guide.entity;
 import java.text.ParseException;
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GuideEpisodeTest {
 
 	private GuideEpisode ep;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		ep = new GuideEpisode();
 	}
 
 	@Test
 	public void setAirDateTest() throws ParseException {
-		Assert.assertNull(ep.getAirDate());
+		Assertions.assertNull(ep.getAirDate());
 		ep.setAirDate(LocalDate.parse("2005-01-02"));
-		Assert.assertEquals(LocalDate.parse("2005-01-02"), ep.getAirDate());
+		Assertions.assertEquals(LocalDate.parse("2005-01-02"), ep.getAirDate());
 
 	}
 
 	@Test
 	public void setTitleTest() {
-		Assert.assertEquals(null, ep.getTitle());
+		Assertions.assertEquals(null, ep.getTitle());
 		ep.setTitle("TEST TITLE");
-		Assert.assertEquals("TEST TITLE", ep.getTitle());
+		Assertions.assertEquals("TEST TITLE", ep.getTitle());
 	}
 
 	@Test
 	public void setSeasonNumTest() {
-		Assert.assertEquals(0, ep.getSeasonNum().intValue());
+		Assertions.assertEquals(0, ep.getSeasonNum().intValue());
 		ep.setSeasonNum(12);
-		Assert.assertEquals(12, ep.getSeasonNum().intValue());
+		Assertions.assertEquals(12, ep.getSeasonNum().intValue());
 	}
 
 	@Test
 	public void setEpisodeNumTest() {
-		Assert.assertEquals(0, ep.getEpisodeNum().intValue());
+		Assertions.assertEquals(0, ep.getEpisodeNum().intValue());
 		ep.setEpisodeNum(55);
-		Assert.assertEquals(55, ep.getEpisodeNum().intValue());
+		Assertions.assertEquals(55, ep.getEpisodeNum().intValue());
 	}
 
 	@Test
 	public void setProductionNumTest() {
-		Assert.assertEquals(0, ep.getProductionNum().intValue());
+		Assertions.assertEquals(0, ep.getProductionNum().intValue());
 		ep.setProductionNum(208);
-		Assert.assertEquals(208, ep.getProductionNum().intValue());
+		Assertions.assertEquals(208, ep.getProductionNum().intValue());
 	}
-	
+
 	@Test
 	public void equalsTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -74,7 +74,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -82,24 +82,24 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertTrue(ep.equals(other));
+		Assertions.assertTrue(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(ep.equals(null));
+		Assertions.assertFalse(ep.equals(null));
 	}
 
 	@Test
 	public void equalsObjectTest() {
-		Assert.assertFalse(ep.equals(new Object()));
+		Assertions.assertFalse(ep.equals(new Object()));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		Assert.assertTrue(ep.equals(ep));
+		Assertions.assertTrue(ep.equals(ep));
 	}
-	
+
 	@Test
 	public void equalsAirDateNullTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -107,7 +107,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -115,9 +115,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsEpisodeNumNullTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -125,7 +125,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(null);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -133,9 +133,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsProductionNumNullTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -143,7 +143,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(null);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -151,9 +151,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsSeasonNumNullTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -161,7 +161,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(null);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -169,9 +169,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTitleNullTest() throws ParseException {
 		ep.setTitle(null);
@@ -179,7 +179,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -187,9 +187,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsAirDateTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -197,7 +197,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -205,9 +205,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsEpisodeNumTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -215,7 +215,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(1);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -223,9 +223,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsProductionNumTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -233,7 +233,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(1);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -241,9 +241,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsSeasonNumTest() throws ParseException {
 		ep.setTitle("OTHER");
@@ -251,7 +251,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(2);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -259,9 +259,9 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTitleTest() throws ParseException {
 		ep.setTitle("TITLE");
@@ -269,7 +269,7 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 		ep.setProductionNum(3);
-		
+
 		GuideEpisode other = new GuideEpisode();
 		other.setTitle("OTHER");
 		other.setAirDate(LocalDate.parse("2016-01-28"));
@@ -277,7 +277,7 @@ public class GuideEpisodeTest {
 		other.setEpisodeNum(2);
 		other.setProductionNum(3);
 
-		Assert.assertFalse(ep.equals(other));
+		Assertions.assertFalse(ep.equals(other));
 	}
 
 	@Test
@@ -287,11 +287,11 @@ public class GuideEpisodeTest {
 		ep.setSeasonNum(1);
 		ep.setEpisodeNum(2);
 
-		Assert.assertEquals(-1010516861, ep.hashCode());
+		Assertions.assertEquals(-1010516861, ep.hashCode());
 	}
 
 	@Test
 	public void toStringTest() throws ParseException {
-		Assert.assertEquals("GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]", ep.toString());
+		Assertions.assertEquals("GuideEpisode [seasonNum=0, episodeNum=0, productionNum=0, ]", ep.toString());
 	}
 }

@@ -15,9 +15,9 @@
  */
 package io.delimeat.guide.util;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.util.TvdbTimezoneAdapter;
 
@@ -25,34 +25,34 @@ public class TvdbTimezoneAdapterTest {
 
 	private TvdbTimezoneAdapter adapter;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		adapter = new TvdbTimezoneAdapter();
 	}
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertNull(adapter.marshal(null));
+		Assertions.assertNull(adapter.marshal(null));
 	}
 
 	@Test
 	public void testExistsUnmarshal() throws Exception {
-		Assert.assertEquals("Etc/GMT+12", adapter.unmarshal("TVNZ"));
+		Assertions.assertEquals("Etc/GMT+12", adapter.unmarshal("TVNZ"));
 	}
 	
 	@Test
 	public void testNotExistsUnmarshal() throws Exception {
-		Assert.assertEquals("America/Los_Angeles", adapter.unmarshal("RANDOM"));
+		Assertions.assertEquals("America/Los_Angeles", adapter.unmarshal("RANDOM"));
 	}
 	
 	@Test
 	public void testNullUnmarshal() throws Exception {
-		Assert.assertNull(adapter.unmarshal(null));
+		Assertions.assertNull(adapter.unmarshal(null));
 	}
 	
 	@Test
 	public void testEmptyUnmarshal() throws Exception {
-		Assert.assertNull(adapter.unmarshal(""));
+		Assertions.assertNull(adapter.unmarshal(""));
 	}
 
 }

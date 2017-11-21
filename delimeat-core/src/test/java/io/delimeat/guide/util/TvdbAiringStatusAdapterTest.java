@@ -15,9 +15,9 @@
  */
 package io.delimeat.guide.util;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.util.TvdbAiringStatusAdapter;
 
@@ -25,39 +25,39 @@ public class TvdbAiringStatusAdapterTest {
 
 	private TvdbAiringStatusAdapter adapter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		adapter = new TvdbAiringStatusAdapter();
 	}
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertNull(adapter.marshal(true));
+		Assertions.assertNull(adapter.marshal(true));
 	}
 
 	@Test
 	public void airingUnmarshalTest() throws Exception {
-		Assert.assertTrue(adapter.unmarshal("Continuing"));
+		Assertions.assertTrue(adapter.unmarshal("Continuing"));
 	}
 
 	@Test
 	public void endedUnmarshalTest() throws Exception {
-		Assert.assertFalse(adapter.unmarshal("Ended"));
+		Assertions.assertFalse(adapter.unmarshal("Ended"));
 	}
 
 	@Test
 	public void unknownUnmarshalTest() throws Exception {
-		Assert.assertFalse(adapter.unmarshal("GIBERISH"));
+		Assertions.assertFalse(adapter.unmarshal("GIBERISH"));
 	}
 
 	@Test
 	public void unmarshalNullTest() throws Exception {
-		Assert.assertFalse(adapter.unmarshal(null));
+		Assertions.assertFalse(adapter.unmarshal(null));
 	}
 
 	@Test
 	public void unmarshalEmptyStringTest() throws Exception {
-		Assert.assertFalse(adapter.unmarshal(""));
+		Assertions.assertFalse(adapter.unmarshal(""));
 
 	}
 }

@@ -18,8 +18,8 @@ package io.delimeat.guide.exception;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GuideResponseBodyExceptionTest {
 
@@ -27,7 +27,7 @@ public class GuideResponseBodyExceptionTest {
 	public void constructorTest() throws MalformedURLException{
 		Throwable throwable = new Throwable();
 		GuideResponseBodyException exception = new GuideResponseBodyException(new URL("http://test.com"),"BODY", throwable);
-		Assert.assertEquals("Unable to parse response for url http://test.com \nBODY", exception.getMessage());
-		Assert.assertEquals(throwable, exception.getCause());
+		Assertions.assertEquals("Unable to parse response for url http://test.com \nBODY", exception.getMessage());
+		Assertions.assertEquals(throwable, exception.getCause());
 	}
 }

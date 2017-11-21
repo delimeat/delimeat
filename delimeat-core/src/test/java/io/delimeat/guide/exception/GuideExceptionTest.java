@@ -15,8 +15,8 @@
  */
 package io.delimeat.guide.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GuideExceptionTest {
 
@@ -24,23 +24,23 @@ public class GuideExceptionTest {
 	public void messageConstructorTest(){
 		GuideException ex = new GuideException("MESSAGE");
 		
-		Assert.assertEquals("MESSAGE", ex.getMessage());
-		Assert.assertNull(ex.getCause());
+		Assertions.assertEquals("MESSAGE", ex.getMessage());
+		Assertions.assertNull(ex.getCause());
 	}
 	
 	@Test
 	public void causeConstructorTest(){
 		GuideException ex = new GuideException(new Exception());
 
-		Assert.assertEquals("java.lang.Exception", ex.getMessage());
-		Assert.assertEquals(Exception.class, ex.getCause().getClass());
+		Assertions.assertEquals("java.lang.Exception", ex.getMessage());
+		Assertions.assertEquals(Exception.class, ex.getCause().getClass());
 	}
 	
 	@Test
 	public void messageAndCauseConstructorTest(){
 		GuideException ex = new GuideException("MESSAGE", new Exception());
 		
-		Assert.assertEquals("MESSAGE", ex.getMessage());
-		Assert.assertEquals(Exception.class, ex.getCause().getClass());
+		Assertions.assertEquals("MESSAGE", ex.getMessage());
+		Assertions.assertEquals(Exception.class, ex.getCause().getClass());
 	}
 }

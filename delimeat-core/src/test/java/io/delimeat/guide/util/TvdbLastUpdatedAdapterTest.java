@@ -17,36 +17,35 @@ package io.delimeat.guide.util;
 
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.util.TvdbLastUpdatedAdapter;
 
 public class TvdbLastUpdatedAdapterTest {
 
 	private TvdbLastUpdatedAdapter adapter;
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() throws Exception {
 		adapter = new TvdbLastUpdatedAdapter();
 	}
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertNull(adapter.marshal(null));
+		Assertions.assertNull(adapter.marshal(null));
 	}
-	
 
 	@Test
 	public void testNullUnmarshal() throws Exception {
-		Assert.assertNull(adapter.unmarshal(null));
+		Assertions.assertNull(adapter.unmarshal(null));
 	}
-	
+
 	@Test
-	public void testUnmarshal() throws Exception{
-		Assert.assertEquals(LocalDate.parse("2016-02-03"),adapter.unmarshal(new Long(1454486401)));
-		
+	public void testUnmarshal() throws Exception {
+		Assertions.assertEquals(LocalDate.parse("2016-02-03"), adapter.unmarshal(new Long(1454486401)));
+
 	}
 
 }

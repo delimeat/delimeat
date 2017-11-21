@@ -287,7 +287,8 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		try{
 			getContext().createMarshaller().marshal(entity, output);
 		}catch(JAXBException ex){
-			throw new GuideException(ex);
+			//TODO better message building
+			throw new GuideException(String.format("Unable to marshal %s", entity.getClass()), ex);
 		}
 		
 		if(headers.get("Content-Type") == null){

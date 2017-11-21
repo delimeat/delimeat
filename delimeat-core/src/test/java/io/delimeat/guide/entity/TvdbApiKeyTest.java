@@ -15,9 +15,9 @@
  */
 package io.delimeat.guide.entity;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.TvdbApiKey;
 
@@ -25,28 +25,28 @@ public class TvdbApiKeyTest {
 
 	private TvdbApiKey apiKey;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		apiKey = new TvdbApiKey();
 	}
 
 	@Test
 	public void valueTest() {
-		Assert.assertNull(apiKey.getValue());
+		Assertions.assertNull(apiKey.getValue());
 		apiKey.setValue("VALUE");
-		Assert.assertEquals("VALUE", apiKey.getValue());
+		Assertions.assertEquals("VALUE", apiKey.getValue());
 	}
   
   	@Test
   	public void hashCodeTest(){
      	apiKey.setValue("VALUE");
-     	Assert.assertEquals(81434992, apiKey.hashCode());
+     	Assertions.assertEquals(81434992, apiKey.hashCode());
    }
    
   	@Test
   	public void toStringTest(){
      	apiKey.setValue("VALUE");
-     	Assert.assertEquals("TvdbApiKey [value=VALUE]", apiKey.toString());
+     	Assertions.assertEquals("TvdbApiKey [value=VALUE]", apiKey.toString());
    }
   	
 	@Test
@@ -54,41 +54,41 @@ public class TvdbApiKeyTest {
 		apiKey.setValue("VALUE");
 		TvdbApiKey other = new TvdbApiKey();
 		other.setValue("VALUE");
-		Assert.assertTrue(apiKey.equals(other));
+		Assertions.assertTrue(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsSelfTest(){
-		Assert.assertTrue(apiKey.equals(apiKey));
+		Assertions.assertTrue(apiKey.equals(apiKey));
 	}
 	
 	@Test
 	public void equalsNullTest(){
-		Assert.assertFalse(apiKey.equals(null));
+		Assertions.assertFalse(apiKey.equals(null));
 	}
 	
 	@Test
 	public void equalsOtherClassTest(){
-		Assert.assertFalse(apiKey.equals("STRING"));
+		Assertions.assertFalse(apiKey.equals(new Object()));
 	}
 	
 	@Test
 	public void equalsNullMessageOtherNullMessageTest(){
 		TvdbApiKey other = new TvdbApiKey();
-		Assert.assertTrue(apiKey.equals(other));
+		Assertions.assertTrue(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsNullMessageOtherNotNullMessageTest(){
 		TvdbApiKey other = new TvdbApiKey();
 		other.setValue("VALUE");
-		Assert.assertFalse(apiKey.equals(other));
+		Assertions.assertFalse(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsNotNullMessageOtherNullMessageTest(){
 		apiKey.setValue("VALUE");
 		TvdbApiKey other = new TvdbApiKey();
-		Assert.assertFalse(apiKey.equals(other));
+		Assertions.assertFalse(apiKey.equals(other));
 	}
 }
