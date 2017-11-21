@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.entity.FeedSource;
@@ -41,178 +41,168 @@ public class LimeTorrentsFeedDataSource_ImplTest {
 
 	private static final int PORT = 8089;
 	private static MockWebServer mockedServer = new MockWebServer();
-  
+
 	private LimeTorrentsFeedDataSource_Impl dataSource;
 
-	@BeforeClass
-	public static void beforeClass() throws IOException{
+	@BeforeAll
+	public static void beforeClass() throws IOException {
 		mockedServer.start(PORT);
 	}
-	
-	@AfterClass
-	public static void tearDown() throws IOException{
+
+	@AfterAll
+	public static void tearDown() throws IOException {
 		mockedServer.shutdown();
 	}
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() throws URISyntaxException {
 		dataSource = new LimeTorrentsFeedDataSource_Impl();
 	}
 
 	@Test
 	public void feedSourceTest() throws Exception {
-		Assert.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
+		Assertions.assertEquals(FeedSource.LIMETORRENTS, dataSource.getFeedSource());
 	}
-	
+
 	@Test
-	public void baseUriTest(){
-		Assert.assertNull(dataSource.getBaseUri());
+	public void baseUriTest() {
+		Assertions.assertNull(dataSource.getBaseUri());
 		dataSource.setBaseUri("http://localhost:8089");
-		Assert.assertEquals("http://localhost:8089", dataSource.getBaseUri());
+		Assertions.assertEquals("http://localhost:8089", dataSource.getBaseUri());
 	}
-	
+
 	@Test
-	public void toStringTest(){
-		Assert.assertEquals("LimeTorrentsFeedDataSource_Impl [feedSource=LIMETORRENTS, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-limetorrents-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=text/html}]", dataSource.toString());
+	public void toStringTest() {
+		Assertions.assertEquals(
+				"LimeTorrentsFeedDataSource_Impl [feedSource=LIMETORRENTS, properties={eclipselink.json.include-root=false, eclipselink.oxm.metadata-source=oxm/feed-limetorrents-oxm.xml, eclipselink.media-type=application/xml}, headers{Accept=text/html}]",
+				dataSource.toString());
 	}
-  
+
 	@Test
-	public void readTest() throws Exception{
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
-     			+ "<size>9223372036854775807</size>"
-     			+ "</item></channel></rss>";
-     	
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(200)
-			    .addHeader("Content-Type", "text/html")
-			    .setBody(responseBody);
-		
+	public void readTest() throws Exception {
+		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
+				+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
+				+ "<size>9223372036854775807</size>" + "</item></channel></rss>";
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(200).addHeader("Content-Type", "text/html")
+				.setBody(responseBody);
+
 		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
+
 		List<FeedResult> results = dataSource.read("title");
 		RecordedRequest request = mockedServer.takeRequest();
-		Assert.assertEquals("/searchrss/title/", request.getPath());
-		Assert.assertEquals("text/html", request.getHeader("Accept"));
-		
-     	Assert.assertNotNull(results);
-     	Assert.assertEquals(1, results.size());
-     	Assert.assertEquals(FeedSource.LIMETORRENTS, results.get(0).getSource());
-     	Assert.assertEquals("title",results.get(0).getTitle());
-     	Assert.assertEquals("torrentUrl",results.get(0).getTorrentURL());
-     	Assert.assertEquals(Long.MAX_VALUE,results.get(0).getContentLength());
-     	Assert.assertEquals(0, results.get(0).getSeeders());
-     	Assert.assertEquals(0, results.get(0).getLeechers());
+		Assertions.assertEquals("/searchrss/title/", request.getPath());
+		Assertions.assertEquals("text/html", request.getHeader("Accept"));
+
+		Assertions.assertNotNull(results);
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(FeedSource.LIMETORRENTS, results.get(0).getSource());
+		Assertions.assertEquals("title", results.get(0).getTitle());
+		Assertions.assertEquals("torrentUrl", results.get(0).getTorrentURL());
+		Assertions.assertEquals(Long.MAX_VALUE, results.get(0).getContentLength());
+		Assertions.assertEquals(0, results.get(0).getSeeders());
+		Assertions.assertEquals(0, results.get(0).getLeechers());
 	}
-  
+
 	@Test
 	public void readResponseExceptionTest() throws Exception {
 
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(500);
-		
+		MockResponse mockResponse = new MockResponse().setResponseCode(500);
+
 		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
-		try{
+
+		FeedResponseException ex = Assertions.assertThrows(FeedResponseException.class, () -> {
 			dataSource.read("title");
-		} catch(FeedResponseException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/searchrss/title/", request.getPath());
-			Assert.assertEquals("text/html", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/searchrss/title/", request.getPath());
+		Assertions.assertEquals("text/html", request.getHeader("Accept"));
+		Assertions.assertEquals(
+				"HTTP response code 500 with message \"Server Error\" for url http://localhost:8089/searchrss/title/",
+				ex.getMessage());
 	}
-	
+
 	@Test
 	public void readContentTypeExceptionTest() throws Exception {
-     	String responseBody = "<?xml version='1.0' encoding='UTF-8'?>"
-     			+ "<rss><channel><item>"
-     			+ "<title><![CDATA[title]]></title>"
-     			+ "<enclosure url='torrentUrl' type='application/x-bittorrent' />"
-     			+ "<size>9223372036854775807</size>"
-     			+ "</item></channel></rss>";
-     	
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(200)
-			    .addHeader("Content-Type", "application/json")
-			    .setBody(responseBody);
-		
+		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss><channel><item>"
+				+ "<title><![CDATA[title]]></title>" + "<enclosure url='torrentUrl' type='application/x-bittorrent' />"
+				+ "<size>9223372036854775807</size>" + "</item></channel></rss>";
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(200)
+				.addHeader("Content-Type", "application/json").setBody(responseBody);
+
 		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
-		try{
+
+		FeedContentTypeException ex = Assertions.assertThrows(FeedContentTypeException.class, () -> {
 			dataSource.read("title");
-		} catch(FeedContentTypeException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/searchrss/title/", request.getPath());
-			Assert.assertEquals("text/html", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/searchrss/title/", request.getPath());
+		Assertions.assertEquals("text/html", request.getHeader("Accept"));
+		Assertions.assertEquals(
+				"Expected Content-Type text/html received application/json for url http://localhost:8089/searchrss/title/ \n<?xml version='1.0' encoding='UTF-8'?><rss><channel><item><title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' /><size>9223372036854775807</size></item></channel></rss>",
+				ex.getMessage());
 	}
-	
+
 	@Test
 	public void readTimeoutExceptionTest() throws Exception {
-     	
-		MockResponse mockResponse = new MockResponse()
-			    .setSocketPolicy(SocketPolicy.NO_RESPONSE);
-		
+
+		MockResponse mockResponse = new MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE);
+
 		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
-		try{
+
+		FeedTimeoutException ex = Assertions.assertThrows(FeedTimeoutException.class, () -> {
 			dataSource.read("title");
-		}catch(FeedTimeoutException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/searchrss/title/", request.getPath());
-			Assert.assertEquals("text/html", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/searchrss/title/", request.getPath());
+		Assertions.assertEquals("text/html", request.getHeader("Accept"));
+		Assertions.assertEquals("Timeout for http://localhost:8089/searchrss/title/", ex.getMessage());
 	}
-  
+
 	@Test
 	public void readResponseBodyExceptionTest() throws Exception {
 
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(200)
-			    .addHeader("Content-Type", "text/html")
-			    .setBody("X");
-		
+		MockResponse mockResponse = new MockResponse().setResponseCode(200).addHeader("Content-Type", "text/html")
+				.setBody("X");
+
 		mockedServer.enqueue(mockResponse);
 
 		dataSource.setBaseUri("http://localhost:8089");
-		
-		try{
+
+		FeedResponseBodyException ex = Assertions.assertThrows(FeedResponseBodyException.class, () -> {
 			dataSource.read("title");
-		} catch(FeedResponseBodyException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/searchrss/title/", request.getPath());
-			Assert.assertEquals("text/html", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/searchrss/title/", request.getPath());
+		Assertions.assertEquals("text/html", request.getHeader("Accept"));
+		Assertions.assertEquals("Unable to parse response for url http://localhost:8089/searchrss/title/ \nX",
+				ex.getMessage());
 	}
 
 	@Test
 	public void readProcessingExceptionTest() throws Exception {
 
 		dataSource.setBaseUri("JIBBERISH");
-		
-		try{
+
+		FeedException ex = Assertions.assertThrows(FeedException.class, () -> {
 			dataSource.read("title");
-		}catch(FeedException ex){
-			return;
-		}
-		Assert.fail();
+		});
+
+		Assertions.assertEquals("java.net.MalformedURLException: no protocol: JIBBERISH/searchrss/title/",
+				ex.getMessage());
 	}
-	
+
 }

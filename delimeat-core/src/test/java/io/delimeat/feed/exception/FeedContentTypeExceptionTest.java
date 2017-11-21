@@ -18,13 +18,13 @@ package io.delimeat.feed.exception;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedContentTypeExceptionTest {
 
 	@Test
 	public void constructorTest() throws MalformedURLException{
-		Assert.assertEquals("Expected Content-Type EXPECTED received ACTUAL for url http://test.com \nBODY", new FeedContentTypeException("EXPECTED","ACTUAL","BODY", new URL("http://test.com")).getMessage());
+		Assertions.assertEquals("Expected Content-Type EXPECTED received ACTUAL for url http://test.com \nBODY", new FeedContentTypeException("EXPECTED","ACTUAL","BODY", new URL("http://test.com")).getMessage());
 	}
 }

@@ -15,59 +15,59 @@
  */
 package io.delimeat.feed.entity;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FeedResultTest {
 
 	private FeedResult result;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		result = new FeedResult();
 	}
 	
 	@Test
 	public void torrentUrlTest(){
-		Assert.assertEquals(null, result.getTorrentURL());
+		Assertions.assertEquals(null, result.getTorrentURL());
 		result.setTorrentURL("TORRENT_LOCATION");
-		Assert.assertEquals("TORRENT_LOCATION", result.getTorrentURL());
+		Assertions.assertEquals("TORRENT_LOCATION", result.getTorrentURL());
 	}
 	
 	@Test
 	public void titleTest(){
-		Assert.assertEquals(null, result.getTitle());
+		Assertions.assertEquals(null, result.getTitle());
 		result.setTitle("FILE_NAME");
-		Assert.assertEquals("FILE_NAME", result.getTitle());
+		Assertions.assertEquals("FILE_NAME", result.getTitle());
 	}
 	
 	@Test
 	public void contentLengthTest(){
-		Assert.assertEquals(0, result.getContentLength());
+		Assertions.assertEquals(0, result.getContentLength());
 		result.setContentLength(Long.MAX_VALUE);
-		Assert.assertEquals(Long.MAX_VALUE, result.getContentLength());
+		Assertions.assertEquals(Long.MAX_VALUE, result.getContentLength());
 	}
 	
 	@Test
 	public void seedersTest(){
-		Assert.assertEquals(0,result.getSeeders());
+		Assertions.assertEquals(0,result.getSeeders());
 		result.setSeeders(Long.MIN_VALUE);
-		Assert.assertEquals(Long.MIN_VALUE, result.getSeeders());
+		Assertions.assertEquals(Long.MIN_VALUE, result.getSeeders());
 	}
 	
 	@Test
 	public void leechersTest(){
-		Assert.assertEquals(0,result.getLeechers());
+		Assertions.assertEquals(0,result.getLeechers());
 		result.setLeechers(Long.MAX_VALUE);
-		Assert.assertEquals(Long.MAX_VALUE, result.getLeechers());		
+		Assertions.assertEquals(Long.MAX_VALUE, result.getLeechers());		
 	}
 	
 	@Test
 	public void infoHasHexTest(){
-		Assert.assertNull(result.getInfoHashHex());
+		Assertions.assertNull(result.getInfoHashHex());
 		result.setInfoHashHex("INFO_HASH");
-		Assert.assertEquals("INFO_HASH", result.getInfoHashHex());	
+		Assertions.assertEquals("INFO_HASH", result.getInfoHashHex());	
 	}
 	@Test
 	public void equalsTest(){
@@ -88,17 +88,17 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertTrue(result.equals(other));
+		Assertions.assertTrue(result.equals(other));
 	}
 	
 	@Test
 	public void equalsNullTest(){
-		Assert.assertFalse(result.equals(null));
+		Assertions.assertFalse(result.equals(null));
 	}
 	
 	@Test
 	public void equalsObjectTest(){
-		Assert.assertFalse(result.equals(new Object()));
+		Assertions.assertFalse(result.equals(new Object()));
 	}
 	
 	@Test
@@ -120,7 +120,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -142,7 +142,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -164,7 +164,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -186,7 +186,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -208,7 +208,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -252,7 +252,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	@Test
@@ -274,7 +274,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 	
 	
@@ -298,7 +298,7 @@ public class FeedResultTest {
 		other.setInfoHashHex("INFO_HASH");
 		other.setSource(FeedSource.KAT);
 
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
   
   	@Test
@@ -309,11 +309,11 @@ public class FeedResultTest {
 		result.setSeeders(Long.MIN_VALUE);
 		result.setLeechers(Long.MAX_VALUE);
 		result.setInfoHashHex("INFO_HASH");
-     	Assert.assertEquals(-345026678,result.hashCode());
+     	Assertions.assertEquals(-345026678,result.hashCode());
    }
   
   	@Test
   	public void toStringTest(){
-     	Assert.assertEquals("FeedResult [contentLength=0, seeders=0, leechers=0]",result.toString());
+     	Assertions.assertEquals("FeedResult [contentLength=0, seeders=0, leechers=0]",result.toString());
    }
 }

@@ -18,8 +18,8 @@ package io.delimeat.feed.exception;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedResponseBodyExceptionTest {
 
@@ -27,7 +27,7 @@ public class FeedResponseBodyExceptionTest {
 	public void constructorTest() throws MalformedURLException{
 		Throwable throwable = new Throwable();
 		FeedResponseBodyException exception = new FeedResponseBodyException(new URL("http://test.com"),"BODY", throwable);
-		Assert.assertEquals("Unable to parse response for url http://test.com \nBODY", exception.getMessage());
-		Assert.assertEquals(throwable, exception.getCause());
+		Assertions.assertEquals("Unable to parse response for url http://test.com \nBODY", exception.getMessage());
+		Assertions.assertEquals(throwable, exception.getCause());
 	}
 }

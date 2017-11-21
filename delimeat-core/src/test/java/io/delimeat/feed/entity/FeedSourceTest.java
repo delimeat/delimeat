@@ -15,53 +15,53 @@
  */
 package io.delimeat.feed.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedSourceTest {
 
 	@Test
 	public void katTest() {
-		Assert.assertEquals(0, FeedSource.KAT.getValue());
+		Assertions.assertEquals(0, FeedSource.KAT.getValue());
 	}
 
 	@Test
 	public void torrentProjectTest() {
-		Assert.assertEquals(1, FeedSource.TORRENTPROJECT.getValue());
+		Assertions.assertEquals(1, FeedSource.TORRENTPROJECT.getValue());
 	}
 
 	@Test
 	public void limeTorrentsTest() {
-		Assert.assertEquals(2, FeedSource.LIMETORRENTS.getValue());
+		Assertions.assertEquals(2, FeedSource.LIMETORRENTS.getValue());
 	}
 
 	@Test
 	public void extraTorrentTest() {
-		Assert.assertEquals(3, FeedSource.EXTRATORRENT.getValue());
+		Assertions.assertEquals(3, FeedSource.EXTRATORRENT.getValue());
 	}
 
 	@Test
 	public void bitSnoopTest() {
-		Assert.assertEquals(4, FeedSource.BITSNOOP.getValue());
+		Assertions.assertEquals(4, FeedSource.BITSNOOP.getValue());
 	}
 
 	@Test
 	public void torrentDownloadsTest() {
-		Assert.assertEquals(5, FeedSource.TORRENTDOWNLOADS.getValue());
+		Assertions.assertEquals(5, FeedSource.TORRENTDOWNLOADS.getValue());
 	}
 
 	@Test
 	public void zooqleTest() {
-		Assert.assertEquals(6, FeedSource.ZOOQLE.getValue());
+		Assertions.assertEquals(6, FeedSource.ZOOQLE.getValue());
 	}
 	
 	@Test
 	public void priateBayTest() {
-		Assert.assertEquals(7, FeedSource.PIRATEBAY.getValue());
+		Assertions.assertEquals(7, FeedSource.PIRATEBAY.getValue());
 	}
 	
 	@Test
 	public void skytorrentsTest() {
-		Assert.assertEquals(8, FeedSource.SKYTORRENTS.getValue());
+		Assertions.assertEquals(8, FeedSource.SKYTORRENTS.getValue());
 	}
 }

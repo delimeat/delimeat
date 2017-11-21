@@ -18,14 +18,14 @@ package io.delimeat.feed.exception;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedResponseExceptionTest {
 
 	@Test
 	public void constructorTest() throws MalformedURLException{
 		FeedResponseException exception = new FeedResponseException(500,"MESSAGE", new URL("http://test.com"));
-		Assert.assertEquals("HTTP response code 500 with message \"MESSAGE\" for url http://test.com", exception.getMessage());
+		Assertions.assertEquals("HTTP response code 500 with message \"MESSAGE\" for url http://test.com", exception.getMessage());
 	}
 }

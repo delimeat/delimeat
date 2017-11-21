@@ -18,13 +18,13 @@ package io.delimeat.feed.exception;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedTimeoutExceptionTest {
 
 	@Test
 	public void constructorTest() throws MalformedURLException{
-		Assert.assertEquals("Timeout for http://test.com", new FeedTimeoutException(new URL("http://test.com")).getMessage());
+		Assertions.assertEquals("Timeout for http://test.com", new FeedTimeoutException(new URL("http://test.com")).getMessage());
 	}
 }

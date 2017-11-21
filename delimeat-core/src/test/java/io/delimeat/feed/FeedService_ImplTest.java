@@ -18,40 +18,38 @@ package io.delimeat.feed;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.exception.FeedException;
 
 public class FeedService_ImplTest {
-	
 
 	private FeedService_Impl service;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		service = new FeedService_Impl();
 	}
-	
+
 	@Test
-	public void feedDataSourcesTest(){
-		Assert.assertNull(service.getFeedDataSources());
+	public void feedDataSourcesTest() {
+		Assertions.assertNull(service.getFeedDataSources());
 		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		service.setFeedDataSources(Arrays.asList(dao));
-		
-		Assert.assertNotNull(service.getFeedDataSources());
-		Assert.assertEquals(1, service.getFeedDataSources().size());
-		Assert.assertEquals(dao, service.getFeedDataSources().get(0));
-	}
-	
-	@Test
-	public void toStringTest(){
-		Assert.assertEquals("FeedService_Impl []", service.toString());
+
+		Assertions.assertNotNull(service.getFeedDataSources());
+		Assertions.assertEquals(1, service.getFeedDataSources().size());
+		Assertions.assertEquals(dao, service.getFeedDataSources().get(0));
 	}
 
+	@Test
+	public void toStringTest() {
+		Assertions.assertEquals("FeedService_Impl []", service.toString());
+	}
 
 	@Test
 	public void readSuccessTest() throws Exception {
@@ -63,9 +61,9 @@ public class FeedService_ImplTest {
 		service.setFeedDataSources(Arrays.asList(dao));
 
 		List<FeedResult> results = service.read("TITLE");
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(feedResult, results.get(0));
-		
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(feedResult, results.get(0));
+
 		Mockito.verify(dao).read("TITLE");
 		Mockito.verify(dao, Mockito.times(1)).getFeedSource();
 		Mockito.verifyNoMoreInteractions(dao);
@@ -76,19 +74,17 @@ public class FeedService_ImplTest {
 		FeedDataSource dao = Mockito.mock(FeedDataSource.class);
 		FeedResult feedResult = new FeedResult();
 		feedResult.setTitle("TITLE");
-		Mockito.when(dao.read("TITLE"))
-				.thenThrow(FeedException.class)
-				.thenReturn(Arrays.asList(feedResult));
+		Mockito.when(dao.read("TITLE")).thenThrow(FeedException.class).thenReturn(Arrays.asList(feedResult));
 
-		service.setFeedDataSources(Arrays.asList(dao,dao));
+		service.setFeedDataSources(Arrays.asList(dao, dao));
 
 		List<FeedResult> results = service.read("TITLE");
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(feedResult, results.get(0));
-		
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(feedResult, results.get(0));
+
 		Mockito.verify(dao, Mockito.times(2)).read("TITLE");
 		Mockito.verify(dao, Mockito.times(2)).getFeedSource();
 		Mockito.verifyNoMoreInteractions(dao);
 	}
-	
+
 }

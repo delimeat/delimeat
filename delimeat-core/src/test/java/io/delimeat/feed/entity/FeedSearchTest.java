@@ -17,39 +17,39 @@ package io.delimeat.feed.entity;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FeedSearchTest {
 
 	private FeedSearch search;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		search = new FeedSearch();
 	}
 
 	@Test
 	public void resultsTest() {
-		Assert.assertTrue(search.getResults().isEmpty());
+		Assertions.assertTrue(search.getResults().isEmpty());
 		FeedResult result = new FeedResult();
 		search.setResults(Arrays.asList(result));
-		Assert.assertFalse(search.getResults().isEmpty());
-		Assert.assertEquals(1, search.getResults().size());
-		Assert.assertEquals(result, search.getResults().get(0));
+		Assertions.assertFalse(search.getResults().isEmpty());
+		Assertions.assertEquals(1, search.getResults().size());
+		Assertions.assertEquals(result, search.getResults().get(0));
 	}
 
 	@Test
 	public void hashCodeTest() {
 		search.getResults().add(new FeedResult());
-		Assert.assertEquals(887503743, search.hashCode());
+		Assertions.assertEquals(887503743, search.hashCode());
 	}
 
 	@Test
 	public void toStringTest() {
 		search.getResults().add(new FeedResult());
-		Assert.assertEquals("FeedSearch [results=[FeedResult [contentLength=0, seeders=0, leechers=0]]]",
+		Assertions.assertEquals("FeedSearch [results=[FeedResult [contentLength=0, seeders=0, leechers=0]]]",
 				search.toString());
 	}
 
@@ -58,22 +58,22 @@ public class FeedSearchTest {
 		search.setResults(Arrays.asList(new FeedResult()));
 		FeedSearch other = new FeedSearch();
 		other.setResults(Arrays.asList(new FeedResult()));
-		Assert.assertTrue(search.equals(other));
+		Assertions.assertTrue(search.equals(other));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		Assert.assertTrue(search.equals(search));
+		Assertions.assertTrue(search.equals(search));
 	}
 
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(search.equals(null));
+		Assertions.assertFalse(search.equals(null));
 	}
 
 	@Test
 	public void equalsOtherClassTest() {
-		Assert.assertFalse(search.equals("STRING"));
+		Assertions.assertFalse(search.equals(new Object()));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class FeedSearchTest {
 		search.setResults(null);
 		FeedSearch other = new FeedSearch();
 		other.setResults(null);
-		Assert.assertTrue(search.equals(other));
+		Assertions.assertTrue(search.equals(other));
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class FeedSearchTest {
 		search.setResults(null);
 		FeedSearch other = new FeedSearch();
 		other.setResults(Arrays.asList(new FeedResult()));
-		Assert.assertFalse(search.equals(other));
+		Assertions.assertFalse(search.equals(other));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class FeedSearchTest {
 		FeedSearch other = new FeedSearch();
 		other.setResults(null);
 
-		Assert.assertFalse(search.equals(other));
+		Assertions.assertFalse(search.equals(other));
 	}
 
 }
