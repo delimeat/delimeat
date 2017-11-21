@@ -27,11 +27,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.api.ShowController;
@@ -51,7 +51,7 @@ public class ShowControllerTest {
 	private static Client client;
 	private static ShowController controller;
     
-	@BeforeClass
+	@BeforeAll
     public static void setup() throws Exception {
 		Thread.sleep(1000);
 		controller = new ShowController();
@@ -65,13 +65,13 @@ public class ShowControllerTest {
         
     }
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		controller.setEpisodeService(null);
 		controller.setShowService(null);
 	}
     
-	@AfterClass
+	@AfterAll
     public static void tearDown() {
         Spark.stop();
 		if(client!=null){
@@ -82,22 +82,22 @@ public class ShowControllerTest {
 	
 	@Test
 	public void showServiceTest(){
-		Assert.assertNull(controller.getShowService());
+		Assertions.assertNull(controller.getShowService());
 
 		ShowService showService = Mockito.mock(ShowService.class);
 		controller.setShowService(showService);	
 		
-		Assert.assertEquals(showService, controller.getShowService());
+		Assertions.assertEquals(showService, controller.getShowService());
 	}
 	
 	@Test
 	public void episodeServiceTest(){
-		Assert.assertNull(controller.getEpisodeService());
+		Assertions.assertNull(controller.getEpisodeService());
 
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		controller.setEpisodeService(episodeService);	
 		
-		Assert.assertEquals(episodeService, controller.getEpisodeService());
+		Assertions.assertEquals(episodeService, controller.getEpisodeService());
 	}
 	
 	@Test
@@ -127,11 +127,11 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	List<Show> results = response.readEntity(new GenericType<List<Show>>(){});
-    	Assert.assertEquals(1, results.size());
-    	Assert.assertEquals(show, results.get(0));
+    	Assertions.assertEquals(1, results.size());
+    	Assertions.assertEquals(show, results.get(0));
 								
 		Mockito.verify(showService).readAll();
 		Mockito.verifyNoMoreInteractions(showService);
@@ -164,9 +164,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals(show, response.readEntity(Show.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(show, response.readEntity(Show.class));
 								
 		Mockito.verify(showService).read(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -185,9 +185,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(412, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(412, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
 								
 		Mockito.verify(showService).read(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -206,9 +206,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(404, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals("{\"message\":\"Unable to find requested resource\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(404, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals("{\"message\":\"Unable to find requested resource\"}",  response.readEntity(String.class));
 								
 		Mockito.verify(showService).read(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -241,9 +241,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.put(Entity.entity(show, "application/json"));
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals(show, response.readEntity(Show.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(show, response.readEntity(Show.class));
 								
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -261,9 +261,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.delete();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertFalse(response.hasEntity());
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertFalse(response.hasEntity());
 								
 		Mockito.verify(showService).delete(1L);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -296,9 +296,9 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.post(Entity.entity(show, "application/json"));
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals(show, response.readEntity(Show.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(show, response.readEntity(Show.class));
 								
 		Mockito.verify(showService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(showService);
@@ -347,11 +347,11 @@ public class ShowControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
-    	Assert.assertEquals(1, results.size());
-    	Assert.assertEquals(episode, results.get(0));
+    	Assertions.assertEquals(1, results.size());
+    	Assertions.assertEquals(episode, results.get(0));
 		
 		Mockito.verify(episodeService).findByShow(99L);
 		Mockito.verifyNoMoreInteractions(episodeService);

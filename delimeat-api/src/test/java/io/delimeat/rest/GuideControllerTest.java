@@ -25,11 +25,11 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.api.GuideController;
@@ -45,7 +45,7 @@ public class GuideControllerTest {
 	private static Client client;
 	private static GuideController controller;
     
-	@BeforeClass
+	@BeforeAll
     public static void setup() throws Exception {
 		Thread.sleep(1000);
 		controller = new GuideController();
@@ -60,12 +60,12 @@ public class GuideControllerTest {
         });
     }
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		controller.setGuideService(null);
 	}
     
-	@AfterClass
+	@AfterAll
     public static void tearDown() {
         Spark.stop();
 		if(client!=null){
@@ -75,10 +75,10 @@ public class GuideControllerTest {
 	
 	@Test
 	public void guideServiceTest(){
-		Assert.assertNull(controller.getGuideService());
+		Assertions.assertNull(controller.getGuideService());
 		GuideService guideService = Mockito.mock(GuideService.class);
 		controller.setGuideService(guideService);
-		Assert.assertEquals(guideService, controller.getGuideService());
+		Assertions.assertEquals(guideService, controller.getGuideService());
 	}
 	
 	@Test
@@ -99,11 +99,11 @@ public class GuideControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	List<GuideSearchResult> results = response.readEntity(new GenericType<List<GuideSearchResult>>(){});
-    	Assert.assertEquals(1, results.size());
-    	Assert.assertEquals(gsr, results.get(0));
+    	Assertions.assertEquals(1, results.size());
+    	Assertions.assertEquals(gsr, results.get(0));
     	
 		Mockito.verify(guideService).readLike("TITLE");
 		Mockito.verifyNoMoreInteractions(guideService);
@@ -134,9 +134,9 @@ public class GuideControllerTest {
     			.accept("application/json")
     			.get();
 							
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals(info, response.readEntity(GuideInfo.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(info, response.readEntity(GuideInfo.class));
 
 		Mockito.verify(guideService).read("GUIDEID");
 		Mockito.verifyNoMoreInteractions(guideService);
@@ -161,11 +161,11 @@ public class GuideControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	List<GuideEpisode> results = response.readEntity(new GenericType<List<GuideEpisode>>(){});
-    	Assert.assertEquals(1, results.size());
-    	Assert.assertEquals(ep, results.get(0));
+    	Assertions.assertEquals(1, results.size());
+    	Assertions.assertEquals(ep, results.get(0));
 								
 		Mockito.verify(guideService).readEpisodes("GUIDEID");
 		Mockito.verifyNoMoreInteractions(guideService);

@@ -21,10 +21,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.api.ApplicationController;
@@ -36,7 +36,7 @@ public class ApplicationControllerTest {
 	private static Client client;
 	private static ApplicationController controller;
 	
-	@BeforeClass
+	@BeforeAll
     public static void setup() throws Exception {
 		Thread.sleep(1000);
 		controller = new ApplicationController();
@@ -46,7 +46,7 @@ public class ApplicationControllerTest {
         client = ClientBuilder.newClient();
     }
     
-	@AfterClass
+	@AfterAll
     public static void tearDown() {
         Spark.stop();
 		if(client!=null){
@@ -56,19 +56,19 @@ public class ApplicationControllerTest {
 	
 	@Test
 	public void portTest(){
-		Assert.assertEquals(4567,Spark.port());
-		Assert.assertEquals(4567, controller.getPort());
+		Assertions.assertEquals(4567,Spark.port());
+		Assertions.assertEquals(4567, controller.getPort());
 		controller.setPort(9090);
-		Assert.assertEquals(9090, controller.getPort());		
+		Assertions.assertEquals(9090, controller.getPort());		
 	}
 	
 	@Test
 	public void controllersTest(){
 		SparkController newController = Mockito.mock(SparkController.class);
-		Assert.assertEquals(0, controller.getControllers().size());
+		Assertions.assertEquals(0, controller.getControllers().size());
 		controller.setControllers(Arrays.asList(newController));
-		Assert.assertEquals(1, controller.getControllers().size());
-		Assert.assertEquals(newController, controller.getControllers().get(0));
+		Assertions.assertEquals(1, controller.getControllers().size());
+		Assertions.assertEquals(newController, controller.getControllers().get(0));
 
 	}
 	
@@ -80,10 +80,10 @@ public class ApplicationControllerTest {
     			.accept("application/json")
     			.get();
     	
-    	Assert.assertEquals(404, response.getStatus());
-    	Assert.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
-    	//Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-    	Assert.assertEquals("{\"message\":\"resource not found\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(404, response.getStatus());
+    	Assertions.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
+    	//Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assertions.assertEquals("{\"message\":\"resource not found\"}",  response.readEntity(String.class));
 	}
 	
 	@Test
@@ -98,10 +98,10 @@ public class ApplicationControllerTest {
     			.accept("application/json")
     			.get();
     	
-    	Assert.assertEquals(500, response.getStatus());
-    	Assert.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
-    	//Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-    	Assert.assertEquals("{\"message\":\"internal server error\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(500, response.getStatus());
+    	Assertions.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
+    	//Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assertions.assertEquals("{\"message\":\"internal server error\"}",  response.readEntity(String.class));
 	}
 	
 	@Test
@@ -116,10 +116,10 @@ public class ApplicationControllerTest {
     			.accept("application/json")
     			.get();
     	
-    	Assert.assertEquals(400, response.getStatus());
-    	Assert.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
-    	//Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-    	Assert.assertEquals("{\"message\":\"invalid request format\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(400, response.getStatus());
+    	Assertions.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
+    	//Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	Assertions.assertEquals("{\"message\":\"invalid request format\"}",  response.readEntity(String.class));
 	}
 	
 	@Test
@@ -134,11 +134,11 @@ public class ApplicationControllerTest {
     			.accept("application/json")
     			.get();
     	
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
-    	//Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-    	//Assert.assertEquals("26", response.getHeaderString("Content-Length"));
-    	Assert.assertEquals("{\"message\":\"this is json\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
+    	//Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	//Assertions.assertEquals("26", response.getHeaderString("Content-Length"));
+    	Assertions.assertEquals("{\"message\":\"this is json\"}",  response.readEntity(String.class));
 	}
 	
 	@Test
@@ -153,10 +153,10 @@ public class ApplicationControllerTest {
     			.accept("application/json")
     			.get();
     	
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
-    	//Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-    	//Assert.assertEquals("2", response.getHeaderString("Content-Length"));
-    	Assert.assertEquals("[]",  response.readEntity(String.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json;charset=utf-8", response.getHeaderString("Content-Type")); 
+    	//Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+    	//Assertions.assertEquals("2", response.getHeaderString("Content-Length"));
+    	Assertions.assertEquals("[]",  response.readEntity(String.class));
 	}
 }

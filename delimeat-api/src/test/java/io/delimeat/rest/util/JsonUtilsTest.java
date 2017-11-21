@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.api.util.ApiError;
 import io.delimeat.api.util.JsonUtils;
@@ -29,23 +29,23 @@ public class JsonUtilsTest {
 
 	@Test
 	public void toJsonNullTest() throws JAXBException{
-		Assert.assertNull(JsonUtils.toJson(null));
+		Assertions.assertNull(JsonUtils.toJson(null));
 	}
 	
 	@Test
 	public void toJsonEmptyListTest() throws JAXBException{
-		Assert.assertEquals("[]",JsonUtils.toJson(new ArrayList<>()));
+		Assertions.assertEquals("[]",JsonUtils.toJson(new ArrayList<>()));
 	}
 	
 	@Test
 	public void toJsonTest() throws JAXBException{
 		ApiError apiError = new ApiError("test",500);
-		Assert.assertEquals("{\"error\":\"test\",\"status\":500}", JsonUtils.toJson(apiError));
+		Assertions.assertEquals("{\"error\":\"test\",\"status\":500}", JsonUtils.toJson(apiError));
 	}
 	
 	@Test
 	public void fromJsonTest() throws JAXBException{
 		ApiError apiError = JsonUtils.fromJson("{\"error\":\"test\",\"status\":500}".getBytes(), ApiError.class);
-		Assert.assertEquals(new ApiError("test",500), apiError);
+		Assertions.assertEquals(new ApiError("test",500), apiError);
 	}
 }

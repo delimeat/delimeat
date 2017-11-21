@@ -15,97 +15,96 @@
  */
 package io.delimeat.rest.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.api.util.ApiError;
 
 public class ApiErrorTest {
 
-    @Test
-    public void nullConstructorTest() {
-        ApiError error = new ApiError();
-        Assert.assertNull(error.getError());
-        Assert.assertEquals(0, error.getStatus());
-        error.setError("THIS IS AN ERROR");
-        error.setStatus(500);
-        Assert.assertEquals(500, error.getStatus());
-        Assert.assertEquals("THIS IS AN ERROR", error.getError());
-    }
-
-    @Test
-    public void constructorTest() {
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-        Assert.assertEquals(500, error.getStatus());
-        Assert.assertEquals("THIS IS AN ERROR", error.getError());
-    }
-
-    @Test
-    public void toStringTest() {
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-        Assert.assertEquals("ApiError [error=THIS IS AN ERROR, status=500]", error.toString());
-
-    }
-    
-  	@Test
-  	public void hashCodeTest(){
-        ApiError error = new ApiError();
-        error.setError("THIS IS AN ERROR");
-        error.setStatus(500);
-     	Assert.assertEquals(-138041620, error.hashCode());
-   }
-  	
+	@Test
+	public void nullConstructorTest() {
+		ApiError error = new ApiError();
+		Assertions.assertNull(error.getError());
+		Assertions.assertEquals(0, error.getStatus());
+		error.setError("THIS IS AN ERROR");
+		error.setStatus(500);
+		Assertions.assertEquals(500, error.getStatus());
+		Assertions.assertEquals("THIS IS AN ERROR", error.getError());
+	}
 
 	@Test
-	public void equalsTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-        ApiError other = new ApiError("THIS IS AN ERROR",500);
-		Assert.assertTrue(error.equals(other));
+	public void constructorTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertEquals(500, error.getStatus());
+		Assertions.assertEquals("THIS IS AN ERROR", error.getError());
 	}
-	
+
 	@Test
-	public void equalsSelfTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-		Assert.assertTrue(error.equals(error));
+	public void toStringTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertEquals("ApiError [error=THIS IS AN ERROR, status=500]", error.toString());
+
 	}
-	
+
 	@Test
-	public void equalsNullTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-		Assert.assertFalse(error.equals(null));
+	public void hashCodeTest() {
+		ApiError error = new ApiError();
+		error.setError("THIS IS AN ERROR");
+		error.setStatus(500);
+		Assertions.assertEquals(-138041620, error.hashCode());
 	}
-	
+
 	@Test
-	public void equalsOtherClassTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-		Assert.assertFalse(error.equals("STRING"));
+	public void equalsTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		ApiError other = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertTrue(error.equals(other));
 	}
-	
+
 	@Test
-	public void equalsNullOtherNullTest(){
-        ApiError error = new ApiError();
-        ApiError other = new ApiError();
-		Assert.assertTrue(error.equals(other));
+	public void equalsSelfTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertTrue(error.equals(error));
 	}
-	
+
 	@Test
-	public void equalsNullErrorOtherNotNullErrorTest(){
-        ApiError error = new ApiError(null,500);
-        ApiError other = new ApiError("THIS IS AN ERROR",500);
-		Assert.assertFalse(error.equals(other));
+	public void equalsNullTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertFalse(error.equals(null));
 	}
-	
+
 	@Test
-	public void equalsNotNullErrorOtherNullErrorTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-        ApiError other = new ApiError(null,500);
-		Assert.assertFalse(error.equals(other));
+	public void equalsOtherClassTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertFalse(error.equals(new Object()));
 	}
-	
+
 	@Test
-	public void equalsStatusNotEqualTest(){
-        ApiError error = new ApiError("THIS IS AN ERROR",500);
-        ApiError other = new ApiError("THIS IS AN ERROR",400);
-		Assert.assertFalse(error.equals(other));
+	public void equalsNullOtherNullTest() {
+		ApiError error = new ApiError();
+		ApiError other = new ApiError();
+		Assertions.assertTrue(error.equals(other));
+	}
+
+	@Test
+	public void equalsNullErrorOtherNotNullErrorTest() {
+		ApiError error = new ApiError(null, 500);
+		ApiError other = new ApiError("THIS IS AN ERROR", 500);
+		Assertions.assertFalse(error.equals(other));
+	}
+
+	@Test
+	public void equalsNotNullErrorOtherNullErrorTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		ApiError other = new ApiError(null, 500);
+		Assertions.assertFalse(error.equals(other));
+	}
+
+	@Test
+	public void equalsStatusNotEqualTest() {
+		ApiError error = new ApiError("THIS IS AN ERROR", 500);
+		ApiError other = new ApiError("THIS IS AN ERROR", 400);
+		Assertions.assertFalse(error.equals(other));
 	}
 }

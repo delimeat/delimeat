@@ -27,11 +27,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.api.EpisodeController;
@@ -45,7 +45,7 @@ public class EpisodeControllerTest {
 	private static Client client;
 	private static EpisodeController controller;
     
-	@BeforeClass
+	@BeforeAll
     public static void setup() throws Exception {
 		Thread.sleep(1000);
 		controller = new EpisodeController();
@@ -59,12 +59,12 @@ public class EpisodeControllerTest {
         
     }
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		controller.setEpisodeService(null);
 	}
     
-	@AfterClass
+	@AfterAll
     public static void tearDown() {
         Spark.stop();
 		if(client!=null){
@@ -74,10 +74,10 @@ public class EpisodeControllerTest {
 	
 	@Test
 	public void episodeServiceTest(){
-		Assert.assertNull(controller.getEpisodeService());
+		Assertions.assertNull(controller.getEpisodeService());
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		controller.setEpisodeService(episodeService);
-		Assert.assertEquals(episodeService, controller.getEpisodeService());
+		Assertions.assertEquals(episodeService, controller.getEpisodeService());
 
 	}
 	
@@ -105,11 +105,11 @@ public class EpisodeControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
     	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
-    	Assert.assertEquals(1, results.size());
-    	Assert.assertEquals(episode, results.get(0));
+    	Assertions.assertEquals(1, results.size());
+    	Assertions.assertEquals(episode, results.get(0));
 								
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -127,11 +127,11 @@ public class EpisodeControllerTest {
     			.accept("application/json")
     			.get();
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type"));
     	
     	List<Episode> results = response.readEntity(new GenericType<List<Episode>>(){});
-    	Assert.assertEquals(0, results.size());
+    	Assertions.assertEquals(0, results.size());
 								
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -161,9 +161,9 @@ public class EpisodeControllerTest {
     			.accept("application/json")
     			.put(Entity.entity(episode, "application/json"));
 
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals(episode, response.readEntity(Episode.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals(episode, response.readEntity(Episode.class));
 								
 		Mockito.verify(episodeService).update(episode);
 		Mockito.verifyNoMoreInteractions(episodeService);

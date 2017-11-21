@@ -22,11 +22,11 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.api.ConfigController;
@@ -40,7 +40,7 @@ public class ConfigControllerTest {
 	private static Client client;
 	private static ConfigController controller;
 	
-	@BeforeClass
+	@BeforeAll
     public static void setup() throws Exception {
 		Thread.sleep(1000);
 		controller = new ConfigController();
@@ -54,12 +54,12 @@ public class ConfigControllerTest {
         
     }
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		controller.setConfigService(null);
 	}
     
-	@AfterClass
+	@AfterAll
     public static void tearDown() {
         Spark.stop();
 		if(client!=null){
@@ -69,10 +69,10 @@ public class ConfigControllerTest {
 	
 	@Test
 	public void configServiceTest(){
-		Assert.assertNull(controller.getConfigService());
+		Assertions.assertNull(controller.getConfigService());
 		ConfigService configService = Mockito.mock(ConfigService.class);
 		controller.setConfigService(configService);
-		Assert.assertEquals(configService, controller.getConfigService());
+		Assertions.assertEquals(configService, controller.getConfigService());
 
 	}
     
@@ -101,9 +101,9 @@ public class ConfigControllerTest {
     	
     	System.out.println(response);
     	
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
-    	Assert.assertEquals(config, response.readEntity(Config.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
+    	Assertions.assertEquals(config, response.readEntity(Config.class));
 
 		Mockito.verify(configService).read();
 		Mockito.verifyNoMoreInteractions(configService);
@@ -132,9 +132,9 @@ public class ConfigControllerTest {
     			.accept("application/json")
     			.put(Entity.entity(config, "application/json"));
     	
-    	Assert.assertEquals(200, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
-    	Assert.assertEquals(config, response.readEntity(Config.class));
+    	Assertions.assertEquals(200, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type"));    	
+    	Assertions.assertEquals(config, response.readEntity(Config.class));
     	
 		Mockito.verify(configService).update(config);
 		Mockito.verifyNoMoreInteractions(configService);
@@ -163,9 +163,9 @@ public class ConfigControllerTest {
     			.accept("application/json")
     			.put(Entity.entity(config, "application/json"));
     	
-    	Assert.assertEquals(412, response.getStatus());
-    	Assert.assertEquals("application/json", response.getHeaderString("Content-Type")); 
-    	Assert.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
+    	Assertions.assertEquals(412, response.getStatus());
+    	Assertions.assertEquals("application/json", response.getHeaderString("Content-Type")); 
+    	Assertions.assertEquals("{\"message\":\"You are trying to update a resource that has been modified\"}",  response.readEntity(String.class));
 							  	
 		Mockito.verify(configService).update(config);
 		Mockito.verifyNoMoreInteractions(configService);
