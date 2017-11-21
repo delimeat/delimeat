@@ -15,33 +15,34 @@
  */
 package io.delimeat.show.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ShowTypeTest {
-  
-  	@Test
-  	public void unknownTest(){
-     	Assert.assertEquals(0, ShowType.UNKNOWN.getValue());
-   }
-  
-  	@Test
-  	public void animatedTest(){
-     	Assert.assertEquals(1, ShowType.ANIMATED.getValue());
-   } 
-  
-  	@Test
-  	public void dailyTest(){
-     	Assert.assertEquals(2, ShowType.DAILY.getValue());
-   } 
-  
-  	@Test
-  	public void miniSeriesTest(){
-     	Assert.assertEquals(3, ShowType.MINI_SERIES.getValue());
-   } 
-  
-  	@Test
-  	public void seasonTest(){
-     	Assert.assertEquals(4, ShowType.SEASON.getValue());
-   }
+
+	@Test
+	public void unknownTest() {
+		Assertions.assertEquals(0, ShowType.UNKNOWN.getValue());
+	}
+
+	@Test
+	public void animatedTest() {
+		Assertions.assertEquals(1, ShowType.ANIMATED.getValue());
+	}
+
+	@Test
+	public void dailyTest() {
+		Assertions.assertEquals(2, ShowType.DAILY.getValue());
+	}
+
+	@Test
+	public void miniSeriesTest() {
+		Assertions.assertEquals(3, ShowType.MINI_SERIES.getValue());
+	}
+
+	@Test
+	public void seasonTest() {
+		Assertions.assertEquals(4, ShowType.SEASON.getValue());
+	}
+
 }

@@ -287,7 +287,7 @@ public class TvdbGuideDataSource_ImplTest {
 		Assertions.assertEquals("/refresh_token", request.getPath());
 		Assertions.assertEquals("application/json", request.getHeader("Accept"));
 		// TODO better message
-		//Assertions.assertEquals("", ex.getMessage());
+		Assertions.assertNull(ex.getMessage());
 	}
 
 	@Test
@@ -310,7 +310,7 @@ public class TvdbGuideDataSource_ImplTest {
 		Assertions.assertEquals("/refresh_token", request.getPath());
 		Assertions.assertEquals("application/json", request.getHeader("Accept"));
 		// TODO better message
-		// Assertions.assertEquals("", ex.getMessage());
+		Assertions.assertNull(ex.getMessage());
 	}
 
 	@Test

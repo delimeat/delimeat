@@ -15,8 +15,8 @@
  */
 package io.delimeat.show.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.show.exception.ShowNotFoundException;
 
@@ -25,6 +25,6 @@ public class ShowNotFoundExceptionTest {
 	@Test
 	public void constructorTest(){
 		ShowNotFoundException ex = new ShowNotFoundException(Long.MAX_VALUE);
-		Assert.assertEquals(Long.MAX_VALUE, ex.getShowId().longValue());
+		Assertions.assertEquals(Long.MAX_VALUE, ex.getShowId().longValue());
 	}
 }

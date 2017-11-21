@@ -20,55 +20,55 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.guide.entity.GuideEpisode;
 import io.delimeat.show.ShowUtils;
 import io.delimeat.show.entity.Episode;
 
 public class ShowUtilsTest {
-    
-    @Test
-    public void determineAirTimeLocalDateTest(){
-    	//2016-12-27 22:00 EST = 2016-12-28 03:00 UTC
-    	
-    	Instant result = ShowUtils.determineAirTime(LocalDate.parse("2016-12-27"), LocalTime.parse("22:00"),"US/Eastern");
-    	Assert.assertEquals(Instant.parse("2016-12-28T03:00:00Z"), result);
-    	
-    }
-    
 
-    @Test
-    public void guideEpisodeConstructorTest() throws ParseException {
-        GuideEpisode guideEp = new GuideEpisode();
-        guideEp.setAirDate(LocalDate.ofEpochDay(0));
-        guideEp.setEpisodeNum(2);
-        guideEp.setSeasonNum(1);
-        guideEp.setTitle("TITLE");
-        Episode episode = ShowUtils.fromGuideEpisode(guideEp);
-        Assert.assertNull(episode.getEpisodeId());
-        Assert.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
-        Assert.assertEquals(2, episode.getEpisodeNum());
-        Assert.assertEquals(1, episode.getSeasonNum());
-        Assert.assertEquals("TITLE", episode.getTitle());
-        Assert.assertEquals(0, episode.getVersion());
-    }
-    
-    @Test
-    public void guideEpisodeNullSeasonEpisodeConstructorTest() throws ParseException {
-        GuideEpisode guideEp = new GuideEpisode();
-        guideEp.setAirDate(LocalDate.ofEpochDay(0));
-        guideEp.setEpisodeNum(null);
-        guideEp.setSeasonNum(null);
-        guideEp.setTitle("TITLE");
-        Episode episode = ShowUtils.fromGuideEpisode(guideEp);
-        Assert.assertNull(episode.getEpisodeId());
-        Assert.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
-        Assert.assertEquals(0, episode.getEpisodeNum());
-        Assert.assertEquals(0, episode.getSeasonNum());
-        Assert.assertEquals("TITLE", episode.getTitle());
-        Assert.assertEquals(0, episode.getVersion());
-    }
-   
+	@Test
+	public void determineAirTimeLocalDateTest() {
+		// 2016-12-27 22:00 EST = 2016-12-28 03:00 UTC
+
+		Instant result = ShowUtils.determineAirTime(LocalDate.parse("2016-12-27"), LocalTime.parse("22:00"),
+				"US/Eastern");
+		Assertions.assertEquals(Instant.parse("2016-12-28T03:00:00Z"), result);
+
+	}
+
+	@Test
+	public void guideEpisodeConstructorTest() throws ParseException {
+		GuideEpisode guideEp = new GuideEpisode();
+		guideEp.setAirDate(LocalDate.ofEpochDay(0));
+		guideEp.setEpisodeNum(2);
+		guideEp.setSeasonNum(1);
+		guideEp.setTitle("TITLE");
+		Episode episode = ShowUtils.fromGuideEpisode(guideEp);
+		Assertions.assertNull(episode.getEpisodeId());
+		Assertions.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
+		Assertions.assertEquals(2, episode.getEpisodeNum());
+		Assertions.assertEquals(1, episode.getSeasonNum());
+		Assertions.assertEquals("TITLE", episode.getTitle());
+		Assertions.assertEquals(0, episode.getVersion());
+	}
+
+	@Test
+	public void guideEpisodeNullSeasonEpisodeConstructorTest() throws ParseException {
+		GuideEpisode guideEp = new GuideEpisode();
+		guideEp.setAirDate(LocalDate.ofEpochDay(0));
+		guideEp.setEpisodeNum(null);
+		guideEp.setSeasonNum(null);
+		guideEp.setTitle("TITLE");
+		Episode episode = ShowUtils.fromGuideEpisode(guideEp);
+		Assertions.assertNull(episode.getEpisodeId());
+		Assertions.assertEquals(LocalDate.parse("1970-01-01"), episode.getAirDate());
+		Assertions.assertEquals(0, episode.getEpisodeNum());
+		Assertions.assertEquals(0, episode.getSeasonNum());
+		Assertions.assertEquals("TITLE", episode.getTitle());
+		Assertions.assertEquals(0, episode.getVersion());
+	}
+
 }

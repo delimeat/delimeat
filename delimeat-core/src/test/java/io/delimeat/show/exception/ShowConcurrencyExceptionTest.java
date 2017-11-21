@@ -15,8 +15,8 @@
  */
 package io.delimeat.show.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ShowConcurrencyExceptionTest {
 
@@ -24,6 +24,6 @@ public class ShowConcurrencyExceptionTest {
 	public void constructorTest(){
 		Exception throwable = new Exception();
 		ShowConcurrencyException ex = new ShowConcurrencyException(throwable);
-		Assert.assertEquals(throwable, ex.getCause());
+		Assertions.assertEquals(throwable, ex.getCause());
 	}
 }

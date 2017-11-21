@@ -15,21 +15,21 @@
  */
 package io.delimeat.show.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ShowExceptionTest {
 
 	@Test
-	public void nullConstructorTest(){
+	public void nullConstructorTest() {
 		ShowException ex = new ShowException();
-		Assert.assertNull(ex.getCause());
+		Assertions.assertNull(ex.getCause());
 	}
-	
+
 	@Test
-	public void constructorTest(){
+	public void constructorTest() {
 		Exception throwable = new Exception();
 		ShowException ex = new ShowException(throwable);
-		Assert.assertEquals(throwable, ex.getCause());
+		Assertions.assertEquals(throwable, ex.getCause());
 	}
 }

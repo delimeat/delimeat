@@ -15,23 +15,23 @@
  */
 package io.delimeat.show.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EpisodeStatusTest {
 
 	@Test
-	public void pendingTest(){
-		Assert.assertEquals(0, EpisodeStatus.PENDING.getValue());
+	public void pendingTest() {
+		Assertions.assertEquals(0, EpisodeStatus.PENDING.getValue());
 	}
-	
+
 	@Test
-	public void foundTest(){
-		Assert.assertEquals(1, EpisodeStatus.FOUND.getValue());
+	public void foundTest() {
+		Assertions.assertEquals(1, EpisodeStatus.FOUND.getValue());
 	}
-	
+
 	@Test
-	public void skippedTest(){
-		Assert.assertEquals(2, EpisodeStatus.SKIPPED.getValue());
+	public void skippedTest() {
+		Assertions.assertEquals(2, EpisodeStatus.SKIPPED.getValue());
 	}
 }
