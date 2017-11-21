@@ -15,8 +15,8 @@
  */
 package io.delimeat.config.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ConfigExceptionTest {
 
@@ -25,6 +25,6 @@ public class ConfigExceptionTest {
 		Exception throwable = new Exception();
 		ConfigException ex = new ConfigException(throwable);
 		
-		Assert.assertEquals(throwable, ex.getCause());
+		Assertions.assertEquals(throwable, ex.getCause());
 	}
 }

@@ -15,8 +15,8 @@
  */
 package io.delimeat.config.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ConfigConcurrencyExceptionTest {
 
@@ -25,6 +25,6 @@ public class ConfigConcurrencyExceptionTest {
 		Exception throwable = new Exception();
 		ConfigConcurrencyException ex = new ConfigConcurrencyException(throwable);
 		
-		Assert.assertEquals(throwable, ex.getCause());
+		Assertions.assertEquals(throwable, ex.getCause());
 	}
 }

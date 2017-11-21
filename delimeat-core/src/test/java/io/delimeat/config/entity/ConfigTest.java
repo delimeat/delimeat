@@ -15,113 +15,111 @@
  */
 package io.delimeat.config.entity;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import io.delimeat.config.entity.Config;
-
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConfigTest {
 
 	private Config config;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		config = new Config();
 	}
 
 	@Test
 	public void configIdTest() {
-		Assert.assertNull(config.getConfigId());
+		Assertions.assertNull(config.getConfigId());
 		config.setConfigId(1L);
-		Assert.assertEquals(1, config.getConfigId().longValue());
+		Assertions.assertEquals(1, config.getConfigId().longValue());
 
 	}
 
 	@Test
 	public void searchIntervalTest() {
-		Assert.assertEquals(0, config.getSearchInterval());
+		Assertions.assertEquals(0, config.getSearchInterval());
 		config.setSearchInterval(100);
-		Assert.assertEquals(100, config.getSearchInterval());
+		Assertions.assertEquals(100, config.getSearchInterval());
 	}
 
 	@Test
 	public void searchDelayTest() {
-		Assert.assertEquals(0, config.getSearchDelay());
+		Assertions.assertEquals(0, config.getSearchDelay());
 		config.setSearchDelay(100);
-		Assert.assertEquals(100, config.getSearchDelay());
+		Assertions.assertEquals(100, config.getSearchDelay());
 	}
 
 	@Test
 	public void preferFilesTest() {
-		Assert.assertFalse(config.isPreferFiles());
+		Assertions.assertFalse(config.isPreferFiles());
 		config.setPreferFiles(true);
-		Assert.assertTrue(config.isPreferFiles());
+		Assertions.assertTrue(config.isPreferFiles());
 	}
 
 	@Test
 	public void ignoreFoldersTest() {
-		Assert.assertFalse(config.isIgnoreFolders());
+		Assertions.assertFalse(config.isIgnoreFolders());
 		config.setIgnoreFolders(true);
-		Assert.assertTrue(config.isIgnoreFolders());
+		Assertions.assertTrue(config.isIgnoreFolders());
 	}
 
 	@Test
 	public void ignoredFileTypesTest() {
-		Assert.assertEquals(0, config.getIgnoredFileTypes().size());
+		Assertions.assertEquals(0, config.getIgnoredFileTypes().size());
 		config.setIgnoredFileTypes(Arrays.asList("AVI", "MKV"));
-		Assert.assertEquals(2, config.getIgnoredFileTypes().size());
-		Assert.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
-		Assert.assertEquals("MKV", config.getIgnoredFileTypes().get(1));
+		Assertions.assertEquals(2, config.getIgnoredFileTypes().size());
+		Assertions.assertEquals("AVI", config.getIgnoredFileTypes().get(0));
+		Assertions.assertEquals("MKV", config.getIgnoredFileTypes().get(1));
 	}
 
 	@Test
 	public void excludedKeywordsTest() {
-		Assert.assertNotNull(config.getExcludedKeywords());
-		Assert.assertEquals(0, config.getExcludedKeywords().size());
+		Assertions.assertNotNull(config.getExcludedKeywords());
+		Assertions.assertEquals(0, config.getExcludedKeywords().size());
 		config.setExcludedKeywords(Arrays.asList("265", "XVR"));
-		Assert.assertEquals(2, config.getExcludedKeywords().size());
-		Assert.assertEquals("265", config.getExcludedKeywords().get(0));
-		Assert.assertEquals("XVR", config.getExcludedKeywords().get(1));
+		Assertions.assertEquals(2, config.getExcludedKeywords().size());
+		Assertions.assertEquals("265", config.getExcludedKeywords().get(0));
+		Assertions.assertEquals("XVR", config.getExcludedKeywords().get(1));
 
 	}
 
 	@Test
 	public void outputDirectoryTest() {
-		Assert.assertNull(config.getOutputDirectory());
+		Assertions.assertNull(config.getOutputDirectory());
 		config.setOutputDirectory("OUTPUTDIR");
-		Assert.assertEquals("OUTPUTDIR", config.getOutputDirectory());
+		Assertions.assertEquals("OUTPUTDIR", config.getOutputDirectory());
 	}
 
 	@Test
 	public void hashCodeTest() {
 		config.setConfigId(1L);
 		config.setVersion(99L);
-		Assert.assertEquals(1091, config.hashCode());
+		Assertions.assertEquals(1091, config.hashCode());
 	}
 
 	@Test
 	public void toStringTest() {
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"Config [searchInterval=0, searchDelay=0, preferFiles=false, ignoreFolders=false, ignoredFileTypes=[], excludedKeywords=[], ]",
 				config.toString());
 	}
 
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(config.equals(null));
+		Assertions.assertFalse(config.equals(null));
 	}
 
 	@Test
 	public void equalsThisTest() {
-		Assert.assertTrue(config.equals(config));
+		Assertions.assertTrue(config.equals(config));
 	}
 
 	@Test
 	public void equalsOtherObjectTest() {
-		Assert.assertFalse(config.equals(new Object()));
+		Assertions.assertFalse(config.equals(new Object()));
 	}
 
 	@Test
@@ -131,7 +129,7 @@ public class ConfigTest {
 		Config other = new Config();
 		other.setConfigId(1L);
 		other.setVersion(99L);
-		Assert.assertTrue(config.equals(other));
+		Assertions.assertTrue(config.equals(other));
 	}
 
 	@Test
@@ -141,7 +139,7 @@ public class ConfigTest {
 		Config other = new Config();
 		other.setConfigId(1L);
 		other.setVersion(99L);
-		Assert.assertFalse(config.equals(other));
+		Assertions.assertFalse(config.equals(other));
 	}
 
 	@Test
@@ -151,7 +149,7 @@ public class ConfigTest {
 		Config other = new Config();
 		other.setConfigId(1L);
 		other.setVersion(99L);
-		Assert.assertFalse(config.equals(other));
+		Assertions.assertFalse(config.equals(other));
 	}
 	
 	@Test
@@ -161,7 +159,7 @@ public class ConfigTest {
 		Config other = new Config();
 		other.setConfigId(1L);
 		other.setVersion(99L);
-		Assert.assertFalse(config.equals(other));
+		Assertions.assertFalse(config.equals(other));
 	}
 
 	@Test
@@ -171,6 +169,6 @@ public class ConfigTest {
 		Config other = new Config();
 		other.setConfigId(1L);
 		other.setVersion(99L);
-		Assert.assertFalse(config.equals(other));
+		Assertions.assertFalse(config.equals(other));
 	}
 }
