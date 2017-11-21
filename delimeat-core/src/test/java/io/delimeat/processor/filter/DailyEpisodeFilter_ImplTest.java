@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
@@ -34,7 +34,7 @@ public class DailyEpisodeFilter_ImplTest {
 
 	private DailyEpisodeFilter_Impl filter;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		filter = new DailyEpisodeFilter_Impl();
 	}
@@ -52,8 +52,8 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(1, results.size());	
-		Assert.assertEquals(result, results.get(0));	
+		Assertions.assertEquals(1, results.size());	
+		Assertions.assertEquals(result, results.get(0));	
 	}
 		
 	@Test
@@ -71,7 +71,7 @@ public class DailyEpisodeFilter_ImplTest {
 		System.out.println(results.size());
 		
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 	
 	@Test
@@ -103,7 +103,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 	
 	@Test
@@ -119,7 +119,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 	
 	@Test
@@ -135,7 +135,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 	@Test
 	public void noDayRejectTest() throws Exception{
@@ -150,7 +150,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
   
 	@Test
@@ -166,7 +166,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
     
 	@Test
@@ -182,7 +182,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 	@Test
 	public void wrongDayRejectTest() throws Exception{
@@ -197,7 +197,7 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
   
 	@Test
@@ -213,8 +213,8 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(result, results.get(0));
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(result, results.get(0));
 	}
 	
 	@Test
@@ -255,8 +255,8 @@ public class DailyEpisodeFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result1,result2,result3,result4,result5,result6,result7,result8,result9));
 
 		filter.filter(results, episode, new Config());
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(result1, results.get(0));	
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(result1, results.get(0));	
 
 	}
 }

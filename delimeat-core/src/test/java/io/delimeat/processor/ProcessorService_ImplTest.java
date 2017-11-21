@@ -15,9 +15,9 @@
  */
 package io.delimeat.processor;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
@@ -34,23 +34,23 @@ public class ProcessorService_ImplTest {
 
 	private ProcessorService_Impl service;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		service = new ProcessorService_Impl();
 	}
 	
 	@Test
 	public void applicationContextTest(){
-		Assert.assertNull(service.getApplicationContext());
+		Assertions.assertNull(service.getApplicationContext());
 		ApplicationContext context = Mockito.mock(ApplicationContext.class);
 		service.setApplicationContext(context);
 		
-		Assert.assertEquals(context, service.getApplicationContext());
+		Assertions.assertEquals(context, service.getApplicationContext());
 	}
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("ProcessorService_Impl []", service.toString());
+		Assertions.assertEquals("ProcessorService_Impl []", service.toString());
 	}
 
 	@Test

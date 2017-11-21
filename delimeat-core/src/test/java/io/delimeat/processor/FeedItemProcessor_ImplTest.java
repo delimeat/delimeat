@@ -20,9 +20,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.config.ConfigService;
@@ -50,69 +50,69 @@ public class FeedItemProcessor_ImplTest {
 
 	private FeedItemProcessor_Impl processor;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		processor = new FeedItemProcessor_Impl();
 	}
 
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedItemProcessor_Impl [torrentValidators=[], ]", processor.toString());
+		Assertions.assertEquals("FeedItemProcessor_Impl [torrentValidators=[], ]", processor.toString());
 	}
 	@Test
 	public void configServiceTest() {
-		Assert.assertNull(processor.getConfigService());
+		Assertions.assertNull(processor.getConfigService());
 		ConfigService configService = Mockito.mock(ConfigService.class);
 		processor.setConfigService(configService);
-		Assert.assertEquals(configService, processor.getConfigService());
+		Assertions.assertEquals(configService, processor.getConfigService());
 	}
 	
 	@Test
 	public void episodeServiceTest() {
-		Assert.assertNull(processor.getEpisodeService());
+		Assertions.assertNull(processor.getEpisodeService());
 		EpisodeService service = Mockito.mock(EpisodeService.class);
 		processor.setEpisodeService(service);
-		Assert.assertEquals(service, processor.getEpisodeService());
+		Assertions.assertEquals(service, processor.getEpisodeService());
 	}
 
 	@Test
 	public void feedServiceTest() {
-		Assert.assertNull(processor.getFeedService());
+		Assertions.assertNull(processor.getFeedService());
 		FeedService service = Mockito.mock(FeedService.class);
 		processor.setFeedService(service);
-		Assert.assertEquals(service, processor.getFeedService());
+		Assertions.assertEquals(service, processor.getFeedService());
 	}
 
 	@Test
 	public void torrentServiceTest() {
-		Assert.assertNull(processor.getTorrentService());
+		Assertions.assertNull(processor.getTorrentService());
 		TorrentService torrentService = Mockito.mock(TorrentService.class);
 		processor.setTorrentService(torrentService);
-		Assert.assertEquals(torrentService, processor.getTorrentService());
+		Assertions.assertEquals(torrentService, processor.getTorrentService());
 	}
 
 	@Test
 	public void torrentValidatorsTest() {
-		Assert.assertNotNull(processor.getTorrentValidators());
-		Assert.assertTrue(processor.getTorrentValidators().isEmpty());
+		Assertions.assertNotNull(processor.getTorrentValidators());
+		Assertions.assertTrue(processor.getTorrentValidators().isEmpty());
 		TorrentValidator mockedValidator = Mockito.mock(TorrentValidator.class);
 		processor.setTorrentValidators(Arrays.asList(mockedValidator));
-		Assert.assertNotNull(processor.getTorrentValidators());
-		Assert.assertFalse(processor.getTorrentValidators().isEmpty());
-		Assert.assertEquals(1, processor.getTorrentValidators().size());
-		Assert.assertEquals(mockedValidator, processor.getTorrentValidators().get(0));
+		Assertions.assertNotNull(processor.getTorrentValidators());
+		Assertions.assertFalse(processor.getTorrentValidators().isEmpty());
+		Assertions.assertEquals(1, processor.getTorrentValidators().size());
+		Assertions.assertEquals(mockedValidator, processor.getTorrentValidators().get(0));
 	}
 	
 	@Test
 	public void feedResultFiltersTest(){
-		Assert.assertNotNull(processor.getFeedResultFilters());
-		Assert.assertTrue(processor.getFeedResultFilters().isEmpty());
+		Assertions.assertNotNull(processor.getFeedResultFilters());
+		Assertions.assertTrue(processor.getFeedResultFilters().isEmpty());
 		FeedResultFilter filter = Mockito.mock(FeedResultFilter.class);
 		processor.setFeedResultFilters(Arrays.asList(filter));
-		Assert.assertNotNull(processor.getFeedResultFilters());
-		Assert.assertFalse(processor.getFeedResultFilters().isEmpty());
-		Assert.assertEquals(1, processor.getFeedResultFilters().size());
-		Assert.assertEquals(filter, processor.getFeedResultFilters().get(0));
+		Assertions.assertNotNull(processor.getFeedResultFilters());
+		Assertions.assertFalse(processor.getFeedResultFilters().isEmpty());
+		Assertions.assertEquals(1, processor.getFeedResultFilters().size());
+		Assertions.assertEquals(filter, processor.getFeedResultFilters().get(0));
 	}
 
 	@Test
@@ -132,9 +132,9 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.fetchTorrent(result);
 		
-		Assert.assertEquals(torrent, result.getTorrent());
-		Assert.assertEquals(new InfoHash("INFO_HASH".getBytes()), result.getInfoHash());
-		Assert.assertEquals(0, result.getRejections().size());
+		Assertions.assertEquals(torrent, result.getTorrent());
+		Assertions.assertEquals(new InfoHash("INFO_HASH".getBytes()), result.getInfoHash());
+		Assertions.assertEquals(0, result.getRejections().size());
 		
 		Mockito.verify(torrentService).read(new URI("http://test.com"));
 		Mockito.verifyNoMoreInteractions(torrentService);
@@ -152,9 +152,9 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.fetchTorrent(result);
 		
-		Assert.assertNull(result.getTorrent());
-		Assert.assertEquals(1, result.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
+		Assertions.assertNull(result.getTorrent());
+		Assertions.assertEquals(1, result.getRejections().size());
+		Assertions.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
 		
 		Mockito.verify(torrentService).read(new URI("http://test.com"));
 		Mockito.verifyNoMoreInteractions(torrentService);
@@ -178,9 +178,9 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.fetchTorrent(result);
 		
-		Assert.assertEquals(torrent, result.getTorrent());
-		Assert.assertEquals(new InfoHash("INFO_HASH".getBytes()), result.getInfoHash());
-		Assert.assertEquals(0, result.getRejections().size());
+		Assertions.assertEquals(torrent, result.getTorrent());
+		Assertions.assertEquals(new InfoHash("INFO_HASH".getBytes()), result.getInfoHash());
+		Assertions.assertEquals(0, result.getRejections().size());
 		
 		Mockito.verify(torrentService).read(new InfoHash("INFO_HASH".getBytes()));
 		Mockito.verifyNoMoreInteractions(torrentService);
@@ -198,9 +198,9 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.fetchTorrent(result);
 		
-		Assert.assertNull(result.getTorrent());
-		Assert.assertEquals(1, result.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
+		Assertions.assertNull(result.getTorrent());
+		Assertions.assertEquals(1, result.getRejections().size());
+		Assertions.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
 		
 		Mockito.verify(torrentService).read(new InfoHash("INFO_HASH".getBytes()));
 		Mockito.verifyNoMoreInteractions(torrentService);
@@ -216,9 +216,9 @@ public class FeedItemProcessor_ImplTest {
 		processor.setTorrentService(torrentService);
 		
 		processor.fetchTorrent(result);
-		Assert.assertNull(result.getTorrent());
-		Assert.assertEquals(1, result.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
+		Assertions.assertNull(result.getTorrent());
+		Assertions.assertEquals(1, result.getRejections().size());
+		Assertions.assertEquals(FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT, result.getRejections().get(0));
 		
 		Mockito.verifyZeroInteractions(torrentService);
 
@@ -242,7 +242,7 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.validateTorrent(processUnit, show, config);
 		
-     	Assert.assertEquals(0, processUnit.getRejections().size());
+     	Assertions.assertEquals(0, processUnit.getRejections().size());
 		
 		Mockito.verify(validator).validate(torrent, show, config);
 		Mockito.verifyNoMoreInteractions(validator);
@@ -267,8 +267,8 @@ public class FeedItemProcessor_ImplTest {
 
 		processor.validateTorrent(processUnit, show, config);
 		
-     	Assert.assertEquals(1, processUnit.getRejections().size());
-     	Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, processUnit.getRejections().get(0));
+     	Assertions.assertEquals(1, processUnit.getRejections().size());
+     	Assertions.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, processUnit.getRejections().get(0));
 		
 		Mockito.verify(validator).validate(torrent, show, config);
 		Mockito.verify(validator).getRejection();
@@ -293,7 +293,7 @@ public class FeedItemProcessor_ImplTest {
 
 		FeedProcessUnit result = processor.selectBestResultTorrent(Arrays.asList(result2, result1));
 
-		Assert.assertEquals(result, result1);		
+		Assertions.assertEquals(result, result1);		
 	}
   
   	@Test
@@ -348,10 +348,10 @@ public class FeedItemProcessor_ImplTest {
      	
      	Instant testEnd = Instant.now();
      	
-     	Assert.assertTrue(episode.getLastFeedUpdate().toEpochMilli()>= testStart.toEpochMilli());
-     	Assert.assertTrue(episode.getLastFeedUpdate().toEpochMilli()<=testEnd.toEpochMilli());
-     	Assert.assertTrue(episode.getLastFeedCheck().equals(episode.getLastFeedUpdate()));
-     	Assert.assertEquals(EpisodeStatus.FOUND, episode.getStatus());
+     	Assertions.assertTrue(episode.getLastFeedUpdate().toEpochMilli()>= testStart.toEpochMilli());
+     	Assertions.assertTrue(episode.getLastFeedUpdate().toEpochMilli()<=testEnd.toEpochMilli());
+     	Assertions.assertTrue(episode.getLastFeedCheck().equals(episode.getLastFeedUpdate()));
+     	Assertions.assertEquals(EpisodeStatus.FOUND, episode.getStatus());
  
      	Mockito.verify(service).update(episode);
      	Mockito.verifyNoMoreInteractions(service);
@@ -381,7 +381,7 @@ public class FeedItemProcessor_ImplTest {
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("BITSNOOP_SHOW_TITLE_1970-01-01_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));
+  		Assertions.assertEquals("BITSNOOP_SHOW_TITLE_1970-01-01_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));
   		
   	}
   	
@@ -396,7 +396,7 @@ public class FeedItemProcessor_ImplTest {
   		episode.setTitle("EPISODE_TITLE");
   		episode.setShow(show);
   		
-  		Assert.assertEquals("BITSNOOP_SHOW_TITLE_10x09_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));	
+  		Assertions.assertEquals("BITSNOOP_SHOW_TITLE_10x09_EPISODE_TITLE.torrent", processor.generateTorrentFileName(FeedSource.BITSNOOP, episode));	
   	}
   	
   	@Test
@@ -411,12 +411,12 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
-  		Assert.assertEquals(FeedSource.BITSNOOP,processUnit.getSource());
-  		Assert.assertEquals("TITLE_1", processUnit.getTitle());
-  		Assert.assertEquals(99, processUnit.getScrape().getSeeders());
-  		Assert.assertEquals(100, processUnit.getScrape().getLeechers());
-  		Assert.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
-  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());	
+  		Assertions.assertEquals(FeedSource.BITSNOOP,processUnit.getSource());
+  		Assertions.assertEquals("TITLE_1", processUnit.getTitle());
+  		Assertions.assertEquals(99, processUnit.getScrape().getSeeders());
+  		Assertions.assertEquals(100, processUnit.getScrape().getLeechers());
+  		Assertions.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
+  		Assertions.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());	
   	}
   	
   	@Test
@@ -430,11 +430,11 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setInfoHashHex("df706cf16f45e8c0fd226223509c7e97b4ffec13");
   	  		  		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
-  		Assert.assertEquals("TITLE_1", processUnit.getTitle());
-  		Assert.assertEquals(99, processUnit.getScrape().getSeeders());
-  		Assert.assertEquals(100, processUnit.getScrape().getLeechers());
-  		Assert.assertNull(processUnit.getDownloadUri());
-  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());
+  		Assertions.assertEquals("TITLE_1", processUnit.getTitle());
+  		Assertions.assertEquals(99, processUnit.getScrape().getSeeders());
+  		Assertions.assertEquals(100, processUnit.getScrape().getLeechers());
+  		Assertions.assertNull(processUnit.getDownloadUri());
+  		Assertions.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", processUnit.getInfoHash().getHex());
   	}
   	
   	@Test
@@ -448,11 +448,11 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setInfoHashHex(null);
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
-  		Assert.assertEquals("TITLE_1", processUnit.getTitle());
-  		Assert.assertEquals(99, processUnit.getScrape().getSeeders());
-  		Assert.assertEquals(100, processUnit.getScrape().getLeechers());
-  		Assert.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
-  		Assert.assertNull(processUnit.getInfoHash());
+  		Assertions.assertEquals("TITLE_1", processUnit.getTitle());
+  		Assertions.assertEquals(99, processUnit.getScrape().getSeeders());
+  		Assertions.assertEquals(100, processUnit.getScrape().getLeechers());
+  		Assertions.assertEquals(new URI("http://download_1.url"), processUnit.getDownloadUri());
+  		Assertions.assertNull(processUnit.getInfoHash());
   	}
   	
   	@Test
@@ -466,11 +466,11 @@ public class FeedItemProcessor_ImplTest {
   		feedResult.setInfoHashHex(null);
   		
   		FeedProcessUnit processUnit = processor.convertFeedResult(feedResult);
-  		Assert.assertEquals("TITLE_1", processUnit.getTitle());
-  		Assert.assertEquals(99, processUnit.getScrape().getSeeders());
-  		Assert.assertEquals(100, processUnit.getScrape().getLeechers());
-  		Assert.assertNull(processUnit.getDownloadUri());
-  		Assert.assertNull( processUnit.getInfoHash());	
+  		Assertions.assertEquals("TITLE_1", processUnit.getTitle());
+  		Assertions.assertEquals(99, processUnit.getScrape().getSeeders());
+  		Assertions.assertEquals(100, processUnit.getScrape().getLeechers());
+  		Assertions.assertNull(processUnit.getDownloadUri());
+  		Assertions.assertNull( processUnit.getInfoHash());	
   	}
   	
   	@Test
@@ -486,9 +486,9 @@ public class FeedItemProcessor_ImplTest {
 		
 		processor.scrapeTorrent(processUnit);
 		
-		Assert.assertEquals(0,processUnit.getRejections().size());
-		Assert.assertEquals(100,processUnit.getScrape().getSeeders());
-		Assert.assertEquals(200, processUnit.getScrape().getLeechers());
+		Assertions.assertEquals(0,processUnit.getRejections().size());
+		Assertions.assertEquals(100,processUnit.getScrape().getSeeders());
+		Assertions.assertEquals(200, processUnit.getScrape().getLeechers());
 		
 		Mockito.verify(torrentService).scrape(torrent);
 		Mockito.verifyNoMoreInteractions(torrentService);		
@@ -507,10 +507,10 @@ public class FeedItemProcessor_ImplTest {
 		
 		processor.scrapeTorrent(processUnit);
 		
-		Assert.assertEquals(1,processUnit.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
-		Assert.assertEquals(19,processUnit.getScrape().getSeeders());
-		Assert.assertEquals(18, processUnit.getScrape().getLeechers());
+		Assertions.assertEquals(1,processUnit.getRejections().size());
+		Assertions.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
+		Assertions.assertEquals(19,processUnit.getScrape().getSeeders());
+		Assertions.assertEquals(18, processUnit.getScrape().getLeechers());
 		
 		Mockito.verify(torrentService).scrape(torrent);
 		Mockito.verifyNoMoreInteractions(torrentService); 		
@@ -528,9 +528,9 @@ public class FeedItemProcessor_ImplTest {
 		
 		processor.scrapeTorrent(processUnit);
 		
-		Assert.assertEquals(1,processUnit.getRejections().size());
-		Assert.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
-		Assert.assertNull(processUnit.getScrape());
+		Assertions.assertEquals(1,processUnit.getRejections().size());
+		Assertions.assertEquals(FeedProcessUnitRejection.INSUFFICENT_SEEDERS, processUnit.getRejections().get(0));
+		Assertions.assertNull(processUnit.getScrape());
 		
 		Mockito.verify(torrentService).scrape(torrent);
 		Mockito.verifyNoMoreInteractions(torrentService);   		

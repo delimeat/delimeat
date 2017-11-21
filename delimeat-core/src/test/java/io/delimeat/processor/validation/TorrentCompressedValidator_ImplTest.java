@@ -15,9 +15,9 @@
  */
 package io.delimeat.processor.validation;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.processor.entity.FeedProcessUnitRejection;
@@ -33,7 +33,7 @@ public class TorrentCompressedValidator_ImplTest {
 	private Config config;
 	private Torrent torrent;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new TorrentCompressedValidator_Impl();
 		show = new Show();
@@ -43,7 +43,7 @@ public class TorrentCompressedValidator_ImplTest {
 	
 	@Test
 	public void rejectionTest(){
-		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, validator.getRejection());
+		Assertions.assertEquals(FeedProcessUnitRejection.CONTAINS_COMPRESSED, validator.getRejection());
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.setFiles(null);
 
 		torrent.setInfo(info);
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.setName("VALIDFILE_TYPE.ZIP");
 
 		torrent.setInfo(info);
-		Assert.assertFalse( validator.validate(torrent, show, config));
+		Assertions.assertFalse( validator.validate(torrent, show, config));
 
 	}
 
@@ -77,7 +77,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.getFiles().add(file2);
 
 		torrent.setInfo(info);
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 
 	}
 
@@ -92,7 +92,7 @@ public class TorrentCompressedValidator_ImplTest {
 		info.getFiles().add(file2);
 
 		torrent.setInfo(info);
-		Assert.assertFalse( validator.validate(torrent, show, config));
+		Assertions.assertFalse( validator.validate(torrent, show, config));
 
 	}
 }

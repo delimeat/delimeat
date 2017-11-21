@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
@@ -32,7 +32,7 @@ public class ExcludedKeywordFilter_ImplTest {
 
 	private ExcludedKeywordFilter_Impl filter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		filter = new ExcludedKeywordFilter_Impl();
 	}
@@ -44,8 +44,8 @@ public class ExcludedKeywordFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, new Episode(), config);
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(result, results.get(0));
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(result, results.get(0));
 	}
 
 	@Test
@@ -57,8 +57,8 @@ public class ExcludedKeywordFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, new Episode(), config);
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(result, results.get(0));
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(result, results.get(0));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class ExcludedKeywordFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, new Episode(), config);
-		Assert.assertEquals(0, results.size());
+		Assertions.assertEquals(0, results.size());
 	}
 
 	@Test
@@ -84,8 +84,8 @@ public class ExcludedKeywordFilter_ImplTest {
 		List<FeedResult> results = new ArrayList<>(Arrays.asList(result));
 
 		filter.filter(results, new Episode(), config);
-		Assert.assertEquals(1, results.size());
-		Assert.assertEquals(result, results.get(0));
+		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(result, results.get(0));
 	}
 	
 }

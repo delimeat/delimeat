@@ -15,38 +15,38 @@
  */
 package io.delimeat.processor.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FeedProcessUnitRejectionTest {
 
 	@Test
 	public void containsFolersTest() {
-		Assert.assertEquals(1, FeedProcessUnitRejection.CONTAINS_FOLDERS.getValue());
+		Assertions.assertEquals(1, FeedProcessUnitRejection.CONTAINS_FOLDERS.getValue());
 	}
 
 	@Test
 	public void containsCompressedTest() {
-		Assert.assertEquals(2, FeedProcessUnitRejection.CONTAINS_COMPRESSED.getValue());
+		Assertions.assertEquals(2, FeedProcessUnitRejection.CONTAINS_COMPRESSED.getValue());
 	}
 
 	@Test
 	public void containsExcludedFileTypesTest() {
-		Assert.assertEquals(3, FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES.getValue());
+		Assertions.assertEquals(3, FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES.getValue());
 	}
 
 	@Test
 	public void fileSizeIncorrectTest() {
-		Assert.assertEquals(4, FeedProcessUnitRejection.FILE_SIZE_INCORRECT.getValue());
+		Assertions.assertEquals(4, FeedProcessUnitRejection.FILE_SIZE_INCORRECT.getValue());
 	}
 
 	@Test
 	public void insufficientSeedersTest() {
-		Assert.assertEquals(5, FeedProcessUnitRejection.INSUFFICENT_SEEDERS.getValue());
+		Assertions.assertEquals(5, FeedProcessUnitRejection.INSUFFICENT_SEEDERS.getValue());
 	}
 
 	@Test
 	public void unableToGetTorrentTest() {
-		Assert.assertEquals(6, FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT.getValue());
+		Assertions.assertEquals(6, FeedProcessUnitRejection.UNNABLE_TO_GET_TORRENT.getValue());
 	}
 }

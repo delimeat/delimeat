@@ -17,9 +17,9 @@ package io.delimeat.processor.validation;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.processor.entity.FeedProcessUnitRejection;
@@ -35,7 +35,7 @@ public class TorrentFileTypeValidator_ImplTest {
 	private Config config;
 	private Torrent torrent;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new TorrentFileTypeValidator_Impl();
 		show = new Show();
@@ -45,19 +45,19 @@ public class TorrentFileTypeValidator_ImplTest {
 
 	@Test
 	public void rejectionTest(){
-		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES, validator.getRejection());
+		Assertions.assertEquals(FeedProcessUnitRejection.CONTAINS_EXCLUDED_FILE_TYPES, validator.getRejection());
 	}
 	
 	@Test
 	public void nullFileTypesTest() throws Exception {
 		config.setIgnoredFileTypes(null);
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
 	public void emptyFileTypesTest() throws Exception {
 		config.setIgnoredFileTypes(Collections.<String>emptyList());
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertFalse( validator.validate(torrent, show, config));
+		Assertions.assertFalse( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertTrue( validator.validate(torrent, show, config));
+		Assertions.assertTrue( validator.validate(torrent, show, config));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class TorrentFileTypeValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertFalse( validator.validate(torrent, show, config));
+		Assertions.assertFalse( validator.validate(torrent, show, config));
 	}
 
 }

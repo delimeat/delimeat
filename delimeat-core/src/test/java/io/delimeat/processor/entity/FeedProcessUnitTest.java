@@ -17,9 +17,9 @@ package io.delimeat.processor.entity;
 
 import java.net.URI;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
@@ -29,55 +29,55 @@ public class FeedProcessUnitTest {
 
 	private FeedProcessUnit processUnit;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		processUnit = new FeedProcessUnit();
 	}
 	
 	@Test
 	public void downloadUriTest() throws Exception{
-		Assert.assertNull(processUnit.getDownloadUri());
+		Assertions.assertNull(processUnit.getDownloadUri());
 		URI uri = new URI("udp://test.com");
 		processUnit.setDownloadUri(uri);
-		Assert.assertEquals(uri, processUnit.getDownloadUri());
+		Assertions.assertEquals(uri, processUnit.getDownloadUri());
 	}
 	
 	@Test
 	public void feedResultRejectionsTest(){
-		Assert.assertNotNull(processUnit.getRejections());
-		Assert.assertEquals(0, processUnit.getRejections().size());
+		Assertions.assertNotNull(processUnit.getRejections());
+		Assertions.assertEquals(0, processUnit.getRejections().size());
 	}
 	
 	@Test
 	public void infoHashTest(){
-		Assert.assertNull(processUnit.getInfoHash());
+		Assertions.assertNull(processUnit.getInfoHash());
 		InfoHash infoHash = new InfoHash("bytes".getBytes());
 		processUnit.setInfoHash(infoHash);
-		Assert.assertEquals(infoHash, processUnit.getInfoHash());
+		Assertions.assertEquals(infoHash, processUnit.getInfoHash());
 	}
 	
 	@Test
 	public void scrapeTest(){
-		Assert.assertNull(processUnit.getScrape());
+		Assertions.assertNull(processUnit.getScrape());
 		ScrapeResult result = new ScrapeResult(Long.MAX_VALUE, Long.MIN_VALUE);
 		processUnit.setScrape(result);
-		Assert.assertEquals(Long.MAX_VALUE, processUnit.getScrape().getSeeders());
-		Assert.assertEquals(Long.MIN_VALUE, processUnit.getScrape().getLeechers());	
+		Assertions.assertEquals(Long.MAX_VALUE, processUnit.getScrape().getSeeders());
+		Assertions.assertEquals(Long.MIN_VALUE, processUnit.getScrape().getLeechers());	
 	}
 	
 	@Test
 	public void titleTest(){
-		Assert.assertNull(processUnit.getTitle());
+		Assertions.assertNull(processUnit.getTitle());
 		processUnit.setTitle("TITLE");
-		Assert.assertEquals("TITLE", processUnit.getTitle());
+		Assertions.assertEquals("TITLE", processUnit.getTitle());
 	}
 	
 	@Test
 	public void torrentTest(){
-		Assert.assertNull(processUnit.getTorrent());
+		Assertions.assertNull(processUnit.getTorrent());
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
-		Assert.assertEquals(torrent, processUnit.getTorrent());
+		Assertions.assertEquals(torrent, processUnit.getTorrent());
 	}
 	
 	@Test
@@ -87,12 +87,12 @@ public class FeedProcessUnitTest {
 		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
 		processUnit.setTitle("TITLE");
 		processUnit.setTorrent(new Torrent());
-		Assert.assertEquals(-1163967515, processUnit.hashCode());
+		Assertions.assertEquals(-1163967515, processUnit.hashCode());
 	}
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedProcessUnit [source=null, title=null, infoHash=null, downloadUri=null, scrape=null, torrent=null, rejections=[]]", processUnit.toString());
+		Assertions.assertEquals("FeedProcessUnit [source=null, title=null, infoHash=null, downloadUri=null, scrape=null, torrent=null, rejections=[]]", processUnit.toString());
 	}
 	
 	@Test
@@ -112,22 +112,22 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertTrue(processUnit.equals(other));
+		Assertions.assertTrue(processUnit.equals(other));
 	}
 	
 	@Test
 	public void equalsSelfTest(){
-		Assert.assertTrue(processUnit.equals(processUnit));
+		Assertions.assertTrue(processUnit.equals(processUnit));
 	}
 	
 	@Test
 	public void equalsNullTest(){
-		Assert.assertFalse(processUnit.equals(null));
+		Assertions.assertFalse(processUnit.equals(null));
 	}
 	
 	@Test
 	public void equalsObjectTest(){
-		Assert.assertFalse(processUnit.equals(new Object()));
+		Assertions.assertFalse(processUnit.equals(new Object()));
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -167,7 +167,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -187,7 +187,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -207,7 +207,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 
 	@Test
@@ -228,7 +228,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -248,7 +248,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -268,7 +268,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}	
 	
 	@Test
@@ -288,7 +288,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -307,7 +307,7 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 	
 	@Test
@@ -326,6 +326,6 @@ public class FeedProcessUnitTest {
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
 		
-		Assert.assertFalse(processUnit.equals(other));
+		Assertions.assertFalse(processUnit.equals(other));
 	}
 }

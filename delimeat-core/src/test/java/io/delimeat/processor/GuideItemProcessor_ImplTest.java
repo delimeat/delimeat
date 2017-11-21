@@ -22,9 +22,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -41,38 +41,38 @@ public class GuideItemProcessor_ImplTest {
 
 	private GuideItemProcessor_Impl processor;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		processor = new GuideItemProcessor_Impl();
 	}
 
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("GuideItemProcessor_Impl []", processor.toString());
+		Assertions.assertEquals("GuideItemProcessor_Impl []", processor.toString());
 	}
 	
 	@Test
 	public void showServiceTest() {
-		Assert.assertNull(processor.getShowService());
+		Assertions.assertNull(processor.getShowService());
 		ShowService showService = Mockito.mock(ShowService.class);
 		processor.setShowService(showService);
-		Assert.assertEquals(showService, processor.getShowService());
+		Assertions.assertEquals(showService, processor.getShowService());
 	}
 
 	@Test
 	public void guideServiceTest() {
-		Assert.assertNull(processor.getGuideService());
+		Assertions.assertNull(processor.getGuideService());
 		GuideService guideService = Mockito.mock(GuideService.class);
 		processor.setGuideService(guideService);
-		Assert.assertEquals(guideService, processor.getGuideService());
+		Assertions.assertEquals(guideService, processor.getGuideService());
 	}
 	
 	@Test
 	public void episodeServiceTest() {
-		Assert.assertNull(processor.getEpisodeService());
+		Assertions.assertNull(processor.getEpisodeService());
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		processor.setEpisodeService(episodeService);
-		Assert.assertEquals(episodeService, processor.getEpisodeService());
+		Assertions.assertEquals(episodeService, processor.getEpisodeService());
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class GuideItemProcessor_ImplTest {
 		
 		LocalDate result = processor.minPendingAirDate(Arrays.asList(skippedEpisode,foundEpisode,minPendingEpisode,maxPendingEpisode));
 		
-		Assert.assertEquals(LocalDate.of(2017, 01, 02), result);
+		Assertions.assertEquals(LocalDate.of(2017, 01, 02), result);
 	}
 	
 	@Test
@@ -110,8 +110,8 @@ public class GuideItemProcessor_ImplTest {
 		
 		LocalDate result = processor.minPendingAirDate(Arrays.asList(skippedEpisode,foundEpisode));
 		
-		Assert.assertNotNull(result);
-		Assert.assertEquals(LocalDate.now(),result);
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(LocalDate.now(),result);
 	}
 	
 	@Test
@@ -142,14 +142,14 @@ public class GuideItemProcessor_ImplTest {
 		Mockito.when(episodeService.create(argumentCaptor.capture())).thenReturn(null);
 		processor.setEpisodeService(episodeService);
 		
-		Assert.assertTrue(processor.createEpisodes(guideEps, showEps,show));
+		Assertions.assertTrue(processor.createEpisodes(guideEps, showEps,show));
 		
 		Episode result = argumentCaptor.getValue();
-		Assert.assertEquals(LocalDate.of(2017, 9, 8), result.getAirDate());
-		Assert.assertEquals(EpisodeStatus.PENDING, result.getStatus());
-		Assert.assertEquals(2, result.getSeasonNum());
-		Assert.assertEquals(3, result.getEpisodeNum());
-		Assert.assertEquals(show, result.getShow());
+		Assertions.assertEquals(LocalDate.of(2017, 9, 8), result.getAirDate());
+		Assertions.assertEquals(EpisodeStatus.PENDING, result.getStatus());
+		Assertions.assertEquals(2, result.getSeasonNum());
+		Assertions.assertEquals(3, result.getEpisodeNum());
+		Assertions.assertEquals(show, result.getShow());
 		
 		Mockito.verify(episodeService).create(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -158,7 +158,7 @@ public class GuideItemProcessor_ImplTest {
 	@Test
 	public void createEpisodesNoEpisodesTest() throws Exception {
 		
-		Assert.assertFalse(processor.createEpisodes(Collections.emptyList(), Collections.emptyList(), null));
+		Assertions.assertFalse(processor.createEpisodes(Collections.emptyList(), Collections.emptyList(), null));
 	}
 	
 	@Test
@@ -193,7 +193,7 @@ public class GuideItemProcessor_ImplTest {
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		processor.setEpisodeService(episodeService);
 		
-		Assert.assertTrue(processor.deleteEpisodes(guideEps, showEps));
+		Assertions.assertTrue(processor.deleteEpisodes(guideEps, showEps));
 		
 		Mockito.verify(episodeService).delete(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -202,7 +202,7 @@ public class GuideItemProcessor_ImplTest {
 	@Test
 	public void deleteEpisodesNoEpisodesTest() throws Exception {
 		
-		Assert.assertFalse(processor.deleteEpisodes(Collections.emptyList(), Collections.emptyList()));
+		Assertions.assertFalse(processor.deleteEpisodes(Collections.emptyList(), Collections.emptyList()));
 	}
 	
 	@Test
@@ -273,7 +273,7 @@ public class GuideItemProcessor_ImplTest {
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		processor.setEpisodeService(episodeService);
 		
-		Assert.assertTrue(processor.updateEpisodes(guideEps, showEps));
+		Assertions.assertTrue(processor.updateEpisodes(guideEps, showEps));
 		
 		Mockito.verify(episodeService, Mockito.times(2)).update(Mockito.any());
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -282,7 +282,7 @@ public class GuideItemProcessor_ImplTest {
 	@Test
 	public void updateEpisodesNoEpisodesTest() throws Exception {
 		
-		Assert.assertFalse(processor.updateEpisodes(Collections.emptyList(), Collections.emptyList()));
+		Assertions.assertFalse(processor.updateEpisodes(Collections.emptyList(), Collections.emptyList()));
 	}
 	
 	@Test
@@ -311,9 +311,9 @@ public class GuideItemProcessor_ImplTest {
 		
 		Date testEnd = new Date();
 		
-		Assert.assertEquals(Instant.MAX, show.getLastGuideUpdate());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
+		Assertions.assertEquals(Instant.MAX, show.getLastGuideUpdate());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
 
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -389,27 +389,27 @@ public class GuideItemProcessor_ImplTest {
 		
 		Date testEnd = new Date();
 
-		Assert.assertFalse(show.isAiring());
-		Assert.assertTrue(show.getLastGuideUpdate().toEpochMilli()>=testStart.getTime());
-		Assert.assertTrue(show.getLastGuideUpdate().toEpochMilli()<=testEnd.getTime());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
+		Assertions.assertFalse(show.isAiring());
+		Assertions.assertTrue(show.getLastGuideUpdate().toEpochMilli()>=testStart.getTime());
+		Assertions.assertTrue(show.getLastGuideUpdate().toEpochMilli()<=testEnd.getTime());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
 		
 		Episode createdEpResult = createCaptor.getValue();
-		Assert.assertEquals(LocalDate.of(2017,03,28), createdEpResult.getAirDate());
-		Assert.assertEquals(3, createdEpResult.getSeasonNum());
-		Assert.assertEquals(4, createdEpResult.getEpisodeNum());
-		Assert.assertEquals(EpisodeStatus.PENDING, createdEpResult.getStatus());
-		Assert.assertEquals(show, createdEpResult.getShow());
+		Assertions.assertEquals(LocalDate.of(2017,03,28), createdEpResult.getAirDate());
+		Assertions.assertEquals(3, createdEpResult.getSeasonNum());
+		Assertions.assertEquals(4, createdEpResult.getEpisodeNum());
+		Assertions.assertEquals(EpisodeStatus.PENDING, createdEpResult.getStatus());
+		Assertions.assertEquals(show, createdEpResult.getShow());
 		
 		Episode updatedEpResult = updateCaptor.getValue();
-		Assert.assertEquals(LocalDate.of(2017,03,28), updatedEpResult.getAirDate());
-		Assert.assertEquals(2, updatedEpResult.getSeasonNum());
-		Assert.assertEquals(3, updatedEpResult.getEpisodeNum());
-		Assert.assertEquals("UPDATED_TITLE", updatedEpResult.getTitle());
-		Assert.assertEquals(EpisodeStatus.PENDING, updatedEpResult.getStatus());
+		Assertions.assertEquals(LocalDate.of(2017,03,28), updatedEpResult.getAirDate());
+		Assertions.assertEquals(2, updatedEpResult.getSeasonNum());
+		Assertions.assertEquals(3, updatedEpResult.getEpisodeNum());
+		Assertions.assertEquals("UPDATED_TITLE", updatedEpResult.getTitle());
+		Assertions.assertEquals(EpisodeStatus.PENDING, updatedEpResult.getStatus());
 		
-		Assert.assertEquals(Long.MIN_VALUE, deleteCaptor.getValue().longValue());
+		Assertions.assertEquals(Long.MIN_VALUE, deleteCaptor.getValue().longValue());
 		
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);
@@ -477,10 +477,10 @@ public class GuideItemProcessor_ImplTest {
 		
 		Date testEnd = new Date();
 
-		Assert.assertTrue(show.isAiring());
-		//Assert.assertEquals(Instant.EPOCH, show.getLastGuideUpdate());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
-		Assert.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
+		Assertions.assertTrue(show.isAiring());
+		//Assertions.assertEquals(Instant.EPOCH, show.getLastGuideUpdate());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()>=testStart.getTime());
+		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
 
 		Mockito.verify(showService).update(show);
 		Mockito.verifyNoMoreInteractions(showService);

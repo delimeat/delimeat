@@ -17,9 +17,9 @@ package io.delimeat.processor;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.show.ShowService;
@@ -29,22 +29,22 @@ public class GuideItemReader_ImplTest {
 
 	private GuideItemReader_Impl reader;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		reader = new GuideItemReader_Impl();
 	}
 	
 	@Test
 	public void showServiceTest(){
-		Assert.assertNull(reader.getShowService());
+		Assertions.assertNull(reader.getShowService());
 		ShowService showService = Mockito.mock(ShowService.class);
 		reader.setShowService(showService);
-		Assert.assertEquals(showService, reader.getShowService());
+		Assertions.assertEquals(showService, reader.getShowService());
 	}
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("GuideItemReader_Impl []", reader.toString());
+		Assertions.assertEquals("GuideItemReader_Impl []", reader.toString());
 	}
 	
 	@Test
@@ -58,8 +58,8 @@ public class GuideItemReader_ImplTest {
 		
 		reader.setShowService(showService);
 		
-		Assert.assertEquals(show1, reader.read());
-		Assert.assertEquals(show1, reader.read());
-		Assert.assertNull(reader.read());
+		Assertions.assertEquals(show1, reader.read());
+		Assertions.assertEquals(show1, reader.read());
+		Assertions.assertNull(reader.read());
 	}
 }

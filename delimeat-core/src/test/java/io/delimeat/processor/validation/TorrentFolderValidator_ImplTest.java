@@ -15,9 +15,9 @@
  */
 package io.delimeat.processor.validation;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.processor.entity.FeedProcessUnitRejection;
@@ -33,7 +33,7 @@ public class TorrentFolderValidator_ImplTest {
 	private Config config;
 	private Torrent torrent;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new TorrentFolderValidator_Impl();
 		show = new Show();
@@ -43,14 +43,14 @@ public class TorrentFolderValidator_ImplTest {
 
 	@Test
 	public void rejectionTest(){
-		Assert.assertEquals(FeedProcessUnitRejection.CONTAINS_FOLDERS, validator.getRejection());
+		Assertions.assertEquals(FeedProcessUnitRejection.CONTAINS_FOLDERS, validator.getRejection());
 	}
 	
 	@Test
 	public void singleFileTest() throws Exception {
 		TorrentInfo info = new TorrentInfo();
 		torrent.setInfo(info);
-		Assert.assertTrue(validator.validate(torrent, show, config));
+		Assertions.assertTrue(validator.validate(torrent, show, config));
 
 	}
 
@@ -67,6 +67,6 @@ public class TorrentFolderValidator_ImplTest {
 
 		torrent.setInfo(info);
 
-		Assert.assertFalse(validator.validate(torrent, show, config));
+		Assertions.assertFalse(validator.validate(torrent, show, config));
 	}
 }

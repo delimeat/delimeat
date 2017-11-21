@@ -19,9 +19,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.config.ConfigService;
@@ -34,30 +34,30 @@ public class FeedItemReader_ImplTest {
 
 	private FeedItemReader_Impl reader;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		reader = new FeedItemReader_Impl();
 	}
 	
 	@Test
 	public void toStringTest(){
-		Assert.assertEquals("FeedItemReader_Impl []", reader.toString());
+		Assertions.assertEquals("FeedItemReader_Impl []", reader.toString());
 	}
 	
 	@Test
 	public void configServiceTest() {
-		Assert.assertNull(reader.getConfigService());
+		Assertions.assertNull(reader.getConfigService());
 		ConfigService configService = Mockito.mock(ConfigService.class);
 		reader.setConfigService(configService);
-		Assert.assertEquals(configService, reader.getConfigService());
+		Assertions.assertEquals(configService, reader.getConfigService());
 	}
 	
 	@Test
 	public void episodeServiceTest() {
-		Assert.assertNull(reader.getEpisodeService());
+		Assertions.assertNull(reader.getEpisodeService());
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		reader.setEpisodeService(episodeService);
-		Assert.assertEquals(episodeService, reader.getEpisodeService());
+		Assertions.assertEquals(episodeService, reader.getEpisodeService());
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertNull(reader.read());
+		Assertions.assertNull(reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -102,7 +102,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertNull(reader.read());
+		Assertions.assertNull(reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -131,7 +131,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertNull(reader.read());
+		Assertions.assertNull(reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -159,7 +159,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertEquals(episode, reader.read());
+		Assertions.assertEquals(episode, reader.read());
 
 
 		Mockito.verify(episodeService).findAllPending();
@@ -188,7 +188,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertEquals(episode, reader.read());
+		Assertions.assertEquals(episode, reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -217,7 +217,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertNull(reader.read());
+		Assertions.assertNull(reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);
@@ -243,7 +243,7 @@ public class FeedItemReader_ImplTest {
 		Mockito.when(configService.read()).thenReturn(config);
 		reader.setConfigService(configService);
 
-		Assert.assertNull(reader.read());
+		Assertions.assertNull(reader.read());
 
 		Mockito.verify(episodeService).findAllPending();
 		Mockito.verifyNoMoreInteractions(episodeService);

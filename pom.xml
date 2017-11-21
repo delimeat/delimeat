@@ -89,8 +89,6 @@
 	<dependencies>
 
 		<!-- TEST ! -->
-
- 
 		<dependency>
 		    <groupId>org.junit.platform</groupId>
 		    <artifactId>junit-platform-engine</artifactId>
@@ -115,12 +113,14 @@
 		    <version>${org.junit.jupiter.version}</version>
 		    <scope>test</scope>
 		</dependency>
+		<!-- 
 		<dependency>
 		    <groupId>org.junit.vintage</groupId>
 		    <artifactId>junit-vintage-engine</artifactId>
 		    <version>${org.junit.vintage.version}</version>
 		    <scope>test</scope>
 		</dependency>
+		!-->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
