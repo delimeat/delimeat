@@ -17,15 +17,15 @@ package io.delimeat.util.http.exception;
 
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class HttpTimeoutExceptionTest {
 
 	@Test
 	public void constructorTest() throws Exception{
 		HttpTimeoutException exception = new HttpTimeoutException(new URL("http://localhost"));
-		Assert.assertEquals("Timeout for http://localhost", exception.getMessage());
+		Assertions.assertEquals("Timeout for http://localhost", exception.getMessage());
 		
 	}
 }

@@ -17,9 +17,9 @@ package io.delimeat.util.jaxb;
 
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.util.jaxb.LocalDateAdapter;
 
@@ -27,33 +27,33 @@ public class LocalDateAdapterTest {
 
 	private LocalDateAdapter adapter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		adapter = new LocalDateAdapter();
 	}
 
 	@Test
 	public void marshalTest() throws Exception {
-		Assert.assertEquals("2016-01-03" ,adapter.marshal(LocalDate.parse("2016-01-03")));
+		Assertions.assertEquals("2016-01-03" ,adapter.marshal(LocalDate.parse("2016-01-03")));
 	}
 	@Test
 	public void marshalNullTest() throws Exception {
-		Assert.assertNull(adapter.marshal(null));
+		Assertions.assertNull(adapter.marshal(null));
 	}
 
 	@Test
 	public void setValidDateTest() throws Exception {
-		Assert.assertEquals(LocalDate.parse("2012-02-04"), adapter.unmarshal("2012-02-04"));
+		Assertions.assertEquals(LocalDate.parse("2012-02-04"), adapter.unmarshal("2012-02-04"));
 	}
 
 	@Test
 	public void unmarshalNullTest() throws Exception {
-		Assert.assertNull(adapter.unmarshal(null));
+		Assertions.assertNull(adapter.unmarshal(null));
 	}
 
 	@Test
 	public void unmarshalEmptyStringTest() throws Exception {
-		Assert.assertNull(adapter.unmarshal(""));
+		Assertions.assertNull(adapter.unmarshal(""));
 	}
 
 }

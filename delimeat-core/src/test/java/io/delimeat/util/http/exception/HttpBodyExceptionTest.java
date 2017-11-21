@@ -15,8 +15,8 @@
  */
 package io.delimeat.util.http.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class HttpBodyExceptionTest {
 
@@ -25,7 +25,7 @@ public class HttpBodyExceptionTest {
 		Throwable throwable = new Throwable("THROWABLE");
 		HttpBodyException exception = new HttpBodyException(Object.class, throwable);
 		
-		Assert.assertEquals("Unable to marshall/unmarshall body for class java.lang.Object", exception.getMessage());
-		Assert.assertEquals(throwable, exception.getCause());
+		Assertions.assertEquals("Unable to marshall/unmarshall body for class java.lang.Object", exception.getMessage());
+		Assertions.assertEquals(throwable, exception.getCause());
 	}
 }

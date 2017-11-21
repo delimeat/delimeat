@@ -17,9 +17,9 @@ package io.delimeat.util.http;
 
 import java.io.ByteArrayInputStream;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BInteger;
@@ -28,7 +28,7 @@ public class BencodeUnmarshaller_ImplTest {
 
 	private BencodeUnmarshaller_Impl unmarshaller;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		unmarshaller = new BencodeUnmarshaller_Impl();
 	}
@@ -36,6 +36,6 @@ public class BencodeUnmarshaller_ImplTest {
 	@Test
 	public void unmarshallTest() throws Exception{
 		BDictionary dict = unmarshaller.unmarshall(new ByteArrayInputStream("d7:INTEGERi2ee".getBytes()), BDictionary.class);
-		Assert.assertEquals(new BInteger(2), dict.get("INTEGER"));
+		Assertions.assertEquals(new BInteger(2), dict.get("INTEGER"));
 	}
 }

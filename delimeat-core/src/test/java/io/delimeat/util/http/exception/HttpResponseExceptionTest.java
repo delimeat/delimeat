@@ -17,8 +17,8 @@ package io.delimeat.util.http.exception;
 
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class HttpResponseExceptionTest {
 
@@ -26,8 +26,8 @@ public class HttpResponseExceptionTest {
 	public void constuctorTest() throws Exception{
 		HttpResponseException exception = new HttpResponseException(new URL("http://localhost"), 500, "MESSAGE");
 		
-		Assert.assertEquals(new URL("http://localhost"), exception.getUrl());
-		Assert.assertEquals(500, exception.getCode());
-		Assert.assertEquals("HTTP response code 500 with message \"MESSAGE\" for url http://localhost", exception.getMessage());
+		Assertions.assertEquals(new URL("http://localhost"), exception.getUrl());
+		Assertions.assertEquals(500, exception.getCode());
+		Assertions.assertEquals("HTTP response code 500 with message \"MESSAGE\" for url http://localhost", exception.getMessage());
 	}
 }

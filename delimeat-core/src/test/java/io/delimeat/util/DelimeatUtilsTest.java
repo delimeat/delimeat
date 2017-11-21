@@ -17,8 +17,8 @@ package io.delimeat.util;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.util.okhttp.LoggingInterceptor;
 import okhttp3.OkHttpClient;
@@ -27,61 +27,70 @@ public class DelimeatUtilsTest {
 
 	@Test
 	public void urlEscapeTest() {
-		Assert.assertEquals("ENCODE+THIS", DelimeatUtils.urlEscape("ENCODE THIS", "UTF-8"));
+		Assertions.assertEquals("ENCODE+THIS", DelimeatUtils.urlEscape("ENCODE THIS", "UTF-8"));
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void urlEscapeUnsupportedEncodingTest() {
-		DelimeatUtils.urlEscape("ENCODE THIS", "JIBBERISH");
+		RuntimeException ex = Assertions.assertThrows(RuntimeException.class, () ->{
+			DelimeatUtils.urlEscape("ENCODE THIS", "JIBBERISH");
+		});
+		
+		Assertions.assertEquals("java.io.UnsupportedEncodingException: JIBBERISH", ex.getMessage());
+		
 	}
 
 	@Test
 	public void toHexTest() {
-		Assert.assertEquals("6279746573", DelimeatUtils.toHex("bytes".getBytes()));
+		Assertions.assertEquals("6279746573", DelimeatUtils.toHex("bytes".getBytes()));
 	}
 	
 	@Test
 	public void hexToBytesTest() {
-		Assert.assertEquals("bytes", new String(DelimeatUtils.hexToBytes("6279746573")));
+		Assertions.assertEquals("bytes", new String(DelimeatUtils.hexToBytes("6279746573")));
 	}
 
 	@Test
 	public void sha1HashTest() {
 		byte[] expectedBytes = new byte[] { 50, 82, 79, -89, 112, -96, 70, -88, 123, 28, 107, -61, 15, 99, -84, 52, 18,
 				-84, -125, 37 };
-		Assert.assertTrue(Arrays.equals(expectedBytes, DelimeatUtils.hashBytes("byes".getBytes(),"SHA-1")));
+		Assertions.assertTrue(Arrays.equals(expectedBytes, DelimeatUtils.hashBytes("byes".getBytes(),"SHA-1")));
 	}
 	
-	@Test(expected=RuntimeException.class)
+	@Test
 	public void hashBytesInvalidAlgorithmTest(){
-		DelimeatUtils.hashBytes("byes".getBytes(),"JIBBERISH");
+		RuntimeException ex = Assertions.assertThrows(RuntimeException.class, () -> {
+			DelimeatUtils.hashBytes("bytes".getBytes(),"JIBBERISH");
+		});
+		
+		Assertions.assertEquals("java.security.NoSuchAlgorithmException: JIBBERISH MessageDigest not available", ex.getMessage());
 	}
 	
 	@Test
 	public void httpClientTest(){
 		OkHttpClient client = DelimeatUtils.httpClient();
-		Assert.assertEquals(2000, client.connectTimeoutMillis());
-		Assert.assertEquals(2000, client.readTimeoutMillis());
-		Assert.assertEquals(2000, client.writeTimeoutMillis());
-		Assert.assertEquals(1, client.interceptors().size());
-		Assert.assertEquals(LoggingInterceptor.class, client.interceptors().get(0).getClass());
+		Assertions.assertEquals(2000, client.connectTimeoutMillis());
+		Assertions.assertEquals(2000, client.readTimeoutMillis());
+		Assertions.assertEquals(2000, client.writeTimeoutMillis());
+		Assertions.assertEquals(1, client.interceptors().size());
+		Assertions.assertEquals(LoggingInterceptor.class, client.interceptors().get(0).getClass());
 	}
 	
 	@Test
 	public void cleanTitleTest() {
 		String result = DelimeatUtils.cleanTitle("Marvel's DC's This is 2015 a V'ery-Nice $#10293734521,.<>~?! title & (2016)");
 
-		Assert.assertEquals("This is 2015 a Very-Nice 10293734521 title and", result);
+		Assertions.assertEquals("This is 2015 a Very-Nice 10293734521 title and", result);
 	}
 	
 	@Test
 	public void cleanTitleNullTest() {
-		Assert.assertNull(DelimeatUtils.cleanTitle(null));
+		Assertions.assertNull(DelimeatUtils.cleanTitle(null));
 	}
 	
 	@Test
 	public void cleanTitleEmptyTest() {
-		Assert.assertEquals("", DelimeatUtils.cleanTitle(""));
+		Assertions.assertEquals("", DelimeatUtils.cleanTitle(""));
 	}
 
 }
