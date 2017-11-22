@@ -370,13 +370,22 @@ public class TvdbGuideDataSource_ImplTest {
 		headers.put("Accept", "application/json");
 		Request getRequest = dataSource.buildGet(url, headers);
 
-		mockedServer.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(200)
+				.setHeader("Content-Type","application/json");
 		
+		mockedServer.enqueue(mockResponse);
+		
+		dataSource.getProperties().put("eclipselink.media-type", "JIBBERISH");
+
 		GuideException ex = Assertions.assertThrows(GuideException.class, () -> {
 			dataSource.executeRequest(getRequest, TvdbToken.class);
 		});
-
-		Assertions.assertEquals("java.net.ConnectException: Failed to connect to localhost/0:0:0:0:0:0:0:1:8089", ex.getMessage());
+		
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/refresh_token", request.getPath());
+		Assertions.assertEquals("application/json", request.getHeader("Accept"));
+		Assertions.assertEquals("javax.xml.bind.PropertyException: eclipselink.media-type", ex.getMessage());
 	}
 
 	@Test
