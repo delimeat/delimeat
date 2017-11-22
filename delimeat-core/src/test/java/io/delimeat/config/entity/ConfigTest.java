@@ -94,6 +94,13 @@ public class ConfigTest {
 	}
 
 	@Test
+	public void versionTest() {
+		Assertions.assertNull(config.getVersion());
+		config.setVersion(Long.MIN_VALUE);
+		Assertions.assertEquals(Long.MIN_VALUE, config.getVersion().longValue());
+	}
+
+	@Test
 	public void hashCodeTest() {
 		config.setConfigId(1L);
 		config.setVersion(99L);
@@ -151,7 +158,7 @@ public class ConfigTest {
 		other.setVersion(99L);
 		Assertions.assertFalse(config.equals(other));
 	}
-	
+
 	@Test
 	public void equalsConfigIdTest() {
 		config.setConfigId(2L);
