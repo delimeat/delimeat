@@ -370,20 +370,13 @@ public class TvdbGuideDataSource_ImplTest {
 		headers.put("Accept", "application/json");
 		Request getRequest = dataSource.buildGet(url, headers);
 
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(300)
-				.setHeader("Content-Type","application/json");
-
-		mockedServer.enqueue(mockResponse);
+		mockedServer.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
 		
 		GuideException ex = Assertions.assertThrows(GuideException.class, () -> {
 			dataSource.executeRequest(getRequest, TvdbToken.class);
 		});
 
-		RecordedRequest request = mockedServer.takeRequest();
-		Assertions.assertEquals("/refresh_token", request.getPath());
-		Assertions.assertEquals("application/json", request.getHeader("Accept"));
-		Assertions.assertEquals("HTTP response code 300 with message \"Redirection\" for url http://localhost:8089/refresh_token", ex.getMessage());
+		Assertions.assertEquals("java.net.ConnectException: Failed to connect to localhost/0:0:0:0:0:0:0:1:8089", ex.getMessage());
 	}
 
 	@Test
