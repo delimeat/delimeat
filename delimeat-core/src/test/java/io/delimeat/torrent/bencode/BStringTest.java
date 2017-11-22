@@ -86,24 +86,4 @@ public class BStringTest {
 		Assertions.assertEquals(false, b_string_one.equals(null));
 	}
 
-	@Test
-	public void equalStringEqualsTest() {
-		String string_one = "match";
-		BString b_string_one = new BString("match");
-		Assertions.assertEquals(true, b_string_one.equals(string_one));
-	}
-
-	@Test
-	public void notEqaulStringEqualsTest() {
-		String string_one = "no match";
-		BString b_string_one = new BString("match");
-		Assertions.assertEquals(false, b_string_one.equals(string_one));
-	}
-
-	@Test
-	public void equalsByteArrayTest() {
-		BString b_string_one = new BString("match");
-		Assertions.assertEquals(true, b_string_one.equals("match".getBytes()));
-	}
-
 }
