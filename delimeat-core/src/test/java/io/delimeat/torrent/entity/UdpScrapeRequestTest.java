@@ -2,8 +2,8 @@ package io.delimeat.torrent.entity;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.util.DelimeatUtils;
 
@@ -15,26 +15,26 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertEquals(Long.MAX_VALUE, request.getConnectionId());
-		Assert.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
-		Assert.assertEquals(new InfoHash(infoBytes), request.getInfoHash());
-		Assert.assertEquals(UdpAction.SCRAPE, request.getAction());
-
+		Assertions.assertEquals(Long.MAX_VALUE, request.getConnectionId());
+		Assertions.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
+		Assertions.assertEquals(new InfoHash(infoBytes), request.getInfoHash());
+		Assertions.assertEquals(UdpAction.SCRAPE, request.getAction());
 
 	}
-	
+
 	@Test
-	public void toByteBufferTest(){
-		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash("INFO_HASH".getBytes()));
-		
+	public void toByteBufferTest() {
+		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE,
+				new InfoHash("INFO_HASH".getBytes()));
+
 		ByteBuffer result = request.toByteBuffer();
 
-		Assert.assertEquals(Long.MAX_VALUE, result.getLong());
-		Assert.assertEquals(2, result.getInt());
-		Assert.assertEquals(Integer.MIN_VALUE, result.getInt());
+		Assertions.assertEquals(Long.MAX_VALUE, result.getLong());
+		Assertions.assertEquals(2, result.getInt());
+		Assertions.assertEquals(Integer.MIN_VALUE, result.getInt());
 		byte[] bytes = new byte[result.remaining()];
 		result.get(bytes);
-		Assert.assertEquals("INFO_HASH", new String(bytes).trim());
+		Assertions.assertEquals("INFO_HASH", new String(bytes).trim());
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertEquals(-1979621474, request.hashCode());
+		Assertions.assertEquals(-1979621474, request.hashCode());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertTrue(request.equals(request));
+		Assertions.assertTrue(request.equals(request));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertFalse(request.equals(null));
+		Assertions.assertFalse(request.equals(null));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertFalse(request.equals(new Object()));
+		Assertions.assertFalse(request.equals(new Object()));
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class UdpScrapeRequestTest {
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 		UdpScrapeRequest other = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertTrue(request.equals(other));
+		Assertions.assertTrue(request.equals(other));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class UdpScrapeRequestTest {
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 		UdpScrapeRequest other = new UdpScrapeRequest(Long.MIN_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertFalse(request.equals(other));
+		Assertions.assertFalse(request.equals(other));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class UdpScrapeRequestTest {
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 		UdpScrapeRequest other = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MAX_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertFalse(request.equals(other));
+		Assertions.assertFalse(request.equals(other));
 	}
 
 	@Test
@@ -103,16 +103,16 @@ public class UdpScrapeRequestTest {
 		UdpScrapeRequest other = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE,
 				new InfoHash("INFO_HASH".getBytes()));
 
-		Assert.assertFalse(request.equals(other));
+		Assertions.assertFalse(request.equals(other));
 	}
-	
+
 	@Test
 	public void equalsInfoHashNullTest() {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, null);
 		UdpScrapeRequest other = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertFalse(request.equals(other));
+		Assertions.assertFalse(request.equals(other));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class UdpScrapeRequestTest {
 		byte[] infoBytes = DelimeatUtils.hexToBytes("df706cf16f45e8c0fd226223509c7e97b4ffec13");
 		UdpScrapeRequest request = new UdpScrapeRequest(Long.MAX_VALUE, Integer.MIN_VALUE, new InfoHash(infoBytes));
 
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"ScrapeUdpRequest [connectionId=9223372036854775807, action=SCRAPE, transactionId=-2147483648, infoHash=InfoHash [getHex()=df706cf16f45e8c0fd226223509c7e97b4ffec13]]",
 				request.toString());
 	}

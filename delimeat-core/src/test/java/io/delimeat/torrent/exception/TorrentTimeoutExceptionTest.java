@@ -19,18 +19,20 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TorrentTimeoutExceptionTest {
 
 	@Test
-	public void constructorURLTest() throws MalformedURLException{
-		Assert.assertEquals("Timeout for http://test.com", new TorrentTimeoutException(new URL("http://test.com")).getMessage());
+	public void constructorURLTest() throws MalformedURLException {
+		Assertions.assertEquals("Timeout for http://test.com",
+				new TorrentTimeoutException(new URL("http://test.com")).getMessage());
 	}
-	
+
 	@Test
-	public void constructorInetAddressTest() throws MalformedURLException{
-		Assert.assertEquals("Timeout for 0.0.0.0:1234", new TorrentTimeoutException(InetSocketAddress.createUnresolved("0.0.0.0", 1234)).getMessage());
+	public void constructorInetAddressTest() throws MalformedURLException {
+		Assertions.assertEquals("Timeout for 0.0.0.0:1234",
+				new TorrentTimeoutException(InetSocketAddress.createUnresolved("0.0.0.0", 1234)).getMessage());
 	}
 }

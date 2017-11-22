@@ -1,53 +1,54 @@
 package io.delimeat.torrent.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UdpConnectResponseTest {
 
 	@Test
-	public void constructorTest(){
-		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
-		
-		Assert.assertEquals(Integer.MAX_VALUE, response.getTransactionId());
-		Assert.assertEquals(Long.MAX_VALUE, response.getConnectionId());
-		Assert.assertEquals(UdpAction.CONNECT, response.getAction());
-	}
-	
-	@Test
-	public void hashCodeTest(){
-		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
-		
-		Assert.assertEquals(960, response.hashCode());
-	}
-	
-	@Test
-	public void toStringTest(){
+	public void constructorTest() {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 
-		Assert.assertEquals("ConnectUdpResponse [transactionId=2147483647, action=CONNECT, connectionId=9223372036854775807]", response.toString());
+		Assertions.assertEquals(Integer.MAX_VALUE, response.getTransactionId());
+		Assertions.assertEquals(Long.MAX_VALUE, response.getConnectionId());
+		Assertions.assertEquals(UdpAction.CONNECT, response.getAction());
 	}
-	
+
+	@Test
+	public void hashCodeTest() {
+		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
+
+		Assertions.assertEquals(960, response.hashCode());
+	}
+
+	@Test
+	public void toStringTest() {
+		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
+
+		Assertions.assertEquals(
+				"ConnectUdpResponse [transactionId=2147483647, action=CONNECT, connectionId=9223372036854775807]",
+				response.toString());
+	}
 
 	@Test
 	public void equalsSelfTest() {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 
-		Assert.assertTrue(response.equals(response));
+		Assertions.assertTrue(response.equals(response));
 	}
 
 	@Test
 	public void equalsNullTest() {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 
-		Assert.assertFalse(response.equals(null));
+		Assertions.assertFalse(response.equals(null));
 	}
 
 	@Test
 	public void equalsObjectTest() {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 
-		Assert.assertFalse(response.equals(new Object()));
+		Assertions.assertFalse(response.equals(new Object()));
 	}
 
 	@Test
@@ -55,7 +56,7 @@ public class UdpConnectResponseTest {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 		UdpConnectResponse other = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 
-		Assert.assertTrue(response.equals(other));
+		Assertions.assertTrue(response.equals(other));
 	}
 
 	@Test
@@ -63,15 +64,15 @@ public class UdpConnectResponseTest {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 		UdpConnectResponse other = new UdpConnectResponse(Integer.MIN_VALUE, Long.MAX_VALUE);
 
-		Assert.assertFalse(response.equals(other));
+		Assertions.assertFalse(response.equals(other));
 	}
-	
+
 	@Test
 	public void equalsConnectionIdTest() {
 		UdpConnectResponse response = new UdpConnectResponse(Integer.MAX_VALUE, Long.MAX_VALUE);
 		UdpConnectResponse other = new UdpConnectResponse(Integer.MAX_VALUE, Long.MIN_VALUE);
 
-		Assert.assertFalse(response.equals(other));
+		Assertions.assertFalse(response.equals(other));
 	}
 
 }

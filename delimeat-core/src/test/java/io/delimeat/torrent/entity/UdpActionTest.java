@@ -15,38 +15,38 @@
  */
 package io.delimeat.torrent.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UdpActionTest {
 
 	@Test
 	public void connectTest(){
-		Assert.assertEquals(0, UdpAction.CONNECT.value());
+		Assertions.assertEquals(0, UdpAction.CONNECT.value());
 	}
 	
 	@Test
 	public void announceTest(){
-		Assert.assertEquals(1, UdpAction.ANNOUNCE.value());
+		Assertions.assertEquals(1, UdpAction.ANNOUNCE.value());
 	}
 	
 	@Test
 	public void scrapeTest(){
-		Assert.assertEquals(2, UdpAction.SCRAPE.value());
+		Assertions.assertEquals(2, UdpAction.SCRAPE.value());
 	}
 	
 	@Test
 	public void errorTest(){
-		Assert.assertEquals(3, UdpAction.ERROR.value());
+		Assertions.assertEquals(3, UdpAction.ERROR.value());
 	}
 	
 	@Test
 	public void getSuccessTest(){
-		Assert.assertEquals(UdpAction.CONNECT, UdpAction.get(0));
+		Assertions.assertEquals(UdpAction.CONNECT, UdpAction.get(0));
 	}
 	
 	@Test
 	public void getFailTest(){
-		Assert.assertNull( UdpAction.get(Integer.MAX_VALUE));
+		Assertions.assertNull( UdpAction.get(Integer.MAX_VALUE));
 	}
 }

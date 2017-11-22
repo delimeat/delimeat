@@ -15,30 +15,30 @@
  */
 package io.delimeat.torrent.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UnhandledScrapeExceptionTest {
-  
-  	@Test
-  	public void messageConstructorTest(){
-     	UnhandledScrapeException ex = new UnhandledScrapeException("TEST");
-     	Assert.assertEquals("TEST", ex.getMessage());
-   }
-  	
-  	@Test
-  	public void causeConstructorTest(){
-     	Throwable throwable = new Throwable("THROWABLE");
-     	UnhandledScrapeException ex = new UnhandledScrapeException(throwable);
-     	Assert.assertEquals(throwable, ex.getCause());
-   }
-  	
-  	@Test
-  	public void messageCauseConstructorTest(){
-     	Throwable throwable = new Throwable("THROWABLE");
-     	UnhandledScrapeException ex = new UnhandledScrapeException("TEST", throwable);
-     	Assert.assertEquals("TEST", ex.getMessage());
-     	Assert.assertEquals(throwable, ex.getCause());     	
-   }
-  
+
+	@Test
+	public void messageConstructorTest() {
+		UnhandledScrapeException ex = new UnhandledScrapeException("TEST");
+		Assertions.assertEquals("TEST", ex.getMessage());
+	}
+
+	@Test
+	public void causeConstructorTest() {
+		Throwable throwable = new Throwable("THROWABLE");
+		UnhandledScrapeException ex = new UnhandledScrapeException(throwable);
+		Assertions.assertEquals(throwable, ex.getCause());
+	}
+
+	@Test
+	public void messageCauseConstructorTest() {
+		Throwable throwable = new Throwable("THROWABLE");
+		UnhandledScrapeException ex = new UnhandledScrapeException("TEST", throwable);
+		Assertions.assertEquals("TEST", ex.getMessage());
+		Assertions.assertEquals(throwable, ex.getCause());
+	}
+
 }

@@ -15,8 +15,8 @@
  */
 package io.delimeat.torrent.entity;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ScrapeResultTest {
 
@@ -25,59 +25,59 @@ public class ScrapeResultTest {
 	@Test
 	public void createResult() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertEquals(Long.MIN_VALUE, result.getSeeders());
-		Assert.assertEquals(Long.MAX_VALUE, result.getLeechers());
+		Assertions.assertEquals(Long.MIN_VALUE, result.getSeeders());
+		Assertions.assertEquals(Long.MAX_VALUE, result.getLeechers());
 	}
 
 	@Test
 	public void toStringTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertEquals("ScrapeResult [seeders=-9223372036854775808, leechers=9223372036854775807]",
+		Assertions.assertEquals("ScrapeResult [seeders=-9223372036854775808, leechers=9223372036854775807]",
 				result.toString());
 	}
 
 	@Test
 	public void hashCodeTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertEquals(961, result.hashCode());
+		Assertions.assertEquals(961, result.hashCode());
 	}
 
 	@Test
 	public void equalsTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
 		ScrapeResult other = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertTrue(result.equals(other));
+		Assertions.assertTrue(result.equals(other));
 	}
 
 	@Test
 	public void equalsSelfTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertTrue(result.equals(result));
+		Assertions.assertTrue(result.equals(result));
 	}
 
 	@Test
 	public void equalsNullTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertFalse(result.equals(null));
+		Assertions.assertFalse(result.equals(null));
 	}
 
 	@Test
 	public void equalsOtherClassTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		Assert.assertFalse(result.equals("STRING"));
+		Assertions.assertFalse(result.equals(new Object()));
 	}
 
 	@Test
 	public void equalsSeedersNotLeechersTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
 		ScrapeResult other = new ScrapeResult(Long.MIN_VALUE, Long.MIN_VALUE);
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 
 	@Test
 	public void equalsLeechersNotSeedersTest() {
 		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
 		ScrapeResult other = new ScrapeResult(Long.MAX_VALUE, Long.MAX_VALUE);
-		Assert.assertFalse(result.equals(other));
+		Assertions.assertFalse(result.equals(other));
 	}
 }

@@ -20,8 +20,8 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BList;
@@ -35,18 +35,18 @@ import io.delimeat.torrent.entity.TorrentInfo;
 public class TorrentUtilsTest {
 
 	private String sep = System.getProperty("file.separator");
-	
-  	@Test
-  	public void buildInfoHashFromMagnetTest() throws Exception{
-  		InfoHash infoHash = TorrentUtils.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
-  		Assert.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", infoHash.getHex());
-  	}
-  	
-  	@Test
-  	public void buildInfoHashFromMagnetNoMatchTest() throws Exception{
-  		Assert.assertNull(TorrentUtils.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:")));
-  	}
-  	
+
+	@Test
+	public void buildInfoHashFromMagnetTest() throws Exception {
+		InfoHash infoHash = TorrentUtils.infoHashFromMagnet(new URI(
+				"magnet:?xt=urn:btih:df706cf16f45e8c0fd226223509c7e97b4ffec13&tr=udp://tracker.coppersurfer.tk:6969/announce"));
+		Assertions.assertEquals("df706cf16f45e8c0fd226223509c7e97b4ffec13", infoHash.getHex());
+	}
+
+	@Test
+	public void buildInfoHashFromMagnetNoMatchTest() throws Exception {
+		Assertions.assertNull(TorrentUtils.infoHashFromMagnet(new URI("magnet:?xt=urn:btih:")));
+	}
 
 	@Test
 	public void parseTorrentFileTest() {
@@ -60,14 +60,12 @@ public class TorrentUtilsTest {
 		fileDict.put("path", pathList);
 
 		TorrentFile file = TorrentUtils.parseTorrentFile(fileDict);
-		Assert.assertEquals(1234567890L, file.getLength());
-		Assert.assertEquals("part1" + sep + "part2" + sep + "part3" + sep
-				+ "fileName", file.getName());
+		Assertions.assertEquals(1234567890L, file.getLength());
+		Assertions.assertEquals("part1" + sep + "part2" + sep + "part3" + sep + "fileName", file.getName());
 	}
 
 	@Test
-	public void parseInfoDictionaryTest() throws IOException, BencodeException,
-			NoSuchAlgorithmException {
+	public void parseInfoDictionaryTest() throws IOException, BencodeException, NoSuchAlgorithmException {
 		BDictionary infoDict = new BDictionary();
 		infoDict.put("name", "NAME");
 		infoDict.put("length", 987654321L);
@@ -88,16 +86,14 @@ public class TorrentUtilsTest {
 		filesList.add(fileDict2);
 		infoDict.put("files", filesList);
 		TorrentInfo info = TorrentUtils.parseInfoDictionary(infoDict);
-		Assert.assertEquals(987654321L, info.getLength());
-		Assert.assertEquals("NAME", info.getName());
-		Assert.assertEquals(2, info.getFiles().size());
-		Assert.assertEquals("1_part_1" + sep + "1_file_name", info.getFiles()
-				.get(0).getName());
-		Assert.assertEquals(1234, info.getFiles().get(0).getLength());
-		Assert.assertEquals("2_part_1" + sep + "2_file_name", info.getFiles()
-				.get(1).getName());
-		Assert.assertEquals(56789, info.getFiles().get(1).getLength());
-		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", info.getInfoHash().getHex());
+		Assertions.assertEquals(987654321L, info.getLength());
+		Assertions.assertEquals("NAME", info.getName());
+		Assertions.assertEquals(2, info.getFiles().size());
+		Assertions.assertEquals("1_part_1" + sep + "1_file_name", info.getFiles().get(0).getName());
+		Assertions.assertEquals(1234, info.getFiles().get(0).getLength());
+		Assertions.assertEquals("2_part_1" + sep + "2_file_name", info.getFiles().get(1).getName());
+		Assertions.assertEquals(56789, info.getFiles().get(1).getLength());
+		Assertions.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", info.getInfoHash().getHex());
 	}
 
 	@Test
@@ -113,39 +109,34 @@ public class TorrentUtilsTest {
 		announceList.add(tier2);
 
 		List<String> trackers = TorrentUtils.parseAnnounceList(announceList);
-		Assert.assertEquals(4, trackers.size());
-		Assert.assertEquals("1_tracker_1", trackers.get(0));
-		Assert.assertEquals("1_tracker_2", trackers.get(1));
-		Assert.assertEquals("2_tracker_1", trackers.get(2));
-		Assert.assertEquals("2_tracker_2", trackers.get(3));
+		Assertions.assertEquals(4, trackers.size());
+		Assertions.assertEquals("1_tracker_1", trackers.get(0));
+		Assertions.assertEquals("1_tracker_2", trackers.get(1));
+		Assertions.assertEquals("2_tracker_1", trackers.get(2));
+		Assertions.assertEquals("2_tracker_2", trackers.get(3));
 	}
 
 	@Test
-	public void parseRootDictionaryTest() throws IOException, BencodeException,
-			NoSuchAlgorithmException {
-		byte[] bytes ="d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee".getBytes();
-
+	public void parseRootDictionaryTest() throws IOException, BencodeException, NoSuchAlgorithmException {
+		byte[] bytes = "d8:announce9:TRACKER_113:announce-listll11:1_tracker_111:1_tracker_2el11:2_tracker_111:2_tracker_2ee4:infod5:filesld6:lengthi1234e4:pathl8:1_part_111:1_file_nameeed6:lengthi56789e4:pathl8:2_part_111:2_file_nameeee6:lengthi987654321e4:name4:NAMEee"
+				.getBytes();
 
 		Torrent torrent = TorrentUtils.parseRootDictionary(bytes);
-		Assert.assertEquals("TRACKER_1", torrent.getTracker());
-		Assert.assertEquals(4, torrent.getTrackers().size());
-		Assert.assertEquals("1_tracker_1", torrent.getTrackers().get(0));
-		Assert.assertEquals("1_tracker_2", torrent.getTrackers().get(1));
-		Assert.assertEquals("2_tracker_1", torrent.getTrackers().get(2));
-		Assert.assertEquals("2_tracker_2", torrent.getTrackers().get(3));
-		Assert.assertEquals(987654321L, torrent.getInfo().getLength());
-		Assert.assertEquals("NAME", torrent.getInfo().getName());
-		Assert.assertEquals(2, torrent.getInfo().getFiles().size());
-		Assert.assertEquals("1_part_1" + sep + "1_file_name", torrent.getInfo()
-				.getFiles().get(0).getName());
-		Assert.assertEquals(1234, torrent.getInfo().getFiles().get(0)
-				.getLength());
-		Assert.assertEquals("2_part_1" + sep + "2_file_name", torrent.getInfo()
-				.getFiles().get(1).getName());
-		Assert.assertEquals(56789, torrent.getInfo().getFiles().get(1)
-				.getLength());
-		Assert.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
-		Assert.assertNotNull(torrent.getBytes());
-		
+		Assertions.assertEquals("TRACKER_1", torrent.getTracker());
+		Assertions.assertEquals(4, torrent.getTrackers().size());
+		Assertions.assertEquals("1_tracker_1", torrent.getTrackers().get(0));
+		Assertions.assertEquals("1_tracker_2", torrent.getTrackers().get(1));
+		Assertions.assertEquals("2_tracker_1", torrent.getTrackers().get(2));
+		Assertions.assertEquals("2_tracker_2", torrent.getTrackers().get(3));
+		Assertions.assertEquals(987654321L, torrent.getInfo().getLength());
+		Assertions.assertEquals("NAME", torrent.getInfo().getName());
+		Assertions.assertEquals(2, torrent.getInfo().getFiles().size());
+		Assertions.assertEquals("1_part_1" + sep + "1_file_name", torrent.getInfo().getFiles().get(0).getName());
+		Assertions.assertEquals(1234, torrent.getInfo().getFiles().get(0).getLength());
+		Assertions.assertEquals("2_part_1" + sep + "2_file_name", torrent.getInfo().getFiles().get(1).getName());
+		Assertions.assertEquals(56789, torrent.getInfo().getFiles().get(1).getLength());
+		Assertions.assertEquals("ab835ef1b726e2aa4d1c6df6b91278d651b228a7", torrent.getInfo().getInfoHash().getHex());
+		Assertions.assertNotNull(torrent.getBytes());
+
 	}
 }

@@ -21,11 +21,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
@@ -43,204 +43,222 @@ import okhttp3.mockwebserver.SocketPolicy;
 import okio.Buffer;
 
 public class HttpScrapeRequestHandler_ImplTest {
-	
+
 	private static final int PORT = 8089;
 	private static MockWebServer mockedServer = new MockWebServer();
-	
+
 	private HttpScrapeRequestHandler_Impl scraper;
 
-	@BeforeClass
-	public static void beforeClass() throws IOException{
+	@BeforeAll
+	public static void beforeClass() throws IOException {
 		mockedServer.start(PORT);
 	}
-	
-	@AfterClass
-	public static void tearDown() throws IOException{
+
+	@AfterAll
+	public static void tearDown() throws IOException {
 		mockedServer.shutdown();
 	}
-	
-	@Before
-	public void setUp(){
+
+	@BeforeEach
+	public void setUp() {
 		scraper = new HttpScrapeRequestHandler_Impl();
 	}
 
 	@Test
-	public void supportedProtocolTest(){
-		Assert.assertEquals(Arrays.asList("HTTP","HTTPS"),scraper.getSupportedProtocols());
-	}
-
-	@Test(expected=UnhandledScrapeException.class)
-	public void invalidGenerateScrapeURITest() throws Exception{
-		URI announceURI = new URI("http://test.com/a");
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.generateScrapeURL(announceURI, infoHash);
+	public void supportedProtocolTest() {
+		Assertions.assertEquals(Arrays.asList("HTTP", "HTTPS"), scraper.getSupportedProtocols());
 	}
 
 	@Test
-	public void validGenerateScrapeURIAnnounceTest() throws Exception{
-		URI announceURI = new URI("http://test/announce");	
+	public void invalidGenerateScrapeURITest() throws Exception {
+		URI announceURI = new URI("http://test.com/a");
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		UnhandledScrapeException ex = Assertions.assertThrows(UnhandledScrapeException.class, () -> {
+			scraper.generateScrapeURL(announceURI, infoHash);
+		});
+
+		Assertions.assertEquals("Unable to scrape URI: http://test.com/a", ex.getMessage());
+	}
+
+	@Test
+	public void validGenerateScrapeURIAnnounceTest() throws Exception {
+		URI announceURI = new URI("http://test/announce");
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
+		Assertions.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				scrapeURL.toString());
 	}
 
 	@Test
-	public void validGenerateScrapeURITest() throws Exception{
+	public void validGenerateScrapeURITest() throws Exception {
 		URI announceURI = new URI("http://test/scrape");
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
+		Assertions.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				scrapeURL.toString());
 	}
 
 	@Test
-	public void validGenerateScrapeURIIncludesInfoHashTest() throws Exception{
+	public void validGenerateScrapeURIIncludesInfoHashTest() throws Exception {
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
-		URI announceURI = new URI("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE");
+		URI announceURI = new URI(
+				"http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE");
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
+		Assertions.assertEquals("http://test/scrape?info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				scrapeURL.toString());
 	}
 
 	@Test
-	public void validGenerateScrapeURIIncludesQueryTest() throws Exception{
+	public void validGenerateScrapeURIIncludesQueryTest() throws Exception {
 		URI announceURI = new URI("http://test/scrape?test=true");
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 		URL scrapeURL = scraper.generateScrapeURL(announceURI, infoHash);
-		Assert.assertEquals("http://test/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", scrapeURL.toString());
+		Assertions.assertEquals(
+				"http://test/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				scrapeURL.toString());
 	}
-	
+
 	@Test
-	public void scrapeTest() throws URISyntaxException, Exception{
+	public void scrapeTest() throws URISyntaxException, Exception {
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
-	
+
 		Buffer buffer = new Buffer();
-		buffer.write("d5:filesd20:".getBytes())
-			.write(infoHash.getBytes())
-			.write("d8:completei5e10:downloadedi50e10:incompletei10eeee".getBytes());
-		
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(200)
-			    .addHeader("Content-Type", "text/plain")
-			    .setBody(buffer);
-		
+		buffer.write("d5:filesd20:".getBytes()).write(infoHash.getBytes())
+				.write("d8:completei5e10:downloadedi50e10:incompletei10eeee".getBytes());
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(200).addHeader("Content-Type", "text/plain")
+				.setBody(buffer);
+
 		mockedServer.enqueue(mockResponse);
-		
+
 		ScrapeResult result = scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
 
 		RecordedRequest request = mockedServer.takeRequest();
-		Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
-		Assert.assertEquals("text/plain", request.getHeader("Accept"));
-		Assert.assertEquals("true", request.getRequestUrl().queryParameter("test"));
-		Assert.assertEquals(5, result.getSeeders());
-		Assert.assertEquals(10, result.getLeechers());
+		Assertions.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				request.getPath());
+		Assertions.assertEquals("text/plain", request.getHeader("Accept"));
+		Assertions.assertEquals("true", request.getRequestUrl().queryParameter("test"));
+		Assertions.assertEquals(5, result.getSeeders());
+		Assertions.assertEquals(10, result.getLeechers());
 
 	}
-	
-	@Test
-	public void scrapeTimeoutExceptionTest() throws URISyntaxException, Exception{
-		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-		
-		MockResponse mockResponse = new MockResponse()
-			    .setSocketPolicy(SocketPolicy.NO_RESPONSE);
-		
-		mockedServer.enqueue(mockResponse);
-				
-		try{
-			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
-		}catch(TorrentTimeoutException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
-			Assert.assertEquals("text/plain", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
-	}
-	
-	@Test
-	public void scrapeNotFoundExceptionTest() throws URISyntaxException, Exception{
-		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-		
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(404)
-			    .addHeader("Content-Type", "text/plain");
-		
-		mockedServer.enqueue(mockResponse);
-		
-		try{
-			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
-		}catch(TorrentNotFoundException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
-			Assert.assertEquals("text/plain", request.getHeader("Accept"));
-			return;
-		}
-		Assert.fail();
-	}
-	
-	@Test
-	public void scrapeResponseExceptionTest() throws URISyntaxException, Exception{
-		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-		
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(500)
-			    .addHeader("Content-Type", "text/plain");
-		
-		mockedServer.enqueue(mockResponse);
-		
-		try{
-			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
-		}catch(TorrentResponseException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
-			Assert.assertEquals("text/plain", request.getHeader("Accept"));
-			Assert.assertEquals("HTTP response code 500 with message \"Server Error\" for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", ex.getMessage());
-			return;
-		}
-		Assert.fail();
-	}
-	
-	@Test
-	public void scrapeResponseBodyExceptionTest() throws URISyntaxException, Exception{
-		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
-		InfoHash infoHash = new InfoHash(sha1Bytes);
-		
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(200)
-			    .addHeader("Content-Type", "text/plain")
-			    .setBody("JIBBERISH");
-		
-		mockedServer.enqueue(mockResponse);
-		
-		try{
-			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
-		}catch(TorrentResponseBodyException ex){
-			RecordedRequest request = mockedServer.takeRequest();
-			Assert.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", request.getPath());
-			Assert.assertEquals("text/plain", request.getHeader("Accept"));
-			Assert.assertEquals("Unable to parse response for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE \nJIBBERISH", ex.getMessage());
-			return;
-		}
-		Assert.fail();
-	}
 
-	@Test(expected=TorrentException.class)
-	public void scrapeExceptionTest() throws URISyntaxException, Exception{
+	@Test
+	public void scrapeTimeoutExceptionTest() throws URISyntaxException, Exception {
 		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
 		InfoHash infoHash = new InfoHash(sha1Bytes);
 
-		scraper.scrape(new URI("http://localhost/announce?test=true"), infoHash);
+		MockResponse mockResponse = new MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE);
+
+		mockedServer.enqueue(mockResponse);
+
+		TorrentTimeoutException ex = Assertions.assertThrows(TorrentTimeoutException.class, () -> {
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				request.getPath());
+		Assertions.assertEquals("text/plain", request.getHeader("Accept"));
+
+		Assertions.assertEquals("Timeout for http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", ex.getMessage());
 	}
 
-	@Test(expected=TorrentException.class)
-	public void scrapeNotHTTPTest() throws URISyntaxException, Exception{
+	@Test
+	public void scrapeNotFoundExceptionTest() throws URISyntaxException, Exception {
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(404).addHeader("Content-Type", "text/plain");
+
+		mockedServer.enqueue(mockResponse);
+
+		TorrentNotFoundException ex = Assertions.assertThrows(TorrentNotFoundException.class, () -> {
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				request.getPath());
+		Assertions.assertEquals("text/plain", request.getHeader("Accept"));
+
+		Assertions.assertEquals("HTTP response code 404 with message \"Client Error\" for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", ex.getMessage());
+	}
+
+	@Test
+	public void scrapeResponseExceptionTest() throws URISyntaxException, Exception {
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(500).addHeader("Content-Type", "text/plain");
+
+		mockedServer.enqueue(mockResponse);
+
+		TorrentResponseException ex = Assertions.assertThrows(TorrentResponseException.class, () -> {
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				request.getPath());
+		Assertions.assertEquals("text/plain", request.getHeader("Accept"));
+		Assertions.assertEquals(
+				"HTTP response code 500 with message \"Server Error\" for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				ex.getMessage());
+
+		Assertions.assertEquals("HTTP response code 500 with message \"Server Error\" for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", ex.getMessage());
+	}
+
+	@Test
+	public void scrapeResponseBodyExceptionTest() throws URISyntaxException, Exception {
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		MockResponse mockResponse = new MockResponse().setResponseCode(200).addHeader("Content-Type", "text/plain")
+				.setBody("JIBBERISH");
+
+		mockedServer.enqueue(mockResponse);
+
+		TorrentResponseBodyException ex = Assertions.assertThrows(TorrentResponseBodyException.class, () -> {
+			scraper.scrape(new URI("http://localhost:8089/announce?test=true"), infoHash);
+		});
+
+		RecordedRequest request = mockedServer.takeRequest();
+		Assertions.assertEquals("/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
+				request.getPath());
+		Assertions.assertEquals("text/plain", request.getHeader("Accept"));
+		Assertions.assertEquals(
+				"Unable to parse response for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE \nJIBBERISH",
+				ex.getMessage());
+
+		Assertions.assertEquals("Unable to parse response for url http://localhost:8089/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE \nJIBBERISH", ex.getMessage());
+	}
+
+	@Test
+	public void scrapeExceptionTest() throws URISyntaxException, Exception {
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+
+		TorrentException ex = Assertions.assertThrows(TorrentException.class, () -> {
+			scraper.scrape(new URI("http://localhost/announce?test=true"), infoHash);
+		});
+
+		Assertions.assertEquals("Unnable to connect to http://localhost/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE", ex.getMessage());
+	}
+
+	@Test
+	public void scrapeNotHTTPTest() throws URISyntaxException, Exception {
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		scraper.scrape(new URI("udp://test.com/announce"), infoHash);
+
+		TorrentException ex = Assertions.assertThrows(TorrentException.class, () -> {
+			scraper.scrape(new URI("udp://test.com/announce"), infoHash);
+		});
+
+		Assertions.assertEquals("Unsupported protocol udp", ex.getMessage());
 	}
 }

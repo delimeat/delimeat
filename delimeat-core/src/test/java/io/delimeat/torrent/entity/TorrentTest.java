@@ -17,57 +17,57 @@ package io.delimeat.torrent.entity;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TorrentTest {
 
 	private Torrent torrent;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		torrent = new Torrent();
 	}
 
 	@Test
 	public void trackerTest() {
-		Assert.assertNull(torrent.getTracker());
+		Assertions.assertNull(torrent.getTracker());
 		torrent.setTracker("TRACKER");
-		Assert.assertEquals("TRACKER", torrent.getTracker());
+		Assertions.assertEquals("TRACKER", torrent.getTracker());
 	}
 
 	@Test
 	public void trackersTest() {
-		Assert.assertEquals(0, torrent.getTrackers().size());
+		Assertions.assertEquals(0, torrent.getTrackers().size());
 
 		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 
-		Assert.assertEquals(2, torrent.getTrackers().size());
-		Assert.assertEquals("TRACKER_1", torrent.getTrackers().get(0));
-		Assert.assertEquals("TRACKER_2", torrent.getTrackers().get(1));
+		Assertions.assertEquals(2, torrent.getTrackers().size());
+		Assertions.assertEquals("TRACKER_1", torrent.getTrackers().get(0));
+		Assertions.assertEquals("TRACKER_2", torrent.getTrackers().get(1));
 	}
 
 	@Test
 	public void infoTest() {
-		Assert.assertNull(torrent.getInfo());
+		Assertions.assertNull(torrent.getInfo());
 
 		TorrentInfo info = new TorrentInfo();
 		torrent.setInfo(info);
 
-		Assert.assertEquals(info, torrent.getInfo());
+		Assertions.assertEquals(info, torrent.getInfo());
 	}
 
 	@Test
 	public void bytesTest() {
-		Assert.assertNull(torrent.getBytes());
+		Assertions.assertNull(torrent.getBytes());
 		torrent.setBytes("BYTES".getBytes());
-		Assert.assertEquals("BYTES", new String(torrent.getBytes()));
+		Assertions.assertEquals("BYTES", new String(torrent.getBytes()));
 	}
 
 	@Test
 	public void toStringTest() {
-		Assert.assertEquals("Torrent [trackers=[], ]", torrent.toString());
+		Assertions.assertEquals("Torrent [trackers=[], ]", torrent.toString());
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class TorrentTest {
 		torrent.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		torrent.setInfo(new TorrentInfo());
 		torrent.setBytes("BYTES".getBytes());
-		Assert.assertEquals(-453204695, torrent.hashCode());
+		Assertions.assertEquals(-453204695, torrent.hashCode());
 	}
-	
+
 	@Test
 	public void equalsTest() {
 		torrent.setTracker("TRACKER");
@@ -89,24 +89,24 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertTrue(torrent.equals(other));
+		Assertions.assertTrue(torrent.equals(other));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		Assert.assertTrue(torrent.equals(torrent));
+		Assertions.assertTrue(torrent.equals(torrent));
 	}
 
 	@Test
 	public void equalsNullTest() {
-		Assert.assertFalse(torrent.equals(null));
+		Assertions.assertFalse(torrent.equals(null));
 	}
 
 	@Test
 	public void equalsOtherClassTest() {
-		Assert.assertFalse(torrent.equals("STRING"));
+		Assertions.assertFalse(torrent.equals(new Object()));
 	}
-	
+
 	@Test
 	public void equalsInfoNullTest() {
 		torrent.setTracker("TRACKER");
@@ -117,9 +117,9 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTrackerNullTest() {
 		torrent.setTracker(null);
@@ -130,9 +130,9 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTrackersNullTest() {
 		torrent.setTracker("TRACKER");
@@ -143,9 +143,9 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
-	
+
 	@Test
 	public void equalsInfoTest() {
 		torrent.setTracker("TRACKER");
@@ -158,9 +158,9 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTrackerTest() {
 		torrent.setTracker("OTHER_TRACKER");
@@ -171,9 +171,9 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
-	
+
 	@Test
 	public void equalsTrackersTest() {
 		torrent.setTracker("TRACKER");
@@ -184,7 +184,7 @@ public class TorrentTest {
 		other.setTrackers(Arrays.asList("TRACKER_1", "TRACKER_2"));
 		other.setInfo(new TorrentInfo());
 
-		Assert.assertFalse(torrent.equals(other));
+		Assertions.assertFalse(torrent.equals(other));
 	}
 
 }

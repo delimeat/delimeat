@@ -15,15 +15,15 @@
  */
 package io.delimeat.torrent.bencode;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BListTest {
 
 	@Test
 	public void NullConstructorTest() {
 		BList b_list_one = new BList();
-		Assert.assertEquals(0, b_list_one.size());
+		Assertions.assertEquals(0, b_list_one.size());
 	}
 
 	@Test
@@ -31,38 +31,35 @@ public class BListTest {
 		BList b_list_one = new BList();
 		BString b_string = new BString("value");
 		b_list_one.add(b_string);
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(b_string, b_list_one.get(0));
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(b_string, b_list_one.get(0));
 	}
 
 	@Test
 	public void LongAddTest() {
 		BList b_list_one = new BList();
 		b_list_one.add(1234567890);
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(true, b_list_one.get(0) instanceof BInteger);
-		Assert.assertEquals(1234567890,
-				((BInteger) b_list_one.get(0)).longValue());
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(true, b_list_one.get(0) instanceof BInteger);
+		Assertions.assertEquals(1234567890, ((BInteger) b_list_one.get(0)).longValue());
 	}
 
 	@Test
 	public void StringAddTest() {
 		BList b_list_one = new BList();
 		b_list_one.add("string_value");
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(true, b_list_one.get(0) instanceof BString);
-		Assert.assertEquals("string_value",
-				((BString) b_list_one.get(0)).toString());
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(true, b_list_one.get(0) instanceof BString);
+		Assertions.assertEquals("string_value", ((BString) b_list_one.get(0)).toString());
 	}
 
 	@Test
 	public void ByteArrayAddTest() {
 		BList b_list_one = new BList();
 		b_list_one.add("string_value".getBytes());
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(true, b_list_one.get(0) instanceof BString);
-		Assert.assertEquals("string_value",
-				new String(((BString) b_list_one.get(0)).getValue()));
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(true, b_list_one.get(0) instanceof BString);
+		Assertions.assertEquals("string_value", new String(((BString) b_list_one.get(0)).getValue()));
 	}
 
 	@Test
@@ -72,10 +69,10 @@ public class BListTest {
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);
 		b_list_one.add(b_integer);
-		Assert.assertEquals(2, b_list_one.size());
-		Assert.assertEquals(true, b_list_one.remove(b_string));
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(b_integer, b_list_one.get(0));
+		Assertions.assertEquals(2, b_list_one.size());
+		Assertions.assertEquals(true, b_list_one.remove(b_string));
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(b_integer, b_list_one.get(0));
 	}
 
 	@Test
@@ -85,9 +82,9 @@ public class BListTest {
 		BList b_list_one = new BList();
 		b_list_one.add(b_string);
 		b_list_one.add(b_integer);
-		Assert.assertEquals(2, b_list_one.size());
-		Assert.assertEquals(b_integer, b_list_one.remove(1));
-		Assert.assertEquals(1, b_list_one.size());
-		Assert.assertEquals(b_string, b_list_one.get(0));
+		Assertions.assertEquals(2, b_list_one.size());
+		Assertions.assertEquals(b_integer, b_list_one.remove(1));
+		Assertions.assertEquals(1, b_list_one.size());
+		Assertions.assertEquals(b_string, b_list_one.get(0));
 	}
 }

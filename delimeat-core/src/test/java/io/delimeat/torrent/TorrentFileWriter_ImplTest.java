@@ -19,9 +19,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.torrent.exception.TorrentException;
@@ -29,52 +29,54 @@ import io.delimeat.torrent.exception.TorrentException;
 public class TorrentFileWriter_ImplTest {
 
 	private TorrentFileWriter_Impl writer;
-	
-	@Before
-	public void setUp(){
+
+	@BeforeEach
+	public void setUp() {
 		writer = new TorrentFileWriter_Impl();
 	}
-	
+
 	@Test
-	public void buildUrlDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlDirectoryTest() throws IOException, TorrentException {
 		Config config = new Config();
 		config.setOutputDirectory("OUTPUT");
-		
-		Assert.assertEquals(new URL("file:OUTPUT/FILENAME"), writer.buildUrl("FILENAME", config));
+
+		Assertions.assertEquals(new URL("file:OUTPUT/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
-	
+
 	@Test
-	public void buildUrlNullDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlNullDirectoryTest() throws IOException, TorrentException {
 		Config config = new Config();
 		config.setOutputDirectory(null);
-		
+
 		String dir = System.getProperty("user.home");
-		
-		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.buildUrl("FILENAME", config));
+
+		Assertions.assertEquals(new URL("file:" + dir + "/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
-	
+
 	@Test
-	public void buildUrlEmptyDirectoryTest() throws IOException, TorrentException{
+	public void buildUrlEmptyDirectoryTest() throws IOException, TorrentException {
 		Config config = new Config();
 		config.setOutputDirectory("");
-		
+
 		String dir = System.getProperty("user.home");
-		
-		Assert.assertEquals(new URL("file:"+dir+"/FILENAME"), writer.buildUrl("FILENAME", config));
+
+		Assertions.assertEquals(new URL("file:" + dir + "/FILENAME"), writer.buildUrl("FILENAME", config));
 	}
-	
+
 	@Test
-	public void writeToStreamTest() throws Exception{
+	public void writeToStreamTest() throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		writer.writeToStream(baos, "TEST".getBytes());
-		Assert.assertEquals("TEST", new String(baos.toByteArray()));
+		Assertions.assertEquals("TEST", new String(baos.toByteArray()));
 	}
-	
-	@Test(expected=TorrentException.class)
-	public void writeTest() throws TorrentException{
-		writer.write("","JIBBERISH".getBytes(), new Config());
-		Assert.fail();
+
+	@Test
+	public void writeTest() throws TorrentException {
+		Exception ex = Assertions.assertThrows(TorrentException.class, () -> {
+			writer.write("", "JIBBERISH".getBytes(), new Config());
+		});
+
+		Assertions.assertEquals("Unnable to write ", ex.getMessage());
 	}
-	
-	
+
 }

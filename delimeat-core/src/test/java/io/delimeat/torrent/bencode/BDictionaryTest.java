@@ -18,106 +18,111 @@ package io.delimeat.torrent.bencode;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BDictionaryTest {
 
-   public BDictionary dictionary;
-  
-   @Before
-   public void setUp(){
-     dictionary = new BDictionary();
-   }
+	public BDictionary dictionary;
+
+	@BeforeEach
+	public void setUp() {
+		dictionary = new BDictionary();
+	}
 
 	@Test
 	public void putAllTest() {
-      Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertTrue(dictionary.isEmpty());
 		Map<BString, BObject> values = new TreeMap<BString, BObject>();
 		BString b_string_val = new BString("value");
 		BString b_string_key = new BString("key_value");
 		values.put(b_string_key, b_string_val);
 		dictionary.putAll(values);
-		Assert.assertEquals(1, dictionary.size());
-		Assert.assertEquals(b_string_val, dictionary.get(b_string_key));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(b_string_val, dictionary.get(b_string_key));
 	}
 
 	@Test
 	public void putBStringTest() {
-      Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertTrue(dictionary.isEmpty());
 		BString b_string_val = new BString("value");
 		BString b_string_key = new BString("key_value");
-		Assert.assertEquals(null, dictionary.put(b_string_key, b_string_val));
-		Assert.assertEquals(1, dictionary.size());
-     	Assert.assertEquals(b_string_val, dictionary.get(b_string_key));
+		Assertions.assertEquals(null, dictionary.put(b_string_key, b_string_val));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(b_string_val, dictionary.get(b_string_key));
 	}
 
 	@Test
 	public void putStringBObjectTest() {
-      Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertTrue(dictionary.isEmpty());
 		BString b_string_val = new BString("value");
-		Assert.assertEquals(null, dictionary.put("key_value", b_string_val));
-		Assert.assertEquals(1, dictionary.size());
-      Assert.assertEquals(b_string_val, dictionary.get("key_value"));
+		Assertions.assertEquals(null, dictionary.put("key_value", b_string_val));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(b_string_val, dictionary.get("key_value"));
 	}
 
 	@Test
 	public void putStringStringTest() {
-      Assert.assertTrue(dictionary.isEmpty());
-		Assert.assertEquals(null, dictionary.put("key_value", "value"));
-		Assert.assertEquals(1, dictionary.size());
-      Assert.assertEquals(new BString("value"), dictionary.get("key_value"));
+		Assertions.assertTrue(dictionary.isEmpty());
+		Assertions.assertEquals(null, dictionary.put("key_value", "value"));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(new BString("value"), dictionary.get("key_value"));
 	}
-  
+
 	@Test
 	public void putStringLongTest() {
-      Assert.assertTrue(dictionary.isEmpty());
-		Assert.assertEquals(null, dictionary.put("key_value", Long.MAX_VALUE));
-		Assert.assertEquals(1, dictionary.size());
-      Assert.assertEquals(new BInteger(Long.MAX_VALUE), dictionary.get("key_value"));
+		Assertions.assertTrue(dictionary.isEmpty());
+		Assertions.assertEquals(null, dictionary.put("key_value", Long.MAX_VALUE));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(new BInteger(Long.MAX_VALUE), dictionary.get("key_value"));
 	}
 
 	@Test
 	public void getByteArrayTest() {
-      Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertTrue(dictionary.isEmpty());
 		BString b_string_val = new BString("value");
 		BString b_string_key = new BString("key_value");
 		dictionary.put(b_string_key, b_string_val);
-		Assert.assertEquals(1, dictionary.size());
-		Assert.assertEquals(b_string_val,dictionary.get("key_value".getBytes()));
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(b_string_val, dictionary.get("key_value".getBytes()));
 	}
 
 	@Test
 	public void removeBStringTest() {
-      Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertTrue(dictionary.isEmpty());
 		BString b_string_val = new BString("value");
 		BString b_string_key = new BString("key_value");
 		dictionary.put(b_string_key, b_string_val);
-		Assert.assertEquals(1, dictionary.size());
-		Assert.assertEquals(b_string_val, dictionary.remove(b_string_key));
-		Assert.assertTrue(dictionary.isEmpty());
+		Assertions.assertEquals(1, dictionary.size());
+		Assertions.assertEquals(b_string_val, dictionary.remove(b_string_key));
+		Assertions.assertTrue(dictionary.isEmpty());
 	}
 
 	@Test
 	public void addValueTest() throws BencodeException {
-      Assert.assertTrue(dictionary.isEmpty());
-		Assert.assertNull(dictionary.getKey());
+		Assertions.assertTrue(dictionary.isEmpty());
+		Assertions.assertNull(dictionary.getKey());
 		BString b_string_key = new BString("key_value");
 		dictionary.addValue(b_string_key);
-		Assert.assertNotNull(dictionary.getKey());
-		Assert.assertEquals(0, dictionary.size());
+		Assertions.assertNotNull(dictionary.getKey());
+		Assertions.assertEquals(0, dictionary.size());
 		BInteger b_integer_val = new BInteger(1);
 		dictionary.addValue(b_integer_val);
-		Assert.assertNull(dictionary.getKey());
-		Assert.assertEquals(1, dictionary.size());
+		Assertions.assertNull(dictionary.getKey());
+		Assertions.assertEquals(1, dictionary.size());
 	}
 
-	@Test(expected = BencodeException.class)
+	@Test
 	public void InvalidSetValueTest() throws BencodeException {
-      Assert.assertTrue(dictionary.isEmpty());
-		Assert.assertNull(dictionary.getKey());
+		Assertions.assertTrue(dictionary.isEmpty());
+		Assertions.assertNull(dictionary.getKey());
 		BInteger b_integer_val = new BInteger(1);
-		dictionary.addValue(b_integer_val);
+		BencodeException ex = Assertions.assertThrows(BencodeException.class, () -> {
+			dictionary.addValue(b_integer_val);
+		});
+
+		Assertions.assertEquals("Expected Benocded String as Key got io.delimeat.torrent.bencode.BInteger", ex.getMessage());
+
 	}
 }

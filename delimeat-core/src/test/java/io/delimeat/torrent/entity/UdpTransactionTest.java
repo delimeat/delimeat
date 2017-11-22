@@ -17,8 +17,8 @@ package io.delimeat.torrent.entity;
 
 import java.net.InetSocketAddress;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.torrent.exception.UdpTimeoutException;
@@ -26,59 +26,64 @@ import io.delimeat.torrent.exception.UdpTimeoutException;
 public class UdpTransactionTest {
 
 	@Test
-	public void constructorTest(){
+	public void constructorTest() {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
 		InetSocketAddress address = InetSocketAddress.createUnresolved("localhost", 9090);
 		UdpTransaction transaction = new UdpTransaction(request, address);
-		
-		Assert.assertEquals(request, transaction.getRequest());
-		Assert.assertEquals(address, transaction.getToAddress());
+
+		Assertions.assertEquals(request, transaction.getRequest());
+		Assertions.assertEquals(address, transaction.getToAddress());
 	}
-	
+
 	@Test
-	public void toStringTest(){
+	public void toStringTest() {
 		UdpScrapeRequest request = new UdpScrapeRequest(1, 2, new InfoHash("INFO_HASH".getBytes()));
 		InetSocketAddress address = InetSocketAddress.createUnresolved("localhost", 9090);
 		UdpTransaction transaction = new UdpTransaction(request, address);
-		
-		Assert.assertEquals("UdpTransaction [toAddress=localhost:9090, request=ScrapeUdpRequest [connectionId=1, action=SCRAPE, transactionId=2, infoHash=InfoHash [getHex()=494e464f5f48415348]], ]", transaction.toString());
+
+		Assertions.assertEquals(
+				"UdpTransaction [toAddress=localhost:9090, request=ScrapeUdpRequest [connectionId=1, action=SCRAPE, transactionId=2, infoHash=InfoHash [getHex()=494e464f5f48415348]], ]",
+				transaction.toString());
 	}
-	
-	@Test(expected=UdpTimeoutException.class)
-	public void getResponseTimeoutTest() throws Exception{
-		UdpRequest request = Mockito.mock(UdpRequest.class);
-		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
-		UdpTransaction transaction = new UdpTransaction(request, address);
-		
-		transaction.getResponse(1000);
-	}
-	
+
 	@Test
-	public void getResponseExceptionTest(){
+	public void getResponseTimeoutTest() throws Exception {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
 		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
 		UdpTransaction transaction = new UdpTransaction(request, address);
-		
+
+		UdpTimeoutException ex = Assertions.assertThrows(UdpTimeoutException.class, () -> {
+			transaction.getResponse(1000);
+		});
+
+		Assertions.assertEquals("Transaction timeout\n{}", ex.getMessage());
+	}
+
+	@Test
+	public void getResponseExceptionTest() {
+		UdpRequest request = Mockito.mock(UdpRequest.class);
+		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
+		UdpTransaction transaction = new UdpTransaction(request, address);
+
 		Exception exception = new Exception("EXCEPTION");
 		transaction.setException(exception);
-		try{
+
+		Exception ex = Assertions.assertThrows(Exception.class, () -> {
 			transaction.getResponse(1000);
-		}catch(Exception e){
-			Assert.assertEquals(exception, e);
-			return;
-		}	
-		Assert.fail();		
+		});
+
+		Assertions.assertEquals(exception, ex);
 	}
-	
+
 	@Test
-	public void getResponseTest() throws Exception{
+	public void getResponseTest() throws Exception {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
 		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
 		UdpTransaction transaction = new UdpTransaction(request, address);
-		
+
 		UdpResponse response = Mockito.mock(UdpResponse.class);
 		transaction.setResponse(response);
-		
-		Assert.assertEquals(response, transaction.getResponse(1000));
+
+		Assertions.assertEquals(response, transaction.getResponse(1000));
 	}
 }

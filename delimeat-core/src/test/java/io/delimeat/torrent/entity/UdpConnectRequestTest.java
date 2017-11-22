@@ -2,8 +2,8 @@ package io.delimeat.torrent.entity;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UdpConnectRequestTest {
 
@@ -11,9 +11,9 @@ public class UdpConnectRequestTest {
 	public void constructorTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertEquals(0x41727101980L, request.getConnectionId());
-		Assert.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
-		Assert.assertEquals(UdpAction.CONNECT, request.getAction());
+		Assertions.assertEquals(0x41727101980L, request.getConnectionId());
+		Assertions.assertEquals(Integer.MIN_VALUE, request.getTransactionId());
+		Assertions.assertEquals(UdpAction.CONNECT, request.getAction());
 	}
 
 	
@@ -23,37 +23,37 @@ public class UdpConnectRequestTest {
 		
 		ByteBuffer result = request.toByteBuffer();
 		
-		Assert.assertEquals(0x41727101980L, result.getLong());
-		Assert.assertEquals(0, result.getInt());
-		Assert.assertEquals(Integer.MAX_VALUE, result.getInt());
+		Assertions.assertEquals(0x41727101980L, result.getLong());
+		Assertions.assertEquals(0, result.getInt());
+		Assertions.assertEquals(Integer.MAX_VALUE, result.getInt());
 	}
 
 	@Test
 	public void hashCodeTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertEquals(989042954, request.hashCode());
+		Assertions.assertEquals(989042954, request.hashCode());
 	}
 
 	@Test
 	public void equalsSelfTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertTrue(request.equals(request));
+		Assertions.assertTrue(request.equals(request));
 	}
 
 	@Test
 	public void equalsNullTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertFalse(request.equals(null));
+		Assertions.assertFalse(request.equals(null));
 	}
 
 	@Test
 	public void equalsObjectTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertFalse(request.equals(new Object()));
+		Assertions.assertFalse(request.equals(new Object()));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class UdpConnectRequestTest {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 		UdpConnectRequest other = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertTrue(request.equals(other));
+		Assertions.assertTrue(request.equals(other));
 	}
 
 	@Test
@@ -69,13 +69,13 @@ public class UdpConnectRequestTest {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 		UdpConnectRequest other = new UdpConnectRequest(Integer.MAX_VALUE);
 
-		Assert.assertFalse(request.equals(other));
+		Assertions.assertFalse(request.equals(other));
 	}
 
 	@Test
 	public void toStringTest() {
 		UdpConnectRequest request = new UdpConnectRequest(Integer.MIN_VALUE);
 
-		Assert.assertEquals("ConnectUdpRequest [connectionId=4497486125440, action=CONNECT, transactionId=-2147483648]", request.toString());
+		Assertions.assertEquals("ConnectUdpRequest [connectionId=4497486125440, action=CONNECT, transactionId=-2147483648]", request.toString());
 	}
 }
