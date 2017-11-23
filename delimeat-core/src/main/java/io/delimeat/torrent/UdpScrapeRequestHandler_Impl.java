@@ -373,7 +373,12 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				LOGGER.trace("Transaction {} timed out, attempt {}", txn, count+1);
 			}
 			count++;
-		}while(response==null && count < 3);
+		}while(response == null && count < 3);
+		
+		if(response != null) {
+			//TODO better exception
+			throw new UdpTorrentException(String.format("No response returned for %s",txn));
+		}
 		
 		return response;
 		/*
@@ -442,6 +447,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			LOGGER.error("Received an error scraping", ex);
 			throw new TorrentException(ex);
 		}
+		
+		
 		ScrapeResult result = new ScrapeResult(response.getSeeders(), response.getLeechers());
 		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
 		return result;
