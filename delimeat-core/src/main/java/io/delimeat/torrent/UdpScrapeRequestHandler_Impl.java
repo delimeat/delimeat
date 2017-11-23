@@ -335,7 +335,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				return;
 			}
 		}catch(BufferUnderflowException ex){
-			LOGGER.error(String.format("Unable to unmarshall response from %s", fromAddress), ex);
+			LOGGER.error(String.format("Unable to unmarshall response from %s\nbuffer:\n%s", fromAddress, buffer.array()), ex);
 			return;
 		}
 				
@@ -381,12 +381,6 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		}
 		
 		return response;
-		/*
-		LOGGER.trace("Adding {} to send queue", txn);
-		sendPipeline.add(txn);
-		executor.execute(this::doSend);
-		return txn.getResponse(3000);
-		*/
 	}
 	
 	public UdpConnectionId requestConnection(InetSocketAddress toAddress) throws Exception {
