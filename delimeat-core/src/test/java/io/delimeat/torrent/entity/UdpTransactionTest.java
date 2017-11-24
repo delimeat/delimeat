@@ -47,20 +47,20 @@ public class UdpTransactionTest {
 	}
 
 	@Test
-	public void getResponseTimeoutTest() throws Exception {
+	public void awaitResponseTimeoutTest() throws Exception {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
 		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
 		UdpTransaction transaction = new UdpTransaction(request, address);
 
 		UdpTimeoutException ex = Assertions.assertThrows(UdpTimeoutException.class, () -> {
-			transaction.getResponse(1000);
+			transaction.awaitResponse(1000);
 		});
 
 		Assertions.assertEquals("Transaction timeout\n{}", ex.getMessage());
 	}
 
 	@Test
-	public void getResponseExceptionTest() {
+	public void awaitResponseExceptionTest() {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
 		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
 		UdpTransaction transaction = new UdpTransaction(request, address);
@@ -69,7 +69,7 @@ public class UdpTransactionTest {
 		transaction.setException(exception);
 
 		Exception ex = Assertions.assertThrows(Exception.class, () -> {
-			transaction.getResponse(1000);
+			transaction.awaitResponse(1000);
 		});
 
 		Assertions.assertEquals(exception, ex);
@@ -84,6 +84,6 @@ public class UdpTransactionTest {
 		UdpResponse response = Mockito.mock(UdpResponse.class);
 		transaction.setResponse(response);
 
-		Assertions.assertEquals(response, transaction.getResponse(1000));
+		Assertions.assertEquals(response, transaction.getResponse());
 	}
 }

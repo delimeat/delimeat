@@ -18,12 +18,8 @@ public class UdpTransaction {
 		this.request = request;
 		this.toAddress = toAddress;
 	}
-
-	/**
-	 * @return the response
-	 */
-	public UdpResponse getResponse(long timeout) throws UdpTimeoutException, Exception {
-		
+	
+	public void awaitResponse(long timeout) throws UdpTimeoutException, Exception{
 		if(response == null && exception == null){
 			try{
 				if(latch.await(timeout, TimeUnit.MILLISECONDS) == false){
@@ -39,7 +35,12 @@ public class UdpTransaction {
 		if(exception != null){
 			throw exception;
 		}
-		
+	}
+
+	/**
+	 * @return the response
+	 */
+	public UdpResponse getResponse() {
 		return response;
 	}
 
