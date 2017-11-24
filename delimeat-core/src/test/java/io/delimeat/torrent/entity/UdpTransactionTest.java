@@ -49,14 +49,14 @@ public class UdpTransactionTest {
 	@Test
 	public void awaitResponseTimeoutTest() throws Exception {
 		UdpRequest request = Mockito.mock(UdpRequest.class);
-		InetSocketAddress address = Mockito.mock(InetSocketAddress.class);
+		InetSocketAddress address = InetSocketAddress.createUnresolved("localhost", 9090);
 		UdpTransaction transaction = new UdpTransaction(request, address);
 
 		UdpTimeoutException ex = Assertions.assertThrows(UdpTimeoutException.class, () -> {
 			transaction.awaitResponse(1000);
 		});
 
-		Assertions.assertEquals("Transaction timeout\n{}", ex.getMessage());
+		Assertions.assertEquals("Transaction timeout\nUdpTransaction [toAddress=localhost:9090, request=Mock for UdpRequest, hashCode: 1778629809, ]", ex.getMessage());
 	}
 
 	@Test

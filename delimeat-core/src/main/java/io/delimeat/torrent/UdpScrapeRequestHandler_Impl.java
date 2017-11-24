@@ -362,6 +362,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public UdpResponse enqueueRequest(UdpRequest request, InetSocketAddress address) throws Exception{
 		UdpTransaction txn = new UdpTransaction(request, address);
 		int count = 0;
+		
 		do{
 			LOGGER.trace("Adding {} to send queue, attempt {}", txn, count+1);
 			sendPipeline.add(txn);
@@ -371,7 +372,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				break;
 			}catch(UdpTimeoutException ex){
 				LOGGER.trace("Transaction {} timed out, attempt {}", txn, count+1);
-				if(count >= 3) {
+				if(count >= 2) {
 					throw ex;
 				}
 			}
