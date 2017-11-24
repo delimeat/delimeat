@@ -362,25 +362,26 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	public UdpResponse enqueueRequest(UdpRequest request, InetSocketAddress address) throws Exception{
 		UdpTransaction txn = new UdpTransaction(request, address);
 		int count = 0;
-		UdpResponse response = null;
+		
 		do{
 			LOGGER.trace("Adding {} to send queue, attempt {}", txn, count+1);
 			sendPipeline.add(txn);
 			executor.execute(this::doSend);
 			try{
-				response = txn.getResponse((15*2^count)*1000);
+				UdpResponse response = txn.getResponse((15*2^count)*1000);
+				if(response != null) {
+					return response;
+				}
 			}catch(UdpTimeoutException ex){
 				LOGGER.trace("Transaction {} timed out, attempt {}", txn, count+1);
+				if(count >= 3) {
+					throw ex;
+				}
 			}
 			count++;
-		}while(response == null && count < 3);
+		}while(count < 3);
 		
-		if(response != null) {
-			//TODO better exception
-			throw new UdpTorrentException(String.format("No response returned for %s",txn));
-		}
-		
-		return response;
+		throw new UdpTorrentException(String.format("No response returned for %s",txn));
 	}
 	
 	public UdpConnectionId requestConnection(InetSocketAddress toAddress) throws Exception {
