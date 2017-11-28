@@ -26,6 +26,11 @@
 		    <version>${javax.transaction.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
     		<artifactId>javax.persistence</artifactId>
     		<version>${javax.persistence.version}</version>

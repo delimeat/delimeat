@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.api.util.RequestLoggingFilter;
 import io.delimeat.api.util.ResponseLoggingFilter;
@@ -34,7 +34,7 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
-@Component
+@Named
 public class ApplicationController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationController.class);
@@ -42,8 +42,8 @@ public class ApplicationController {
 	
 	@Value("${io.delimeat.port}")
 	private int port = 8080;
-	
-	@Autowired
+		
+	@Inject
 	private List<SparkController> controllers = new ArrayList<SparkController>();
 	
 	/**

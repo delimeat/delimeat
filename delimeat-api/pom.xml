@@ -43,6 +43,6 @@
 		    <groupId>org.eclipse.persistence</groupId>
 		    <artifactId>org.eclipse.persistence.moxy</artifactId>
 		    <version>${org.eclipse.persistence.version}</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 </project>
