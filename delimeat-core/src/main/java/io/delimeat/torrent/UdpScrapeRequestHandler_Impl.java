@@ -335,7 +335,7 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 				return;
 			}
 		}catch(BufferUnderflowException ex){
-			LOGGER.error(String.format("Unable to unmarshall response from %s\nbuffer:\n%s", fromAddress, buffer.array()), ex);
+			LOGGER.error(String.format("Unable to unmarshall response from %s", fromAddress), ex);
 			return;
 		}
 				
@@ -368,7 +368,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 			sendPipeline.add(txn);
 			executor.execute(this::doSend);
 			try{
-				txn.awaitResponse((15*2^count)*1000);
+				//txn.awaitResponse((15*2^count)*1000);
+				txn.awaitResponse(1000*(count+1));
 				break;
 			}catch(UdpTimeoutException ex){
 				LOGGER.trace("Transaction {} timed out, attempt {}", txn, count+1);
