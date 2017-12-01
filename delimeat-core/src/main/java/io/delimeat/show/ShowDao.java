@@ -21,7 +21,7 @@ import io.delimeat.show.entity.Show;
 
 public interface ShowDao {
 
-	public void create(Show show);
+	public Show create(Show show);
 	
 	public Show read(Long id);
 	

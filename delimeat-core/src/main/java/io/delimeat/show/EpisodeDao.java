@@ -22,7 +22,7 @@ import io.delimeat.show.entity.EpisodeStatus;
 
 public interface EpisodeDao {
 
-	public void create(Episode episode);
+	public Episode create(Episode episode);
 	
 	public Episode read(Long id);
 	

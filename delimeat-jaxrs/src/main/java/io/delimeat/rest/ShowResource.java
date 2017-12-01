@@ -9,8 +9,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import io.delimeat.show.ShowService;
 import io.delimeat.show.entity.Episode;
@@ -38,25 +38,25 @@ public class ShowResource {
 	
 	@GET
 	@Path("/{id}")
-	public Show read(@QueryParam("id") Long id) throws ShowNotFoundException, ShowException {
+	public Show read(@PathParam("id") Long id) throws ShowNotFoundException, ShowException {
 		return service.read(id);
 	}
 	
 	@PUT
 	@Path("/{id}")
-	public Show update(@QueryParam("id") Long id, Show show) throws ShowNotFoundException, ShowException {
+	public Show update(@PathParam("id") Long id, Show show) throws ShowNotFoundException, ShowException {
 		return service.update(show);
 	}
 	
 	@DELETE
 	@Path("/{id}")
-	public void delete(@QueryParam("id") Long id) throws ShowException {
+	public void delete(@PathParam("id") Long id) throws ShowException {
 		service.delete(id);
 	}
 	
 	@GET
 	@Path("/{id}/episode")
-	public List<Episode> episodes(@QueryParam("id") Long id) throws ShowNotFoundException, ShowException{
+	public List<Episode> episodes(@PathParam("id") Long id) throws ShowNotFoundException, ShowException{
 		return read(id).getEpisodes();
 	}	
 }

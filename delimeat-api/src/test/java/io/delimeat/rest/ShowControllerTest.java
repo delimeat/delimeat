@@ -332,14 +332,10 @@ public class ShowControllerTest {
 		episode.setStatus(EpisodeStatus.SKIPPED);
 		episode.setTitle("TITLE");
 		episode.setVersion(1);
-		
+				
 		ShowService showService = Mockito.mock(ShowService.class);
-		Mockito.when(showService.read(1L)).thenReturn(show);
+		Mockito.when(showService.readAllEpisodes(99L)).thenReturn(Arrays.asList(episode));
 		controller.setShowService(showService);
-		
-		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(99L)).thenReturn(Arrays.asList(episode));
-		controller.setEpisodeService(episodeService);
 		
     	Response response = client.target("http://localhost:4567")
     			.path("/api/show/99/episode")
@@ -353,8 +349,8 @@ public class ShowControllerTest {
     	Assertions.assertEquals(1, results.size());
     	Assertions.assertEquals(episode, results.get(0));
 		
-		Mockito.verify(episodeService).findByShow(99L);
-		Mockito.verifyNoMoreInteractions(episodeService);
+		Mockito.verify(showService).readAllEpisodes(99L);
+		Mockito.verifyNoMoreInteractions(showService);
 	}
 
 }

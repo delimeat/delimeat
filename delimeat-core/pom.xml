@@ -38,7 +38,7 @@
 		<!-- SPRING  -->
  		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<!-- REST -->
@@ -51,13 +51,6 @@
 		    <groupId>org.eclipse.persistence</groupId>
 		    <artifactId>org.eclipse.persistence.moxy</artifactId>
 		    <version>${org.eclipse.persistence.version}</version>
-		</dependency>
-		
-		<!-- to be removed once dependency removed -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-			<version>${org.springframework.data.version}</version>
 		</dependency>
 	</dependencies>
 </project>

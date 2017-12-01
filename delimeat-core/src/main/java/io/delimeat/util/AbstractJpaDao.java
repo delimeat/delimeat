@@ -46,8 +46,9 @@ public abstract class AbstractJpaDao<I,T> {
 	/**
 	 * @param entity the entity to create
 	 */
-	public void create(T entity){
+	public T create(T entity){
 		entityManager.persist(entity);
+		return entity;
 	}
 	
 	/**

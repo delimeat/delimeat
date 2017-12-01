@@ -22,13 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.entity.GuideEpisode;
@@ -50,11 +52,11 @@ public class ShowService_ImplTest {
 	}
 
 	@Test
-	public void showRepositoryTest() {
-		Assertions.assertNull(service.getShowRepository());
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		service.setShowRepository(showRepository);
-		Assertions.assertEquals(showRepository, service.getShowRepository());
+	public void showDaoTest() {
+		Assertions.assertNull(service.getShowDao());
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		service.setShowDao(showDao);
+		Assertions.assertEquals(showDao, service.getShowDao());
 	}
 
 	@Test
@@ -80,13 +82,13 @@ public class ShowService_ImplTest {
 
 	@Test
 	public void createTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
 		Show show = new Show();
 		show.setTitle("TITLE");
 		show.setGuideId("GUIDEID");
 		show.setAirTime(LocalTime.NOON);
 		show.setTimezone(ZoneId.systemDefault().getId());
-		service.setShowRepository(showRepository);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		service.setShowDao(showDao);
 
 		GuideService guideService = Mockito.mock(GuideService.class);
 		GuideEpisode guideEp1 = new GuideEpisode();
@@ -101,8 +103,8 @@ public class ShowService_ImplTest {
 
 		service.create(show);
 
-		Mockito.verify(showRepository).save(show);
-		Mockito.verifyNoMoreInteractions(showRepository);
+		Mockito.verify(showDao).create(show);
+		Mockito.verifyNoMoreInteractions(showDao);
 
 		ArgumentCaptor<Episode> argumentCaptor = ArgumentCaptor.forClass(Episode.class);
 		Mockito.verify(episodeService, Mockito.times(2)).create(argumentCaptor.capture());
@@ -112,19 +114,19 @@ public class ShowService_ImplTest {
 		Mockito.verifyNoMoreInteractions(episodeService);
 
 		Mockito.verify(guideService).readEpisodes("GUIDEID");
-		Mockito.verifyNoMoreInteractions(showRepository, guideService);
+		Mockito.verifyNoMoreInteractions(showDao, guideService);
 
 	}
 
 	@Test
 	public void createExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
 		show.setTitle("TITLE");
 		show.setGuideId("GUIDEID");
 		show.setAirTime(LocalTime.NOON);
 		show.setTimezone(ZoneId.systemDefault().getId());
-		service.setShowRepository(showRepository);
+		service.setShowDao(showDao);
 
 		GuideService guideService = Mockito.mock(GuideService.class);
 		GuideEpisode guideEp1 = new GuideEpisode();
@@ -148,23 +150,23 @@ public class ShowService_ImplTest {
 
 	@Test
 	public void readTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
-		Mockito.when(showRepository.findOne(Long.MAX_VALUE)).thenReturn(show);
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.read(Long.MAX_VALUE)).thenReturn(show);
+		service.setShowDao(showDao);
 
 		Show actualShow = service.read(Long.MAX_VALUE);
 		Assertions.assertEquals(show, actualShow);
 
-		Mockito.verify(showRepository).findOne(Long.MAX_VALUE);
-		Mockito.verifyNoMoreInteractions(showRepository);
+		Mockito.verify(showDao).read(Long.MAX_VALUE);
+		Mockito.verifyNoMoreInteractions(showDao);
 	}
 
 	@Test
 	public void readNotFoundExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		Mockito.when(showRepository.findOne(Long.MAX_VALUE)).thenReturn(null);
-		service.setShowRepository(showRepository);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		Mockito.when(showDao.read(Long.MAX_VALUE)).thenThrow(EntityNotFoundException.class);
+		service.setShowDao(showDao);
 
 		ShowNotFoundException ex = Assertions.assertThrows(ShowNotFoundException.class, () -> {
 			service.read(Long.MAX_VALUE);
@@ -176,117 +178,115 @@ public class ShowService_ImplTest {
 
 	@Test
 	public void readExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		Mockito.when(showRepository.findOne(Long.MAX_VALUE)).thenThrow(new ConcurrencyFailureException("EX"));
-		service.setShowRepository(showRepository);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		Mockito.when(showDao.read(Long.MAX_VALUE)).thenThrow(OptimisticLockException.class);
+		service.setShowDao(showDao);
 
 		ShowException ex = Assertions.assertThrows(ShowException.class, () -> {
 			service.read(Long.MAX_VALUE);
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.dao.ConcurrencyFailureException: EX", ex.getMessage());
+		Assertions.assertEquals("javax.persistence.OptimisticLockException", ex.getMessage());
 	}
 
 	@Test
 	public void readAllTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		List<Show> expectedShows = new ArrayList<Show>();
 		Show show = new Show();
 		expectedShows.add(show);
-		Mockito.when(showRepository.findAll()).thenReturn(expectedShows);
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.readAll()).thenReturn(expectedShows);
+		service.setShowDao(showDao);
 
 		List<Show> actualShows = service.readAll();
 		Assertions.assertEquals(1, actualShows.size());
 		Assertions.assertEquals(show, actualShows.get(0));
 
-		Mockito.verify(showRepository).findAll();
-		Mockito.verifyNoMoreInteractions(showRepository);
+		Mockito.verify(showDao).readAll();
+		Mockito.verifyNoMoreInteractions(showDao);
 	}
 
 	@Test
 	public void readAllExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		List<Show> expectedShows = new ArrayList<Show>();
 		Show show = new Show();
 		expectedShows.add(show);
-		Mockito.when(showRepository.findAll()).thenThrow(new ConcurrencyFailureException("EX"));
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.readAll()).thenThrow(OptimisticLockException.class);
+		service.setShowDao(showDao);
 
 		ShowException ex = Assertions.assertThrows(ShowException.class, () -> {
 			service.readAll();
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.dao.ConcurrencyFailureException: EX", ex.getMessage());
+		Assertions.assertEquals("javax.persistence.OptimisticLockException", ex.getMessage());
 	}
 
 	@Test
 	public void updateTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
-		Mockito.when(showRepository.save(show)).thenReturn(show);
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.update(show)).thenReturn(show);
+		service.setShowDao(showDao);
 
 		Show actualShow = service.update(new Show());
 		Assertions.assertEquals(show, actualShow);
 
-		Mockito.verify(showRepository).save(show);
-		Mockito.verifyNoMoreInteractions(showRepository);
+		Mockito.verify(showDao).update(show);
+		Mockito.verifyNoMoreInteractions(showDao);
 	}
 
 	@Test
 	public void updateConcurrencyExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
-		Mockito.when(showRepository.save(show)).thenThrow(new ConcurrencyFailureException("EX"));
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.update(show)).thenThrow(OptimisticLockException.class);
+		service.setShowDao(showDao);
 
 		ShowConcurrencyException ex = Assertions.assertThrows(ShowConcurrencyException.class, () -> {
 			service.update(new Show());
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.dao.ConcurrencyFailureException: EX", ex.getMessage());
+		Assertions.assertEquals("javax.persistence.OptimisticLockException", ex.getMessage());
 	}
 
 	@Test
 	public void updateExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
 		Show show = new Show();
-		Mockito.when(showRepository.save(show)).thenThrow(new DataSourceLookupFailureException("EX"));
-		service.setShowRepository(showRepository);
+		Mockito.when(showDao.update(show)).thenThrow(PersistenceException.class);
+		service.setShowDao(showDao);
 
 		ShowException ex = Assertions.assertThrows(ShowException.class, () -> {
 			service.update(new Show());
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException: EX",
-				ex.getMessage());
+		Assertions.assertEquals("javax.persistence.PersistenceException", ex.getMessage());
 	}
 
 	@Test
 	public void deleteTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		service.setShowRepository(showRepository);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		service.setShowDao(showDao);
 
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		service.setEpisodeService(episodeService);
 
 		service.delete(Long.MAX_VALUE);
 
-		Mockito.verify(showRepository).delete(Long.MAX_VALUE);
-		Mockito.verify(episodeService).deleteByShow(Long.MAX_VALUE);
-		Mockito.verifyNoMoreInteractions(showRepository, episodeService);
+		Mockito.verify(showDao).delete(Long.MAX_VALUE);
+		Mockito.verifyNoMoreInteractions(showDao, episodeService);
 	}
 
 	@Test
 	public void deleteExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		service.setShowRepository(showRepository);
-		Mockito.doThrow(new DataSourceLookupFailureException("EX")).when(showRepository).delete(Long.MAX_VALUE);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		service.setShowDao(showDao);
+		Mockito.doThrow(PersistenceException.class).when(showDao).delete(Long.MAX_VALUE);
 
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
 		service.setEpisodeService(episodeService);
@@ -297,46 +297,40 @@ public class ShowService_ImplTest {
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException: EX",
-				ex.getMessage());
+		Assertions.assertEquals("javax.persistence.PersistenceException", ex.getMessage());
 	}
 
 	@Test
 	public void readAllEpisodesTest() throws Exception {
+		Show show = new Show();
 		Episode ep = new Episode();
+		show.setEpisodes(Arrays.asList(ep));
 
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		service.setShowRepository(showRepository);
-
-		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(1L)).thenReturn(Arrays.asList(ep));
-		service.setEpisodeService(episodeService);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		Mockito.when(showDao.read(1L)).thenReturn(show);
+		service.setShowDao(showDao);
 
 		List<Episode> episodes = service.readAllEpisodes(1L);
 		Assertions.assertNotNull(episodes);
 		Assertions.assertEquals(1, episodes.size());
 		Assertions.assertEquals(ep, episodes.get(0));
 
-		Mockito.verify(episodeService).findByShow(1L);
-		Mockito.verifyNoMoreInteractions(episodeService);
+		Mockito.verify(showDao).read(1L);
+		Mockito.verifyNoMoreInteractions(showDao);
 	}
 
 	@Test
 	public void readAllEpisodesExceptionTest() throws Exception {
-		ShowRepository showRepository = Mockito.mock(ShowRepository.class);
-		service.setShowRepository(showRepository);
-
-		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(1L)).thenThrow(new DataSourceLookupFailureException("EX"));
-		service.setEpisodeService(episodeService);
+		ShowDao showDao = Mockito.mock(ShowDao.class);
+		Mockito.when(showDao.read(1L)).thenThrow(PersistenceException.class);
+		service.setShowDao(showDao);
 
 		ShowException ex = Assertions.assertThrows(ShowException.class, () -> {
 			service.readAllEpisodes(1L);
 		});
 
 		// TODO better error message
-		Assertions.assertEquals("org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException: EX",
-				ex.getMessage());
+		Assertions.assertEquals("javax.persistence.PersistenceException", ex.getMessage());
 	}
 
 }

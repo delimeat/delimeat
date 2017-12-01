@@ -350,11 +350,11 @@ public class GuideItemProcessor_ImplTest {
 		
 		ShowService showService = Mockito.mock(ShowService.class);
 		Mockito.when(showService.read(Long.MAX_VALUE)).thenReturn(show);
-		
+		Mockito.when(showService.readAllEpisodes(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEpToDelete, showEpToUpdate));
+
 		processor.setShowService(showService);
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEpToDelete, showEpToUpdate));
 		ArgumentCaptor<Episode> createCaptor = ArgumentCaptor.forClass(Episode.class);
 		Mockito.when(episodeService.create(createCaptor.capture())).thenReturn(null);
 		ArgumentCaptor<Long> deleteCaptor = ArgumentCaptor.forClass(Long.class);
@@ -412,9 +412,9 @@ public class GuideItemProcessor_ImplTest {
 		Assertions.assertEquals(Long.MIN_VALUE, deleteCaptor.getValue().longValue());
 		
 		Mockito.verify(showService).update(show);
+		Mockito.verify(showService).readAllEpisodes(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
 		Mockito.verify(episodeService).delete(Long.MIN_VALUE);
 		Mockito.verify(episodeService).create(Mockito.any());
 		Mockito.verify(episodeService).update(Mockito.any());
@@ -451,7 +451,6 @@ public class GuideItemProcessor_ImplTest {
 		processor.setShowService(showService);
 		
 		EpisodeService episodeService = Mockito.mock(EpisodeService.class);
-		Mockito.when(episodeService.findByShow(Long.MAX_VALUE)).thenReturn(Arrays.asList(showEp));
 		processor.setEpisodeService(episodeService);
 
 		GuideInfo info = new GuideInfo();
@@ -483,10 +482,10 @@ public class GuideItemProcessor_ImplTest {
 		Assertions.assertTrue(show.getLastGuideCheck().toEpochMilli()<=testEnd.getTime());
 
 		Mockito.verify(showService).update(show);
+		Mockito.verify(showService).readAllEpisodes(Long.MAX_VALUE);
 		Mockito.verifyNoMoreInteractions(showService);
 		
-		Mockito.verify(episodeService).findByShow(Long.MAX_VALUE);
-		Mockito.verifyNoMoreInteractions(episodeService);
+		Mockito.verifyZeroInteractions(episodeService);
 
 		Mockito.verify(guideService).read("GUIDEID");
 		Mockito.verify(guideService).readEpisodes("GUIDEID");

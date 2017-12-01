@@ -17,10 +17,13 @@ package io.delimeat.show;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.EpisodeStatus;
 import io.delimeat.util.AbstractJpaDao;
 
+@Repository
 public class EpisodeDao_Impl extends AbstractJpaDao<Long,Episode> implements EpisodeDao {
 
 	public EpisodeDao_Impl(){
@@ -33,7 +36,7 @@ public class EpisodeDao_Impl extends AbstractJpaDao<Long,Episode> implements Epi
 	@Override
 	public List<Episode> findByStatus(List<EpisodeStatus> statuses) {
 		return getEntityManager().createNamedQuery("Episode.findByStatus", Episode.class)
-				.setParameter(":list", statuses)
+				.setParameter("list", statuses)
 				.getResultList();
 	}
 

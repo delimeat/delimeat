@@ -17,14 +17,14 @@ package io.delimeat.show;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.guide.GuideService;
@@ -41,7 +41,7 @@ import io.delimeat.util.DelimeatUtils;
 public class ShowService_Impl implements ShowService {
 	
 	@Autowired
-	private ShowRepository showRepository;
+	private ShowDao showDao;
 	
 	@Autowired
 	private EpisodeService episodeService;
@@ -49,18 +49,19 @@ public class ShowService_Impl implements ShowService {
 	@Autowired
 	private GuideService guideService;
 
+
 	/**
-	 * @return the showRepository
+	 * @return the showDao
 	 */
-	public ShowRepository getShowRepository() {
-		return showRepository;
+	public ShowDao getShowDao() {
+		return showDao;
 	}
 
 	/**
-	 * @param showRepository the showRepository to set
+	 * @param showDao the showDao to set
 	 */
-	public void setShowRepository(ShowRepository showRepository) {
-		this.showRepository = showRepository;
+	public void setShowDao(ShowDao showDao) {
+		this.showDao = showDao;
 	}
 
 	/**
@@ -101,7 +102,7 @@ public class ShowService_Impl implements ShowService {
 			String cleanTitle = DelimeatUtils.cleanTitle(show.getTitle());
 			show.setTitle(cleanTitle);
 			
-			showRepository.save(show);
+			showDao.create(show);
 			final String guideId = show.getGuideId();
 	
 			if (guideId != null && guideId.length() > 0) {
@@ -122,7 +123,7 @@ public class ShowService_Impl implements ShowService {
 				}
 	
 			}
-		} catch (DataAccessException | GuideException e) {
+		} catch (PersistenceException | GuideException e) {
 			throw new ShowException(e);
 		}
 	}
@@ -133,13 +134,11 @@ public class ShowService_Impl implements ShowService {
 	@Override
 	@Transactional
 	public Show read(Long id)  throws ShowNotFoundException, ShowException  {
-		try{
-			Optional<Show> optional = Optional.ofNullable(showRepository.findOne(id));
-			if(optional.isPresent() == false){
-				throw new ShowNotFoundException(id);
-			}
-			return optional.get();
-		} catch (DataAccessException e) {
+		try {
+			return showDao.read(id);
+		} catch(EntityNotFoundException ex) {
+			throw new ShowNotFoundException(id);
+		} catch (PersistenceException e) {
 			throw new ShowException(e);
 		}
 	}
@@ -150,9 +149,9 @@ public class ShowService_Impl implements ShowService {
 	@Override
 	@Transactional
 	public List<Show> readAll() throws ShowException {
-		try{
-			return showRepository.findAll();
-		} catch (DataAccessException e) {
+		try {
+			return showDao.readAll();
+		} catch (PersistenceException e) {
 			throw new ShowException(e);
 		}
 	}
@@ -164,10 +163,10 @@ public class ShowService_Impl implements ShowService {
 	@Transactional
 	public Show update(Show show)  throws ShowConcurrencyException, ShowException {
 		try{
-			return showRepository.save(show);
-		} catch (ConcurrencyFailureException e) {
+			return showDao.update(show);
+		}  catch (OptimisticLockException e) {
 			throw new ShowConcurrencyException(e);
-		} catch (DataAccessException e) {
+		} catch (PersistenceException e) {
 			throw new ShowException(e);
 		}
 	}
@@ -179,24 +178,19 @@ public class ShowService_Impl implements ShowService {
 	@Transactional
 	public void delete(Long id) throws ShowException {
 		try{
-			episodeService.deleteByShow(id);
-			showRepository.delete(id);
-		} catch (DataAccessException e) {
+			showDao.delete(id);
+		} catch (PersistenceException e) {
 			throw new ShowException(e);
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see io.delimeat.common.show.ShowService#readAllEpisodes(java.lang.Long)
 	 */
 	@Override
 	@Transactional
 	public List<Episode> readAllEpisodes(Long id) throws ShowNotFoundException, ShowException {
-		try{
-			return episodeService.findByShow(id);
-		} catch (DataAccessException e) {
-			throw new ShowException(e);
-		}
+		return read(id).getEpisodes();
 	}
 
 	/* (non-Javadoc)
@@ -204,7 +198,7 @@ public class ShowService_Impl implements ShowService {
 	 */
 	@Override
 	public String toString() {
-		return "ShowService_Impl [" + (showRepository != null ? "showRepository=" + showRepository + ", " : "")
+		return "ShowService_Impl [" + (showDao != null ? "showDao=" + showDao + ", " : "")
 				+ (episodeService != null ? "episodeService=" + episodeService + ", " : "")
 				+ (guideService != null ? "guideService=" + guideService : "") + "]";
 	}
