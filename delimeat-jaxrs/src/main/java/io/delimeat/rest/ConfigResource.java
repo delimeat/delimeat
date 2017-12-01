@@ -17,16 +17,7 @@ import io.delimeat.config.exception.ConfigException;
 @Consumes("application/json")
 public class ConfigResource {
 
-	@Inject
-	private ConfigService service;
-	
-	public ConfigService getService() {
-		return service;
-	}
-
-	public void setService(ConfigService service) {
-		this.service = service;
-	}
+	@Inject ConfigService service;
 
 	@GET
 	public Config read() throws ConfigException {

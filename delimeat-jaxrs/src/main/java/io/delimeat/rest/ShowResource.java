@@ -23,16 +23,7 @@ import io.delimeat.show.exception.ShowNotFoundException;
 @Consumes("application/json")
 public class ShowResource {
 
-	@Inject
-	private ShowService showService;
-
-	public ShowService getShowService() {
-		return showService;
-	}
-
-	public void setShowService(ShowService showService) {
-		this.showService = showService;
-	}
+	@Inject ShowService showService;
 	
 	@GET
 	public List<Show> readAll() throws ShowException{
