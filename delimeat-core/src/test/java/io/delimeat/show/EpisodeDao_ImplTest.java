@@ -87,7 +87,7 @@ public class EpisodeDao_ImplTest {
 		TypedQuery<Episode> query = Mockito.mock(TypedQuery.class);
 		Mockito.when(query.getResultList()).thenReturn(Arrays.asList(episode));
 		Mockito.when(entityManager.createNamedQuery("Episode.findByStatus", Episode.class)).thenReturn(query);
-		Mockito.when(query.setParameter(":list", Arrays.asList(EpisodeStatus.PENDING))).thenReturn(query);
+		Mockito.when(query.setParameter("list", Arrays.asList(EpisodeStatus.PENDING))).thenReturn(query);
 		dao.setEntityManager(entityManager);
 
 		List<Episode> result = dao.findByStatus(Arrays.asList(EpisodeStatus.PENDING));
