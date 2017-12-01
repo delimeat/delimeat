@@ -6,7 +6,7 @@
 		<artifactId>delimeat</artifactId>
 		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>delimeat-rest-api</artifactId>
+	<artifactId>delimeat-jaxrs</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.delimeat</groupId>
