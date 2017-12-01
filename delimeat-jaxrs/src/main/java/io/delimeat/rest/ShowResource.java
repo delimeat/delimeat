@@ -23,40 +23,40 @@ import io.delimeat.show.exception.ShowNotFoundException;
 @Consumes("application/json")
 public class ShowResource {
 
-	@Inject ShowService showService;
+	@Inject ShowService service;
 	
 	@GET
 	public List<Show> readAll() throws ShowException{
-		return showService.readAll();
+		return service.readAll();
 	}
 	
 	@POST
-	public Show createShow(Show show) throws ShowException {
-		showService.create(show);
+	public Show create(Show show) throws ShowException {
+		service.create(show);
 		return show;
 	}
 	
 	@GET
 	@Path("/{id}")
 	public Show read(@QueryParam("id") Long id) throws ShowNotFoundException, ShowException {
-		return showService.read(id);
+		return service.read(id);
 	}
 	
 	@PUT
 	@Path("/{id}")
 	public Show update(@QueryParam("id") Long id, Show show) throws ShowNotFoundException, ShowException {
-		return showService.update(show);
+		return service.update(show);
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	public void delete(@QueryParam("id") Long id) throws ShowException {
-		showService.delete(id);
+		service.delete(id);
 	}
 	
 	@GET
 	@Path("/{id}/episode")
 	public List<Episode> episodes(@QueryParam("id") Long id) throws ShowNotFoundException, ShowException{
-		return showService.read(id).getEpisodes();
+		return read(id).getEpisodes();
 	}	
 }

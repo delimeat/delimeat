@@ -28,6 +28,7 @@ public class ConfigResourceTest {
 		Assertions.assertEquals(config, result);
 		
 		Mockito.verify(resource.service).read();
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 	
 	@Test
@@ -40,5 +41,6 @@ public class ConfigResourceTest {
 		Assertions.assertEquals(config, result);
 		
 		Mockito.verify(resource.service).update(config);
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 }

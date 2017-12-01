@@ -32,6 +32,7 @@ public class EpisodeResourceTest {
 		Assertions.assertEquals(episode, results.get(0));
 		
 		Mockito.verify(resource.service).findAllPending();
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 	
 	@Test
@@ -44,5 +45,6 @@ public class EpisodeResourceTest {
 		Assertions.assertEquals(episode, result);
 		
 		Mockito.verify(resource.service).update(episode);
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 }

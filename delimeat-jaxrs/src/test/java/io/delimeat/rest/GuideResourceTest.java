@@ -35,6 +35,7 @@ public class GuideResourceTest {
 		Assertions.assertEquals(searchResult, results.get(0));
 		
 		Mockito.verify(resource.service).readLike("TITLE");
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 	
 	@Test
@@ -48,6 +49,7 @@ public class GuideResourceTest {
 		Assertions.assertEquals(info, result);
 		
 		Mockito.verify(resource.service).read("GUIDEID");
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 	
 	@Test
@@ -62,5 +64,6 @@ public class GuideResourceTest {
 		Assertions.assertEquals(guideEpisode, results.get(0));
 		
 		Mockito.verify(resource.service).readEpisodes("GUIDEID");
+		Mockito.verifyNoMoreInteractions(resource.service);
 	}
 }
