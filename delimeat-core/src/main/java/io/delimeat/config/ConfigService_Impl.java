@@ -15,16 +15,15 @@
  */
 package io.delimeat.config;
 
-import java.util.Optional;
-
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import io.delimeat.config.entity.Config;
@@ -34,26 +33,26 @@ import io.delimeat.config.exception.ConfigException;
 @Service
 public class ConfigService_Impl implements ConfigService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigService_Impl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass().getName());
 
 	@Autowired
-	private ConfigRepository configRepository;
+	private ConfigDao configDao;
 
 	@Value("${io.delimeat.config.defaultOutputDir}")
 	private String defaultOutputDir;
 
 	/**
-	 * @return the configRepository
+	 * @return the configDao
 	 */
-	public ConfigRepository getConfigRepository() {
-		return configRepository;
+	public ConfigDao getConfigDao() {
+		return configDao;
 	}
 
 	/**
-	 * @param configRepository the configRepository to set
+	 * @param configDao the configDao to set
 	 */
-	public void setConfigRepository(ConfigRepository configRepository) {
-		this.configRepository = configRepository;
+	public void setConfigDao(ConfigDao configDao) {
+		this.configDao = configDao;
 	}
 
 	/**
@@ -79,20 +78,20 @@ public class ConfigService_Impl implements ConfigService {
 	@Transactional
 	public Config read() throws ConfigException {
 		try {
-			Config config = configRepository.findOne(1L);
-			if (Optional.ofNullable(config).isPresent() == false) {
+			try {
+				return configDao.read(1L);
+			}catch(EntityNotFoundException ex) {
 				Config defaultConfig = new Config();
 				defaultConfig.setSearchInterval(4 * 60 * 60 * 1000);
 				defaultConfig.setSearchDelay(60 * 60 * 1000);
 				defaultConfig.setPreferFiles(true);
 				defaultConfig.setIgnoreFolders(false);
 				defaultConfig.setOutputDirectory(defaultOutputDir);
-				LOGGER.trace(String.format("No config exists, creating default %s", defaultConfig));
+				LOGGER.trace("No config exists, creating default {}", defaultConfig);
 				return update(defaultConfig);
 			}
-			return config;
-		} catch (DataAccessException e) {
-			throw new ConfigException(e);
+		}catch(PersistenceException ex) {
+			throw new ConfigException(ex);
 		}
 	}
 
@@ -109,11 +108,11 @@ public class ConfigService_Impl implements ConfigService {
 			if (config.isIgnoreFolders()) {
 				config.setPreferFiles(true);
 			}
-			return configRepository.save(config);
-		} catch (ConcurrencyFailureException e) {
-			throw new ConfigConcurrencyException(e);
-		} catch (DataAccessException e) {
-			throw new ConfigException(e);
+			return configDao.update(config);
+		} catch(OptimisticLockException ex) {
+			throw new ConfigConcurrencyException(ex);
+		} catch(PersistenceException ex) {
+			throw new ConfigException(ex);
 		}
 	}
 
@@ -122,7 +121,7 @@ public class ConfigService_Impl implements ConfigService {
 	 */
 	@Override
 	public String toString() {
-		return "ConfigService_Impl [" + (configRepository != null ? "configRepository=" + configRepository + ", " : "")
+		return "ConfigService_Impl [" + (configDao != null ? "configRepository=" + configDao + ", " : "")
 				+ (defaultOutputDir != null ? "defaultOutputDir=" + defaultOutputDir : "") + "]";
 	}
 }

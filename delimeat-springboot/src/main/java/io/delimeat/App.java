@@ -97,6 +97,7 @@ public class App {
 		return transactionManager;
 	}
 	
+	
 	@Bean(name="io.delimeat.torrent.udpAddress")
 	public InetSocketAddress udpScrapeSocketAddress(){
 		String address = env.getProperty("io.delimeat.torrent.udp.address");

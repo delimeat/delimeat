@@ -15,18 +15,17 @@
  */
 package io.delimeat.config;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.RecoverableDataAccessException;
 
-import io.delimeat.config.ConfigRepository;
-import io.delimeat.config.ConfigService_Impl;
 import io.delimeat.config.entity.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
 import io.delimeat.config.exception.ConfigException;
@@ -47,10 +46,10 @@ public class ConfigService_ImplTest {
 
 	@Test
 	public void configDaoTest() {
-		Assertions.assertNull(service.getConfigRepository());
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		service.setConfigRepository(repository);
-		Assertions.assertEquals(repository, service.getConfigRepository());
+		Assertions.assertNull(service.getConfigDao());
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		service.setConfigDao(dao);
+		Assertions.assertEquals(dao, service.getConfigDao());
 	}
 
 	@Test
@@ -63,14 +62,14 @@ public class ConfigService_ImplTest {
 	@Test
 	public void readTest() throws Exception {
 		Config config = new Config();
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		Mockito.when(repository.findOne(1L)).thenReturn(config);
-		service.setConfigRepository(repository);
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.read(1L)).thenReturn(config);
+		service.setConfigDao(dao);
 
 		Assertions.assertEquals(config, service.read());
 
-		Mockito.verify(repository).findOne(1L);
-		Mockito.verifyNoMoreInteractions(repository);
+		Mockito.verify(dao).read(1L);
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test
@@ -82,11 +81,11 @@ public class ConfigService_ImplTest {
 		config.setSearchDelay(60 * 60 * 1000);
 		config.setPreferFiles(true);
 		config.setIgnoreFolders(false);
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		Mockito.when(repository.findOne(1L)).thenReturn(null);
-		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
-
-		service.setConfigRepository(repository);
+		
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.read(1L)).thenThrow(EntityNotFoundException.class);
+		Mockito.when(dao.update(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
+		service.setConfigDao(dao);
 		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
 
 		Config result = service.read();
@@ -98,26 +97,25 @@ public class ConfigService_ImplTest {
 		Assertions.assertFalse(result.isIgnoreFolders());
 
 		ArgumentCaptor<Config> captor = ArgumentCaptor.forClass(Config.class);
-		Mockito.verify(repository).save(captor.capture());
+		Mockito.verify(dao).update(captor.capture());
 		Assertions.assertEquals(config, captor.getValue());
-		Mockito.verify(repository).findOne(1L);
-		Mockito.verify(repository).save(result);
-		Mockito.verifyNoMoreInteractions(repository);
+		Mockito.verify(dao).read(1L);
+		Mockito.verify(dao).update(result);
+		Mockito.verifyNoMoreInteractions(dao);
 	}
 
 	@Test
-	public void readEnityDataAccessExceptionTest() throws Exception {
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		DataAccessException ex = new RecoverableDataAccessException("ERROR");
-		Mockito.when(repository.findOne(1L)).thenThrow(ex);
+	public void readExceptionTest() throws Exception {
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.read(1L)).thenThrow(PersistenceException.class);
+		service.setConfigDao(dao);
 
-		service.setConfigRepository(repository);
 		service.setDefaultOutputDir("DEFAULT_OUTPUT_DIR");
 
 		ConfigException exception = Assertions.assertThrows(ConfigException.class, () -> {
 			service.read();
 		});
-		Assertions.assertEquals("org.springframework.dao.RecoverableDataAccessException: ERROR", exception.getMessage());
+		Assertions.assertEquals("javax.persistence.PersistenceException", exception.getMessage());
 	}
 
 	@Test
@@ -125,9 +123,10 @@ public class ConfigService_ImplTest {
 		Config config = new Config();
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(false);
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		Mockito.when(repository.save(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
-		service.setConfigRepository(repository);
+		
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.update(Mockito.any())).then(AdditionalAnswers.returnsFirstArg());
+		service.setConfigDao(dao);
 
 		Config result = service.update(config);
 		Assertions.assertEquals(config, result);
@@ -135,27 +134,26 @@ public class ConfigService_ImplTest {
 		Assertions.assertTrue(config.isPreferFiles());
 
 		ArgumentCaptor<Config> captor = ArgumentCaptor.forClass(Config.class);
-		Mockito.verify(repository).save(captor.capture());
+		Mockito.verify(dao).update(captor.capture());
 		Assertions.assertEquals(config, captor.getValue());
-		Mockito.verify(repository).save(config);
-		Mockito.verifyNoMoreInteractions(repository);
+		Mockito.verifyNoMoreInteractions(dao);
 
 	}
 
 	@Test
-	public void updateDataAccessExceptionTest() throws Exception {
+	public void updateExceptionTest() throws Exception {
 		Config config = new Config();
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(false);
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		DataAccessException ex = new RecoverableDataAccessException("ERROR");
-		Mockito.when(repository.save(Mockito.any(Config.class))).thenThrow(ex);
-		service.setConfigRepository(repository);
+		
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.update(Mockito.any())).thenThrow(PersistenceException.class);
+		service.setConfigDao(dao);
 
 		ConfigException exception = Assertions.assertThrows(ConfigException.class, () -> {
 			service.update(config);
 		});
-		Assertions.assertEquals("org.springframework.dao.RecoverableDataAccessException: ERROR", exception.getMessage());
+		Assertions.assertEquals("javax.persistence.PersistenceException", exception.getMessage());
 
 	}
 
@@ -164,15 +162,15 @@ public class ConfigService_ImplTest {
 		Config config = new Config();
 		config.setIgnoreFolders(true);
 		config.setPreferFiles(false);
-		ConfigRepository repository = Mockito.mock(ConfigRepository.class);
-		DataAccessException ex = new ConcurrencyFailureException("ERROR");
-		Mockito.when(repository.save(Mockito.any(Config.class))).thenThrow(ex);
-		service.setConfigRepository(repository);
+		
+		ConfigDao dao = Mockito.mock(ConfigDao.class);
+		Mockito.when(dao.update(Mockito.any())).thenThrow(OptimisticLockException.class);
+		service.setConfigDao(dao);
 
 		ConfigConcurrencyException exception = Assertions.assertThrows(ConfigConcurrencyException.class, () -> {
 			service.update(config);
 		});
-		Assertions.assertEquals("org.springframework.dao.ConcurrencyFailureException: ERROR", exception.getMessage());
+		Assertions.assertEquals("javax.persistence.OptimisticLockException", exception.getMessage());
 	}
 
 }
