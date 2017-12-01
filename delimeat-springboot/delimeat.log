@@ -1,6 +1,0 @@
-11:59:29.382 [main] INFO  io.delimeat.App - Starting App on calculon with PID 1403 (/home/ubuntu/git/delimeat/delimeat-springboot/target/classes started by ubuntu in /home/ubuntu/git/delimeat/delimeat-springboot)
-11:59:29.394 [main] DEBUG io.delimeat.App - Running with Spring Boot v1.5.9.RELEASE, Spring v4.3.13.RELEASE
-11:59:29.395 [main] INFO  io.delimeat.App - No active profile set, falling back to default profiles: default
-11:59:36.796 [main] INFO  io.delimeat.App - Started App in 8.066 seconds (JVM running for 8.704)
-11:59:51.706 [http-nio-8080-exec-1] TRACE i.delimeat.config.ConfigService_Impl - Entering io.delimeat.config.ConfigService_Impl.read()
-11:59:51.747 [http-nio-8080-exec-1] TRACE i.delimeat.config.ConfigService_Impl - Leaving io.delimeat.config.ConfigService_Impl.read(): Config [configId=1, outputDirectory=/home/ubuntu/delimeat/torrents, searchInterval=43200000, searchDelay=3600000, preferFiles=true, ignoreFolders=false, ignoredFileTypes={[]}, excludedKeywords={[]}, version=7]
