@@ -20,7 +20,7 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<mainClass>io.delimeat.SpringApplication</mainClass>
+							<mainClass>io.delimeat.App</mainClass>
 						</configuration>
 					</execution>
 				</executions>
@@ -47,6 +47,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jersey</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
