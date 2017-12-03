@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.entity.GuideEpisode;
@@ -26,19 +26,19 @@ public class GuideResource {
 	
 	@GET
 	@Path("/search/{title}")
-	public List<GuideSearchResult> search(@QueryParam("title") String title) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+	public List<GuideSearchResult> search(@PathParam("title") String title) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
 		return service.readLike(title);
 	}
 	
 	@GET
 	@Path("/info/{id}")
-	public GuideInfo info(@QueryParam("id") String id) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
+	public GuideInfo info(@PathParam("id") String id) throws GuideNotFoundException, GuideAuthorizationException, GuideException {
 		return service.read(id);
 	}
 	
 	@GET
 	@Path("/info/{id}/episode")
-	public List<GuideEpisode> episodes(@QueryParam("id") String id) throws GuideNotFoundException, GuideAuthorizationException, GuideException{
+	public List<GuideEpisode> episodes(@PathParam("id") String id) throws GuideNotFoundException, GuideAuthorizationException, GuideException{
 		return service.readEpisodes(id);
 	}
 	
