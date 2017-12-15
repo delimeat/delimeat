@@ -79,15 +79,15 @@
 		<!-- API versions -->
 		<javax.transaction.version>1.2</javax.transaction.version>
 		<javax.persistence.version>2.2.0</javax.persistence.version>
+		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
+		<javax.inject.version>1</javax.inject.version>
 		
 		<org.slf4j.version>1.7.22</org.slf4j.version>
 		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>
 		
 		<org.springframework.version>4.3.13.RELEASE</org.springframework.version>
-		<!--
-		<org.springframework.version>5.0.0.RELEASE</org.springframework.version>
-		!-->
-		<org.eclipse.persistence.version>2.6.5</org.eclipse.persistence.version>
+
+		<org.eclipse.persistence.version>2.6.0</org.eclipse.persistence.version>
 
 	</properties>
 

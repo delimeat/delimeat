@@ -9,16 +9,17 @@
   <properties>
 		<!-- Runtime versions ! -->
   		<com.squareup.okhttp3.version>3.9.0</com.squareup.okhttp3.version>
-  		<org.springframework.data.version>1.11.8.RELEASE</org.springframework.data.version>
+  		<com.github.tomakehurst.wiremock.version>2.12.0</com.github.tomakehurst.wiremock.version>
+  		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>		
   </properties>
   <dependencies>
-  		<!-- TESTING -->
+		<!-- TESTING -->
   		<dependency>
 		  <groupId>com.squareup.okhttp3</groupId>
 		  <artifactId>mockwebserver</artifactId>
 		  <version>${com.squareup.okhttp3.version}</version>
 		  <scope>test</scope>
-		</dependency>		
+		</dependency>	
 		<!-- APIs -->
 		<dependency>
 		    <groupId>javax.transaction</groupId>
@@ -28,20 +29,26 @@
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
-			<version>1</version>
+			<version>${javax.inject.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
     		<artifactId>javax.persistence</artifactId>
     		<version>${javax.persistence.version}</version>
 		</dependency>	
+		
 		<!-- SPRING  -->
  		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
-		<!-- REST -->
+			
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>

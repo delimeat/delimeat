@@ -15,9 +15,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 //import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -32,9 +31,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.zaxxer.hikari.HikariDataSource;
 
 @SpringBootApplication
-
-@Configuration
-@ComponentScan
+@ImportResource("classpath:spring/application-context.xml")
+//@Configuration
+//@ComponentScan
 @ConfigurationProperties 
 @PropertySource({ "classpath:delimeat.properties" })
 //@EnableJpaRepositories("io.delimeat")
@@ -47,7 +46,8 @@ public class App {
 	private Environment env;
 	
 	public static void main(String[] args) {
-		SpringApplication.run(App.class, args);
+		SpringApplication.run(App.class, args);  
+		
 	}
 	
 	/**
