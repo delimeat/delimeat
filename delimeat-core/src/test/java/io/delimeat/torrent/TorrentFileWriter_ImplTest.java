@@ -15,7 +15,6 @@
  */
 package io.delimeat.torrent;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -61,13 +60,6 @@ public class TorrentFileWriter_ImplTest {
 		String dir = System.getProperty("user.home");
 
 		Assertions.assertEquals(new URL("file:" + dir + "/FILENAME"), writer.buildUrl("FILENAME", config));
-	}
-
-	@Test
-	public void writeToStreamTest() throws Exception {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		writer.writeToStream(baos, "TEST".getBytes());
-		Assertions.assertEquals("TEST", new String(baos.toByteArray()));
 	}
 
 	@Test

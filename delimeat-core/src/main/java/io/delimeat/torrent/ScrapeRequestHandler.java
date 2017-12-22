@@ -17,7 +17,6 @@ package io.delimeat.torrent;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
@@ -26,13 +25,6 @@ import io.delimeat.torrent.exception.UnhandledScrapeException;
 
 public interface ScrapeRequestHandler {
 
-	/**
-	 * Get list of supported protocols
-	 * 
-	 * @return list of supported protocols
-	 */
-	public List<String> getSupportedProtocols();
-	
 	/**
 	 * Perform a scrape
 	 * @param uri

@@ -18,10 +18,12 @@ package io.delimeat.guide.entity;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import io.delimeat.util.jaxb.LocalDateAdapter;
 
+@XmlRootElement
 public class GuideSearchResult {
 
 	private String description;

@@ -1,4 +1,5 @@
 package io.delimeat.feed;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.delimeat.feed.entity.FeedSource;
-import io.delimeat.util.jaxrs.ClientFactory;
 
 public class JaxrsFeedClient_ImplTest {
 
@@ -27,12 +27,12 @@ public class JaxrsFeedClient_ImplTest {
 		client.setBaseUri(new URI("test://test"));
 		Assertions.assertEquals(new URI("test://test"), client.getBaseUri());
 	}
-	
+
 	@Test
 	public void mediaTypeTest() {
 		Assertions.assertNull(client.getMediaType());
-		client.setMediaType(MediaType.APPLICATION_ATOM_XML_TYPE);
-		Assertions.assertEquals(MediaType.APPLICATION_ATOM_XML_TYPE, client.getMediaType());
+		client.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		Assertions.assertEquals(MediaType.APPLICATION_JSON_TYPE, client.getMediaType());
 	}
 	
 	@Test
@@ -40,21 +40,6 @@ public class JaxrsFeedClient_ImplTest {
 		Assertions.assertNull(client.getFeedSource());
 		client.setFeedSource(FeedSource.BITSNOOP);
 		Assertions.assertEquals(FeedSource.BITSNOOP, client.getFeedSource());
-	}
-	
-	@Test
-	public void clientFactoryTest() {
-		Assertions.assertNull(client.getClientFactory());
-		ClientFactory factory = Mockito.mock(ClientFactory.class);
-		client.setClientFactory(factory);
-		Assertions.assertEquals(factory, client.getClientFactory());
-	}
-	
-	@Test
-	public void encodingTest() {
-		Assertions.assertEquals("UTF-8", client.getEncoding());
-		client.setEncoding("ENCODING");
-		Assertions.assertEquals("ENCODING", client.getEncoding());
 	}
 
 	@Test

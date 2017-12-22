@@ -77,6 +77,27 @@ public class TorrentUtils {
 		}
 		return torrent;
 	}
+    
+    public static Torrent parseRootDictionary(BDictionary rootDictionary) throws BencodeException, IOException{
+		final Torrent torrent = new Torrent();
+		torrent.setBytes(BencodeUtils.encode(rootDictionary));
+		if(rootDictionary.containsKey(ANNOUNCE_KEY) && rootDictionary.get(ANNOUNCE_KEY) instanceof BString){
+			BString announceValue = (BString)rootDictionary.get(ANNOUNCE_KEY);
+			String tracker = announceValue.toString();
+			torrent.setTracker(tracker);
+		}
+		if (rootDictionary.containsKey(ANNOUNCE_LIST_KEY) && rootDictionary.get(ANNOUNCE_LIST_KEY) instanceof BList) {
+			BList announceListValue = (BList)rootDictionary.get(ANNOUNCE_LIST_KEY);
+			List<String> announceList = parseAnnounceList(announceListValue);
+			torrent.setTrackers(announceList);
+		}
+		if (rootDictionary.containsKey(INFO_KEY) && rootDictionary.get(INFO_KEY) instanceof BDictionary) {
+			BDictionary infoValue = (BDictionary)rootDictionary.get(INFO_KEY);
+			TorrentInfo info = parseInfoDictionary(infoValue);
+			torrent.setInfo(info);
+		}
+		return torrent;
+	}
 
 	public static List<String> parseAnnounceList(BList announceList){
 		List<String> trackers = new ArrayList<String>();

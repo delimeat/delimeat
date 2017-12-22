@@ -20,12 +20,9 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import io.delimeat.guide.entity.GuideEpisode;
 import io.delimeat.show.entity.Episode;
-import io.delimeat.util.okhttp.LoggingInterceptor;
-import okhttp3.OkHttpClient;
 
 public class DelimeatUtils {
 	
@@ -74,15 +71,6 @@ public class DelimeatUtils {
 	public static boolean equals(GuideEpisode guideEp, Episode episode){
 		return Objects.equals(guideEp.getSeasonNum(), episode.getSeasonNum())
 			&& Objects.equals(guideEp.getEpisodeNum(), episode.getEpisodeNum());
-	}
-	
-	public static OkHttpClient httpClient(){
-		return new OkHttpClient().newBuilder()
-				.connectTimeout(2, TimeUnit.SECONDS)
-				.readTimeout(2, TimeUnit.SECONDS)
-				.writeTimeout(2, TimeUnit.SECONDS)
-				.addInterceptor(new LoggingInterceptor())
-				.build();
 	}
 	
 	public static String cleanTitle(String title){

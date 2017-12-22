@@ -18,45 +18,28 @@ package io.delimeat.torrent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 
-@Component
 public class MagnetTorrentReader_Impl extends HttpTorrentReader_Impl implements TorrentReader {
-
-	private final List<String> protocols = Arrays.asList("MAGNET");
 	
-  	@Value("${io.delimeat.torrent.reader.downloadUriTemplate}")
-  	private String downloadUriTemplate;
-  	
+	private String defaultUri;
+	
 	/**
-	 * @return the downloadUriTemplate
+	 * @return the defaultUri
 	 */
 	public String getDownloadUriTemplate() {
-		return downloadUriTemplate;
+		return defaultUri;
 	}
 
 	/**
-	 * @param downloadUriTemplate the downloadUriTemplate to set
+	 * @param defaultUri the defaultUri to set
 	 */
-	public void setDownloadUriTemplate(String downloadUriTemplate) {
-		this.downloadUriTemplate = downloadUriTemplate;
-	}
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.TorrentReader#getSupportedProtocols()
-	 */
-	@Override
-	public List<String> getSupportedProtocols() {
-		return protocols;
+	public void setDownloadUriTemplate(String defaultUri) {
+		this.defaultUri = defaultUri;
 	}
 	
 	/* (non-Javadoc)
@@ -64,12 +47,9 @@ public class MagnetTorrentReader_Impl extends HttpTorrentReader_Impl implements 
 	 */
 	@Override
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
-		if(protocols.contains((uri.getScheme().toUpperCase())) == false ){
-			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
-		}
 		
 		InfoHash infoHash = TorrentUtils.infoHashFromMagnet(uri);
-		String downloadUri = String.format(downloadUriTemplate, infoHash.getHex().toUpperCase());
+		String downloadUri = String.format(defaultUri, infoHash.getHex().toUpperCase());
 		try{
 			return super.read(new URI(downloadUri));
 		}catch(URISyntaxException ex){

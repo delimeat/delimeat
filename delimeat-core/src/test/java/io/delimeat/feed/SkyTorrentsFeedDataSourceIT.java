@@ -6,10 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -22,14 +19,13 @@ import org.junit.jupiter.api.Test;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import io.delimeat.feed.entity.FeedResult;
-import io.delimeat.feed.entity.FeedSearch;
-import io.delimeat.util.jaxrs.ClientFactory_Impl;
-import io.delimeat.util.jaxrs.MoxyJAXBContextProvider;
+import io.delimeat.feed.entity.FeedSource;
 
-public class LimeTorrentsFeedClientIT {
+public class SkyTorrentsFeedDataSourceIT {
 
-	private JaxrsFeedDataSource_Impl client;
 	private static WireMockServer server = new WireMockServer(8089);
+	
+	private JaxrsFeedDataSource_Impl client;
 	
 	@BeforeAll
 	public static void setUpClass() {
@@ -44,17 +40,13 @@ public class LimeTorrentsFeedClientIT {
 	@BeforeEach
 	public void setUp() throws URISyntaxException {
 		client = new JaxrsFeedDataSource_Impl();
-		ClientFactory_Impl clientFactory = new ClientFactory_Impl();
-		Map<String,Object> properties = new HashMap<>();
-		properties.put("eclipselink.media-type", "application/xml");
-		properties.put("eclipselink.oxm.metadata-source", "oxm/feed-limetorrents-oxm.xml");
-		MoxyJAXBContextProvider provider = new MoxyJAXBContextProvider(properties, Arrays.asList(FeedSearch.class, FeedResult.class));
-		clientFactory.getProviders().add(provider);
-		client.setClientFactory(clientFactory);
+		client.setFeedSource(FeedSource.SKYTORRENTS);
+		client.getMoxyProperties().put("eclipselink.media-type", "application/xml");
+		client.getMoxyProperties().put("eclipselink.oxm.metadata-source", "oxm/feed-skytorrents-oxm.xml");
 		
 		client.setMediaType(MediaType.APPLICATION_XML_TYPE);
 		
-		client.setTargetFactory(new LimeTorrentsTargetFactory_Impl());
+		client.setTargetFactory(new SkyTorrentsTargetFactory_Impl());
 		
 		client.setBaseUri(new URI("http://localhost:8089"));		
 	}
@@ -64,11 +56,12 @@ public class LimeTorrentsFeedClientIT {
 		
 		String responseBody = "<?xml version='1.0' encoding='UTF-8'?>" 
 				+ "<rss><channel><item>"
-				+ "<title><![CDATA[title]]></title><enclosure url='torrentUrl' type='application/x-bittorrent' />"
-				+ "<size>9223372036854775807</size>" 
+				+ "<title><![CDATA[title]]></title>" 
+				+ "<link><![CDATA[torrentUrl]]></link>"
+				+ "<description><![CDATA[2 Seeders, 3 Leechers 168 MB]]></description>" 
 				+ "</item></channel></rss>";
 		
-		server.stubFor(get(urlEqualTo("/searchrss/TITLE/"))
+		server.stubFor(get(urlEqualTo("/rss/all/ad/1/TITLE"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/xml")
@@ -77,9 +70,11 @@ public class LimeTorrentsFeedClientIT {
 		List<FeedResult> results = client.read("TITLE");
 
 		Assertions.assertEquals(1, results.size());
+		Assertions.assertEquals(FeedSource.SKYTORRENTS, results.get(0).getSource());
 		Assertions.assertEquals("title", results.get(0).getTitle());
 		Assertions.assertEquals("torrentUrl", results.get(0).getTorrentURL());
-		Assertions.assertEquals(Long.MAX_VALUE, results.get(0).getContentLength());
+		Assertions.assertNull(results.get(0).getInfoHashHex());
+		Assertions.assertEquals(0, results.get(0).getContentLength());
 		Assertions.assertEquals("title", results.get(0).getTitle());
 		Assertions.assertEquals(0, results.get(0).getSeeders());
 		Assertions.assertEquals(0, results.get(0).getLeechers());

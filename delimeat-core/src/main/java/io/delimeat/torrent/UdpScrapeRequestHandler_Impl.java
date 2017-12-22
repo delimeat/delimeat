@@ -11,7 +11,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.UnresolvedAddressException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -27,9 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
@@ -49,8 +45,7 @@ import io.delimeat.torrent.exception.UdpTimeoutException;
 import io.delimeat.torrent.exception.UdpTorrentException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
-@Component
-public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
+public class UdpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UdpScrapeRequestHandler_Impl.class);
 	
@@ -69,15 +64,8 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 	private DatagramChannel channel;
 	private Selector selector;
 	private ScheduledExecutorService executor;
-	
-	@Autowired
-	@Qualifier("io.delimeat.torrent.udpAddress")
 	private InetSocketAddress address;
-	
-	public UdpScrapeRequestHandler_Impl(){
-		super(Arrays.asList("UDP"));
-	}
-	
+
 	/**
 	 * @return the channel
 	 */
@@ -416,8 +404,36 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 
 	}
 	
+	public Integer generateTransactionId(){
+		Integer transactionId;
+		
+		do{
+			transactionId = RANDOM_GEN.nextInt();
+		}while(queue.containsKey(transactionId) == true);
+		
+		return transactionId;
+	}
+	
+	public UdpConnectResponse unmarshallConnectResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		return new UdpConnectResponse(buffer.getInt(), buffer.getLong());
+	}
+	
+	public UdpScrapeResponse unmarshallScrapeResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		return new UdpScrapeResponse(buffer.getInt(), buffer.getInt(), buffer.getInt());
+
+	}
+	
+	public UdpErrorResponse unmarshallErrorResponse(ByteBuffer buffer) throws BufferUnderflowException{
+		int transactionId = buffer.getInt();
+		byte[] msgBytes = new byte[buffer.remaining()];
+		buffer.get(msgBytes);
+		String message = new String(msgBytes).trim();
+		return new UdpErrorResponse(transactionId, message);
+	}
+
 	@Override
-	public ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash)
+			throws IOException, UnhandledScrapeException, TorrentException {
 		LOGGER.trace("Received request for scrape of {} from {}", infoHash, uri);
 
 		initialize();
@@ -446,33 +462,6 @@ public class UdpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler i
 		ScrapeResult result = new ScrapeResult(response.getSeeders(), response.getLeechers());
 		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
 		return result;
-	}
-	
-	public Integer generateTransactionId(){
-		Integer transactionId;
-		
-		do{
-			transactionId = RANDOM_GEN.nextInt();
-		}while(queue.containsKey(transactionId) == true);
-		
-		return transactionId;
-	}
-	
-	public UdpConnectResponse unmarshallConnectResponse(ByteBuffer buffer) throws BufferUnderflowException{
-		return new UdpConnectResponse(buffer.getInt(), buffer.getLong());
-	}
-	
-	public UdpScrapeResponse unmarshallScrapeResponse(ByteBuffer buffer) throws BufferUnderflowException{
-		return new UdpScrapeResponse(buffer.getInt(), buffer.getInt(), buffer.getInt());
-
-	}
-	
-	public UdpErrorResponse unmarshallErrorResponse(ByteBuffer buffer) throws BufferUnderflowException{
-		int transactionId = buffer.getInt();
-		byte[] msgBytes = new byte[buffer.remaining()];
-		buffer.get(msgBytes);
-		String message = new String(msgBytes).trim();
-		return new UdpErrorResponse(transactionId, message);
 	}
 
 }

@@ -35,11 +35,6 @@ public class UdpScrapeRequestHandler_ImplTest {
 	}
 
 	@Test
-	public void supportedProtocolTest() {
-		Assertions.assertEquals(Arrays.asList("UDP"), handler.getSupportedProtocols());
-	}
-
-	@Test
 	public void addressTest() {
 		Assertions.assertNull(handler.getAddress());
 

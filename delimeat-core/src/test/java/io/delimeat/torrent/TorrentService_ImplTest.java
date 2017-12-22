@@ -17,6 +17,7 @@ package io.delimeat.torrent;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,24 +42,13 @@ public class TorrentService_ImplTest {
 	}
 
 	@Test
-	public void downloadUriTemplateTest() {
-		Assertions.assertNull(service.getMagnetUriTemplate());
-		service.setMagnetUriTemplate("template");
-		Assertions.assertEquals("template", service.getMagnetUriTemplate());
-	}
-
-	@Test
 	public void readersTest() {
+		Assertions.assertNotNull(service.getReaders());
 		Assertions.assertEquals(0, service.getReaders().size());
 
-		TorrentReader reader1 = Mockito.mock(TorrentReader.class);
-		TorrentReader reader2 = Mockito.mock(TorrentReader.class);
+		service.setReaders( new HashMap<>());
 
-		service.setReaders(Arrays.asList(reader1, reader2));
-
-		Assertions.assertEquals(2, service.getReaders().size());
-		Assertions.assertEquals(reader1, service.getReaders().get(0));
-		Assertions.assertEquals(reader2, service.getReaders().get(1));
+		Assertions.assertEquals(new HashMap<>(), service.getReaders());
 	}
 
 	@Test
@@ -71,21 +61,16 @@ public class TorrentService_ImplTest {
 
 	@Test
 	public void scrapeRequestHandlersTest() {
+		Assertions.assertNotNull(service.getScrapeRequestHandlers());
 		Assertions.assertEquals(0, service.getScrapeRequestHandlers().size());
 
-		ScrapeRequestHandler mockedScraper1 = Mockito.mock(ScrapeRequestHandler.class);
-		ScrapeRequestHandler mockedScraper2 = Mockito.mock(ScrapeRequestHandler.class);
+		service.setScrapeRequestHandlers(new HashMap<>());
 
-		service.setScrapeRequestHandlers(Arrays.asList(mockedScraper1, mockedScraper2));
-
-		Assertions.assertEquals(2, service.getScrapeRequestHandlers().size());
-		Assertions.assertEquals(mockedScraper1, service.getScrapeRequestHandlers().get(0));
-		Assertions.assertEquals(mockedScraper2, service.getScrapeRequestHandlers().get(1));
+		Assertions.assertEquals(new HashMap<>(), service.getScrapeRequestHandlers());
 	}
 
 	@Test
 	public void buildMagnetUriTest() throws Exception {
-		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
 
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		URI uri = service.buildMagnetUri(infoHash);
@@ -94,32 +79,17 @@ public class TorrentService_ImplTest {
 	}
 
 	@Test
-	public void buildMagnetUriURISyntaxExceptionTest() throws Exception {
-
-		service.setMagnetUriTemplate("\\//");
-
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		Exception ex = Assertions.assertThrows(TorrentException.class, () -> {
-			service.buildMagnetUri(infoHash);
-		});
-
-		Assertions.assertEquals("Encountered an error creating magnet uri \\//", ex.getMessage());
-	}
-
-	@Test
 	public void readUriTest() throws Exception {
 		URI uri = new URI("http://test.com");
 		Torrent torrent = new Torrent();
 		TorrentReader reader = Mockito.mock(TorrentReader.class);
-		Mockito.when(reader.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
 		Mockito.when(reader.read(uri)).thenReturn(torrent);
 
-		service.setReaders(Arrays.asList(reader));
+		service.getReaders().put("HTTP", reader);
 
 		Torrent result = service.read(uri);
 		Assertions.assertEquals(torrent, result);
 
-		Mockito.verify(reader).getSupportedProtocols();
 		Mockito.verify(reader).read(uri);
 		Mockito.verifyNoMoreInteractions(reader);
 	}
@@ -137,19 +107,15 @@ public class TorrentService_ImplTest {
 	public void readInfoHashTest() throws Exception {
 		Torrent torrent = new Torrent();
 		TorrentReader reader = Mockito.mock(TorrentReader.class);
-		Mockito.when(reader.getSupportedProtocols()).thenReturn(Arrays.asList("MAGNET"));
 		Mockito.when(reader.read(new URI("magnet:?xt=urn:btih:494e464f5f48415348"))).thenReturn(torrent);
 
-		service.setReaders(Arrays.asList(reader));
-
-		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		service.getReaders().put("MAGNET", reader);
 
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		Torrent result = service.read(infoHash);
 
 		Assertions.assertEquals(torrent, result);
 
-		Mockito.verify(reader).getSupportedProtocols();
 		Mockito.verify(reader).read(new URI("magnet:?xt=urn:btih:494e464f5f48415348"));
 		Mockito.verifyNoMoreInteractions(reader);
 	}
@@ -172,9 +138,9 @@ public class TorrentService_ImplTest {
 
 	@Test
 	public void scrapeUnhandledTest() throws Exception {
-		ScrapeRequestHandler mockedScraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(mockedScraper.getSupportedProtocols()).thenReturn(Arrays.asList("NOT_UDP"));
-		service.setScrapeRequestHandlers(Arrays.asList(mockedScraper));
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		service.getScrapeRequestHandlers().put("NOT_UDP", scraper);
+
 
 		URI scrapeUri = new URI("udp://scrape.me:8080");
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
@@ -184,21 +150,24 @@ public class TorrentService_ImplTest {
 		});
 
 		Assertions.assertEquals("Protocol UDP not supported for scrape", ex.getMessage());
+		
+		Mockito.verifyZeroInteractions(scraper);
 	}
 
 	@Test
 	public void scrapeTest() throws Exception {
 		ScrapeResult mockedResult = Mockito.mock(ScrapeResult.class);
-		ScrapeRequestHandler mockedScraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(mockedScraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
-		Mockito.when(mockedScraper.scrape(new URI("http://scrape.me.com"), new InfoHash("INFO_HASH".getBytes())))
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		Mockito.when(scraper.scrape(new URI("http://scrape.me.com"), new InfoHash("INFO_HASH".getBytes())))
 				.thenReturn(mockedResult);
 
-		service.setScrapeRequestHandlers(Arrays.asList(mockedScraper));
+		service.getScrapeRequestHandlers().put("HTTP", scraper);
 
 		URI uri = new URI("http://scrape.me.com");
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		Assertions.assertEquals(mockedResult, service.doScrape(uri, infoHash));
+		
+		Mockito.verify(scraper).scrape(new URI("http://scrape.me.com"), new InfoHash("INFO_HASH".getBytes()));
 	}
 
 	@Test
@@ -212,17 +181,15 @@ public class TorrentService_ImplTest {
 
 		ScrapeResult scrapeResult = new ScrapeResult(100, 200);
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
 		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes())))
 				.thenReturn(scrapeResult);
 
-		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+		service.getScrapeRequestHandlers().put("HTTP", scraper);
 
 		ScrapeResult result = service.scrape(torrent);
 
 		Assertions.assertEquals(scrapeResult, result);
 
-		Mockito.verify(scraper).getSupportedProtocols();
 		Mockito.verify(scraper).scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes()));
 		Mockito.verifyNoMoreInteractions(scraper);
 
@@ -239,17 +206,15 @@ public class TorrentService_ImplTest {
 
 		ScrapeResult scrapeResult = new ScrapeResult(100, 200);
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
 		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes())))
 				.thenReturn(scrapeResult);
 
-		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+		service.getScrapeRequestHandlers().put("HTTP", scraper);
 
 		ScrapeResult result = service.scrape(torrent);
 
 		Assertions.assertEquals(scrapeResult, result);
 
-		Mockito.verify(scraper).getSupportedProtocols();
 		Mockito.verify(scraper).scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes()));
 		Mockito.verifyNoMoreInteractions(scraper);
 	}
@@ -264,17 +229,15 @@ public class TorrentService_ImplTest {
 		torrent.setInfo(info);
 
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("HTTP"));
-		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes()))).thenReturn(null)
-				.thenThrow(TorrentException.class);
+		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes())))
+			.thenReturn(null)
+			.thenThrow(TorrentException.class);
 
-		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+		service.getScrapeRequestHandlers().put("HTTP", scraper);
 
 		Assertions.assertNull(service.scrape(torrent));
 
-		Mockito.verify(scraper, Mockito.times(2)).getSupportedProtocols();
-		Mockito.verify(scraper, Mockito.times(2)).scrape(new URI("http://tracker"),
-				new InfoHash("INFO_HASH".getBytes()));
+		Mockito.verify(scraper, Mockito.times(2)).scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes()));
 		Mockito.verifyNoMoreInteractions(scraper);
 	}
 
@@ -289,39 +252,12 @@ public class TorrentService_ImplTest {
 		torrent.setInfo(info);
 
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("MAGNET"));
 
-		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
-		service.setScrapeRequestHandlers(Arrays.asList(scraper));
+		service.getScrapeRequestHandlers().put("MAGNET", scraper);
 
 		Assertions.assertNull(service.scrape(torrent));
 
-		Mockito.verify(scraper).getSupportedProtocols();
 		Mockito.verify(scraper).scrape(new URI("magnet:?xt=urn:btih:494e464f5f48415348"), infoHash);
-		Mockito.verifyNoMoreInteractions(scraper);
-	}
-
-	@Test
-	public void scrapeMagnetUriExceptionTest() throws Exception {
-		Torrent torrent = new Torrent();
-		torrent.setTrackers(Arrays.asList(""));
-		torrent.setTracker(null);
-		TorrentInfo info = new TorrentInfo();
-		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
-		info.setInfoHash(infoHash);
-		torrent.setInfo(info);
-
-		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-		Mockito.when(scraper.getSupportedProtocols()).thenReturn(Arrays.asList("MAGNET"));
-
-		service.setMagnetUriTemplate("\\//");
-		service.setScrapeRequestHandlers(Arrays.asList(scraper));
-
-		Assertions.assertNull(service.scrape(torrent));
-
-		// Mockito.verify(scraper).getSupportedProtocols();
-		// Mockito.verify(scraper).scrape(new
-		// URI("magnet:?xt=urn:btih:494e464f5f48415348"), infoHash);
 		Mockito.verifyNoMoreInteractions(scraper);
 	}
 

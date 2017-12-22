@@ -19,15 +19,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.torrent.entity.InfoHash;
@@ -37,48 +36,29 @@ import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.torrent.exception.UnhandledScrapeException;
 
-@Service
 public class TorrentService_Impl implements TorrentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TorrentService_Impl.class);
+	private static final String MAGNET_TEMPLATE = "magnet:?xt=urn:btih:%s";
 
-	@Autowired
-	private List<TorrentReader> readers = new ArrayList<>();
+	private Map<String, TorrentReader> readers = new HashMap<>();
 	
-	@Autowired
 	private TorrentWriter writer;
 	
-	@Autowired
-	private List<ScrapeRequestHandler> scrapeRequestHandlers = new ArrayList<>();
+	private Map<String, ScrapeRequestHandler> scrapeRequestHandlers = new HashMap<>();
 	
-  	@Value("${io.delimeat.torrent.magnetUriTemplate}")
-  	private String magnetUriTemplate;
-  	
-	/**
-	 * @return the magnetUriTemplate
-	 */
-	public String getMagnetUriTemplate() {
-		return magnetUriTemplate;
-	}
-
-	/**
-	 * @param magnetUriTemplate the magnetUriTemplate to set
-	 */
-	public void setMagnetUriTemplate(String magnetUriTemplate) {
-		this.magnetUriTemplate = magnetUriTemplate;
-	}
-
+	
 	/**
 	 * @return the readers
 	 */
-	public List<TorrentReader> getReaders() {
+	public Map<String, TorrentReader> getReaders() {
 		return readers;
 	}
 
 	/**
 	 * @param readers the readers to set
 	 */
-	public void setReaders(List<TorrentReader> readers) {
+	public void setReaders(Map<String, TorrentReader> readers) {
 		this.readers = readers;
 	}
 
@@ -99,14 +79,14 @@ public class TorrentService_Impl implements TorrentService {
 	/**
 	 * @return the scrapeRequestHandlers
 	 */
-	public List<ScrapeRequestHandler> getScrapeRequestHandlers() {
+	public Map<String, ScrapeRequestHandler> getScrapeRequestHandlers() {
 		return scrapeRequestHandlers;
 	}
 
 	/**
 	 * @param scrapeRequestHandlers the scrapeRequestHandlers to set
 	 */
-	public void setScrapeRequestHandlers(List<ScrapeRequestHandler> scrapeRequestHandlers) {
+	public void setScrapeRequestHandlers(Map<String, ScrapeRequestHandler> scrapeRequestHandlers) {
 		this.scrapeRequestHandlers = scrapeRequestHandlers;
 	}
 	
@@ -115,14 +95,11 @@ public class TorrentService_Impl implements TorrentService {
 	 */
 	@Override
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException {
+			
 		final String protocol = uri.getScheme().toUpperCase();
-		TorrentReader reader =  readers.stream()
-				.filter(p->p.getSupportedProtocols().contains(protocol))
-				.findAny()
-				.orElse(null);
-		
+		TorrentReader reader = readers.get(protocol);
 		if(reader == null){
-			throw new UnhandledScrapeException(String.format("Protocol %s not supported for read", protocol));
+			throw new TorrentException(String.format("Protocol %s not supported for read", protocol));
 		}
 		
 		return reader.read(uri);		
@@ -149,10 +126,7 @@ public class TorrentService_Impl implements TorrentService {
 	public ScrapeResult doScrape(URI uri, InfoHash infoHash)
 			throws IOException, UnhandledScrapeException, TorrentException {
 		final String protocol = uri.getScheme().toUpperCase();
-		ScrapeRequestHandler handler = scrapeRequestHandlers.stream()
-				.filter(p->p.getSupportedProtocols().contains(protocol))
-				.findAny()
-				.orElse(null);
+		ScrapeRequestHandler handler = scrapeRequestHandlers.get(protocol);
 		
 		if(handler == null){
 			throw new UnhandledScrapeException(String.format("Protocol %s not supported for scrape", protocol));
@@ -215,7 +189,7 @@ public class TorrentService_Impl implements TorrentService {
 	 * @throws TorrentException
 	 */
 	public URI buildMagnetUri(InfoHash infoHash) throws TorrentException{
-		String magnetUri = String.format(magnetUriTemplate,infoHash.getHex());
+		String magnetUri = String.format(MAGNET_TEMPLATE,infoHash.getHex());
 		try{
 			return new URI(magnetUri);
 		}catch(URISyntaxException ex){

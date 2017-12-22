@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.delimeat.guide.entity.TvdbApiKey;
 
 public class TvdbApiKeyTest {
 

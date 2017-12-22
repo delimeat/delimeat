@@ -16,81 +16,46 @@
 package io.delimeat.torrent;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 
-import org.springframework.stereotype.Component;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.ClientBuilder;
 
+import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BencodeException;
 import io.delimeat.torrent.entity.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
-import io.delimeat.torrent.exception.TorrentResponseBodyException;
-import io.delimeat.torrent.exception.TorrentResponseException;
-import io.delimeat.torrent.exception.TorrentTimeoutException;
-import io.delimeat.util.DelimeatUtils;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.delimeat.util.jaxrs.BencodeBodyReader;
 
-@Component
 public class HttpTorrentReader_Impl implements TorrentReader {
 
-	private final List<String> protocols = Arrays.asList("HTTP", "HTTPS");
-
-	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.TorrentReader#getSupportedProtocols()
-	 */
-	@Override
-	public List<String> getSupportedProtocols() {
-		return protocols;
-	}
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.delimeat.torrent.TorrentReader#read(java.net.URI)
 	 */
 	@Override
-	public Torrent read(URI uri) throws TorrentNotFoundException,TorrentResponseException, TorrentResponseBodyException, TorrentException, IOException {
-		if(protocols.contains(uri.getScheme().toUpperCase()) == false ){
-			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
-		}
-		
-		URL url = uri.toURL();
-		Request request = new Request.Builder()
-									.addHeader("Referer", uri.toASCIIString())
-									.addHeader("Accept", "application/x-bittorrent")
-									.url(uri.toURL())
-									.build();
+	public Torrent read(URI uri) throws TorrentNotFoundException, TorrentException, IOException {
+		try {
+			BDictionary dictionary = ClientBuilder.newClient()
+					.register(BencodeBodyReader.class)
+					.target(uri)
+					.request()
+					.accept("application/x-bittorrent")
+					.header("Referer", uri.toASCIIString())
+					.get(BDictionary.class);
 
-		Response response;
-		try{
-			response = DelimeatUtils.httpClient().newCall(request).execute();
-		}catch(SocketTimeoutException ex){
-			throw new TorrentTimeoutException(uri.toURL());
-		}
-		
-		if (response.isSuccessful() == false) {
-			switch (response.code()) {
-			case 404:
-				throw new TorrentNotFoundException(response.code(), response.message(), url);
-			default:
-				throw new TorrentResponseException(response.code(), response.message(), url);
-			}
-		}
-		
-		final byte[] responseBytes = response.body().bytes();
-		response.body().close();
-		
-		try{
-			return TorrentUtils.parseRootDictionary(responseBytes);
-		}catch(BencodeException ex){
-			throw new TorrentResponseBodyException(url, new String(responseBytes), ex);
+			return TorrentUtils.parseRootDictionary(dictionary);
+
+		} catch (NotFoundException ex) {
+			throw new TorrentNotFoundException(ex.getResponse().getStatus(), ex.getMessage(), uri.toURL());
+		} catch (WebApplicationException | ProcessingException | BencodeException ex) {
+			throw new TorrentException(ex);
 		}
 
 	}
-
-	
 
 }

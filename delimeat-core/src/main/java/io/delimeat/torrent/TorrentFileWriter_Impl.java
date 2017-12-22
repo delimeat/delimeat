@@ -22,12 +22,9 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.torrent.exception.TorrentException;
 
-@Component
 public class TorrentFileWriter_Impl implements TorrentWriter {
 	
 	@Override
@@ -37,7 +34,10 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 			final URL url = buildUrl(fileName,config);
 			System.out.println(url);
 			File file = buildFile(url);
-			writeToStream(new FileOutputStream(file), bytes);
+			try(OutputStream os = new FileOutputStream(file)){
+				os.write(bytes);
+				os.flush();
+			}
 
 		}catch(IOException ex){
 			throw new TorrentException("Unnable to write " + fileName ,ex);
@@ -66,14 +66,4 @@ public class TorrentFileWriter_Impl implements TorrentWriter {
 		return file;
 	}
 	
-	public void writeToStream(OutputStream output, byte[] bytes) throws IOException{
-		try{
-			output.write(bytes);
-			output.flush();
-		} finally{
-			output.close();
-		}
-	}
-
-
 }

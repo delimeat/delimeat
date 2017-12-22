@@ -18,8 +18,6 @@ package io.delimeat.torrent;
 import java.io.IOException;
 import java.net.URI;
 
-import org.springframework.cache.annotation.Cacheable;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
@@ -37,7 +35,6 @@ public interface TorrentService {
 	 * @throws TorrentNotFoundException
 	 * @throws TorrentException
 	 */
-	@Cacheable("torrent")
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException;
 	
 	/**
@@ -48,7 +45,6 @@ public interface TorrentService {
 	 * @throws TorrentNotFoundException
 	 * @throws TorrentException
 	 */
-	@Cacheable("torrent")
 	public Torrent read(InfoHash infoHash) throws IOException, TorrentNotFoundException, TorrentException; 
 
 	/**
@@ -56,7 +52,6 @@ public interface TorrentService {
 	 * @param torrent
 	 * @return scrape result
 	 */
-	@Cacheable("scrape")
 	public ScrapeResult scrape(Torrent torrent);
 	
 	/**

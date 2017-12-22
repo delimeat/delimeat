@@ -15,81 +15,60 @@
  */
 package io.delimeat.torrent;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
 
-import org.springframework.stereotype.Component;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.ClientBuilder;
 
 import io.delimeat.torrent.bencode.BDictionary;
 import io.delimeat.torrent.bencode.BInteger;
 import io.delimeat.torrent.bencode.BString;
-import io.delimeat.torrent.bencode.BencodeException;
-import io.delimeat.torrent.bencode.BencodeUtils;
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
-import io.delimeat.torrent.exception.TorrentResponseBodyException;
-import io.delimeat.torrent.exception.TorrentResponseException;
-import io.delimeat.torrent.exception.TorrentTimeoutException;
-import io.delimeat.torrent.exception.UnhandledScrapeException;
 import io.delimeat.util.DelimeatUtils;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.delimeat.util.jaxrs.BencodeBodyReader;
 
-@Component
-public class HttpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler implements ScrapeRequestHandler {
+public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
 	private final BString FILES_KEY = new BString("files");
 	private final BString COMPLETE_KEY = new BString("complete");
 	private final BString INCOMPLETE_KEY = new BString("incomplete");
 
-	public HttpScrapeRequestHandler_Impl(){
-		super(Arrays.asList("HTTP", "HTTPS"));	
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI,
+	 * io.delimeat.torrent.domain.InfoHash)
+	 */
 	@Override
-	ScrapeResult doScrape(URI uri, InfoHash infoHash) throws IOException, UnhandledScrapeException, TorrentException {
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, TorrentException {
+
 		final URL scrapeURL = generateScrapeURL(uri, infoHash);
 
-		Request request = new Request.Builder().url(scrapeURL).addHeader("Accept", "text/plain").build();
-
-		Response response;
 		try {
-			response = DelimeatUtils.httpClient().newCall(request).execute();
-		} catch (SocketTimeoutException ex) {
-			throw new TorrentTimeoutException(scrapeURL);
-		} catch(ConnectException ex){
-			throw new TorrentException(String.format("Unnable to connect to %s", scrapeURL));
+			BDictionary dictionary = ClientBuilder.newClient()
+					.register(BencodeBodyReader.class)
+					.target(scrapeURL.toURI())
+					.request("text/plain")
+					.get(BDictionary.class);
+
+			return umarshalScrapeResult(dictionary, infoHash);
+
+		} catch (NotFoundException ex) {
+			throw new TorrentNotFoundException(ex.getResponse().getStatus(), ex.getMessage(), scrapeURL);
+		} catch (WebApplicationException | ProcessingException | URISyntaxException ex) {
+			throw new TorrentException(ex);
 		}
-		
-		if (response.isSuccessful() == false) {
-			switch (response.code()) {
-			case 404:
-				throw new TorrentNotFoundException(response.code(), response.message(), scrapeURL);
-			default:
-				throw new TorrentResponseException(response.code(), response.message(), scrapeURL);
-			}
-		}
-		
-		BDictionary dictionary; 
-		byte[] responseBytes = response.body().bytes();
-		response.body().close();
-		try{
-			 dictionary = BencodeUtils.decode(new ByteArrayInputStream(responseBytes));
-		}catch(BencodeException ex){
-			throw new TorrentResponseBodyException(scrapeURL, new String(responseBytes), ex);
-		}
-		return umarshalScrapeResult(dictionary, infoHash);
 	}
 
-	public URL generateScrapeURL(URI uri, InfoHash infoHash)
-			throws UnhandledScrapeException, IOException {
+	public URL generateScrapeURL(URI uri, InfoHash infoHash) throws TorrentException, IOException {
 
 		String path;
 		if (uri.getPath().contains("announce")) {
@@ -97,7 +76,7 @@ public class HttpScrapeRequestHandler_Impl extends AbstractScrapeRequestHandler 
 		} else if (uri.getPath().contains("scrape")) {
 			path = uri.getPath();
 		} else {
-			throw new UnhandledScrapeException(String.format("Unable to scrape URI: %s", uri.toString()));
+			throw new TorrentException(String.format("Unable to scrape URI: %s", uri.toString()));
 		}
 
 		final String infoHashString = new String(infoHash.getBytes(), "ISO-8859-1");

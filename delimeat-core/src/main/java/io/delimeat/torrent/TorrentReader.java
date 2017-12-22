@@ -17,22 +17,12 @@ package io.delimeat.torrent;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-
-import org.springframework.cache.annotation.Cacheable;
 
 import io.delimeat.torrent.entity.Torrent;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 
 public interface TorrentReader {
-
-	/**
-	 * Get list of supported protocols
-	 * 
-	 * @return list of supported protocols
-	 */
-	public List<String> getSupportedProtocols();
 	
 	/**
 	 * Read a torrent
@@ -42,7 +32,6 @@ public interface TorrentReader {
 	 * @throws TorrentNotFoundException
 	 * @throws TorrentException
 	 */
-	@Cacheable(value="torrent", key="uri")
 	public Torrent read(URI uri) throws IOException, TorrentNotFoundException, TorrentException;
 
 }

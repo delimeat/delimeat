@@ -17,6 +17,9 @@ package io.delimeat.guide.entity;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class GuideError {
 
 	private String message;

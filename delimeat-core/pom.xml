@@ -14,12 +14,27 @@
   </properties>
   <dependencies>
 		<!-- TESTING -->
-  		<dependency>
-		  <groupId>com.squareup.okhttp3</groupId>
-		  <artifactId>mockwebserver</artifactId>
-		  <version>${com.squareup.okhttp3.version}</version>
-		  <scope>test</scope>
-		</dependency>	
+		<dependency>
+		    <groupId>com.github.tomakehurst</groupId>
+		    <artifactId>wiremock</artifactId>
+		    <version>2.12.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<!-- 
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-client</artifactId>
+		    <version>3.1.4.Final</version>
+		    <scope>test</scope>
+		</dependency>
+		!--> 
+		<dependency>
+		    <groupId>org.glassfish.jersey.core</groupId>
+		    <artifactId>jersey-client</artifactId>
+		    <version>${org.glassfish.jersey.version}</version>
+		    <scope>test</scope>
+		</dependency>
+
 		<!-- APIs -->
 		<dependency>
 		    <groupId>javax.transaction</groupId>
@@ -49,11 +64,13 @@
 			<version>${org.springframework.version}</version>
 		</dependency>
 			
+		<!-- 
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>
 		    <version>${com.squareup.okhttp3.version}</version>
 		</dependency>
+		!-->
 		<dependency>
 		    <groupId>org.eclipse.persistence</groupId>
 		    <artifactId>org.eclipse.persistence.moxy</artifactId>

@@ -20,9 +20,6 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.delimeat.util.okhttp.LoggingInterceptor;
-import okhttp3.OkHttpClient;
-
 public class DelimeatUtilsTest {
 
 	@Test
@@ -64,16 +61,6 @@ public class DelimeatUtilsTest {
 		});
 		
 		Assertions.assertEquals("java.security.NoSuchAlgorithmException: JIBBERISH MessageDigest not available", ex.getMessage());
-	}
-	
-	@Test
-	public void httpClientTest(){
-		OkHttpClient client = DelimeatUtils.httpClient();
-		Assertions.assertEquals(2000, client.connectTimeoutMillis());
-		Assertions.assertEquals(2000, client.readTimeoutMillis());
-		Assertions.assertEquals(2000, client.writeTimeoutMillis());
-		Assertions.assertEquals(1, client.interceptors().size());
-		Assertions.assertEquals(LoggingInterceptor.class, client.interceptors().get(0).getClass());
 	}
 	
 	@Test

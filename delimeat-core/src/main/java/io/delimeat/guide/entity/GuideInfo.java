@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import io.delimeat.util.jaxb.LocalDateAdapter;
 import io.delimeat.util.jaxb.LocalTimeAdapter;
 
+@XmlRootElement
 public class GuideInfo {
 
 	private String description;

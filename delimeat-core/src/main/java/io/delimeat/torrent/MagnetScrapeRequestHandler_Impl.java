@@ -17,24 +17,15 @@ package io.delimeat.torrent;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
 import io.delimeat.torrent.exception.TorrentException;
 
-@Component
 public class MagnetScrapeRequestHandler_Impl extends HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 
-	private final List<String> protocols = Arrays.asList("MAGNET");
+	private URI defaultTracker;
 
-  	@Value("${io.delimeat.torrent.scraper.defaultTracker}")
-  	private URI defaultTracker;
-  	
 	/**
 	 * @return the defaultTracker
 	 */
@@ -50,23 +41,11 @@ public class MagnetScrapeRequestHandler_Impl extends HttpScrapeRequestHandler_Im
 	}
 
 	/* (non-Javadoc)
-	 * @see io.delimeat.torrent.ScrapeRequestHandler#getSupportedProtocols()
-	 */
-	@Override
-	public List<String> getSupportedProtocols() {
-		return protocols;
-	}
-
-	/* (non-Javadoc)
 	 * @see io.delimeat.torrent.ScrapeRequestHandler#scrape(java.net.URI, io.delimeat.torrent.domain.InfoHash)
 	 */
 	@Override
-	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, TorrentException {
-		if(protocols.contains((uri.getScheme().toUpperCase())) == false ){
-			throw new TorrentException(String.format("Unsupported protocol %s", uri.getScheme()));
-		}
-		
-		return super.scrape(getDefaultTracker(), infoHash);
+	public ScrapeResult scrape(URI uri, InfoHash infoHash) throws IOException, TorrentException {		
+		return super.scrape(defaultTracker, infoHash);
 	}
 
 }
