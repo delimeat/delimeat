@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,11 +20,11 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.entity.FeedSource;
 
-public class ZooqleFeedDataSourceIT {
+public class ZooqleDataSource_ImplIT {
 
 	private static WireMockServer server = new WireMockServer(8089);
 
-	private JaxrsFeedDataSource_Impl client;
+	private ZooqleDataSource_Impl client;
 	
 	@BeforeAll
 	public static void setUpClass() {
@@ -40,15 +38,7 @@ public class ZooqleFeedDataSourceIT {
 	
 	@BeforeEach
 	public void setUp() throws URISyntaxException {
-		client = new JaxrsFeedDataSource_Impl();
-		client.setFeedSource(FeedSource.ZOOQLE);
-		client.getMoxyProperties().put("eclipselink.media-type", "application/xml");
-		client.getMoxyProperties().put("eclipselink.oxm.metadata-source", "oxm/feed-zooqle-oxm.xml");
-		
-		client.setMediaType(MediaType.APPLICATION_XML_TYPE);
-		
-		client.setTargetFactory(new ZooqleTargetFactory_Impl());
-		
+		client = new ZooqleDataSource_Impl();		
 		client.setBaseUri(new URI("http://localhost:8089"));		
 	}
 	

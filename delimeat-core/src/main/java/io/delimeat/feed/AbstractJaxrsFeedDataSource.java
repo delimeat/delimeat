@@ -2,14 +2,14 @@ package io.delimeat.feed;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
@@ -26,26 +26,22 @@ import io.delimeat.feed.exception.FeedTimeoutException;
 import io.delimeat.util.DelimeatUtils;
 import io.delimeat.util.jaxrs.MoxyJAXBFeature;
 
-public class JaxrsFeedDataSource_Impl implements FeedDataSource {
+public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsFeedDataSource_Impl.class);
 	private static final String ENCODING = "UTF-8";
-
+	
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	private final FeedSource feedSource;
+	private final Map<String, Object> moxyProperties;
+	private final MediaType mediaType;
+	
   	private URI baseUri;
-	private FeedSource feedSource;
-	private FeedTargetFactory targetFactory;
-	private Map<String, Object> moxyProperties = new HashMap<>();
-	private MediaType mediaType;
-	
-	private Client client = null;
-	
-	public Client getClient() {
-		if(client == null) {
-			client = ClientBuilder.newClient();
-			client.register(new MoxyJAXBFeature(moxyProperties, Arrays.asList(FeedResult.class,FeedSearch.class)));
-		}
-		return client;
-	}	
+  	
+  	public AbstractJaxrsFeedDataSource(FeedSource feedSource, Map<String, Object> moxyProperties, MediaType mediaType) {
+  		this.feedSource = feedSource;
+  		this.moxyProperties = moxyProperties;
+  		this.mediaType = mediaType;
+  	}
 
 	/**
 	 * @return the baseUri
@@ -69,38 +65,10 @@ public class JaxrsFeedDataSource_Impl implements FeedDataSource {
 	}
 
 	/**
-	 * @param feedSource the feedSource to set
-	 */
-	public void setFeedSource(FeedSource feedSource) {
-		this.feedSource = feedSource;
-	}
-
-	/**
-	 * @return the targetFactory
-	 */
-	public FeedTargetFactory getTargetFactory() {
-		return targetFactory;
-	}
-
-	/**
-	 * @param targetFactory the targetFactory to set
-	 */
-	public void setTargetFactory(FeedTargetFactory targetFactory) {
-		this.targetFactory = targetFactory;
-	}
-
-	/**
 	 * @return the moxyProperties
 	 */
 	public Map<String, Object> getMoxyProperties() {
 		return moxyProperties;
-	}
-
-	/**
-	 * @param moxyProperties the moxyProperties to set
-	 */
-	public void setMoxyProperties(Map<String, Object> moxyProperties) {
-		this.moxyProperties = moxyProperties;
 	}
 
 	/**
@@ -110,13 +78,8 @@ public class JaxrsFeedDataSource_Impl implements FeedDataSource {
 		return mediaType;
 	}
 
-	/**
-	 * @param mediaType the mediaType to set
-	 */
-	public void setMediaType(MediaType mediaType) {
-		this.mediaType = mediaType;
-	}
-
+	abstract Invocation buildInvocation(WebTarget target, String encodedTitle, MediaType mediaType);
+	
 	/* (non-Javadoc)
 	 * @see io.delimeat.feed.FeedDataSource#read(java.lang.String)
 	 */
@@ -124,13 +87,17 @@ public class JaxrsFeedDataSource_Impl implements FeedDataSource {
 	public List<FeedResult> read(String title) throws FeedTimeoutException, FeedContentTypeException,
 			FeedResponseException, FeedResponseBodyException, FeedException {
 		LOGGER.trace("reading for title \"{}\"", title);
-		final String encodedTitle = DelimeatUtils.urlEscape(title, ENCODING);
+		String encodedTitle = DelimeatUtils.urlEscape(title, ENCODING);
 	     
 		List<FeedResult> results = null;
         try {
-        	results = targetFactory.build(getClient(), getBaseUri(), encodedTitle)
-        			.request(mediaType)
-        			.get(FeedSearch.class)
+        	WebTarget target = ClientBuilder.newBuilder()
+								.register(new MoxyJAXBFeature(moxyProperties, Arrays.asList(FeedResult.class, FeedSearch.class)))
+								.build()
+								.target(baseUri);
+        	
+        	results = buildInvocation(target, encodedTitle, mediaType)
+        			.invoke(FeedSearch.class)
         			.getResults();
 
         } catch (WebApplicationException | ProcessingException ex) {
