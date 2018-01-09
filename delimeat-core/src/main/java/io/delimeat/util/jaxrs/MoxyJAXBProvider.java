@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class MoxyJAXBProvider  implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MoxyJAXBProviderTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MoxyJAXBProvider.class);
 
 	@Context
 	protected Providers providers;
