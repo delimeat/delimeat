@@ -89,11 +89,10 @@
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-		<jacoco-maven-plugin.version>0.8.0</jacoco-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 
 		<!-- Test versions ! -->
-		
 		<org.junit.platform.version>1.0.1</org.junit.platform.version>
 		<org.junit.vintage.version>4.12.1</org.junit.vintage.version>
 		<org.junit.jupiter.version>5.0.2</org.junit.jupiter.version>
