@@ -41,4 +41,17 @@ public class BencodeBodyReaderTest {
 		Assertions.assertEquals(BInteger.class, dict.get("files").getClass());
 		Assertions.assertEquals(new BInteger(20), dict.get("files"));
 	}
+	
+	@Test
+	public void readFromExceptionTest() throws WebApplicationException, IOException {		
+		ByteBuffer buffer = ByteBuffer.allocate(1);
+		buffer.put("e".getBytes());
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(buffer.array());
+		
+		Assertions.assertThrows(WebApplicationException.class, () -> {
+			reader.readFrom(BDictionary.class, null, null, null, null, bais);
+		});
+		
+	}
 }

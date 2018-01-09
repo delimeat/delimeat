@@ -44,5 +44,12 @@ public class TvdbGuideDataSource_ImplTest {
 		dataSource.setBaseUri(new URI("test://test"));
 		Assertions.assertEquals(new URI("test://test"), dataSource.getBaseUri());
 	}
+	
+	@Test
+	public void validTokePeriodInMsTest() {
+		Assertions.assertEquals(3600000, dataSource.getTokenValidPeriodInMs());
+		dataSource.setTokenValidPeriodInMs(1);
+		Assertions.assertEquals(1, dataSource.getTokenValidPeriodInMs());
+	}
 
 }

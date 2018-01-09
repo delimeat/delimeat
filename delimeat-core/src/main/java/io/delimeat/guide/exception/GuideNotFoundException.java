@@ -18,8 +18,6 @@ package io.delimeat.guide.exception;
 public class GuideNotFoundException extends GuideException {
 
 	private static final long serialVersionUID = 1L;
-
-	public GuideNotFoundException(){}
 	
 	public GuideNotFoundException(String message, Throwable cause) {
 		super(message, cause);

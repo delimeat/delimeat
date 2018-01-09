@@ -42,6 +42,9 @@ import io.delimeat.guide.entity.GuideInfo;
 import io.delimeat.guide.entity.GuideSearchResult;
 import io.delimeat.guide.entity.TvdbEpisodes;
 import io.delimeat.guide.entity.TvdbToken;
+import io.delimeat.guide.exception.GuideAuthorizationException;
+import io.delimeat.guide.exception.GuideException;
+import io.delimeat.guide.exception.GuideNotFoundException;
 
 public class TvdbGuideDataSource_ImplIT {
 
@@ -68,29 +71,88 @@ public class TvdbGuideDataSource_ImplIT {
 
 	@Test
 	public void loginTest() throws Exception {
-				
+			
+		String responseBody = "{\"token\":\"TOKEN\"}";
+
 		server.stubFor(post(urlEqualTo("/login"))
 				.withRequestBody(equalToJson("{\"apikey\":\"FE3A3CA0FE707FEF\"}"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
-						.withBody("{\"token\":\"TOKEN\"}")));
+						.withBody(responseBody)));
 
 		TvdbToken token = dataSource.login();
 
 		Assertions.assertNotNull(token);
 		Assertions.assertEquals("TOKEN", token.getValue());
 	}
+	
+	@Test
+	public void loginNotAuthorisedTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(post(urlEqualTo("/login"))
+				.withRequestBody(equalToJson("{\"apikey\":\"FE3A3CA0FE707FEF\"}"))
+				.willReturn(aResponse()
+						.withStatus(401)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+
+		GuideAuthorizationException ex = Assertions.assertThrows(GuideAuthorizationException.class, () ->{
+			dataSource.login();
+		});
+
+		Assertions.assertEquals("Unable to login", ex.getMessage());
+	}
+	
+	@Test
+	public void loginNotFoundTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(post(urlEqualTo("/login"))
+				.withRequestBody(equalToJson("{\"apikey\":\"FE3A3CA0FE707FEF\"}"))
+				.willReturn(aResponse()
+						.withStatus(404)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+
+		GuideNotFoundException ex = Assertions.assertThrows(GuideNotFoundException.class, () ->{
+			dataSource.login();
+		});
+
+		Assertions.assertEquals("HTTP 404 Not Found", ex.getMessage());
+	}
+	
+	@Test
+	public void loginExceptionTest() throws Exception {
+				
+		String responseBody = "{\\\"token\\\":\\\"TOKEN\\\"}\"";
+
+		server.stubFor(post(urlEqualTo("/login"))
+				.withRequestBody(equalToJson("{\"apikey\":\"FE3A3CA0FE707FEF\"}"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+
+		Assertions.assertThrows(GuideException.class, () ->{
+			dataSource.login();
+		});
+	}
 
 	@Test
 	public void refreshTokenTest() throws Exception {
 		
+		String responseBody = "{\"token\":\"NEW_TOKEN\"}";
+
 		server.stubFor(get(urlEqualTo("/refresh_token"))
 				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
-						.withBody("{\"token\":\"NEW_TOKEN\"}")));
+						.withBody(responseBody)));
 		
 
 		TvdbToken oldToken = new TvdbToken();
@@ -102,6 +164,78 @@ public class TvdbGuideDataSource_ImplIT {
 		
 		Assertions.assertNotNull(newToken);
 		Assertions.assertEquals("NEW_TOKEN", newToken.getValue());
+	}
+	
+	@Test
+	public void refreshTokenNotAuthorisedTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlEqualTo("/refresh_token"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(401)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		GuideAuthorizationException ex = Assertions.assertThrows(GuideAuthorizationException.class, () ->{
+			dataSource.refreshToken();
+		});
+
+		Assertions.assertEquals("Unable to login", ex.getMessage());
+	}
+	
+	@Test
+	public void refreshTokenNotFoundTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlEqualTo("/refresh_token"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(404)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+		
+		GuideNotFoundException ex = Assertions.assertThrows(GuideNotFoundException.class, () ->{
+			dataSource.refreshToken();
+		});
+
+		Assertions.assertEquals("HTTP 404 Not Found", ex.getMessage());
+	}
+	
+	@Test
+	public void refreshTokenExceptionTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"ERROR\"}";
+
+		server.stubFor(get(urlEqualTo("/refresh_token"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		Assertions.assertThrows(GuideException.class, () ->{
+			dataSource.refreshToken();
+		});
 	}
 
 	
@@ -118,12 +252,14 @@ public class TvdbGuideDataSource_ImplIT {
 	@Test
 	public void getTokenLoginTest() throws Exception {
 
+		String responseBody = "{\"token\":\"TOKEN\"}";
+
 		server.stubFor(post(urlEqualTo("/login"))
 				.withRequestBody(equalToJson("{\"apikey\":\"FE3A3CA0FE707FEF\"}"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
-						.withBody("{\"token\":\"TOKEN\"}")));
+						.withBody(responseBody)));
 
 		TvdbToken token = dataSource.getToken();
 
@@ -135,12 +271,14 @@ public class TvdbGuideDataSource_ImplIT {
 	@Test
 	public void getTokenRefreshTest() throws Exception {
 		
+		String responseBody = "{\"token\":\"NEW_TOKEN\"}";
+
 		server.stubFor(get(urlEqualTo("/refresh_token"))
 				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
-						.withBody("{\"token\":\"NEW_TOKEN\"}")));
+						.withBody(responseBody)));
 		
 
 		TvdbToken oldToken = new TvdbToken();
@@ -161,7 +299,7 @@ public class TvdbGuideDataSource_ImplIT {
 
 		server.stubFor(get(urlPathEqualTo("/search/series"))
 				.withQueryParam("name", matching("TITLE"))
-				.withHeader("Authorization", matching("Bearer TOKEN"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
@@ -170,7 +308,7 @@ public class TvdbGuideDataSource_ImplIT {
 
 		dataSource.setTokenValidPeriodInMs(Integer.MAX_VALUE);
 		TvdbToken token = new TvdbToken();
-		token.setValue("TOKEN");
+		token.setValue("OLD_TOKEN");
 		dataSource.setToken(token);
 
 		List<GuideSearchResult> results = dataSource.search("TITLE");
@@ -182,7 +320,79 @@ public class TvdbGuideDataSource_ImplIT {
 		Assertions.assertEquals("TITLE", results.get(0).getTitle());
 		Assertions.assertEquals(LocalDate.parse("2005-03-11"), results.get(0).getFirstAired());
 	}
+	
+	@Test
+	public void searchNotAuthorisedTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
 
+		server.stubFor(get(urlPathEqualTo("/search/series"))
+				.withQueryParam("name", matching("TITLE"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(401)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		GuideAuthorizationException ex = Assertions.assertThrows(GuideAuthorizationException.class, () ->{
+			dataSource.search("TITLE");
+		});
+
+		Assertions.assertEquals("Unable to login", ex.getMessage());
+	}
+	
+	@Test
+	public void searchNotFoundTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlPathEqualTo("/search/series"))
+				.withQueryParam("name", matching("TITLE"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(404)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		GuideNotFoundException ex = Assertions.assertThrows(GuideNotFoundException.class, () ->{
+			dataSource.search("TITLE");
+		});
+
+		Assertions.assertEquals("HTTP 404 Not Found", ex.getMessage());
+	}
+	
+	@Test
+	public void searchExceptionTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlPathEqualTo("/search/series"))
+				.withQueryParam("name", matching("TITLE"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+		dataSource.setToken(oldToken);
+
+		Assertions.assertThrows(GuideException.class, () ->{
+			dataSource.search("TITLE");
+		});
+	}
 	
 	@Test
 	public void searchInvalidSeriesTest() throws Exception {
@@ -190,12 +400,16 @@ public class TvdbGuideDataSource_ImplIT {
 
 		server.stubFor(get(urlPathEqualTo("/search/series"))
 				.withQueryParam("name", matching("TITLE"))
-				.withHeader("Authorization", matching("Bearer TOKEN"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
 						.withBody(responseBody)));
 
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+		dataSource.setToken(oldToken);
+		
 		List<GuideSearchResult> results = dataSource.search("TITLE");
 
 		Assertions.assertNotNull(results);
@@ -272,7 +486,80 @@ public class TvdbGuideDataSource_ImplIT {
 		Assertions.assertEquals("TITLE", result.getEpisodes().get(0).getTitle());
 		Assertions.assertEquals(LocalDate.parse("2015-09-29"), result.getEpisodes().get(0).getAirDate());
 	}
+	
+	
+	@Test
+	public void episodesNotAuthorisedTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
 
+		server.stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
+				.withQueryParam("page", matching("1"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(401)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		GuideAuthorizationException ex = Assertions.assertThrows(GuideAuthorizationException.class, () ->{
+			dataSource.episodes("GUIDEID", 1);
+		});
+
+		Assertions.assertEquals("Unable to login", ex.getMessage());
+	}
+	
+	@Test
+	public void episodesNotFoundTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
+				.withQueryParam("page", matching("1"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(404)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		GuideNotFoundException ex = Assertions.assertThrows(GuideNotFoundException.class, () ->{
+			dataSource.episodes("GUIDEID", 1);
+		});
+
+		Assertions.assertEquals("HTTP 404 Not Found", ex.getMessage());
+	}
+	
+	@Test
+	public void episodesExceptionTest() throws Exception {
+				
+		String responseBody = "{\"Error\":\"Unable to login\"}";
+
+		server.stubFor(get(urlPathEqualTo("/series/GUIDEID/episodes"))
+				.withQueryParam("page", matching("1"))
+				.withHeader("Authorization", matching("Bearer OLD_TOKEN"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/json")
+						.withBody(responseBody)));
+		
+		TvdbToken oldToken = new TvdbToken();
+		oldToken.setValue("OLD_TOKEN");
+
+		dataSource.setToken(oldToken);
+
+		Assertions.assertThrows(GuideException.class, () ->{
+			dataSource.episodes("GUIDEID", 1);
+		});
+	}
 	
 	@Test
 	public void episodeListNoNextTest() throws Exception {

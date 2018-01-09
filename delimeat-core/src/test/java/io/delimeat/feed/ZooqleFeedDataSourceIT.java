@@ -2,7 +2,8 @@ package io.delimeat.feed;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,7 +47,7 @@ public class ZooqleFeedDataSourceIT {
 		
 		client.setMediaType(MediaType.APPLICATION_XML_TYPE);
 		
-		client.setTargetFactory(new TorrentProjectTargetFactory_Impl());
+		client.setTargetFactory(new ZooqleTargetFactory_Impl());
 		
 		client.setBaseUri(new URI("http://localhost:8089"));		
 	}
@@ -63,7 +64,10 @@ public class ZooqleFeedDataSourceIT {
 				+ "<enclosure url='torrentUrl' length='9223372036854775807' type='application/x-bittorrent' />"
 				+ "</item></channel></rss>";
 		
-		server.stubFor(get(urlEqualTo("/rss/TITLE/"))
+		server.stubFor(get(urlPathEqualTo("/search"))
+				//TODO encoding issue
+				//.withQueryParam("q", matching("TITLE%2Bafter%3A60%2Bcategory%3ATV"))
+				.withQueryParam("fmt", matching("rss"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/xml")

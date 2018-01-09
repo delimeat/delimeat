@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat.guide.exception;
+package io.delimeat.torrent.exception;
 
-public class GuideAuthorizationException extends GuideException {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-	private static final long serialVersionUID = 1L;
+public class UdpTorrentExceptionTest {
+
+	@Test
+	public void messageConstructorTest() {
+		UdpTorrentException ex = new UdpTorrentException("TEST");
+		Assertions.assertEquals("TEST", ex.getMessage());
+	}
+
+	@Test
+	public void causeConstructorTest() {
+		Throwable throwable = new Throwable("THROWABLE");
+		UdpTorrentException ex = new UdpTorrentException(throwable);
+		Assertions.assertEquals(throwable, ex.getCause());
+	}
 	
-	public GuideAuthorizationException(String message, Throwable cause) {
-		super(message, cause);
-	}	
-
 }
