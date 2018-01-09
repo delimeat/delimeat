@@ -55,6 +55,28 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-failsafe-plugin</artifactId>
+			    <version>${maven-failsafe-plugin.version}</version>
+			    <executions>
+			        <execution>
+			            <id>integration-tests</id>
+			            <goals>
+			                <goal>integration-test</goal>
+			                <goal>verify</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.junit.platform</groupId>
+						<artifactId>junit-platform-surefire-provider</artifactId>
+						<version>${org.junit.platform.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -65,8 +87,9 @@
 				
 		<!-- Maven plugins  !-->
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.0</jacoco-maven-plugin.version>
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 
 		<!-- Test versions ! -->
@@ -177,6 +200,13 @@
 									<goal>prepare-agent</goal>
 								</goals>
 							</execution>
+							<execution>
+								<id>pre-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+				            </execution>
 						</executions>
 					</plugin>
 				</plugins>
