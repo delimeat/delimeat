@@ -20,28 +20,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.entity.Config;
 import io.delimeat.show.EpisodeService;
 import io.delimeat.show.ShowUtils;
 import io.delimeat.show.entity.Episode;
 
-@Component
-@Scope("prototype")
 public class FeedItemReader_Impl implements ItemReader<Episode> {
 
-	@Autowired
 	private EpisodeService episodeService;
-	
-	@Autowired
 	private ConfigService configService;
-	
-	private List<Episode> episodes = null;
-	
+		
 	/**
 	 * @return the episodeService
 	 */
@@ -69,24 +58,12 @@ public class FeedItemReader_Impl implements ItemReader<Episode> {
 	public void setConfigService(ConfigService configService) {
 		this.configService = configService;
 	}
-
+		
 	/* (non-Javadoc)
-	 * @see io.delimeat.processor.ItemReader#read()
+	 * @see io.delimeat.processor.ItemReader#readItems()
 	 */
 	@Override
-	public Episode read() throws Exception {			
-		if(episodes == null){
-			episodes = getEpisodes();		
-		}
-		
-		try{
-			return episodes.remove(0);
-		}catch(IndexOutOfBoundsException ex){
-			return null;
-		}
-	}
-	
-	private List<Episode> getEpisodes() throws Exception{
+	public List<Episode> readItems() throws Exception{
 		final Instant now = Instant.now();
 		final Config config = configService.read();		
 		final long searchInterval = config.getSearchInterval();
@@ -109,8 +86,7 @@ public class FeedItemReader_Impl implements ItemReader<Episode> {
 	@Override
 	public String toString() {
 		return "FeedItemReader_Impl [" + (episodeService != null ? "episodeService=" + episodeService + ", " : "")
-				+ (configService != null ? "configService=" + configService + ", " : "")
-				+ (episodes != null ? "episodes=" + episodes : "") + "]";
+				+ (configService != null ? "configService=" + configService + ", " : "") + "]";
 	}
 
 }

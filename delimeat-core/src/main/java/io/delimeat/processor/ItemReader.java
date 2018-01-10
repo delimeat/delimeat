@@ -15,8 +15,16 @@
  */
 package io.delimeat.processor;
 
-public interface ItemReader<T> {
+import java.util.List;
 
-	public T read() throws Exception;
+public interface ItemReader<T> {
+	
+	/**
+	 * Read items to be processed
+	 * 
+	 * @return items to process
+	 * @throws Exception
+	 */
+	public List<T> readItems() throws Exception;
 	
 }

@@ -16,6 +16,7 @@
 package io.delimeat.processor;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,8 +59,11 @@ public class GuideItemReader_ImplTest {
 		
 		reader.setShowService(showService);
 		
-		Assertions.assertEquals(show1, reader.read());
-		Assertions.assertEquals(show1, reader.read());
-		Assertions.assertNull(reader.read());
+		List<Show> result = reader.readItems();
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(2, result.size());
+		
+		Assertions.assertEquals(show1, result.get(0));
+		Assertions.assertEquals(show1, result.get(1));
 	}
 }

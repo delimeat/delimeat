@@ -18,23 +18,13 @@ package io.delimeat.processor;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.show.ShowService;
 import io.delimeat.show.entity.Show;
 
-
-@Component
-@Scope("prototype")
 public class GuideItemReader_Impl implements ItemReader<Show> {
 
-	@Autowired
 	private ShowService showService;
-	
-	private List<Show> shows = null;
-	
+		
 	/**
 	 * @return the showService
 	 */
@@ -42,32 +32,22 @@ public class GuideItemReader_Impl implements ItemReader<Show> {
 		return showService;
 	}
 
-
 	/**
 	 * @param showService the showService to set
 	 */
 	public void setShowService(ShowService showService) {
 		this.showService = showService;
 	}
-
-
+	
 	/* (non-Javadoc)
-	 * @see org.springframework.batch.item.ItemReader#read()
+	 * @see io.delimeat.processor.ItemReader#readItems()
 	 */
 	@Override
-	public Show read() throws Exception {
-		if(shows == null){
-			shows = showService.readAll()
-							.stream()
-							.filter(show->show.isEnabled())
-							.collect(Collectors.toList());
-		}
-		
-		try{
-			return shows.remove(0);
-		}catch(IndexOutOfBoundsException ex){
-			return null;
-		}
+	public List<Show> readItems() throws Exception {
+		return showService.readAll()
+				.stream()
+				.filter(show->show.isEnabled())
+				.collect(Collectors.toList());
 	}
 
 
@@ -77,7 +57,7 @@ public class GuideItemReader_Impl implements ItemReader<Show> {
 	@Override
 	public String toString() {
 		return "GuideItemReader_Impl [" + (showService != null ? "showService=" + showService + ", " : "")
-				+ (shows != null ? "shows=" + shows : "") + "]";
+				 + "]";
 	}
 
 }

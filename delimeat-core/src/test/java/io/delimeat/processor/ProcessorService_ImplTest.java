@@ -15,6 +15,8 @@
  */
 package io.delimeat.processor;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +61,7 @@ public class ProcessorService_ImplTest {
 		show.setEnabled(true);
 		
 		GuideItemReader_Impl reader = Mockito.mock(GuideItemReader_Impl.class);
-		Mockito.when(reader.read()).thenReturn(show).thenReturn(null);
+		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(show));
 		GuideItemProcessor_Impl processor = Mockito.mock(GuideItemProcessor_Impl.class);
 		
 		ApplicationContext context = Mockito.mock(ApplicationContext.class);
@@ -69,7 +71,7 @@ public class ProcessorService_ImplTest {
 		
 		service.processAllGuideUpdates();
 
-		Mockito.verify(reader, Mockito.times(2)).read();
+		Mockito.verify(reader).readItems();
 		Mockito.verifyNoMoreInteractions(reader);
 		
 		Mockito.verify(processor).process(show);
@@ -86,7 +88,7 @@ public class ProcessorService_ImplTest {
 		Episode episode = new Episode();
 		
 		FeedItemReader_Impl reader = Mockito.mock(FeedItemReader_Impl.class);
-		Mockito.when(reader.read()).thenReturn(episode).thenReturn(null);
+		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(episode));
 		FeedItemProcessor_Impl processor = Mockito.mock(FeedItemProcessor_Impl.class);
 		
 		ApplicationContext context = Mockito.mock(ApplicationContext.class);
@@ -96,7 +98,7 @@ public class ProcessorService_ImplTest {
 		
 		service.processAllFeedUpdates();
 
-		Mockito.verify(reader, Mockito.times(2)).read();
+		Mockito.verify(reader).readItems();
 		Mockito.verifyNoMoreInteractions(reader);
 		
 		Mockito.verify(processor).process(episode);
@@ -111,14 +113,14 @@ public class ProcessorService_ImplTest {
 	public void processorExceptionTest() throws Exception{
 		@SuppressWarnings("unchecked") 
 		ItemReader<Object> reader =  Mockito.mock(ItemReader.class);
-		Mockito.when(reader.read()).thenReturn(new Object()).thenReturn(null);
+		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(new Object()));
 		@SuppressWarnings("unchecked") 
 		ItemProcessor<Object> processor = Mockito.mock(ItemProcessor.class);
 		Mockito.doThrow(Exception.class).when(processor).process(Mockito.any());
 		
 		service.run(reader, processor);
 		
-		Mockito.verify(reader,Mockito.times(2)).read();
+		Mockito.verify(reader).readItems();
 		Mockito.verify(processor).process(Mockito.any());
 		Mockito.verifyNoMoreInteractions(reader,processor);
 		

@@ -15,6 +15,8 @@
  */
 package io.delimeat.processor;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -75,8 +77,8 @@ public class ProcessorService_Impl implements ProcessorService  {
 	
 	@Transactional
 	public <I> void run(ItemReader<I> itemReader, ItemProcessor<I> itemProcessor) throws Exception{
-		I inputItem = null;
-		while((inputItem = itemReader.read()) != null){
+		List<I> items = itemReader.readItems();
+		for(I inputItem: items){
 			try{
 				itemProcessor.process(inputItem);
 			}catch(Exception ex){
