@@ -12,6 +12,7 @@ xmlns:context="http://www.springframework.org/schema/context"
 	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd">
 
 
+	<!-- 
 	<import resource="feed-context.xml" />
-	
+	!-->
 </beans>

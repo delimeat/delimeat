@@ -24,9 +24,6 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.exception.GuideException;
 import io.delimeat.show.entity.Episode;
@@ -37,16 +34,10 @@ import io.delimeat.show.exception.ShowException;
 import io.delimeat.show.exception.ShowNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
-@Service
 public class ShowService_Impl implements ShowService {
 	
-	@Autowired
-	private ShowDao showDao;
-	
-	@Autowired
+	private ShowDao showDao;	
 	private EpisodeService episodeService;
-	
-	@Autowired
 	private GuideService guideService;
 
 

@@ -19,10 +19,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import io.delimeat.guide.GuideEpisodeComparator;
 import io.delimeat.guide.entity.GuideEpisode;
 import io.delimeat.guide.entity.GuideInfo;
 import io.delimeat.guide.entity.GuideSearchResult;
@@ -31,10 +27,8 @@ import io.delimeat.guide.exception.GuideException;
 import io.delimeat.guide.exception.GuideNotFoundException;
 import io.delimeat.util.DelimeatUtils;
 
-@Service
 public class GuideService_Impl implements GuideService {
 
-	@Autowired
 	private GuideDataSource guideDataSource;
 
 	/**

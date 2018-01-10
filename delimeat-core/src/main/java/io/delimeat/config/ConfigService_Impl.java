@@ -22,23 +22,16 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import io.delimeat.config.entity.Config;
 import io.delimeat.config.exception.ConfigConcurrencyException;
 import io.delimeat.config.exception.ConfigException;
 
-@Service
 public class ConfigService_Impl implements ConfigService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass().getName());
 
-	@Autowired
 	private ConfigDao configDao;
-
-	@Value("${io.delimeat.config.defaultOutputDir}")
 	private String defaultOutputDir;
 
 	/**

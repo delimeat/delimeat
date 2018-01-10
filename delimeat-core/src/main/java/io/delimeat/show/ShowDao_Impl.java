@@ -17,12 +17,9 @@ package io.delimeat.show;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import io.delimeat.show.entity.Show;
 import io.delimeat.util.AbstractJpaDao;
 
-@Repository
 public class ShowDao_Impl extends AbstractJpaDao<Long, Show> implements ShowDao {
 
 	public ShowDao_Impl(){

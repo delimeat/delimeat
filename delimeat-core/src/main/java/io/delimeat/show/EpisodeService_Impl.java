@@ -22,21 +22,15 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.EpisodeStatus;
 import io.delimeat.show.exception.ShowConcurrencyException;
 import io.delimeat.show.exception.ShowException;
 import io.delimeat.show.exception.ShowNotFoundException;
 
-@Service
 public class EpisodeService_Impl implements EpisodeService {
 
-	@Autowired
 	private EpisodeDao episodeDao;
-
 	
 	/**
 	 * @return the episodeDao

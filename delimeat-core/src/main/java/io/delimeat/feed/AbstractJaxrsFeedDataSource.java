@@ -100,6 +100,7 @@ public abstract class AbstractJaxrsFeedDataSource implements FeedDataSource {
         			.invoke(FeedSearch.class)
         			.getResults();
 
+        	//TODO better exception handling
         } catch (WebApplicationException | ProcessingException ex) {
         	LOGGER.error("an error occured reading", ex);
         	throw new FeedException(ex);

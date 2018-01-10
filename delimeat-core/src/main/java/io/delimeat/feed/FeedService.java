@@ -17,8 +17,6 @@ package io.delimeat.feed;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
-
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.exception.FeedException;
 
@@ -29,7 +27,6 @@ public interface FeedService {
 	 * @return list of Feed Results
 	 * @throws FeedException
 	 */
-	@Cacheable("feed")
 	public List<FeedResult> read(String title) throws FeedException;
 	
 }

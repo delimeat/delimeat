@@ -20,19 +20,15 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.entity.FeedSource;
 import io.delimeat.feed.exception.FeedException;
 
-@Service
 public class FeedService_Impl implements FeedService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedService_Impl.class);
 	
-	@Autowired
 	private List<FeedDataSource> feedDataSources;
     
 	/**

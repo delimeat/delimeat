@@ -15,12 +15,9 @@
  */
 package io.delimeat.config;
 
-import org.springframework.stereotype.Repository;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.util.AbstractJpaDao;
 
-@Repository
 public class ConfigDao_Impl extends AbstractJpaDao<Long, Config> implements ConfigDao {
 
 	public ConfigDao_Impl(){
