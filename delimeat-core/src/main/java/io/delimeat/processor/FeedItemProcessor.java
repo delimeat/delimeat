@@ -15,14 +15,8 @@
  */
 package io.delimeat.processor;
 
-public interface ItemProcessor<I>{
+import io.delimeat.show.entity.Episode;
 
-	/**
-	 * Process an item 
-	 * 
-	 * @param item to process
-	 * @throws Exception
-	 */
-	public void process(I item) throws Exception;
-	
+public interface FeedItemProcessor extends ItemProcessor<Episode> {
+
 }

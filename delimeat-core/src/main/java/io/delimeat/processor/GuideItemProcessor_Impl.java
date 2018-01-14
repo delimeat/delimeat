@@ -29,9 +29,6 @@ import javax.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.entity.GuideEpisode;
@@ -46,19 +43,12 @@ import io.delimeat.show.exception.ShowConcurrencyException;
 import io.delimeat.show.exception.ShowException;
 import io.delimeat.util.DelimeatUtils;
 
-@Component
-@Scope("prototype")
-public class GuideItemProcessor_Impl implements ItemProcessor<Show> {
+public class GuideItemProcessor_Impl implements GuideItemProcessor {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(GuideItemProcessor_Impl.class);
 
-	@Autowired
 	private ShowService showService;
-
-	@Autowired
 	private GuideService guideService;
-
-	@Autowired
 	private EpisodeService episodeService;
 
 	/**

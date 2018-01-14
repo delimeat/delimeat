@@ -21,17 +21,12 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.processor.entity.FeedProcessUnitRejection;
 import io.delimeat.torrent.entity.Torrent;
 import io.delimeat.torrent.entity.TorrentInfo;
 import io.delimeat.show.entity.Show;
 
-@Component
-@Order(2)
 public class TorrentCompressedValidator_Impl extends AbstractTorrentValidator implements TorrentValidator {
 
 	public TorrentCompressedValidator_Impl(){

@@ -22,16 +22,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.ShowType;
 
-@Component
-@Order(4)
 public class DailyEpisodeFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	private static final String YEAR_REGEX = "\\d{4}(?=[\\s\\.]\\d{2}[\\s\\.]\\d{2})";

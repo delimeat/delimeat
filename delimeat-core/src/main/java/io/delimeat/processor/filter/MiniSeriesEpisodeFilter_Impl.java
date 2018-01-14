@@ -20,16 +20,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.ShowType;
 
-@Component
-@Order(5)
 public class MiniSeriesEpisodeFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	private static final String MINI_SERIES_REGEX = "\\d{2}(?=[Oo][Ff]\\d{2})";

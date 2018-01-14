@@ -26,7 +26,7 @@ import io.delimeat.show.EpisodeService;
 import io.delimeat.show.ShowUtils;
 import io.delimeat.show.entity.Episode;
 
-public class FeedItemReader_Impl implements ItemReader<Episode> {
+public class FeedItemReader_Impl implements FeedItemReader {
 
 	private EpisodeService episodeService;
 	private ConfigService configService;

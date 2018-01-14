@@ -31,9 +31,6 @@ import javax.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import io.delimeat.config.ConfigService;
 import io.delimeat.config.entity.Config;
@@ -56,24 +53,16 @@ import io.delimeat.show.entity.Show;
 import io.delimeat.show.entity.ShowType;
 import io.delimeat.util.DelimeatUtils;
 
-@Component
-@Scope("prototype")
-public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
+public class FeedItemProcessor_Impl implements FeedItemProcessor {
 
   	private static final Logger LOGGER = LoggerFactory.getLogger(FeedItemProcessor_Impl.class);
   	private static final long MINSEEDERS = 20;
   			
-  	@Autowired
   	private ConfigService configService;
-  	@Autowired
     private EpisodeService episodeService;
-  	@Autowired
     private FeedService feedService;
-  	@Autowired
     private TorrentService torrentService;
-  	@Autowired
     private List<TorrentValidator> torrentValidators = new ArrayList<TorrentValidator>();
-  	@Autowired
   	private List<FeedResultFilter> feedResultFilters = new ArrayList<FeedResultFilter>();
 
       	
@@ -163,6 +152,9 @@ public class FeedItemProcessor_Impl implements ItemProcessor<Episode> {
 
 	/* (non-Javadoc)
 	 * @see io.delimeat.ItemProcessor#process(java.lang.Object)
+	 */
+    /* (non-Javadoc)
+	 * @see io.delimeat.processor.FeedItemProcessor#process(io.delimeat.show.entity.Episode)
 	 */
     @Transactional(TxType.REQUIRES_NEW)
 	@Override

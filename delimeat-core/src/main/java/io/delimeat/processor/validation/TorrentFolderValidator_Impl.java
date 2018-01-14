@@ -15,17 +15,12 @@
  */
 package io.delimeat.processor.validation;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.processor.entity.FeedProcessUnitRejection;
 import io.delimeat.show.entity.Show;
 import io.delimeat.torrent.entity.Torrent;
 import io.delimeat.torrent.entity.TorrentInfo;
 
-@Component
-@Order(4)
 public class TorrentFolderValidator_Impl extends AbstractTorrentValidator implements TorrentValidator{
 
 	public TorrentFolderValidator_Impl(){

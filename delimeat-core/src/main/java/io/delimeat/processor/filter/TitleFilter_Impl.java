@@ -18,15 +18,10 @@ package io.delimeat.processor.filter;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.show.entity.Episode;
 
-@Component
-@Order(1)
 public class TitleFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 	/* (non-Javadoc)

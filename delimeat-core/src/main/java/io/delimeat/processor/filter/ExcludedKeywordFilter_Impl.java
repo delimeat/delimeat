@@ -20,15 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import io.delimeat.config.entity.Config;
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.show.entity.Episode;
 
-@Component
-@Order(2)
 public class ExcludedKeywordFilter_Impl extends AbstractFeedResultFilter implements FeedResultFilter {
 
 

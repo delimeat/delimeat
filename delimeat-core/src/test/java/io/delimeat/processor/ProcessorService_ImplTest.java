@@ -21,14 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
 
-import io.delimeat.processor.FeedItemProcessor_Impl;
-import io.delimeat.processor.FeedItemReader_Impl;
-import io.delimeat.processor.GuideItemProcessor_Impl;
-import io.delimeat.processor.GuideItemReader_Impl;
-import io.delimeat.processor.ItemProcessor;
-import io.delimeat.processor.ItemReader;
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.Show;
 
@@ -42,17 +35,40 @@ public class ProcessorService_ImplTest {
 	}
 	
 	@Test
-	public void applicationContextTest(){
-		Assertions.assertNull(service.getApplicationContext());
-		ApplicationContext context = Mockito.mock(ApplicationContext.class);
-		service.setApplicationContext(context);
-		
-		Assertions.assertEquals(context, service.getApplicationContext());
+	public void toStringTest(){
+		Assertions.assertEquals("ProcessorService_Impl []", service.toString());
 	}
 	
 	@Test
-	public void toStringTest(){
-		Assertions.assertEquals("ProcessorService_Impl []", service.toString());
+	public void feedItemReaderTest() {
+		Assertions.assertNull(service.getFeedItemReader());
+		FeedItemReader itemReader = Mockito.mock(FeedItemReader.class);
+		service.setFeedItemReader(itemReader);
+		Assertions.assertEquals(itemReader, service.getFeedItemReader());
+	}
+	
+	@Test
+	public void feedItemProcessorTest() {
+		Assertions.assertNull(service.getFeedItemProcessor());
+		FeedItemProcessor itemProcessor = Mockito.mock(FeedItemProcessor.class);
+		service.setFeedItemProcessor(itemProcessor);
+		Assertions.assertEquals(itemProcessor, service.getFeedItemProcessor());
+	}
+	
+	@Test
+	public void guideItemReaderTest() {
+		Assertions.assertNull(service.getGuideItemReader());
+		GuideItemReader itemReader = Mockito.mock(GuideItemReader.class);
+		service.setGuideItemReader(itemReader);
+		Assertions.assertEquals(itemReader, service.getGuideItemReader());
+	}
+	
+	@Test
+	public void guideItemProcessorTest() {
+		Assertions.assertNull(service.getGuideItemProcessor());
+		GuideItemProcessor itemProcessor = Mockito.mock(GuideItemProcessor.class);
+		service.setGuideItemProcessor(itemProcessor);
+		Assertions.assertEquals(itemProcessor, service.getGuideItemProcessor());
 	}
 
 	@Test
@@ -60,14 +76,11 @@ public class ProcessorService_ImplTest {
 		Show show = new Show();
 		show.setEnabled(true);
 		
-		GuideItemReader_Impl reader = Mockito.mock(GuideItemReader_Impl.class);
+		GuideItemReader reader = Mockito.mock(GuideItemReader.class);
 		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(show));
-		GuideItemProcessor_Impl processor = Mockito.mock(GuideItemProcessor_Impl.class);
-		
-		ApplicationContext context = Mockito.mock(ApplicationContext.class);
-		Mockito.when(context.getBean(GuideItemReader_Impl.class)).thenReturn(reader);
-		Mockito.when(context.getBean(GuideItemProcessor_Impl.class)).thenReturn(processor);
-		service.setApplicationContext(context);
+		service.setGuideItemReader(reader);
+		GuideItemProcessor processor = Mockito.mock(GuideItemProcessor.class);
+		service.setGuideItemProcessor(processor);
 		
 		service.processAllGuideUpdates();
 
@@ -76,25 +89,17 @@ public class ProcessorService_ImplTest {
 		
 		Mockito.verify(processor).process(show);
 		Mockito.verifyNoMoreInteractions(processor);
-
-		Mockito.verify(context).getBean(GuideItemReader_Impl.class);
-		Mockito.verify(context).getBean(GuideItemProcessor_Impl.class);
-		Mockito.verifyNoMoreInteractions(context);
-		
 	}
 	
 	@Test
 	public void processAllFeedUpdatesTest() throws Exception {
 		Episode episode = new Episode();
 		
-		FeedItemReader_Impl reader = Mockito.mock(FeedItemReader_Impl.class);
+		FeedItemReader reader = Mockito.mock(FeedItemReader.class);
 		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(episode));
-		FeedItemProcessor_Impl processor = Mockito.mock(FeedItemProcessor_Impl.class);
-		
-		ApplicationContext context = Mockito.mock(ApplicationContext.class);
-		Mockito.when(context.getBean(FeedItemReader_Impl.class)).thenReturn(reader);
-		Mockito.when(context.getBean(FeedItemProcessor_Impl.class)).thenReturn(processor);
-		service.setApplicationContext(context);
+		service.setFeedItemReader(reader);
+		FeedItemProcessor processor = Mockito.mock(FeedItemProcessor.class);
+		service.setFeedItemProcessor(processor);
 		
 		service.processAllFeedUpdates();
 
@@ -104,18 +109,13 @@ public class ProcessorService_ImplTest {
 		Mockito.verify(processor).process(episode);
 		Mockito.verifyNoMoreInteractions(processor);
 
-		Mockito.verify(context).getBean(FeedItemReader_Impl.class);
-		Mockito.verify(context).getBean(FeedItemProcessor_Impl.class);
-		Mockito.verifyNoMoreInteractions(context);
 	}
 	
 	@Test
 	public void processorExceptionTest() throws Exception{
-		@SuppressWarnings("unchecked") 
-		ItemReader<Object> reader =  Mockito.mock(ItemReader.class);
-		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(new Object()));
-		@SuppressWarnings("unchecked") 
-		ItemProcessor<Object> processor = Mockito.mock(ItemProcessor.class);
+		FeedItemReader reader =  Mockito.mock(FeedItemReader.class);
+		Mockito.when(reader.readItems()).thenReturn(Arrays.asList(new Episode()));
+		FeedItemProcessor processor = Mockito.mock(FeedItemProcessor.class);
 		Mockito.doThrow(Exception.class).when(processor).process(Mockito.any());
 		
 		service.run(reader, processor);

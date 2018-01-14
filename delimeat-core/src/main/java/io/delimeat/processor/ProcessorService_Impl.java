@@ -21,57 +21,89 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
-import io.delimeat.processor.FeedItemProcessor_Impl;
-import io.delimeat.processor.FeedItemReader_Impl;
-import io.delimeat.processor.GuideItemProcessor_Impl;
-import io.delimeat.processor.GuideItemReader_Impl;
-import io.delimeat.processor.ItemProcessor;
-import io.delimeat.processor.ItemReader;
-
-@Service
 public class ProcessorService_Impl implements ProcessorService  {
 		
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorService_Impl.class);
 	
-	@Autowired
-	private ApplicationContext applicationContext;
+	private FeedItemReader feedItemReader;
+	private FeedItemProcessor feedItemProcessor;
 	
+	private GuideItemReader guideItemReader;
+	private GuideItemProcessor guideItemProcessor;
+
 	/**
-	 * @return the applicationContext
+	 * @return the feedItemReader
 	 */
-	public ApplicationContext getApplicationContext() {
-		return applicationContext;
+	public FeedItemReader getFeedItemReader() {
+		return feedItemReader;
 	}
 
 	/**
-	 * @param applicationContext the applicationContext to set
+	 * @param feedItemReader the feedItemReader to set
 	 */
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
+	public void setFeedItemReader(FeedItemReader feedItemReader) {
+		this.feedItemReader = feedItemReader;
 	}
 
+	/**
+	 * @return the feedItemProcessor
+	 */
+	public FeedItemProcessor getFeedItemProcessor() {
+		return feedItemProcessor;
+	}
+
+	/**
+	 * @param feedItemProcessor the feedItemProcessor to set
+	 */
+	public void setFeedItemProcessor(FeedItemProcessor feedItemProcessor) {
+		this.feedItemProcessor = feedItemProcessor;
+	}
+
+	/**
+	 * @return the guideItemReader
+	 */
+	public GuideItemReader getGuideItemReader() {
+		return guideItemReader;
+	}
+
+	/**
+	 * @param guideItemReader the guideItemReader to set
+	 */
+	public void setGuideItemReader(GuideItemReader guideItemReader) {
+		this.guideItemReader = guideItemReader;
+	}
+
+	/**
+	 * @return the guideItemProcessor
+	 */
+	public GuideItemProcessor getGuideItemProcessor() {
+		return guideItemProcessor;
+	}
+
+	/**
+	 * @param guideItemProcessor the guideItemProcessor to set
+	 */
+	public void setGuideItemProcessor(GuideItemProcessor guideItemProcessor) {
+		this.guideItemProcessor = guideItemProcessor;
+	}
+
+	/* (non-Javadoc)
+	 * @see io.delimeat.processor.ProcessorService#processAllFeedUpdates()
+	 */
 	@Override
-	@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.initial}")
+	//@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.initial}")
 	public void processAllFeedUpdates() throws Exception {
-		FeedItemReader_Impl reader = applicationContext.getBean(FeedItemReader_Impl.class);
-		FeedItemProcessor_Impl processor = applicationContext.getBean(FeedItemProcessor_Impl.class);
-		
-		run(reader, processor);
+		run(feedItemReader, feedItemProcessor);
 	}
 	
+	/* (non-Javadoc)
+	 * @see io.delimeat.processor.ProcessorService#processAllGuideUpdates()
+	 */
 	@Override
-	@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.initial}")
+	//@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.initial}")
 	public void processAllGuideUpdates()  throws Exception {
-
-		GuideItemReader_Impl reader = applicationContext.getBean(GuideItemReader_Impl.class);
-		GuideItemProcessor_Impl processor = applicationContext.getBean(GuideItemProcessor_Impl.class);
-		
-		run(reader, processor);
+		run(guideItemReader, guideItemProcessor);
 	}
 
 	
@@ -92,8 +124,12 @@ public class ProcessorService_Impl implements ProcessorService  {
 	 */
 	@Override
 	public String toString() {
-		return "ProcessorService_Impl ["
-				+ (applicationContext != null ? "applicationContext=" + applicationContext : "") + "]";
+		return "ProcessorService_Impl [" + (feedItemReader != null ? "feedItemReader=" + feedItemReader + ", " : "")
+				+ (feedItemProcessor != null ? "feedItemProcessor=" + feedItemProcessor + ", " : "")
+				+ (guideItemReader != null ? "guideItemReader=" + guideItemReader + ", " : "")
+				+ (guideItemProcessor != null ? "guideItemProcessor=" + guideItemProcessor : "") + "]";
 	}
+
+	
 
 }
