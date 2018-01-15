@@ -24,8 +24,6 @@
 
 	<modules>
 		<module>delimeat-core</module>
-		<module>delimeat-api</module>
-		<module>delimeat-app</module>
 		<module>delimeat-static</module>
 		<module>delimeat-jaxrs</module>
 		<module>delimeat-springboot</module>

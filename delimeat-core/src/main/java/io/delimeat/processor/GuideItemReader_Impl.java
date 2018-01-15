@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import io.delimeat.show.ShowService;
 import io.delimeat.show.entity.Show;
 
-public class GuideItemReader_Impl implements ItemReader<Show> {
+public class GuideItemReader_Impl implements GuideItemReader {
 
 	private ShowService showService;
 		
