@@ -24,18 +24,24 @@ public class TvdbApiKey {
 
 	private String value;
 
-	/**
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
+	public TvdbApiKey() {}
+	
+	public TvdbApiKey(String value) {
+		this.value = value;
 	}
-
+	
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
 	}
 
 	/* (non-Javadoc)
@@ -73,5 +79,5 @@ public class TvdbApiKey {
 	public String toString() {
 		return "TvdbApiKey [" + (value != null ? "value=" + value : "") + "]";
 	}
-
+	
 }

@@ -30,6 +30,7 @@ import io.delimeat.torrent.bencode.BInteger;
 import io.delimeat.torrent.bencode.BString;
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
+import io.delimeat.torrent.entity.ScrapeResult.Builder;
 import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.torrent.exception.TorrentNotFoundException;
 import io.delimeat.util.DelimeatUtils;
@@ -96,8 +97,7 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 	}
 
 	public ScrapeResult umarshalScrapeResult(BDictionary dictionary, InfoHash infoHash) {
-		long seeders = 0;
-		long leechers = 0;
+		Builder builder = ScrapeResult.builder();
 		if (dictionary.containsKey(FILES_KEY) && dictionary.get(FILES_KEY) instanceof BDictionary) {
 
 			BDictionary infoHashDictionary = (BDictionary) dictionary.get(FILES_KEY);
@@ -108,18 +108,18 @@ public class HttpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 				if (resultDictionary.containsKey(COMPLETE_KEY)
 						&& resultDictionary.get(COMPLETE_KEY) instanceof BInteger) {
 					BInteger complete = (BInteger) resultDictionary.get(COMPLETE_KEY);
-					seeders = complete.longValue();
+					builder.seeders(complete.longValue());
 				}
 
 				if (resultDictionary.containsKey(INCOMPLETE_KEY)
 						&& resultDictionary.get(INCOMPLETE_KEY) instanceof BInteger) {
 					BInteger incomplete = (BInteger) resultDictionary.get(INCOMPLETE_KEY);
-					leechers = incomplete.longValue();
+					builder.leechers(incomplete.longValue());
 				}
 
 			}
 		}
-		return new ScrapeResult(seeders, leechers);
+		return builder.build();
 	}
 
 }

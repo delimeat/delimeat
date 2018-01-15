@@ -24,60 +24,61 @@ public class ScrapeResultTest {
 
 	@Test
 	public void createResult() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertEquals(Long.MIN_VALUE, result.getSeeders());
 		Assertions.assertEquals(Long.MAX_VALUE, result.getLeechers());
 	}
 
 	@Test
 	public void toStringTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
+
 		Assertions.assertEquals("ScrapeResult [seeders=-9223372036854775808, leechers=9223372036854775807]",
 				result.toString());
 	}
 
 	@Test
 	public void hashCodeTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertEquals(961, result.hashCode());
 	}
 
 	@Test
 	public void equalsTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		ScrapeResult other = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
+		ScrapeResult other = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertTrue(result.equals(other));
 	}
 
 	@Test
 	public void equalsSelfTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertTrue(result.equals(result));
 	}
 
 	@Test
 	public void equalsNullTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertFalse(result.equals(null));
 	}
 
 	@Test
 	public void equalsOtherClassTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertFalse(result.equals(new Object()));
 	}
 
 	@Test
 	public void equalsSeedersNotLeechersTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		ScrapeResult other = new ScrapeResult(Long.MIN_VALUE, Long.MIN_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
+		ScrapeResult other = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MIN_VALUE).build();
 		Assertions.assertFalse(result.equals(other));
 	}
 
 	@Test
 	public void equalsLeechersNotSeedersTest() {
-		result = new ScrapeResult(Long.MIN_VALUE, Long.MAX_VALUE);
-		ScrapeResult other = new ScrapeResult(Long.MAX_VALUE, Long.MAX_VALUE);
+		result = ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build();
+		ScrapeResult other = ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build();
 		Assertions.assertFalse(result.equals(other));
 	}
 }

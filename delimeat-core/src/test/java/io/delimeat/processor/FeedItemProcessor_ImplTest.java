@@ -279,15 +279,15 @@ public class FeedItemProcessor_ImplTest {
 	public void selectBestResultTest() {
 		Torrent torrent = new Torrent();
 		FeedProcessUnit result1 = new FeedProcessUnit();
-		result1.setScrape(new ScrapeResult(100,0));
+		result1.setScrape(ScrapeResult.builder().seeders(100).leechers(0).build());
 		result1.setTorrent(torrent);
 		
 		FeedProcessUnit result2 = new FeedProcessUnit();
-		result2.setScrape(new ScrapeResult(50,0));
+		result2.setScrape(ScrapeResult.builder().seeders(50).leechers(0).build());
 
 		
 		FeedProcessUnit result3 = new FeedProcessUnit();
-		result3.setScrape(new ScrapeResult(200,0));
+		result3.setScrape(ScrapeResult.builder().seeders(200).leechers(0).build());
 
 		result3.getRejections().add(FeedProcessUnitRejection.CONTAINS_COMPRESSED);
 
@@ -336,7 +336,7 @@ public class FeedItemProcessor_ImplTest {
      	info.setInfoHash(infoHash);
      	torrent.setInfo(info);
 		Mockito.when(torrentService.read(Mockito.any(URI.class))).thenReturn(torrent);
-		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		ScrapeResult scrapeResult = ScrapeResult.builder().seeders(100).leechers(200).build();
 		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
 		processor.setTorrentService(torrentService);
      
@@ -480,7 +480,7 @@ public class FeedItemProcessor_ImplTest {
   		processUnit.setTorrent(torrent);
 
   		TorrentService torrentService = Mockito.mock(TorrentService.class);
-		ScrapeResult scrapeResult = new ScrapeResult(100,200);
+		ScrapeResult scrapeResult = ScrapeResult.builder().seeders(100).leechers(200).build();
 		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
 		processor.setTorrentService(torrentService); 
 		
@@ -501,7 +501,7 @@ public class FeedItemProcessor_ImplTest {
   		processUnit.setTorrent(torrent);
 
   		TorrentService torrentService = Mockito.mock(TorrentService.class);
-		ScrapeResult scrapeResult = new ScrapeResult(19,18);
+		ScrapeResult scrapeResult = ScrapeResult.builder().seeders(19).leechers(18).build();
 		Mockito.when(torrentService.scrape(torrent)).thenReturn(scrapeResult);
 		processor.setTorrentService(torrentService); 
 		

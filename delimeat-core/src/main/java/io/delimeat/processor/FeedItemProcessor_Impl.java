@@ -223,7 +223,12 @@ public class FeedItemProcessor_Impl implements FeedItemProcessor {
 		processUnit.setSource(feedResult.getSource());
 		processUnit.setTitle(feedResult.getTitle());
 		if(feedResult.getSeeders() != 0 || feedResult.getLeechers() != 0){
-			processUnit.setScrape(new ScrapeResult(feedResult.getSeeders(), feedResult.getLeechers()));
+			ScrapeResult result = ScrapeResult.builder()
+					.seeders(feedResult.getSeeders())
+					.leechers(feedResult.getLeechers())
+					.build();
+			
+			processUnit.setScrape(result);
 		}
 		
 		if(feedResult.getTorrentURL() != null){

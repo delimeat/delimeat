@@ -59,7 +59,7 @@ public class FeedProcessUnitTest {
 	@Test
 	public void scrapeTest(){
 		Assertions.assertNull(processUnit.getScrape());
-		ScrapeResult result = new ScrapeResult(Long.MAX_VALUE, Long.MIN_VALUE);
+		ScrapeResult result = ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MIN_VALUE).build();
 		processUnit.setScrape(result);
 		Assertions.assertEquals(Long.MAX_VALUE, processUnit.getScrape().getSeeders());
 		Assertions.assertEquals(Long.MIN_VALUE, processUnit.getScrape().getLeechers());	
@@ -84,7 +84,7 @@ public class FeedProcessUnitTest {
 	public void hashCodeTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		processUnit.setTorrent(new Torrent());
 		Assertions.assertEquals(-1163967515, processUnit.hashCode());
@@ -99,7 +99,7 @@ public class FeedProcessUnitTest {
 	public void equalsTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -107,7 +107,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -134,7 +134,7 @@ public class FeedProcessUnitTest {
 	public void equalsDownloadUriTest() throws Exception{
 		processUnit.setDownloadUri(new URI("http://different.io"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -142,7 +142,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -154,7 +154,7 @@ public class FeedProcessUnitTest {
 	public void equalsInfoHashTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("other".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -162,7 +162,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -174,7 +174,7 @@ public class FeedProcessUnitTest {
 	public void equalsScrapeTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MIN_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MIN_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -182,7 +182,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -194,7 +194,7 @@ public class FeedProcessUnitTest {
 	public void equalsTitleTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("OTHER");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -202,7 +202,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -214,7 +214,7 @@ public class FeedProcessUnitTest {
 	public void equalsTorrentTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		torrent.setTracker("TRACKER");
@@ -223,7 +223,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -235,7 +235,7 @@ public class FeedProcessUnitTest {
 	public void equalsDownloadUriNullTest() throws Exception{
 		processUnit.setDownloadUri(null);
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -243,7 +243,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -255,7 +255,7 @@ public class FeedProcessUnitTest {
 	public void equalsInfoHashNullTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(null);
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -263,7 +263,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -275,7 +275,7 @@ public class FeedProcessUnitTest {
 	public void equalsTitleNullTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle(null);
 		Torrent torrent = new Torrent();
 		processUnit.setTorrent(torrent);
@@ -283,7 +283,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -295,14 +295,14 @@ public class FeedProcessUnitTest {
 	public void equalsTorrentNullTest() throws Exception{
 		processUnit.setDownloadUri(new URI("udp:test.com"));
 		processUnit.setInfoHash(new InfoHash("bytes".getBytes()));
-		processUnit.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		processUnit.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		processUnit.setTitle("TITLE");
 		processUnit.setTorrent(null);
 		
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);
@@ -321,7 +321,7 @@ public class FeedProcessUnitTest {
 		FeedProcessUnit other = new FeedProcessUnit();
 		other.setDownloadUri(new URI("udp:test.com"));
 		other.setInfoHash(new InfoHash("bytes".getBytes()));
-		other.setScrape(new ScrapeResult(Long.MAX_VALUE,Long.MAX_VALUE));
+		other.setScrape(ScrapeResult.builder().seeders(Long.MAX_VALUE).leechers(Long.MAX_VALUE).build());
 		other.setTitle("TITLE");
 		Torrent otherTorrent = new Torrent();
 		other.setTorrent(otherTorrent);

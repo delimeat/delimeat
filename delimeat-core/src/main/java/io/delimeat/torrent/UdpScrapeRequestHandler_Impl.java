@@ -459,7 +459,11 @@ public class UdpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		}
 		
 		
-		ScrapeResult result = new ScrapeResult(response.getSeeders(), response.getLeechers());
+		ScrapeResult result = ScrapeResult.builder()
+				.seeders(response.getSeeders())
+				.leechers(response.getLeechers())
+				.build();
+		
 		LOGGER.trace("Returning scrape {} for {} from {}", result, infoHash, address);
 		return result;
 	}

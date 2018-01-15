@@ -16,78 +16,72 @@
 package io.delimeat.guide.entity;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 public class TvdbApiKeyTest {
 
-	private TvdbApiKey apiKey;
-
-	@BeforeEach
-	public void setUp() {
-		apiKey = new TvdbApiKey();
-	}
-
 	@Test
 	public void valueTest() {
-		Assertions.assertNull(apiKey.getValue());
-		apiKey.setValue("VALUE");
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
 		Assertions.assertEquals("VALUE", apiKey.getValue());
 	}
   
   	@Test
   	public void hashCodeTest(){
-     	apiKey.setValue("VALUE");
+  		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
      	Assertions.assertEquals(81434992, apiKey.hashCode());
    }
    
   	@Test
   	public void toStringTest(){
-     	apiKey.setValue("VALUE");
+  		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
      	Assertions.assertEquals("TvdbApiKey [value=VALUE]", apiKey.toString());
    }
   	
 	@Test
 	public void equalsTest(){
-		apiKey.setValue("VALUE");
-		TvdbApiKey other = new TvdbApiKey();
-		other.setValue("VALUE");
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
+		TvdbApiKey other = new TvdbApiKey("VALUE");
 		Assertions.assertTrue(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsSelfTest(){
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
 		Assertions.assertTrue(apiKey.equals(apiKey));
 	}
 	
 	@Test
 	public void equalsNullTest(){
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
 		Assertions.assertFalse(apiKey.equals(null));
 	}
 	
 	@Test
 	public void equalsOtherClassTest(){
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
 		Assertions.assertFalse(apiKey.equals(new Object()));
 	}
 	
 	@Test
 	public void equalsNullMessageOtherNullMessageTest(){
-		TvdbApiKey other = new TvdbApiKey();
+		TvdbApiKey apiKey = new TvdbApiKey(null);
+		TvdbApiKey other = new TvdbApiKey(null);
 		Assertions.assertTrue(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsNullMessageOtherNotNullMessageTest(){
-		TvdbApiKey other = new TvdbApiKey();
-		other.setValue("VALUE");
+		TvdbApiKey apiKey = new TvdbApiKey(null);
+		TvdbApiKey other = new TvdbApiKey("VALUE");
 		Assertions.assertFalse(apiKey.equals(other));
 	}
 	
 	@Test
 	public void equalsNotNullMessageOtherNullMessageTest(){
-		apiKey.setValue("VALUE");
-		TvdbApiKey other = new TvdbApiKey();
+		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
+		TvdbApiKey other = new TvdbApiKey(null);
 		Assertions.assertFalse(apiKey.equals(other));
 	}
 }

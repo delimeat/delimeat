@@ -26,8 +26,7 @@ public class ScrapeResult {
 	 * @param seeders
 	 * @param leechers
 	 */
-	public ScrapeResult(long seeders, long leechers) {
-		super();
+	private ScrapeResult(long seeders, long leechers) {
 		this.seeders = seeders;
 		this.leechers = leechers;
 	}
@@ -75,4 +74,30 @@ public class ScrapeResult {
 	public String toString() {
 		return "ScrapeResult [seeders=" + seeders + ", leechers=" + leechers + "]";
 	}
+	
+	static public Builder builder() {
+		return new Builder();
+	}
+	
+	static public class Builder {
+        
+		private long seeders = 0;
+        private long leechers = 0;
+        
+        private Builder() {}
+        
+        public Builder seeders(long seeders) {
+            this.seeders = seeders;
+            return this;
+        }
+        
+        public Builder leechers(long leechers) {
+            this.leechers = leechers;
+            return this;
+        }
+
+        public ScrapeResult build() {
+            return new ScrapeResult(seeders, leechers);
+        }
+    }
 }

@@ -53,10 +53,12 @@ import io.delimeat.util.jaxrs.MoxyJAXBFeature;
 
 public class TvdbGuideDataSource_Impl implements GuideDataSource {
 
-	private static final String APIKEY = "FE3A3CA0FE707FEF";
+	
 	private static final MediaType MEDIA_TYPE = MediaType.APPLICATION_JSON_TYPE;
 	private static final String ENCODING = "UTF-8";
 
+	private final TvdbApiKey apikey = new TvdbApiKey("FE3A3CA0FE707FEF");
+	
 	private int tokenValidPeriodInMs = 3600000;
   	private URI baseUri;
 	private TvdbToken token = null;	
@@ -131,11 +133,8 @@ public class TvdbGuideDataSource_Impl implements GuideDataSource {
 		return GuideSource.TVDB;
 	}
 
-	public TvdbToken login() throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {
-		TvdbApiKey key = new TvdbApiKey();
-		key.setValue(APIKEY);
-		
-        Entity<TvdbApiKey> entity = Entity.entity(key, MEDIA_TYPE);
+	public TvdbToken login() throws GuideNotFoundException, GuideAuthorizationException, GuideTimeoutException, GuideResponseException,GuideResponseBodyException, GuideException {	
+        Entity<TvdbApiKey> entity = Entity.entity(apikey, MEDIA_TYPE);
 
         Invocation invocation = getClient()
         		.target(baseUri)

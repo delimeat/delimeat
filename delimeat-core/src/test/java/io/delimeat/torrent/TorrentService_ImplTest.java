@@ -179,7 +179,7 @@ public class TorrentService_ImplTest {
 		info.setInfoHash(infoHash);
 		torrent.setInfo(info);
 
-		ScrapeResult scrapeResult = new ScrapeResult(100, 200);
+		ScrapeResult scrapeResult = ScrapeResult.builder().seeders(100).leechers(200).build();
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
 		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes())))
 				.thenReturn(scrapeResult);
@@ -204,7 +204,7 @@ public class TorrentService_ImplTest {
 		info.setInfoHash(infoHash);
 		torrent.setInfo(info);
 
-		ScrapeResult scrapeResult = new ScrapeResult(100, 200);
+		ScrapeResult scrapeResult = ScrapeResult.builder().seeders(100).leechers(200).build();
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
 		Mockito.when(scraper.scrape(new URI("http://tracker"), new InfoHash("INFO_HASH".getBytes())))
 				.thenReturn(scrapeResult);
