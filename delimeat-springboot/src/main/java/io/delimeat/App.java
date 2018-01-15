@@ -19,20 +19,15 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-//import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -56,6 +51,8 @@ import io.delimeat.processor.GuideItemProcessor;
 import io.delimeat.processor.GuideItemProcessor_Impl;
 import io.delimeat.processor.GuideItemReader;
 import io.delimeat.processor.GuideItemReader_Impl;
+import io.delimeat.processor.ProcessorService;
+import io.delimeat.processor.ProcessorService_Impl;
 import io.delimeat.processor.filter.DailyEpisodeFilter_Impl;
 import io.delimeat.processor.filter.ExcludedKeywordFilter_Impl;
 import io.delimeat.processor.filter.FeedResultFilter;
@@ -89,14 +86,7 @@ import io.delimeat.torrent.UdpScrapeRequestHandler_Impl;
 
 @SpringBootApplication
 @ImportResource("classpath:spring/application-context.xml")
-//@Configuration
-//@ComponentScan
-@ConfigurationProperties 
 @PropertySource({ "classpath:delimeat.properties" })
-//@EnableJpaRepositories("io.delimeat")
-@EnableTransactionManagement
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableScheduling
 public class App {
 
 	@Autowired
@@ -283,6 +273,16 @@ public class App {
 		GuideItemReader_Impl reader = new GuideItemReader_Impl();
 		reader.setShowService(showService);
 		return reader;
+	}
+	
+	@Bean
+	public ProcessorService processorService(FeedItemProcessor feedItemProcessor, FeedItemReader feedItemReader, GuideItemProcessor guideItemProcessor, GuideItemReader guideItemReader) {
+		ProcessorService_Impl service = new ProcessorService_Impl();
+		service.setFeedItemProcessor(feedItemProcessor);
+		service.setFeedItemReader(feedItemReader);
+		service.setGuideItemProcessor(guideItemProcessor);
+		service.setGuideItemReader(guideItemReader);
+		return service;
 	}
 	
 	@Bean

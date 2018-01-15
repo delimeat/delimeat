@@ -33,6 +33,7 @@
 		<com.h2database.version>1.4.196</com.h2database.version>
 		<com.zaxxer.hikari.version>2.7.1</com.zaxxer.hikari.version>
 		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
+		<com.github.ben-manes.caffeine.version>2.6.1</com.github.ben-manes.caffeine.version>
 	</properties>
 
 	<dependencies>	
@@ -79,6 +80,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 			<version>${org.springframework.version}</version>
@@ -119,6 +125,12 @@
 		    <groupId>org.glassfish.jersey.media</groupId>
 		    <artifactId>jersey-media-moxy</artifactId>
 		    <version>${org.glassfish.jersey.version}</version>
+		</dependency>
+		<!-- CACHE -->
+		<dependency>
+		    <groupId>com.github.ben-manes.caffeine</groupId>
+		    <artifactId>caffeine</artifactId>
+		    <version>${com.github.ben-manes.caffeine.version}</version>
 		</dependency>
 	</dependencies>
 </project>

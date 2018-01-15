@@ -3,16 +3,64 @@
 xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:cache="http://www.springframework.org/schema/cache"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
-	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd">
+	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+	
+	<task:scheduler id="processorSchedulerId" pool-size="1" />
 
+	<task:scheduled-tasks scheduler="processorSchedulerId">
+		<task:scheduled ref="processorService" method="processAllGuideUpdates"
+			fixed-delay="${io.delimeat.processor.guide.schedule}" initial-delay="${io.delimeat.processor.guide.initial}" />
+	</task:scheduled-tasks>
+	
+	<task:scheduled-tasks scheduler="processorSchedulerId">
+		<task:scheduled ref="processorService" method="processAllFeedUpdates"
+			fixed-delay="${io.delimeat.processor.feed.schedule}" initial-delay="${io.delimeat.processor.feed.initial}" />
+	</task:scheduled-tasks>
+	
+    <cache:advice id="guideCacheAdvice" cache-manager="cacheManager">
+      <cache:caching cache="guide-search">
+        <cache:cacheable method="search" key="#title"/>
+      </cache:caching>
+      <cache:caching cache="guide-info">
+        <cache:cacheable method="info" key="#guideId"/>
+      </cache:caching>
+      <cache:caching cache="guide-episodes">
+        <cache:cacheable method="episodes" key="#guideId"/>
+      </cache:caching>
+    </cache:advice>
 
-	<!-- 
-	<import resource="feed-context.xml" />
-	!-->
+    <aop:config>
+      <aop:advisor advice-ref="guideCacheAdvice" pointcut="execution(* io.delimeat.guide.GuideDataSource.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="torrentCacheAdvice" cache-manager="cacheManager">
+      <cache:caching cache="torrent">
+        <cache:cacheable method="read" key="#uri"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="torrentCacheAdvice" pointcut="execution(* io.delimeat.torrent.TorrentReader.*(..))"/>
+    </aop:config>
+  
+    <cache:advice id="feedCacheAdvice" cache-manager="cacheManager">
+      <cache:caching cache="feed">
+        <cache:cacheable method="read" key="{#root.targetClass, #title}"/>
+      </cache:caching>
+    </cache:advice>
+
+    <aop:config>
+      <aop:advisor advice-ref="feedCacheAdvice" pointcut="execution(* io.delimeat.feed.FeedDataSource.*(..))"/>
+    </aop:config>
+	
 </beans>
