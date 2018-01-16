@@ -22,6 +22,14 @@ import org.junit.jupiter.api.Test;
 public class TvdbApiKeyTest {
 
 	@Test
+	public void setValueTest() {
+		TvdbApiKey apiKey = new TvdbApiKey();
+		Assertions.assertNull(apiKey.getValue());
+		apiKey.setValue("VALUE");
+		Assertions.assertEquals("VALUE", apiKey.getValue());
+	}
+	
+	@Test
 	public void valueTest() {
 		TvdbApiKey apiKey = new TvdbApiKey("VALUE");
 		Assertions.assertEquals("VALUE", apiKey.getValue());
