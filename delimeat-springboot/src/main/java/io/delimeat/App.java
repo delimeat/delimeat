@@ -306,6 +306,7 @@ public class App {
 		service.setReaders(torrentReaders);
 		service.setWriter(torrentWriter);
 		service.setScrapeRequestHandlers(scrapeRequestHandlers);
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
 		return service;
 	}
 	

@@ -40,6 +40,15 @@ public class TorrentService_ImplTest {
 	public void setUp() {
 		service = new TorrentService_Impl();
 	}
+	
+	@Test
+	public void magnetUriTemplateTest() {
+		Assertions.assertNull(service.getMagnetUriTemplate());
+		
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		
+		Assertions.assertEquals("magnet:?xt=urn:btih:%s", service.getMagnetUriTemplate());
+	}
 
 	@Test
 	public void readersTest() {
@@ -71,11 +80,24 @@ public class TorrentService_ImplTest {
 
 	@Test
 	public void buildMagnetUriTest() throws Exception {
-
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		URI uri = service.buildMagnetUri(infoHash);
 
 		Assertions.assertEquals(new URI("magnet:?xt=urn:btih:494e464f5f48415348"), uri);
+	}
+	
+	@Test
+	public void buildMagnetUriExceptionTest() throws Exception {
+		service.setMagnetUriTemplate("\\//");
+		
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		TorrentException ex = Assertions.assertThrows(TorrentException.class, ()->{
+			service.buildMagnetUri(infoHash);
+		});
+		
+		Assertions.assertEquals("Encountered an error creating magnet uri \\//", ex.getMessage());
 	}
 
 	@Test
@@ -105,6 +127,8 @@ public class TorrentService_ImplTest {
 
 	@Test
 	public void readInfoHashTest() throws Exception {
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		
 		Torrent torrent = new Torrent();
 		TorrentReader reader = Mockito.mock(TorrentReader.class);
 		Mockito.when(reader.read(new URI("magnet:?xt=urn:btih:494e464f5f48415348"))).thenReturn(torrent);
@@ -250,9 +274,10 @@ public class TorrentService_ImplTest {
 		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
 		info.setInfoHash(infoHash);
 		torrent.setInfo(info);
-
+		
+		service.setMagnetUriTemplate("magnet:?xt=urn:btih:%s");
+		
 		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
-
 		service.getScrapeRequestHandlers().put("MAGNET", scraper);
 
 		Assertions.assertNull(service.scrape(torrent));

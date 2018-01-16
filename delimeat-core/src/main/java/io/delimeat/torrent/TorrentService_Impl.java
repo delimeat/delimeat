@@ -39,15 +39,26 @@ import io.delimeat.torrent.exception.UnhandledScrapeException;
 public class TorrentService_Impl implements TorrentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TorrentService_Impl.class);
-	private static final String MAGNET_TEMPLATE = "magnet:?xt=urn:btih:%s";
 
+	private String magnetUriTemplate;
 	private Map<String, TorrentReader> readers = new HashMap<>();
-	
 	private TorrentWriter writer;
-	
 	private Map<String, ScrapeRequestHandler> scrapeRequestHandlers = new HashMap<>();
 	
-	
+	/**
+	 * @return the magnetUriTemplate
+	 */
+	public String getMagnetUriTemplate() {
+		return magnetUriTemplate;
+	}
+
+	/**
+	 * @param magnetUriTemplate the magnetUriTemplate to set
+	 */
+	public void setMagnetUriTemplate(String magnetUriTemplate) {
+		this.magnetUriTemplate = magnetUriTemplate;
+	}
+
 	/**
 	 * @return the readers
 	 */
@@ -189,7 +200,7 @@ public class TorrentService_Impl implements TorrentService {
 	 * @throws TorrentException
 	 */
 	public URI buildMagnetUri(InfoHash infoHash) throws TorrentException{
-		String magnetUri = String.format(MAGNET_TEMPLATE,infoHash.getHex());
+		String magnetUri = String.format(magnetUriTemplate,infoHash.getHex());
 		try{
 			return new URI(magnetUri);
 		}catch(URISyntaxException ex){
