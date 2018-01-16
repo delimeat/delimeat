@@ -285,5 +285,25 @@ public class TorrentService_ImplTest {
 		Mockito.verify(scraper).scrape(new URI("magnet:?xt=urn:btih:494e464f5f48415348"), infoHash);
 		Mockito.verifyNoMoreInteractions(scraper);
 	}
+	
+	@Test
+	public void scrapeNoTrackersMagnetExceptionTest() throws Exception {
+		Torrent torrent = new Torrent();
+		torrent.setTrackers(Arrays.asList(""));
+		torrent.setTracker(null);
+		TorrentInfo info = new TorrentInfo();
+		InfoHash infoHash = new InfoHash("INFO_HASH".getBytes());
+		info.setInfoHash(infoHash);
+		torrent.setInfo(info);
+		
+		service.setMagnetUriTemplate("\\//");
+		
+		ScrapeRequestHandler scraper = Mockito.mock(ScrapeRequestHandler.class);
+		service.getScrapeRequestHandlers().put("MAGNET", scraper);
+
+		Assertions.assertNull(service.scrape(torrent));
+
+		Mockito.verifyZeroInteractions(scraper);
+	}
 
 }
