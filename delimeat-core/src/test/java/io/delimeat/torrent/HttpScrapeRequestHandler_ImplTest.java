@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.delimeat.torrent.entity.InfoHash;
+import io.delimeat.torrent.exception.TorrentException;
 import io.delimeat.util.DelimeatUtils;
 
 public class HttpScrapeRequestHandler_ImplTest {
@@ -73,5 +74,18 @@ public class HttpScrapeRequestHandler_ImplTest {
 		Assertions.assertEquals(
 				"http://test/scrape?test=true&info_hash=%60%14%92%E0T%F9T%0E%B0%12%9C5%DE%B3%85%BA%A2%FA%F0%FE",
 				scrapeURL.toString());
+	}
+	
+	@Test
+	public void invalidGenerateScrapeURLTest() throws Exception {
+		URI announceURI = new URI("http://test/fail");
+		byte[] sha1Bytes = DelimeatUtils.hashBytes("INFO_HASH".getBytes(), "SHA-1");
+		InfoHash infoHash = new InfoHash(sha1Bytes);
+		TorrentException ex = Assertions.assertThrows(TorrentException.class, ()->{ 
+			scraper.generateScrapeURL(announceURI, infoHash);
+		});
+		
+		Assertions.assertEquals("Unable to scrape URI: http://test/fail", ex.getMessage());
+		
 	}
 }
