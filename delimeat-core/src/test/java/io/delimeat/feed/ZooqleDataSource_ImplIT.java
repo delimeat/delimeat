@@ -34,6 +34,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.entity.FeedSource;
+import io.delimeat.feed.exception.FeedException;
 
 public class ZooqleDataSource_ImplIT {
 
@@ -89,5 +90,24 @@ public class ZooqleDataSource_ImplIT {
 		Assertions.assertEquals(200, results.get(0).getLeechers());
 		Assertions.assertEquals("67A8DBA7DBF53CD815A4632F4CB1DC870114EDD7", results.get(0).getInfoHashHex());
 		
+	}
+	
+	@Test
+    public void readExceptionTest() throws Exception {
+		
+		String responseBody = "ERROR";
+		
+		server.stubFor(get(urlPathEqualTo("/search"))
+				//TODO encoding issue
+				//.withQueryParam("q", matching("TITLE%2Bafter%3A60%2Bcategory%3ATV"))
+				.withQueryParam("fmt", matching("rss"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/xml")
+						.withBody(responseBody)));
+
+		Assertions.assertThrows(FeedException.class, ()->{
+			 client.read("TITLE");
+		});	
 	}
 }

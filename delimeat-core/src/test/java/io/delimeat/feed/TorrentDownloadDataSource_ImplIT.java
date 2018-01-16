@@ -33,6 +33,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import io.delimeat.feed.entity.FeedResult;
 import io.delimeat.feed.entity.FeedSource;
+import io.delimeat.feed.exception.FeedException;
 
 public class TorrentDownloadDataSource_ImplIT {
 
@@ -87,5 +88,21 @@ public class TorrentDownloadDataSource_ImplIT {
 		Assertions.assertEquals(1, results.get(0).getSeeders());
 		Assertions.assertEquals(1000, results.get(0).getLeechers());
 		
+	}
+	
+	@Test
+    public void readExceptionTest() throws Exception {
+		
+		String responseBody = "ERROR";
+		
+		server.stubFor(get(urlEqualTo("/rss.xml?type=search&search=TITLE"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withHeader("Content-Type", "application/xml")
+						.withBody(responseBody)));
+
+		Assertions.assertThrows(FeedException.class, ()->{
+			 client.read("TITLE");
+		});	
 	}
 }
