@@ -20,6 +20,15 @@ import org.junit.jupiter.api.Test;
 
 public class GuideExceptionTest {
 
+
+	@Test
+	public void nullConstructorTest(){
+		GuideException ex = new GuideException();
+		
+		Assertions.assertNull(ex.getMessage());
+		Assertions.assertNull(ex.getCause());
+	}
+	
 	@Test
 	public void messageConstructorTest(){
 		GuideException ex = new GuideException("MESSAGE");
