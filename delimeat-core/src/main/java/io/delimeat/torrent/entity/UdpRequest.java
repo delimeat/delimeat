@@ -32,12 +32,19 @@ public interface UdpRequest {
 	/**
 	 * @return the transactionId
 	 */
-	public int getTransactionId();
-	
+	public int getTransactionId();	
 	
 	/**
 	 * @return byte buffer representing the request
 	 */
 	public ByteBuffer toByteBuffer();
+	
+	static UdpRequest connectRequest(int transactionId) {
+		return new UdpConnectRequest(transactionId);
+	}
+	
+	static UdpRequest scrapeRequest(UdpConnectionId connectionId, int transactionId, InfoHash infoHash) {
+		return new UdpScrapeRequest(connectionId.getValue(), transactionId, infoHash);
+	}
 	
 }

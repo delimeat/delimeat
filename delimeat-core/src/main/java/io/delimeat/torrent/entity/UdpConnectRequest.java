@@ -18,7 +18,7 @@ package io.delimeat.torrent.entity;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public class UdpConnectRequest implements UdpRequest {
+class UdpConnectRequest implements UdpRequest {
 
 	private final long connectionId = 0x41727101980L;
 	private final int transactionId;

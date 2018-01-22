@@ -17,7 +17,6 @@ package io.delimeat.torrent.entity;
 
 public interface UdpResponse{
 
-	
 	/**
 	 * @return the action
 	 */

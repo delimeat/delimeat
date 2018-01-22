@@ -45,13 +45,11 @@ import org.slf4j.LoggerFactory;
 import io.delimeat.torrent.entity.InfoHash;
 import io.delimeat.torrent.entity.ScrapeResult;
 import io.delimeat.torrent.entity.UdpAction;
-import io.delimeat.torrent.entity.UdpConnectRequest;
 import io.delimeat.torrent.entity.UdpConnectResponse;
 import io.delimeat.torrent.entity.UdpConnectionId;
 import io.delimeat.torrent.entity.UdpErrorResponse;
 import io.delimeat.torrent.entity.UdpRequest;
 import io.delimeat.torrent.entity.UdpResponse;
-import io.delimeat.torrent.entity.UdpScrapeRequest;
 import io.delimeat.torrent.entity.UdpScrapeResponse;
 import io.delimeat.torrent.entity.UdpTransaction;
 import io.delimeat.torrent.exception.TorrentException;
@@ -397,7 +395,7 @@ public class UdpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 			connections.remove(toAddress);
 			
 			// put the send request in another thread
-			UdpConnectRequest request = new UdpConnectRequest(generateTransactionId());
+			UdpRequest request = UdpRequest.connectRequest(generateTransactionId());
 			
 			// wait for response
 			UdpConnectResponse response;
@@ -463,7 +461,7 @@ public class UdpScrapeRequestHandler_Impl implements ScrapeRequestHandler {
 		}catch(Exception ex){
 			throw new TorrentException(ex);
 		}
-		UdpScrapeRequest request = new UdpScrapeRequest(connId.getValue(), generateTransactionId(), infoHash);
+		UdpRequest request = UdpRequest.scrapeRequest(connId, generateTransactionId(), infoHash);
 
 		UdpScrapeResponse response;
 		try{
