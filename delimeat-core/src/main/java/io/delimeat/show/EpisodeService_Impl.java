@@ -21,6 +21,7 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import javax.transaction.Transactional;
 
 import io.delimeat.show.entity.Episode;
 import io.delimeat.show.entity.EpisodeStatus;
@@ -50,6 +51,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#create(io.delimeat.show.domain.Episode)
 	 */
 	@Override
+	@Transactional
 	public Episode create(Episode episode) throws ShowException {
 		try{
 			return episodeDao.create(episode);
@@ -62,6 +64,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#read(java.lang.Long)
 	 */
 	@Override
+	@Transactional
 	public Episode read(Long episodeId) throws ShowNotFoundException, ShowException{
 		try {
 			return episodeDao.read(episodeId);
@@ -76,6 +79,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#save(io.delimeat.show.domain.Episode)
 	 */
 	@Override
+	@Transactional
 	public Episode update(Episode episode) throws ShowConcurrencyException, ShowException {
 		try{
 			return episodeDao.update(episode);
@@ -91,6 +95,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#delete(java.lang.Long)
 	 */
 	@Override
+	@Transactional
 	public void delete(Long episodeId) throws ShowException {
 		try{
 			episodeDao.delete(episodeId);
@@ -103,6 +108,7 @@ public class EpisodeService_Impl implements EpisodeService {
 	 * @see io.delimeat.show.EpisodeService#findAllPending()
 	 */
 	@Override
+	@Transactional
 	public List<Episode> findAllPending() throws ShowException {
 		try{
 			return episodeDao.findByStatus(Arrays.asList(EpisodeStatus.PENDING));
