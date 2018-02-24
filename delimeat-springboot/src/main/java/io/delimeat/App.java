@@ -54,6 +54,9 @@ import io.delimeat.feed.FeedDataSource;
 import io.delimeat.feed.FeedService;
 import io.delimeat.feed.FeedService_Impl;
 import io.delimeat.feed.LimeTorrentsDataSource_Impl;
+import io.delimeat.feed.TorrentDownloadsDataSource_Impl;
+import io.delimeat.feed.TorrentProjectDataSource_Impl;
+import io.delimeat.feed.ZooqleDataSource_Impl;
 import io.delimeat.guide.GuideDataSource;
 import io.delimeat.guide.GuideService;
 import io.delimeat.guide.GuideService_Impl;
@@ -218,6 +221,27 @@ public class App {
 	public FeedDataSource limetorrentsDataSource() throws URISyntaxException {
 		LimeTorrentsDataSource_Impl dataSource = new LimeTorrentsDataSource_Impl();
 		dataSource.setBaseUri(new URI(env.getProperty("io.delimeat.feed.limetorrents.baseUri")));
+		return dataSource;
+	}	
+	
+	@Bean 
+	public FeedDataSource torrentDownloadsDataSource() throws URISyntaxException {
+		TorrentDownloadsDataSource_Impl dataSource = new TorrentDownloadsDataSource_Impl();
+		dataSource.setBaseUri(new URI(env.getProperty("io.delimeat.feed.torrentdownloads.baseUri")));
+		return dataSource;
+	}
+	
+	@Bean 
+	public FeedDataSource torrentProjectDataSource() throws URISyntaxException {
+		TorrentProjectDataSource_Impl dataSource = new TorrentProjectDataSource_Impl();
+		dataSource.setBaseUri(new URI(env.getProperty("io.delimeat.feed.torrentproject.baseUri")));
+		return dataSource;
+	}
+	
+	@Bean 
+	public FeedDataSource zooqleDataSource() throws URISyntaxException {
+		ZooqleDataSource_Impl dataSource = new ZooqleDataSource_Impl();
+		dataSource.setBaseUri(new URI(env.getProperty("io.delimeat.feed.zooqle.baseUri")));
 		return dataSource;
 	}
 	
