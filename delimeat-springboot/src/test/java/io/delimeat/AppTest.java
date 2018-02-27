@@ -35,8 +35,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.zaxxer.hikari.HikariDataSource;
-
 public class AppTest {
 
 	private App application;
@@ -52,22 +50,6 @@ public class AppTest {
 		Environment env = Mockito.mock(Environment.class);
 		application.setEnv(env);	
 		Assertions.assertEquals(env, application.getEnv());
-	}
-	
-	@Test
-	public void datasourceTest(){
-		Environment env = Mockito.mock(Environment.class);
-		Mockito.when(env.getProperty("io.delimeat.show.jdbcUrl")).thenReturn("url");
-		application.setEnv(env);
-		
-		DataSource dataSource = application.dataSource();
-		Assertions.assertEquals(HikariDataSource.class, dataSource.getClass());
-		HikariDataSource hikariDataSource = (HikariDataSource)dataSource;
-		Assertions.assertEquals("url", hikariDataSource.getJdbcUrl());
-		
-		hikariDataSource.close();
-		
-		Mockito.verify(env).getProperty("io.delimeat.show.jdbcUrl");
 	}
 	
 	@Test

@@ -31,7 +31,6 @@
 	<properties>
 		<spring-boot.version>1.5.9.RELEASE</spring-boot.version>
 		<com.h2database.version>1.4.196</com.h2database.version>
-		<com.zaxxer.hikari.version>2.7.1</com.zaxxer.hikari.version>
 		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
 		<com.github.ben-manes.caffeine.version>2.6.1</com.github.ben-manes.caffeine.version>
 	</properties>
@@ -85,6 +84,11 @@
 			<version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-jdbc</artifactId>
+		    <version>1.5.10.RELEASE</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 			<version>${org.springframework.version}</version>
@@ -104,11 +108,6 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>${com.h2database.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>${com.zaxxer.hikari.version}</version>
 		</dependency>
 		<!-- REST CLIENT -->
 		<dependency>
