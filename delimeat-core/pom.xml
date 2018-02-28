@@ -8,32 +8,19 @@
   <artifactId>delimeat-core</artifactId>
   <properties>
 		<!-- Runtime versions ! -->
-  		<com.github.tomakehurst.wiremock.version>2.12.0</com.github.tomakehurst.wiremock.version>
   		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>		
   </properties>
   <dependencies>
 		<!-- TESTING -->
-		<dependency>
-		    <groupId>com.github.tomakehurst</groupId>
-		    <artifactId>wiremock</artifactId>
-		    <version>${com.github.tomakehurst.wiremock.version}</version>
-		    <scope>test</scope>
-		</dependency>
-		<!-- 
-		<dependency>
-		    <groupId>org.jboss.resteasy</groupId>
-		    <artifactId>resteasy-client</artifactId>
-		    <version>3.1.4.Final</version>
-		    <scope>test</scope>
-		</dependency>
-		!--> 
+		<!-- This is included as a dependency for io.delimeat.util.jaxrs.BencodeBodyReaderTest -->
 		<dependency>
 		    <groupId>org.glassfish.jersey.core</groupId>
-		    <artifactId>jersey-client</artifactId>
-		    <version>${org.glassfish.jersey.version}</version>
+		    <artifactId>jersey-common</artifactId>
+		    <version>2.25.1</version>
 		    <scope>test</scope>
 		</dependency>
-
+		
+		
 		<!-- APIs -->
 		<dependency>
 		    <groupId>javax.transaction</groupId>
@@ -54,6 +41,11 @@
 			<groupId>org.eclipse.persistence</groupId>
     		<artifactId>javax.persistence</artifactId>
     		<version>${javax.persistence.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
 		</dependency>	
 		
 		<dependency>

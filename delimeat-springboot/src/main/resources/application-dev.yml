@@ -1,0 +1,12 @@
+spring:
+ 
+ profiles: dev
+ 
+ aop:
+  auto: true
+  proxy-target-class: true
+  
+logging:
+ level:
+   io:
+    delimeat: TRACE
