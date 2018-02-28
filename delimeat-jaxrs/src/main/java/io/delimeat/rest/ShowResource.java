@@ -72,6 +72,6 @@ public class ShowResource {
 	@GET
 	@Path("/{id}/episode")
 	public List<Episode> episodes(@PathParam("id") Long id) throws ShowNotFoundException, ShowException{
-		return read(id).getEpisodes();
+		return service.readAllEpisodes(id);
 	}	
 }

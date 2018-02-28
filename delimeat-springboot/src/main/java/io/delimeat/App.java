@@ -34,7 +34,6 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -125,20 +124,6 @@ public class App {
 	public void setEnv(Environment env) {
 		this.env = env;
 	}
-	/*
-	public DataSource dataSource() {
-	    return DataSourceBuilder.create().build();
-	}
-	*/
-	
-	/*
-	@Bean
-	public DataSource dataSource() {
-		HikariDataSource ds = new HikariDataSource();
-		ds.setJdbcUrl(env.getProperty("io.delimeat.show.jdbcUrl"));
-		return ds;
-	}
-	*/
 	
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,

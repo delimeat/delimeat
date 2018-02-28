@@ -27,7 +27,6 @@
 		<module>delimeat-static</module>
 		<module>delimeat-jaxrs</module>
 		<module>delimeat-springboot</module>
-		<module>delimeat-thymeleaf</module>
 	</modules>
 
 	<build>

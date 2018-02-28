@@ -107,17 +107,15 @@ public class ShowResourceTest {
 	@Test
 	public void episodesTest() throws ShowException {
 		resource.service = Mockito.mock(ShowService.class);
-		Show show = new Show();
 		Episode episode = new Episode();
-		show.setEpisodes(Arrays.asList(episode));
-		Mockito.when(resource.service.read(1L)).thenReturn(show);
+		Mockito.when(resource.service.readAllEpisodes(1L)).thenReturn(Arrays.asList(episode));
 		
 		List<Episode> results = resource.episodes(1L);
 		
 		Assertions.assertEquals(1, results.size());
 		Assertions.assertEquals(episode, results.get(0));
 		
-		Mockito.verify(resource.service).read(1L);
+		Mockito.verify(resource.service).readAllEpisodes(1L);
 		Mockito.verifyNoMoreInteractions(resource.service);		
 	}
 }
