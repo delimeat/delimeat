@@ -18,7 +18,6 @@ package io.delimeat;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -357,16 +356,7 @@ public class App {
 	public TorrentValidator torrentFolderValidator() {
 		return new TorrentFolderValidator_Impl();
 	}
-	
-	@Bean
-	public List<TorrentValidator> torrentValidators(TorrentValidator torrentSizeValidator, TorrentValidator torrentCompressedValidator, TorrentValidator torrentFileTypeValidator, TorrentValidator torrentFolderValidator){
-		List<TorrentValidator> validators = new ArrayList<>();
-		validators.add(torrentSizeValidator);
-		validators.add(torrentCompressedValidator);
-		validators.add(torrentFileTypeValidator);
-		validators.add(torrentFolderValidator);
-		return validators;
-	}
+
 	
 	@Bean
 	public FeedResultFilter feedResultTitleFilter() {
@@ -391,17 +381,6 @@ public class App {
 	@Bean
 	public FeedResultFilter feedResultMiniSeriesFilter() {
 		return new MiniSeriesEpisodeFilter_Impl ();
-	}
-	
-	@Bean
-	public List<FeedResultFilter> feedResultFilters(FeedResultFilter feedResultTitleFilter, FeedResultFilter feedResultKeywordFilter, FeedResultFilter feedResultSeasonFilter, FeedResultFilter feedResultDailyFilter, FeedResultFilter feedResultMiniSeriesFilter){
-		List<FeedResultFilter> filters = new ArrayList<>();
-		filters.add(feedResultTitleFilter);
-		filters.add(feedResultKeywordFilter);
-		filters.add(feedResultSeasonFilter);
-		filters.add(feedResultDailyFilter);
-		filters.add(feedResultMiniSeriesFilter);
-		return filters;
 	}
 	
 }
