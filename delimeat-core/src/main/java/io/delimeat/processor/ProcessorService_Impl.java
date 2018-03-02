@@ -92,7 +92,6 @@ public class ProcessorService_Impl implements ProcessorService  {
 	 * @see io.delimeat.processor.ProcessorService#processAllFeedUpdates()
 	 */
 	@Override
-	//@Scheduled(fixedDelayString="${io.delimeat.processor.feed.schedule}", initialDelayString="${io.delimeat.processor.feed.initial}")
 	public void processAllFeedUpdates() throws Exception {
 		run(feedItemReader, feedItemProcessor);
 	}
@@ -101,7 +100,6 @@ public class ProcessorService_Impl implements ProcessorService  {
 	 * @see io.delimeat.processor.ProcessorService#processAllGuideUpdates()
 	 */
 	@Override
-	//@Scheduled(fixedDelayString="${io.delimeat.processor.guide.schedule}", initialDelayString="${io.delimeat.processor.guide.initial}")
 	public void processAllGuideUpdates()  throws Exception {
 		run(guideItemReader, guideItemProcessor);
 	}

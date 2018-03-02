@@ -31,6 +31,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.delimeat.config.ConfigDao;
 import io.delimeat.config.ConfigDao_Impl;
@@ -89,6 +90,7 @@ import io.delimeat.torrent.TorrentWriter;
 import io.delimeat.torrent.UdpScrapeRequestHandler_Impl;
 
 @SpringBootApplication
+@EnableScheduling
 public class App {
 
 	@Autowired
