@@ -32,8 +32,7 @@
   		<com.github.tomakehurst.wiremock.version>2.12.0</com.github.tomakehurst.wiremock.version>
 
 		<spring-boot.version>1.5.10.RELEASE</spring-boot.version>
-		<org.springframework.version>4.3.14.RELEASE</org.springframework.version>
-		
+				
 		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
 		<com.h2database.version>1.4.196</com.h2database.version>
 		<com.github.ben-manes.caffeine.version>2.6.2</com.github.ben-manes.caffeine.version>
@@ -94,20 +93,20 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-jdbc</artifactId>
-		    <version>${spring-boot.version}</version>
+		    <artifactId>spring-boot-starter-data-jpa</artifactId>
+		    <version>${spring-boot.version}</version> 
+			<exclusions>
+		        <exclusion>
+		            <groupId>org.hibernate</groupId>
+		            <artifactId>hibernate-entitymanager</artifactId>
+		        </exclusion>
+		        <exclusion>
+		            <groupId>org.hibernate</groupId>
+		            <artifactId>hibernate-core</artifactId>
+		        </exclusion>
+		    </exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
+
 		<!-- PERSISTENCE -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>

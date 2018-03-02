@@ -3,7 +3,7 @@ spring:
   name: delimeat
   
  main:
-  sources: spring/application-context.xml
+  sources: applicationContext.xml
   
  cache:
   cache-names: guide-search,guide-info,guide-episodes,torrent,feed
@@ -12,7 +12,41 @@ spring:
    
 spring.datasource:
   continue-on-error: false
-  url: jdbc:h2:~/db
+  url: jdbc:h2:${io.delimeat.home}/db
   
 logging:
  file: delimeat.log
+ 
+io:
+ delimeat:
+  home: ${user.home}/delimeat
+  config:
+   defaultOutputDir: ${io.delimeat.home}/torrents
+  feed:
+   torrentproject:
+    baseUri: https://torrentproject.se
+   limetorrents:
+    baseUri: https://www.limetorrents.cc
+   torrentdownloads:
+    baseUri: https://torrentdownloads.me
+   zooqle:
+    baseUri: https://zooqle.com    
+  guide:
+   tvdb:
+    apikey: FE3A3CA0FE707FE
+    validPeriod: 3600000
+    baseUri: https://api.thetvdb.com
+  processor:
+   feed:
+    schedule: 900000
+    initial: 60000
+   guide:
+    schedule: 86400000
+    initial: 300000
+  torrent:
+   magnet:
+    defaultTrackerUri: http://tracker.opentrackr.org:1337/announce
+    defaultDownloadTemplate: http://itorrents.org/torrent/%s.torrent
+   udp:
+    port: 9004
+    address: 0.0.0.0

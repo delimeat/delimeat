@@ -1,11 +1,10 @@
 spring:
- 
- profiles: dev
- 
+  
  aop:
   auto: true
   proxy-target-class: true
   
+trace: false
 logging:
  level:
    io:

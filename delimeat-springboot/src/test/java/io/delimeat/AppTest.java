@@ -19,9 +19,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +26,6 @@ import org.mockito.Mockito;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
 public class AppTest {
 
@@ -50,39 +42,6 @@ public class AppTest {
 		Environment env = Mockito.mock(Environment.class);
 		application.setEnv(env);	
 		Assertions.assertEquals(env, application.getEnv());
-	}
-	
-	@Test
-	public void entityManagerFactoryTest(){
-		DataSource dataSource = Mockito.mock(DataSource.class);
-		JpaVendorAdapter adapter = Mockito.mock(JpaVendorAdapter.class);
-		LocalContainerEntityManagerFactoryBean emf = application.entityManagerFactory(dataSource, adapter);
-		
-		Assertions.assertEquals(dataSource, emf.getDataSource());
-		Assertions.assertEquals(adapter, emf.getJpaVendorAdapter());
-		Assertions.assertEquals(4, emf.getJpaPropertyMap().size());
-		Assertions.assertEquals("database", emf.getJpaPropertyMap().get("eclipselink.ddl-generation.output-mode"));
-		Assertions.assertEquals("create-or-extend-tables", emf.getJpaPropertyMap().get("eclipselink.ddl-generation"));
-		Assertions.assertEquals("OFF", emf.getJpaPropertyMap().get("eclipselink.logging.level"));
-		Assertions.assertEquals("false", emf.getJpaPropertyMap().get("eclipselink.weaving"));
-
-	}
-	
-	@Test
-	public void jpaVendorAdapter(){
-		JpaVendorAdapter adapter = application.jpaVendorAdapter();
-		
-		Assertions.assertEquals(EclipseLinkJpaVendorAdapter.class, adapter.getClass());
-	}
-	
-	@Test
-	public void transactionManagerTest(){
-		EntityManagerFactory emf = Mockito.mock(EntityManagerFactory.class);
-		PlatformTransactionManager transactionManager = application.transactionManager(emf);
-		
-		Assertions.assertEquals(JpaTransactionManager.class, transactionManager.getClass());
-		JpaTransactionManager jpaTransactionManager = (JpaTransactionManager)transactionManager;
-		Assertions.assertEquals(emf,jpaTransactionManager.getEntityManagerFactory());
 	}
 	
 	@Test

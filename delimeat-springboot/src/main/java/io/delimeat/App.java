@@ -22,10 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
@@ -35,13 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import io.delimeat.config.ConfigDao;
 import io.delimeat.config.ConfigDao_Impl;
@@ -100,7 +90,6 @@ import io.delimeat.torrent.TorrentWriter;
 import io.delimeat.torrent.UdpScrapeRequestHandler_Impl;
 
 @SpringBootApplication
-@PropertySource({ "classpath:delimeat.properties" })
 public class App {
 
 	@Autowired
@@ -124,37 +113,7 @@ public class App {
 	public void setEnv(Environment env) {
 		this.env = env;
 	}
-	
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
-			JpaVendorAdapter jpaVendorAdapter) {
-		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-		factory.setDataSource(dataSource);
-		factory.setJpaVendorAdapter(jpaVendorAdapter);
-		
-		Properties jpaProperties = new Properties();
-		jpaProperties.put("eclipselink.weaving", "false");
-		jpaProperties.put("eclipselink.logging.level", "OFF");
-		jpaProperties.put("eclipselink.ddl-generation", "create-or-extend-tables");
-		jpaProperties.put("eclipselink.ddl-generation.output-mode", "database");
-		factory.setJpaProperties(jpaProperties);
-		
-		factory.setPackagesToScan("io.delimeat.**.entity");
-		return factory;
-	}
-	
-	@Bean
-	public JpaVendorAdapter jpaVendorAdapter() {
-		return new EclipseLinkJpaVendorAdapter();
-	}
 
-	@Bean
-	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManager.setEntityManagerFactory(emf);
-		return transactionManager;
-	}	
-	
 	@Bean(name="io.delimeat.torrent.udpAddress")
 	public InetSocketAddress udpScrapeSocketAddress(){
 		String address = env.getProperty("io.delimeat.torrent.udp.address");
