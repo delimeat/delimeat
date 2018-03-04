@@ -26,14 +26,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,8 +49,7 @@ public class Episode {
 
 	@Id
 	@Column(name="EPISODE_ID")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="EP_SEQ")
-	@TableGenerator(name="EP_SEQ", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", pkColumnValue="EP_SEQ")
+	@GeneratedValue
 	private Long episodeId;
 	
 	@Column(name="TITLE", nullable=true)

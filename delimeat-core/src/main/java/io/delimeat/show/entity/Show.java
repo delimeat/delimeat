@@ -28,13 +28,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -52,8 +50,7 @@ public class Show {
 
   	@Id
 	@Column(name="SHOW_ID")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SHOW_SEQ")
-	@TableGenerator(name="SHOW_SEQ", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", pkColumnValue="SHOW_SEQ")
+	@GeneratedValue
 	private Long showId;
 	
 	@Column(name="AIR_TIME", nullable=false)
