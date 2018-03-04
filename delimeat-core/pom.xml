@@ -8,7 +8,8 @@
   <artifactId>delimeat-core</artifactId>
   <properties>
 		<!-- Runtime versions ! -->
-  		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>		
+  		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>	
+		<org.eclipse.persistence.version>2.6.0</org.eclipse.persistence.version>	
   </properties>
   <dependencies>
 		<!-- TESTING -->
@@ -16,7 +17,7 @@
 		<dependency>
 		    <groupId>org.glassfish.jersey.core</groupId>
 		    <artifactId>jersey-common</artifactId>
-		    <version>2.25.1</version>
+		    <version>${org.glassfish.jersey.version}</version>
 		    <scope>test</scope>
 		</dependency>
 		

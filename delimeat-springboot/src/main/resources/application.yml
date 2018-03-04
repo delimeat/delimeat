@@ -13,6 +13,8 @@ spring:
 spring.datasource:
   continue-on-error: false
   url: jdbc:h2:${io.delimeat.home}/db
+  user: delimeat
+  password: delimeat
   
 logging:
  file: delimeat.log
@@ -21,7 +23,7 @@ io:
  delimeat:
   home: ${user.home}/delimeat
   config:
-   defaultOutputDir: ${io.delimeat.home}/torrents
+   defaultOutputDir: ${io.delimeat.home}/output
   feed:
    torrentproject:
     baseUri: https://torrentproject.se
