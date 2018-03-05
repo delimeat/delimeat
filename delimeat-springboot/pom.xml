@@ -29,24 +29,18 @@
 		</plugins>
 	</build>
 	<properties>
-  		<com.github.tomakehurst.wiremock.version>2.12.0</com.github.tomakehurst.wiremock.version>
+  		<com.github.tomakehurst.wiremock.version>2.14.0</com.github.tomakehurst.wiremock.version>
 
-		<spring-boot.version>1.5.10.RELEASE</spring-boot.version>
-				
-		<org.glassfish.jersey.version>2.25.1</org.glassfish.jersey.version>
+		<spring-boot.version>2.0.0.RELEASE</spring-boot.version>
+		
 		<com.h2database.version>1.4.196</com.h2database.version>
 		<com.github.ben-manes.caffeine.version>2.6.2</com.github.ben-manes.caffeine.version>
+		
+		<!-- This is needed because of jackson version mismatch between spring and jersey -->
+  		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>	
 	</properties>
 
-	<dependencies>	
-		<!-- TESTING -->
-		<dependency>
-		    <groupId>com.github.tomakehurst</groupId>
-		    <artifactId>wiremock</artifactId>
-		    <version>${com.github.tomakehurst.wiremock.version}</version>
-		    <scope>test</scope>
-		</dependency>
-			
+	<dependencies>				
 		<!-- DELIMEAT -->
 		<dependency>
 			<groupId>io.delimeat</groupId>
@@ -62,11 +56,6 @@
 		<!-- SPRING BOOT -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jersey</artifactId>
-			<version>${spring-boot.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${spring-boot.version}</version>	
 		</dependency>
@@ -80,7 +69,25 @@
 		    <artifactId>spring-boot-starter-data-jpa</artifactId>
 		    <version>${spring-boot.version}</version> 
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
+			<version>${spring-boot.version}</version>
+			<exclusions>
+				<!-- This is excluded because of jackson version mismatch between spring and jersey -->
+				<exclusion>
+					<groupId>org.glassfish.jersey.media</groupId>
+					<artifactId>jersey-media-json-jackson</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- This is used because of jackson version mismatch between spring and jersey -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-moxy</artifactId>
+		    <version>${org.glassfish.jersey.version}</version>
+		</dependency>
+				
 		<!-- PERSISTENCE -->
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -93,6 +100,29 @@
 		    <groupId>com.github.ben-manes.caffeine</groupId>
 		    <artifactId>caffeine</artifactId>
 		    <version>${com.github.ben-manes.caffeine.version}</version>
+		</dependency>
+
+		<!-- TESTING -->
+		<dependency>
+		    <groupId>com.github.tomakehurst</groupId>
+		    <artifactId>wiremock</artifactId>
+		    <version>${com.github.tomakehurst.wiremock.version}</version>
+		    <scope>test</scope>
+		    <exclusions>
+		    	<!-- These are excluded because of jackson version mismatch between spring and jersey -->
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+				</exclusion>
+		    </exclusions>
 		</dependency>
 	</dependencies>
 </project>

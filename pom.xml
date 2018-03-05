@@ -99,9 +99,8 @@
 		<!-- API versions -->
 		<javax.transaction.version>1.2</javax.transaction.version>
 		<javax.persistence.version>2.2.0</javax.persistence.version>
-		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
+		<javax.ws.rs.version>2.1</javax.ws.rs.version>
 		<javax.inject.version>1</javax.inject.version>
-		
 		<org.slf4j.version>1.7.25</org.slf4j.version>
 		
 	</properties>
