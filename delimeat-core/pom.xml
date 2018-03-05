@@ -7,8 +7,8 @@
   </parent>
   <artifactId>delimeat-core</artifactId>
   <properties>
-		<!-- Runtime versions ! -->
-  		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>	
+  		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>
+  		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>	
 		<org.eclipse.persistence.version>2.6.4</org.eclipse.persistence.version>	
   </properties>
   <dependencies>
@@ -20,7 +20,12 @@
 		    <version>${org.glassfish.jersey.version}</version>
 		    <scope>test</scope>
 		</dependency>
-		
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.2.3</version>
+		    <scope>test</scope>
+		</dependency>		
 		
 		<!-- APIs -->
 		<dependency>
