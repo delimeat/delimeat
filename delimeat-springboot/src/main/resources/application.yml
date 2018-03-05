@@ -21,9 +21,9 @@ logging:
  
 io:
  delimeat:
-  home: ${user.home}/delimeat
+  home: ${user.home}${file.separator}delimeat
   config:
-   defaultOutputDir: ${io.delimeat.home}/output
+   defaultOutputDir: ${io.delimeat.home}${file.separator}output
   feed:
    torrentproject:
     baseUri: https://torrentproject.se
