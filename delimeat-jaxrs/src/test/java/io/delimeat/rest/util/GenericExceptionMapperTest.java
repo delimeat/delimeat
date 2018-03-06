@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.delimeat;
+package io.delimeat.rest.util;
+
+import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.delimeat.rest.ConfigResource;
-import io.delimeat.rest.EpisodeResource;
-import io.delimeat.rest.GuideResource;
-import io.delimeat.rest.ShowResource;
-import io.delimeat.rest.util.GenericExceptionMapper;
+public class GenericExceptionMapperTest {
 
-public class JaxrsApplicationTest {
+	private GenericExceptionMapper mapper;
 
-	private JaxrsApplication app;
-	
 	@BeforeEach
 	public void setUp() {
-		app = new JaxrsApplication();
+		mapper = new GenericExceptionMapper();
 	}
-	
+
 	@Test
-	public void resourcesTest() {
-		Assertions.assertEquals(5, app.getClasses().size());
-		Assertions.assertTrue(app.getClasses().contains(ConfigResource.class));
-		Assertions.assertTrue(app.getClasses().contains(EpisodeResource.class));
-		Assertions.assertTrue(app.getClasses().contains(GuideResource.class));
-		Assertions.assertTrue(app.getClasses().contains(ShowResource.class));
-		Assertions.assertTrue(app.getClasses().contains(GenericExceptionMapper.class));
+	public void exceptionTest() {
+		Response response = mapper.toResponse(new Exception("THIS IS A TEST"));
+		Assertions.assertNotNull(response);
+		Assertions.assertEquals(500, response.getStatus());
+		Assertions.assertEquals(JaxrsError.class, response.getEntity().getClass());
+		JaxrsError error = (JaxrsError) response.getEntity();
+		Assertions.assertEquals(500, error.getStatus());
+		Assertions.assertEquals("THIS IS A TEST", error.getMessage());
 	}
 }
