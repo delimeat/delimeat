@@ -22,11 +22,13 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import io.delimeat.rest.util.GenericExceptionMapper;
+
 @ApplicationPath("/api")
 public class JaxrsApplication extends Application {
 
 	@Override
 	public Set<Class<?>> getClasses(){
-		return new HashSet<>(Arrays.asList(ConfigResource.class,EpisodeResource.class,GuideResource.class,ShowResource.class));
+		return new HashSet<>(Arrays.asList(ConfigResource.class,EpisodeResource.class,GuideResource.class,ShowResource.class,GenericExceptionMapper.class));
 	}
 }
