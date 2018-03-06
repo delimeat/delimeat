@@ -25,7 +25,7 @@ import io.delimeat.processor.ProcessorService;
 public class ScheduledTasks {
 
 	@Autowired
-	public ProcessorService service;
+	private ProcessorService service;
 	
 	/**
 	 * @return the service
@@ -48,6 +48,6 @@ public class ScheduledTasks {
 	
 	@Scheduled(fixedDelayString = "${io.delimeat.processor.guide.schedule}", initialDelayString = "${io.delimeat.processor.guide.initial}" )
 	public void processAllGuideUpdates() throws Exception {
-		service.processAllFeedUpdates();
+		service.processAllGuideUpdates();
 	}
 }
