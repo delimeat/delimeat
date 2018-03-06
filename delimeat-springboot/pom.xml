@@ -29,8 +29,6 @@
 		</plugins>
 	</build>
 	<properties>
-  		<com.github.tomakehurst.wiremock.version>2.14.0</com.github.tomakehurst.wiremock.version>
-
 		<spring-boot.version>2.0.0.RELEASE</spring-boot.version>
 		
 		<com.h2database.version>1.4.196</com.h2database.version>
@@ -102,27 +100,5 @@
 		    <version>${com.github.ben-manes.caffeine.version}</version>
 		</dependency>
 
-		<!-- TESTING -->
-		<dependency>
-		    <groupId>com.github.tomakehurst</groupId>
-		    <artifactId>wiremock</artifactId>
-		    <version>${com.github.tomakehurst.wiremock.version}</version>
-		    <scope>test</scope>
-		    <exclusions>
-		    	<!-- These are excluded because of jackson version mismatch between spring and jersey -->
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-databind</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-annotations</artifactId>
-				</exclusion>
-		    </exclusions>
-		</dependency>
 	</dependencies>
 </project>

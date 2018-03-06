@@ -9,6 +9,9 @@
 	<artifactId>delimeat-jaxrs</artifactId>
 	<properties>
 		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>
+		
+		<javax.inject.version>1</javax.inject.version>
+		<javax.ws.rs.version>2.1</javax.ws.rs.version>
 	</properties>
 	<dependencies>
 		<!-- TESTING -->
@@ -23,6 +26,11 @@
 			<groupId>io.delimeat</groupId>
 			<artifactId>delimeat-core</artifactId>
 			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.inject</groupId>
+		    <artifactId>javax.inject</artifactId>
+		    <version>${javax.inject.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
