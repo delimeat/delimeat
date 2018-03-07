@@ -35,7 +35,7 @@
 		<com.github.ben-manes.caffeine.version>2.6.2</com.github.ben-manes.caffeine.version>
 		
 		<!-- This is needed because of jackson version mismatch between spring and jersey -->
-  		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>	
+  		<com.fasterxml.jackson.version>2.9.4</com.fasterxml.jackson.version>	
 	</properties>
 
 	<dependencies>				
@@ -72,20 +72,20 @@
 			<artifactId>spring-boot-starter-jersey</artifactId>
 			<version>${spring-boot.version}</version>
 			<exclusions>
-				<!-- This is excluded because of jackson version mismatch between spring and jersey -->
-				<exclusion>
-					<groupId>org.glassfish.jersey.media</groupId>
-					<artifactId>jersey-media-json-jackson</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- This is used because of jackson version mismatch between spring and jersey -->
+		<!-- These are used because of jackson version mismatch between spring and jersey -->	
 		<dependency>
-		    <groupId>org.glassfish.jersey.media</groupId>
-		    <artifactId>jersey-media-moxy</artifactId>
-		    <version>${org.glassfish.jersey.version}</version>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>${com.fasterxml.jackson.version}</version>
 		</dependency>
-				
+		<dependency>
+		    <groupId>com.fasterxml.jackson.module</groupId>
+		    <artifactId>jackson-module-jaxb-annotations</artifactId>
+		    <version>${com.fasterxml.jackson.version}</version>
+		</dependency>
+		
 		<!-- PERSISTENCE -->
 		<dependency>
 			<groupId>com.h2database</groupId>
