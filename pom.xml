@@ -27,6 +27,7 @@
 		<module>delimeat-static</module>
 		<module>delimeat-jaxrs</module>
 		<module>delimeat-springboot</module>
+		
 	</modules>
 
 	<build>
@@ -81,6 +82,7 @@
 	<properties>
 		<!-- Project specific stuff ! -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 				
 		<!-- Maven plugins  !-->
@@ -91,10 +93,10 @@
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 
 		<!-- Test versions ! -->
-		<org.junit.platform.version>1.0.1</org.junit.platform.version>
+		<org.junit.platform.version>1.0.2</org.junit.platform.version>
 		<org.junit.vintage.version>4.12.1</org.junit.vintage.version>
 		<org.junit.jupiter.version>5.0.2</org.junit.jupiter.version>
-		<org.mockito.version>2.12.0</org.mockito.version>
+		<org.mockito.version>2.18.3</org.mockito.version>
 		
 		<!-- API versions -->
 		<org.slf4j.version>1.7.25</org.slf4j.version>

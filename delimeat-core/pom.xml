@@ -7,8 +7,8 @@
   </parent>
   <artifactId>delimeat-core</artifactId>
   <properties>
-    	<com.github.tomakehurst.wiremock.version>2.14.0</com.github.tomakehurst.wiremock.version>
-  		<org.glassfish.jersey.version>2.26</org.glassfish.jersey.version>
+    	<com.github.tomakehurst.wiremock.version>2.17.0</com.github.tomakehurst.wiremock.version>
+  		<org.glassfish.jersey.version>2.27</org.glassfish.jersey.version>
   		<ch.qos.logback.version>1.2.3</ch.qos.logback.version>
   		
   		<javax.ws.rs.version>2.1</javax.ws.rs.version>

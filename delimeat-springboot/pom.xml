@@ -29,13 +29,13 @@
 		</plugins>
 	</build>
 	<properties>
-		<spring-boot.version>2.0.0.RELEASE</spring-boot.version>
+		<spring-boot.version>2.0.2.RELEASE</spring-boot.version>
 		
-		<com.h2database.version>1.4.196</com.h2database.version>
+		<com.h2database.version>1.4.197</com.h2database.version>
 		<com.github.ben-manes.caffeine.version>2.6.2</com.github.ben-manes.caffeine.version>
 		
 		<!-- This is needed because of jackson version mismatch between spring and jersey -->
-  		<com.fasterxml.jackson.version>2.9.4</com.fasterxml.jackson.version>	
+  		<com.fasterxml.jackson.version>2.9.5</com.fasterxml.jackson.version>	
 	</properties>
 
 	<dependencies>				
