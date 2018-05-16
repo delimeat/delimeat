@@ -40,7 +40,7 @@ gulp.task('i18n',['clean'],  function () {
 //minimise images
 gulp.task('images',['clean'], function() {
     return gulp.src('./frontend/img/**/*.*')
-        .pipe($.imagemin())
+        //.pipe($.imagemin())
         .pipe(gulp.dest('target/classes/static/img'));
 });
 
