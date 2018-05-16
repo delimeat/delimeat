@@ -15,7 +15,7 @@ gulp.task('clean', function(){
 
 // linting
 gulp.task('lint', function() {
-    return gulp.src('./frontend/js/**/*.js')
+    return gulp.src('./src/js/**/*.js')
         .pipe($.jshint())
         .pipe($.jshint.reporter('jshint-stylish'))
         .pipe($.jshint.reporter('fail'));
@@ -23,7 +23,7 @@ gulp.task('lint', function() {
 
 //move angular views to js file
 gulp.task('views',['clean'], function() {
-    return gulp.src('./frontend/js/**/*.tmpl.html')
+    return gulp.src('./src/js/**/*.tmpl.html')
         .pipe($.ngtemplatecache({
             module: 'app',
             root: 'js'
@@ -33,42 +33,33 @@ gulp.task('views',['clean'], function() {
 
 //copy i18n files
 gulp.task('i18n',['clean'],  function () {
-	  gulp.src('./frontend/i18n/*.json')
+	  gulp.src('./src/i18n/*.json')
 	  .pipe(gulp.dest('target/classes/static/i18n'));
 });
 
 //minimise images
 gulp.task('images',['clean'], function() {
-    return gulp.src('./frontend/img/**/*.*')
+    return gulp.src('./src/img/**/*.*')
         //.pipe($.imagemin())
         .pipe(gulp.dest('target/classes/static/img'));
 });
 
 //copy bootstrap fonts
 gulp.task('glyph-icons',['clean'], function () {
-	  gulp.src('./frontend/components/bootstrap/fonts/*')
+	  gulp.src('./src/components/bootstrap/fonts/*')
 	  .pipe(gulp.dest('target/classes/static/fonts'));
 });
 
 //copy favion
 gulp.task('favicon',['clean'], function () {
-	  gulp.src('./frontend/*.ico')
+	  gulp.src('./src/*.ico')
 	  .pipe(gulp.dest('target/classes/static'));
 });
 
-//create config file for api endpoint - BUILD
-gulp.task('config:build',['clean'], function () {
-	  gulp.src('./frontend/config.json')
-	  .pipe($.ngconfig('delimeat.config', {
-		  environment: 'production'
-		}))
-	    .pipe($.rename('config.js'))
-	    .pipe(gulp.dest('target/tmp/js'));
-});
 
 //compile the front end
-gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyph-icons','favicon'], function() {
-	return gulp.src('./frontend/index.html')
+gulp.task('compile',['clean','views','lint','i18n','images','glyph-icons','favicon'], function() {
+	return gulp.src('./src/index.html')
     .pipe($.inject(gulp.src('./target/tmp/js/templates.js', {read: false}),
             {
                 starttag: '<!-- inject:templates:js -->',
@@ -81,14 +72,9 @@ gulp.task('compile',['clean','views','config:build','lint','i18n','images','glyp
         js:           [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')],
         js_libs:      [$.sourcemaps.init(),$.ngannotate(), $.uglify(), $.rev(),$.sourcemaps.write('.')]
     }))
+
     .pipe($.size({title: 'html',showFiles:true}))
 	.pipe(gulp.dest('target/classes/static'));
-});
-
-
-//watch for updated source files
-gulp.task('watch',['clean'], function () {
-    gulp.watch('./frontend/**/*.html', ['reload:html']);
 });
 
 gulp.task('default',['clean','compile'], function() {});
