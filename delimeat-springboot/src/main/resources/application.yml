@@ -9,7 +9,7 @@ spring:
   cache-names: guide-search,guide-info,guide-episodes,torrent,feed
   caffeine:
    spec: maximumSize=100,expireAfterAccess=10m,expireAfterWrite=1h
-   
+
 spring.datasource:
   continue-on-error: false
   url: jdbc:h2:${io.delimeat.home}/db

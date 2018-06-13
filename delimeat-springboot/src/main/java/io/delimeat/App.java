@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
@@ -30,7 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.delimeat.config.ConfigDao;
@@ -90,9 +94,13 @@ import io.delimeat.torrent.TorrentWriter;
 import io.delimeat.torrent.UdpScrapeRequestHandler_Impl;
 
 @SpringBootApplication
+@Configuration
+@EnableJpaRepositories
 @EnableScheduling
-public class App {
+public class App /* extends JpaBaseConfiguration*/{
 
+
+	
 	@Autowired
 	private Environment env;
 	
@@ -141,8 +149,10 @@ public class App {
 	}
 	
 	@Bean
-	public ConfigDao configDao() {
-		return new ConfigDao_Impl();
+	public ConfigDao configDao(EntityManager entityManager) {
+		ConfigDao_Impl dao = new ConfigDao_Impl();
+		dao.setEntityManager(entityManager);
+		return dao;
 	}
 	
 	@Bean

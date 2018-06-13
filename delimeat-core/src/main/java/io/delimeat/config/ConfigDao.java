@@ -22,4 +22,5 @@ public interface ConfigDao {
 	public Config read(Long id);
 	
 	public Config update(Config config);
+	
 }
