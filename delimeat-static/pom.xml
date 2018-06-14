@@ -39,38 +39,17 @@
 							<arguments>install</arguments>
 						</configuration>
 					</execution>
-
+					
 					<execution>
-						<id>bower install</id>
+						<id>npm build</id>
 						<phase>prepare-package</phase>
 						<goals>
-							<goal>bower</goal>
+							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<arguments>install</arguments>
+							<arguments>run-script build</arguments>
 						</configuration>
-					</execution>
-
-					<execution>
-						<id>gulp build</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>gulp</goal>
-						</goals>
-						<configuration>
-							<srcdir>${basedir}/frontend</srcdir>
-							<outputdir>${project.build.outputDirectory}/static</outputdir>
-							<triggerfiles>
-								<triggerfile>gulpfile.js</triggerfile>
-								<triggerfile>package.json</triggerfile>
-							</triggerfiles>
-							<environmentVariables>
-								<BUILD_DIR>${project.build.directory}/frontend</BUILD_DIR>
-								<TEMP_DIR>${project.build.directory}/tmp</TEMP_DIR>
-								<OUTPUT_DIR>${project.build.outputDirectory}/static</OUTPUT_DIR>
-							</environmentVariables>
-						</configuration>
-					</execution>
+					</execution>					
 
 				</executions>
 			</plugin>

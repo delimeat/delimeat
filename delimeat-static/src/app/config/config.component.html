@@ -1,0 +1,36 @@
+<h2>Settings</h2>
+<form (ngSubmit)="onSubmit()" #configForm="ngForm">
+ 
+  <div class="form-group">
+    <label for="outputDirectory" >Output Directory</label>
+    <input type="text" class="form-control" id="outputDirectory" aria-describedby="outputDirectoryHelp" placeholder="Output Directory" [(ngModel)]="model.outputDirectory" #outputDirectory="ngModel" name="outputDirectory" required>
+    <small id="outputDirectoryHelp" class="form-text text-muted">Directory to output to</small>
+	<div [hidden]="outputDirectory.valid || outputDirectory.pristine" class="alert alert-danger">Output Directory is required</div>
+  </div>
+  
+  <div class="form-group">
+    <label for="searchInterval">Search Interval</label>
+    <input type="number" class="form-control" id="searchInterval" aria-describedby="searchIntervalHelp" placeholder="Search Interval" [(ngModel)]="model.searchInterval" #searchInterval="ngModel" name="searchInterval" required>
+    <small id="searchIntervalHelp" class="form-text text-muted">Interval for between searches</small>
+    <div [hidden]="searchInterval.valid || searchInterval.pristine" class="alert alert-danger">Search Interval is required</div>
+  </div>
+  
+  <div class="form-group">
+    <label for="searchDelay">Search Delay</label>
+    <input type="number" class="form-control" id="searchDelay" aria-describedby="searchDelayHelp" placeholder="Search Delay" [(ngModel)]="model.searchDelay" #searchDelay="ngModel" name="searchDelay" required>
+    <small id="searchDelayHelp" class="form-text text-muted">Delay after episode airing for searches</small>
+    <div [hidden]="searchDelay.valid || searchDelay.pristine" class="alert alert-danger">Search Delay is required</div>
+  </div>
+  
+  <div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="preferFiles" [(ngModel)]="model.preferFiles" name="preferFiles">
+    <label class="form-check-label" for="preferFiles">Prefer Files</label>
+  </div>
+  
+  <div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="ignoreFolders" [(ngModel)]="model.ignoreFolders" name="ignoreFolders">
+    <label class="form-check-label" for="ignoreFolders">Ignore Folders</label>
+  </div>
+  
+  <button type="submit" class="btn btn-success" [disabled]="!configForm.form.valid">Submit</button>
+</form>

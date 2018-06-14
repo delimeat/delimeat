@@ -1,4 +1,0 @@
-{
-  "development": {"API": "http://localhost:8080/delimeat/api/" },
-  "production": {"API": "api/" }
-}
