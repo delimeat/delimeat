@@ -8,10 +8,6 @@ import { Episode } from './episode/episode';
 import { MessageService } from './message/message.service';
  
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
- 
-const httpOptions = {
   headers: new HttpHeaders({ 'Accept' : 'application/json'})
 };
 
